@@ -209,3 +209,57 @@ Engine/EDL only, no takes, no spend. 1:07 glyph face readable (fork-tree cell = 
 no longer blown (back `figGain .3`); orchestra stand-in close-ups are 2D crops (`zoom`, no parallax), no tearing, v5 orchestra stays default;
 slowed clocks (< 0.9x) blend frames; minors (2:26 scrim, 4:18 log, 3:00.8 insert/flash, poem scrim). edl_check: 0 exceptions, 0 held clocks
 (default, orch=v4, drop=v4/v5, figlook=led). **Next render:** eyeball V5_BOX_RUNSHEET §1.2's ranges.
+
+## 2026-10-25 checkpoint 13: v5 generation queue run from the cloud — NEEDS INTAKE/RENDER (box)
+Cloud session, Jade flying (she OK'd the spend). The KV check printed `None` (Jade added Workers KV Storage: Edit), so the whole run sheet §2
+queue ran through the relay. **Spend: $368.84 / $600** in the committed ledger (was $293.61; hard stop was $380). No renders, nothing in engine/.
+- **Images through the relay**: `GEN_IMAGES_VIA_RELAY=1` makes `cf.generate()` (so gpt_plate / fix_patch / gen_plates / canonprop) queue the
+  image call as a relay job (`gen.run_image`: KV PUT job, the relay cron runs env.AI.run, KV GET result) instead of the direct call that times out at
+  ~30 s here. The default (unset, the box) is the direct path. Relay quirks seen today: an intermittent `2047: Invalid User Credentials` on every
+  model (errored = refunded; resubmitting worked), two cron minutes missed (jobs requeued; the orphaned keys deleted and logged ok=false), and three
+  jobs stuck in `running` with no result. Those three are counted conservatively in the ledger: `canonv4_intro_up_v5_0` and `drop_dr_gs_line6_0`
+  ($0.24 each), `intro_up_t52-b3bff38a5a` ($1.85). If `res:mergemain/intro_up_t52-b3bff38a5a` ever shows up in KV, it can be collected.
+- **Box: put the stills in place before intake** (copy from `review/takes/stills/`; `rm media/gen/refs/<name>*` for each first frame):
+  `v2_horizon_v5.jpg` → `media/plates/fix/v2_horizon.jpg` (kept from the earlier session); `intro_up_face_v4.png` → `media/plates/face_v4/intro_up.png`;
+  `bd_float_face_v4.png` → `media/plates/face_v4/bd_float.png`; `orch_{wide,line,keys,pencil,guitar}.png` → `media/plates/outro/`;
+  `dr_dl_close.png`, `dr_gs_line6.png`, `dr_gs_v6.png` → `media/plates/drop/`. The face_v4 and fix stills were made from the 1600-px stand-ins in
+  `review/cloud/stills/`, so they're 1600 px (intro_up, bd_float) or 2752 px (v2_horizon) wide.
+- **Takes** (`review/takes/<tag>_<id>.mp4` + `review/takes/specs/<tag>.json`; 41 takes, ≤ 16 MB each). Copy them into `media/gen/` and the specs into
+  `media/gen/specs/`, then run intake one take at a time. Preferred = my pick from frames only; lip lag and beat timing are the box's call.
+
+| shot (time) | tags | preferred | why / failures |
+|---|---|---|---|
+| ch2_catch (3:30) | ch2_catch_t51, _t52, ch2_catch_b_t51 | **t52** | eyes closed and calm throughout, only a soft closed-mouth smile at the very end; t51 smiles a little while singing; _b opens her eyes mid-line as its variant asks |
+| ch2_gone_close (3:54) | t51, t52, t53 (retake) | **t51** | calm, eyes close on the last note; **t52 and t53 grin with teeth** (fail) |
+| out_main (4:12) | t51, t52 | **t51** | eyes close from 4.4 s, ends lips relaxed; t52 smiles more |
+| ch1_main (1:11) | t51, t52 | **t51** | both a bit smiley while singing; t52 has an odd teeth-bared blink at 2.3 s |
+| bd_ahh (1:58) | t51, t52 | either (t52) | both eyes closed the whole time, camera still; t52 opens on the note sooner; pick on lip lag |
+| v2_horizon (3:09) | t51, t52 | either (t51) | both keep the fixed back (no band, RARE EARTH + circle, patch on the left arm) to the last frame |
+| intro_up (1:07) | t51 (t52 lost on the relay) | **t51** | canon face (nano-banana whole-frame edit; the GPT canonprop windows redrew her body smaller = doubled torso, rejected); breath, slow blink, small smile |
+| bd_float (1:46) | t51, t52 | **t52** | starts on the still, slow rise, ripples from her fingertips, canon face eyes closed; t51 opens close-in and pulls far up |
+| orch_wide | t51, t52 | **t52** (check vs music) | four players throughout; t52 holds the pencil high longer before the downbeat, t51 slashes at ~1.3 s |
+| orch_line | t51, t52 | **t51** | draws the glowing rising curve; RARE EARTH back holds in both. Still edited: the composer is seen from behind, so her right-arm patch and the back band were removed and RARE EARTH + circle added |
+| orch_keys | t51, t52 | **t51** | two hands (still edited: a phantom third hand removed); t52 adds stray lettering on her trousers |
+| orch_pencil | t51, t52 | **t51** | writes the strokes, keeps her face; t52 restyles the face a little |
+| orch_guitar | t51, t52, t53 (retake) | **t53** | starts on the still, big strum; t51 fine; **t52 doesn't start from the still** (no amp, other sky; fail) |
+| dr_dl_wide (89) | t51, t52, t53 (retake) | **t53** | **t51/t52 grow extra background fighters** (8–10); t53 stays close to six, spinning kick at ~4.5 s |
+| dr_dl_close (91) | t51, t52 | **t51** | sweep, jump, flying kick, mirrored freeze; extra soft-focus background fighters creep in at the end of both (t52 worse) |
+| dr_gs_ranks (93) | t51, t52 | **t51** | burst near 1.7 s, drop stance, overhead pose held; t52 bursts late (~3 s) |
+| dr_gs_tornado (97, the fall) | t51, t52 | **t52** | six land flat together in one sheet of spray, still, rise by ~6 s; t51 similar |
+| dr_gs_ring (98.3) | t51, t52 | **t51** | six, frontal, halves then pairs; t52 starts at an angle off the still |
+| dr_gs_salute (100) | t51, t52 | **t52** | horse stance with arms out, orange visibly steps into the point, salute; seven bodies in both |
+
+- **Stills made** (all looked at): orchestra 5 × GPT Image (picks wide a, line a + edit, keys a + edit, pencil b, guitar b), wushu plates (dl_close b +
+  patch fix: violet faces left, so her near-arm patch was removed; gs_line6 b; gs_v6 b). The gs_line6 / gs_v6 patch edits were **skipped**: their
+  patches already sit on the left arms and read at plate size (run `stills.py dr_gs_line6_patch dr_gs_v6_patch` on the box if they blur in the takes).
+  Rejected: intro_up/bd_float GPT canonprop candidates (scale/window seams), bd_float nano-banana a (a second body).
+- **Box next:** stills into place (above), copy the takes, intake one at a time, word-strip lags for the sung takes, picks
+  (`docs/picks_manual.json`), `picks.py`, `node tools/edl_check.mjs`, the drop `KEY` frames (run sheet §2.1 step 5), orchestra framing fits, then the
+  §3 review renders (330_catch, 354_outro, 107_origin, 146_breakdown, drop_v5) and the full film for Jade.
+
+### Summary (cloud generation session 2, 2026-10-25)
+Generated the whole v5 queue from the cloud: 41 Seedance takes (11 singing re-takes, v2_horizon, intro_up, bd_float, 10 orchestra, 13 wushu incl.
+retakes) and the stills they start from (5 orchestra plates + 2 edits, 3 wushu plates + 1 patch fix, 2 canon-face stills). Every shot has at least
+one take that passes the frame checks; clear failures: ch2_gone_close t52/t53 grin, orch_guitar t52 ignores its still, dr_dl_wide t51/t52 extra
+fighters. Spend **$368.84 / $600** (+$75.23 this session, ≈ $2.3 of it conservative rows for jobs the relay lost). Blockers: none; the relay is
+flaky (2047 errors, missed minutes, stuck jobs), so watch `gen.py status`.

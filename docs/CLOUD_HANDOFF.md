@@ -5,12 +5,10 @@ the phone app's Code tab) or a Remote Control session on the Linux box. Read thi
 commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and `docs/RESUME.md` (checkpoint log).
 
 ## START HERE (2026-10-25 night): Jade is flying, the box is unattended
-**BLOCKED (cloud generation session, 2026-10-25 ~11:00 UTC). Jade: add "Workers KV Storage: Edit" to the cloud token.** The KV probe returned
-401, so no Seedance take could be queued. Image calls also time out at ~30 s in this container (`HTTP 502: upstream request failed`), so only
-3 of ~44 image attempts returned. Kept, in `review/takes/stills/`: the 3:09 jacket-back fix `v2_horizon_v5.jpg` and one orchestra wide candidate
-`orch_wide.png`. No takes. Spend: **$293.61 / $600** in the ledger ($284.82 logged + $8.79 booked conservatively for timed-out attempts that may
-have been billed). Details, box commands and what's left: the last checkpoint in `docs/RESUME.md`. After the KV fix, a NEW cloud session can
-rerun the queue (route images through the relay too), or the box runs V5_BOX_RUNSHEET §2 as written.
+**v5 queue GENERATED (cloud generation session 2, 2026-10-25 ~14:30 UTC); needs the box for intake/render.** The KV fix worked; images went
+through the relay too (`GEN_IMAGES_VIA_RELAY=1`, see `docs/CLOUD_GEN.md`). 41 takes in `review/takes/` (+ specs), the stills they start from in
+`review/takes/stills/`. Every tag, its shot, the preferred take and the failures: checkpoint 13 at the bottom of `docs/RESUME.md` (stills go into
+place before intake). Final spend: **$368.84 / $600**.
 
 Last cloud session (2026-10-25) turned Jade's v4 review notes into **v5 in code** on `claude/wonderful-mccarthy-f90kll` (nothing generated,
 rendered or spent; spend still **$284.32 / $600**). Details: "Where things stand" below, `docs/V5_BOX_RUNSHEET.md` (what the box runs),

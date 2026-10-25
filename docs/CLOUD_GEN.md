@@ -27,6 +27,12 @@ Only `faceedit.py` / `canonprop.py` / `hairswap.py` need mediapipe: `python3.12 
 3. First real image: **one** cheap call. If the result download fails with a proxy 403 (`curl -sS "$HTTPS_PROXY/__agentproxy/status"` →
    recentRelayFailures shows the host), the image was billed but not logged: add the billed row to the ledger by hand and stop image work.
 
+## Images through the relay (cloud)
+Direct `/ai/run` image calls die at ~30 s in a cloud container (HTTP 502). Export `GEN_IMAGES_VIA_RELAY=1` and every `cf.generate()` image
+call (gpt_plate, fix_patch, gen_plates, canonprop via `GEN_PY`) goes through the relay queue like a video job (`gen.run_image`); 2–7 min per image.
+The relay sometimes returns `2047: Invalid User Credentials` (refunded; just resubmit), misses a cron minute (`gen.py requeue`), or leaves a job
+`running` forever (counted; give up after ~30 min).
+
 ## Rules
 - Use `--t0=51` or higher for cloud takes so tags never collide with the box's (the box is at t12).
 - At most 3 image calls in parallel, 1 at a time for edits; pin lane colours in every edit. Seedance: submit, then `gen.py wait`.
