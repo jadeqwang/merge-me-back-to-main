@@ -799,3 +799,7 @@
 {"ts": "2026-10-25T13:31:08Z", "model": "bytedance/seedance-2.5", "tag": "orch_line_t52", "job": "mergemain/orch_line_t52-c27d979f9d", "event": "result", "ok": true, "est_usd": 1.156, "where": "cloud"}
 {"ts": "2026-10-25T13:31:20Z", "model": "google/nano-banana-pro", "tag": "canonv5_bd_float_nbp_a", "job": "mergemain/canonv5_bd_float_nbp_a-aa94792d92", "event": "result", "ok": true, "est_usd": 0.1344, "where": "cloud"}
 {"ts": "2026-10-25T13:31:20Z", "model": "google/nano-banana-pro", "tag": "canonv5_bd_float_nbp_b", "job": "mergemain/canonv5_bd_float_nbp_b-8929a1f0a1", "event": "submit", "ok": null, "est_usd": 0.1344, "where": "cloud"}
+{"ts": "2026-10-25T13:33:10Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_dr_gs_line6_1", "job": "mergemain/drop_dr_gs_line6_1-27819525ce", "event": "result", "ok": true, "est_usd": 0.2384, "where": "cloud"}
+{"ts": "2026-10-25T13:34:57Z", "model": "google/nano-banana-pro", "tag": "canonv5_bd_float_nbp_b", "job": "mergemain/canonv5_bd_float_nbp_b-8929a1f0a1", "event": "result", "ok": true, "est_usd": 0.1344, "where": "cloud"}
+{"ts": "2026-10-25T13:42:22Z", "model": "bytedance/seedance-2.5", "tag": "bd_float_t51", "job": "mergemain/bd_float_t51-722c1e8558", "event": "submit", "ok": null, "est_usd": 2.312, "where": "cloud"}
+{"ts": "2026-10-25T13:42:23Z", "model": "bytedance/seedance-2.5", "tag": "bd_float_t52", "job": "mergemain/bd_float_t52-500a4e4b45", "event": "submit", "ok": null, "est_usd": 2.312, "where": "cloud"}
