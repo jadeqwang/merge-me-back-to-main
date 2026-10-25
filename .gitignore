@@ -19,3 +19,6 @@ work/cf_account_id.txt
 work/gen_kv_ns.txt
 *.env
 .env*
+# review videos Jade asked to share through this (public) repo, each <100 MB (GitHub's per-file limit)
+!review/
+!review/**
