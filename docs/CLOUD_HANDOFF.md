@@ -23,8 +23,12 @@ with another Claude instance (ask her for its details; don't guess at how it wor
   it's her machine.
 
 ## Media transfer (GitHub, files up to 100 MB)
-TBD with Jade: the code repo is public, and generated takes and review renders show her likeness. Proposed: a separate **private** repo for
-media (takes from cloud sessions, review excerpts ≤100 MB), which the box pulls into media/gen/ and out/review/. Not set up yet.
+Jade's call (2026-10-24): videos go in **this public repo**, under `review/` (tracked; everything else in media/out/work stays ignored).
+Keep each file < 100 MB (GitHub hard limit; > 50 MB only warns): split long renders into parts (see `review/v4/README.md`).
+- Box → Jade / cloud: render, re-encode (e.g. 720p ~8.5 Mb/s, ≤ 75 s per part), copy into `review/vN/`, add a README line, commit, push.
+- Cloud → box: generated takes can be committed under `review/takes/` (each < 100 MB); a box session copies them into `media/gen/`,
+  runs `tools/sd/intake.py` (one run at a time), picks, renders.
+- Don't commit anything showing her kids, and nothing larger than needed (history keeps every version forever).
 
 ## Two ways to work, and what each can do
 
