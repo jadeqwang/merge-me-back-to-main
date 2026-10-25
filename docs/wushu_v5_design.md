@@ -363,3 +363,93 @@ Run order:
 
 Unrelated nit seen on the way: the life-montage plate `lf_wushu_gold` shows a **sword group set with teammates**, which contradicts decision 4
 (the group set is barehand; jian is her solo event). Re-caption it as her jian solo at the competition, or regenerate it without the teammates.
+
+---
+
+## 9. From her routine (box session, 2026-10-25): slot fills, timestamps, bar map
+
+Source: her team's 2004 Collegiates group set (3rd place, 8.54), watched on the box at YouTube's best quality for this video, **320×240 at
+15 fps**. Analysis only: the video and its frames stay in the box's ignored `work/`, nothing went to any model, and her teammates aren't
+named or depicted. Structure, formations and move families are clear. Exact counts and hand shapes are not, so treat counts as approximate.
+
+**Jade's decisions (2026-10-25), now built into `tools/sd/shots_wushu.py`:** six branch copies perform the set. The warm half is rose, gold
+and white; the cool half is sky, mint and violet. They alternate along the line the way the real black/red halves did, trade phrases, then
+pair across for the exchanges. **Main (orange) is not in the set.** She steps in only for the closing salute, completing the V of seven that
+cuts into the fold. The group fall stays as the signature.
+- **Line order, left to right:** white, mint, rose | sky, gold, violet. That's the fold's V without its point, so the salute shot needs no
+  re-ordering. It alternates warm, cool, warm | cool, warm, cool.
+- **Cross pairs:** white–mint, rose–sky, gold–violet (each a warm/cool pair, neighbours in the line).
+- **Hair** (unchanged lanes): buns, ponytail, buns | buns, ponytail, buns.
+- **New plates needed:** `dr_gs_line6` (the six standing in that line, facing camera) and `dr_gs_v6` (the six in the V, point empty).
+  `dr_gs_ranks`, `dr_gs_tornado` and `dr_gs_ring` all start from `dr_gs_line6`. The key `dr_gs_tornado` now carries **the group fall**, not
+  a tornado kick (rename it if you like), and `dr_gs_ring` now carries **the halves trading and the cross pairs**, not a ring.
+
+### What the real set does (video time)
+| time | what happens | formation / travel |
+|---|---|---|
+| 0:00–0:07 | walk on from the back of the carpet; line up; salute | single line at the back |
+| 0:08–0:14 | jog into the opening spots | spread into one wide staggered line, colours alternating |
+| 0:15.0–0:16.8 | **still at attention**, a long tense hold | one line facing the judges, six, black/red alternating |
+| 0:16.8–0:17.6 | **first unison hit**: burst out of attention | in place |
+| 0:17.6–0:18.0 | bow stance + straight punch, unison | in place |
+| 0:18.4–0:18.6 | drop into a deep **pubu**, arm sweeping low | in place |
+| 0:19.0–0:20.0 | back up into bow stance, rear arm whipped overhead (liangxiang), held ~1 s | in place |
+| 0:20.4–0:21.6 | turning steps, travelling | the line drifts across the carpet |
+| 0:22.0–0:22.4 | **jump kicks, staggered** (one after another, not unison) | moving |
+| 0:23–0:27.6 | bow stances, arms whip overhead into poses; more travel | briefly two rows |
+| 0:29.0–0:29.4 | leaping jump, again staggered | moving |
+| 0:30.0–0:32.6 | bow stance into a **unison pubu line** (0:31.0–0:31.6 all six low), then rise | one line |
+| 0:40–0:41 | knee-raise balances | line |
+| 0:42.2–0:44.6 | **kicks by half**: black do front kicks (0:42.2–0:42.6), red answer (0:43–0:44), slap kicks (0:44.6) | line, staggered by colour |
+| **0:47.2–0:47.8** | **group fall 1**: all six dive forward and hit the mat together | line |
+| **0:48–0:54** | **lie flat and completely still, ~6 s** | |
+| 0:55–0:58 | push up and rise, crouch, spring to standing | |
+| 0:58–1:12 | **halves trade phrases**: red trio performs while black holds, then black answers | the halves separate (red in front, black behind) |
+| 1:12–1:30 | **cross-colour pairs**: attack and block; takedowns to the floor (~1:13–1:15); sweeps and rolls (~1:24, ~1:29); the partner ducks under kicks | three pairs spread across the carpet |
+| **1:39.4–1:40.4** | **group fall 2**: the pairs go down together | pairs |
+| **1:40.4–1:44** | lie still on the floor, ~4 s | |
+| 1:44–1:46.4 | rise, regroup | |
+| 1:46.4–1:47.4 | step into a line facing the judges | one line |
+| 1:47.4–1:50.6 | **arms straight out to the sides, held ~3 s** | line |
+| 1:51.4–1:52.8 | drop together into a deep horse stance, arms spread | line |
+| 1:53–1:58.4 | bow stance → pubu (~1:54.2) → bow stance; final pose held ~2 s (1:56.6–1:58.4) | line |
+| 1:58.6–2:00 | rise, feet together, **salute** | line |
+| 2:00–2:06 | walk off | |
+
+- **Team size:** 6.
+- **Shouts:** none clearly audible at this quality. Room noise only, no music. The crowd's loudest moments are **0:49** (right after fall 1)
+  and **~2:00** (the salute).
+- **Signature unison jump:** **there isn't one.** Every jump and jump kick in the set is staggered, one after another (0:22, 0:29, 0:44). The
+  unison peaks are the stances (0:17.6 punch, 0:31 pubu line, 1:51.6 horse stance) and **the two group falls**. So the fall replaces the
+  tornado landing as the big unison hit on bar 97.
+- **Closing tableau:** a **level** line, not a staircase of heights: arms out to the sides → deep horse stance → final pose → salute.
+
+### Bar map (one bar = 1.739 s, B(93) = 160.123; clip time = song time − the take's audio window start)
+| bar.beat | song s | take (clip s) | move (from the real set) |
+|---|---|---|---|
+| 93.1 | 160.12 | dr_gs_ranks (1.74) | unison burst into bow stance + straight punch (0:17.6) |
+| 93.3 | 160.99 | ranks (2.61) | all six drop into pubu, arm sweeping low (0:18.4) |
+| 94.1 | 161.86 | ranks (3.48) | rise to bow stance, arm whipped overhead, head snap; **hold** to 95 (0:19–0:20) |
+| 95 | 163.60 | dr_jian_t2 (existing) | her jian solo (her real solo event); hides the cut to the fall plate |
+| 96.1 | 165.34 | dr_gs_tornado = fall (1.74) | two driving steps forward |
+| 96.4 | 166.64 | fall (3.04) | launch forward into the dive |
+| **97.1** | **167.08** | fall (3.48) | **all six hit the water flat together: THE hit** (0:47.6) |
+| **97.1–97.4** | 167.08–168.82 | fall (3.48–5.2) | **the held still bar**: they lie flat, motionless (0:48–0:54 compressed into one bar; the drop's kick keeps going underneath) |
+| 98.1 | 168.82 | fall (5.22) → cut | they push up and spring to their feet as one (0:55) |
+| 98.1 | 168.82 | dr_gs_ring = halves + pairs (1.74) | warm half strikes (bow punch + snap kick) while cool holds (0:58–1:05) |
+| 98.3 | 169.69 | pairs (2.61) | cool half answers, warm freezes (1:05–1:12) |
+| 99.1 | 170.56 | pairs (3.48) | the three cross pairs exchange: punch vs rising block, a low sweep jumped over (1:12–1:30) |
+| 99.3 | 171.43 | pairs (4.35) | the pairs freeze in mirrored bow stances |
+| 100.1 | 172.30 | dr_gs_salute (1.74) | the six (V, point empty) drop into deep horse stance, **arms straight out to the sides** (1:47–1:52) |
+| 100.3 / "ooh" | 173.08–173.17 | salute (2.52–2.61) | **main (orange) walks in to the point**; all seven rise, feet together, **baoquan salute**, held (2:00) |
+| 101.1 | 174.04 | fold (unchanged) | match cut on the V of seven |
+
+**Where the fall sits, and why there:** bar 96.4 → 97.1 is the end of the second rising phrase (bass E → F#), landing on the B phrase
+downbeat. That's the spot this design already gave its biggest unison hit, so the whole team hitting the floor lands on the strongest
+downbeat available. Bar 97 itself becomes the **held still bar**, the drop's equivalent of the real set's ~6 s of lying still. It's the
+only full stop in bars 93–100, so it reads as the stop. The rise on 98.1 starts the third phrase.
+
+**Change from the draft:** the second canon (the ring wave) and the levels tableau are gone, because the real set has neither. In their
+place are the real set's call-and-response between the halves, the cross-colour pairs, and a level closing line. Still in: 3 unison hits
+(93 punch, 97 fall, 100 horse stance), the held bar, the salute, and the match cut. The draft's fallbacks in section 5 still apply, with one
+exception: if the fall take loses copies, use the old `at('dr_set', 2)` tuck-jump landing at bar 96 and keep 97 as a still frame of it.
