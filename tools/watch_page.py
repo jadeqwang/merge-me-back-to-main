@@ -11,8 +11,15 @@ def timing(d):
     return {"lines": [{"t": l["text"], "s": l["start"], "e": l["end"], "w": [[w["w"], w["start"], w["end"]] for w in l["words"]]} for l in T["lyrics"]["lines"]],
             "bars": [b["start"] for b in T["bars"]], "teaser": {"a1": bar(17), "b0": bar(28)}}   # tools/teaser.py: intro 0..bar 17, then bar 28..
 TIMINGS = {"v1": timing("analysis"), "v2": timing("analysis_v2")}
-# (path relative to out/final, label, mode full|teaser, timing v1 = "Merge Me Back to Main" audio | v2 = revised "Merge")
+# (path relative to out/final, label, mode full|teaser|clip@<song start s>, timing v1 = "Merge Me Back to Main" audio | v2 = revised "Merge")
 VIDEOS = [
+    ("../review/v4/merge_v4_720.mp4", "v4 · NEW faces, wushu drop, orchestra, post-credits, glyph figures · 720p (fold = open palms)", "full", "v2"),
+    ("../review/v4/fold1_palms.mp4", "v4 · fold 1 (1:23 “Fold me in again”) · open palms", "clip@81.5", "v2"),
+    ("../review/v4/fold1_reach.mp4", "v4 · fold 1 (1:23 “Fold me in again”) · one hand reaching", "clip@81.5", "v2"),
+    ("../review/v4/fold2_palms.mp4", "v4 · fold 2 (3:42) · open palms", "clip@221.5", "v2"),
+    ("../review/v4/fold2_reach.mp4", "v4 · fold 2 (3:42) · one hand reaching", "clip@221.5", "v2"),
+    ("../review/v4/montage_flash.mp4", "v4 · your earlier films as FLASHES in the life montage (0:44–0:58)", "clip@44", "v2"),
+    ("../review/v4/montage_screens.mp4", "v4 · your earlier films as SCREENS in the open-source branch (0:44–0:58)", "clip@44", "v2"),
     ("../review/v3_port_540.mp4", "v3 · revised song “Merge” · 540p review render", "full", "v2"),
     ("../test/intro2/intro.mp4", "NEW intro (child at the window → drone tree) · 0–29 s · old song timing", "full", "v1"),
     ("merge_v2_1080p.mp4", "v2 · full (X-ready, 12 Mb/s)", "full", "v1"),
@@ -20,10 +27,11 @@ VIDEOS = [
     ("master_v2.mp4", "v2 · master (CRF 17, 4 GB)", "full", "v1"),
     ("merge_me_back_to_main_1080p.mp4", "v1 · full (for comparison)", "full", "v1"),
 ]
-CHECKS = [(28.77, "0:28 I split myself"), (42.74, "0:42 Each one a light"), (47.75, "0:47 her lives"), (54.7, "0:54 the grid"),
-          (70.05, "1:10 Merge me back"), (90.10, "1:30 Nothing that I lived"), (119.1, "1:59 drone tree"), (153.68, "2:33 drop"),
-          (164.08, "2:44 wushu"), (181.73, "3:01 This branch"), (208.79, "3:28 Merge me (catch)"), (214.6, "3:34 every road"),
-          (228.57, "3:48 Nothing (ch2)"), (249.3, "4:09 git log"), (284.8, "4:44 hotel")]
+CHECKS = [(0.5, "0:00 window"), (28.54, "0:28 I split myself"), (42.32, "0:42 Each one a light"), (47.3, "0:47 her lives"), (54.7, "0:54 the grid"),
+          (83.55, "1:23 Fold me in"), (69.42, "1:09 Merge me back"), (89.46, "1:29 Nothing that I lived"), (111.9, "1:52 Ahh"), (153.17, "2:33 drop: group set"),
+          (160.1, "2:40 duilian"), (163.6, "2:44 jian"), (167.1, "2:47 duilian"), (182.0, "3:02 This branch"), (195.5, "3:15 pencil"),
+          (208.13, "3:28 Merge me (catch)"), (215.0, "3:35 every road"), (222.6, "3:42 Fold me in"), (228.88, "3:49 Every life"),
+          (236.7, "3:57 orchestra"), (249.4, "4:09 home"), (264.5, "4:24 end card"), (282.6, "4:43 post-credits")]
 
 html = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -78,8 +86,9 @@ const v = document.getElementById('v'), src = document.getElementById('src'), ka
 const $ = (id) => document.getElementById(id);
 const fmt = (t) => { const m = Math.floor(t / 60), s = t - m * 60; return `${m}:${s.toFixed(3).padStart(6, '0')}`; };
 const mode = () => src.selectedOptions[0].dataset.mode;
-const toSong = (t) => mode() === 'teaser' ? (t < TEASER.a1 ? t : t - TEASER.a1 + TEASER.b0) : t;
-const toVideo = (s) => mode() === 'teaser' ? (s < TEASER.a1 ? s : (s >= TEASER.b0 ? s - TEASER.b0 + TEASER.a1 : null)) : s;
+const clip0 = () => (mode() || '').startsWith('clip@') ? +mode().slice(5) : 0;   // a clip rendered from song time clip0
+const toSong = (t) => mode() === 'teaser' ? (t < TEASER.a1 ? t : t - TEASER.a1 + TEASER.b0) : t + clip0();
+const toVideo = (s) => mode() === 'teaser' ? (s < TEASER.a1 ? s : (s >= TEASER.b0 ? s - TEASER.b0 + TEASER.a1 : null)) : (s - clip0() >= 0 ? s - clip0() : null);
 let curLine = -1;
 function draw(t) {
   if (!LINES) useTiming();

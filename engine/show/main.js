@@ -6,6 +6,9 @@ const PICKS = await (await fetch('/work/picks.json')).json().catch(() => ({}));
 const B = T.bar, W = T.words, bb = T.bb;
 const ws = (id, k = 0) => W(id)[k < 0 ? W(id).length + k : k].start, we = (id, k = -1) => W(id)[k < 0 ? W(id).length + k : k].end;   // word start / end
 const SONG_END = T.songEnd();
+const PC_LEN = 14.5;   // post-credits length after the song (tools/mix.py PC)
+// the fold's last gesture (Jade 2026-10-24: try both): ?fold=palms (open palms toward camera, default) | reach (one hand reaching out)
+const FOLD = new URLSearchParams(location.search).get('fold') || 'palms';
 const fmt = (n) => n.toLocaleString('en-US');
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const ss = (a, b, x) => { const k = clamp((x - a) / (b - a)); return k * k * (3 - 2 * k); };
@@ -104,6 +107,32 @@ const FX = {
       const y = 160 + ((i * 397) % 760), dir = i % 4 < 2 ? 1 : -1, x = dir > 0 ? -400 + age * 4200 : 2320 - age * 4200, c = cols[i % cols.length];
       const gr = g.createLinearGradient(x - dir * 700, y, x, y); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, c);
       g.globalAlpha = 1 - age / .7; g.strokeStyle = gr; g.lineWidth = 5; g.beginPath(); g.moveTo(x - dir * 700, y + dir * 40); g.lineTo(x, y); g.stroke(); });
+    g.restore();
+  },
+  // post-credits: the idea adult-Jade sends arrives as a shape in the frost (Jade: no equations, no title, "only a shape, an idea"):
+  // the logistic map's bifurcation tree (period doubling into chaos) crystallising left to right as cold light. u: 0..1 reveal.
+  frost(g, t, u, { x = 1060, y = 220, w = 720, h = 520, k = 1 } = {}) {
+    const P = FX._bif || (FX._bif = (() => { const pts = []; let s = 7;
+      for (let c = 0; c < 900; c++) { const r = 2.85 + 1.15 * c / 899; let v = .5;
+        for (let i = 0; i < 400; i++) v = r * v * (1 - v);
+        const seen = new Set();                                 // one point per pixel row, so the stable branches don't over-brighten
+        for (let i = 0; i < 90; i++) { v = r * v * (1 - v); const q = Math.round(v * 700); if (seen.has(q)) continue; seen.add(q);
+          s = (s * 16807) % 2147483647; pts.push([c / 899, v, s / 2147483647]); } }
+      return pts; })());
+    g.save(); g.globalCompositeOperation = 'lighter';
+    for (const [cx, v, rnd] of P) {
+      const a = clamp((u * 1.15 - cx) / .15);                 // each column freezes in just behind the reveal front
+      if (a <= 0) continue;
+      const tw = .75 + .25 * Math.sin(t * 2.3 + rnd * 40);    // frost glints
+      g.globalAlpha = k * a * tw * (.5 + .45 * rnd);
+      g.fillStyle = rnd > .93 ? '#FFFFFF' : '#CFE6FF';
+      const sz = rnd > .985 ? 3.4 : 2.0;
+      g.fillRect(x + cx * w, y + (1 - v) * h, sz, sz);
+    }
+    // the reveal front: a soft breath of light moving through the frost
+    if (u < 1) { const fx = x + Math.min(1, u * 1.15) * w, gr = g.createRadialGradient(fx, y + h * .45, 0, fx, y + h * .45, h * .35);
+      gr.addColorStop(0, `rgba(210,232,255,${.07 * k})`); gr.addColorStop(1, 'rgba(210,232,255,0)'); g.globalAlpha = 1; g.fillStyle = gr;
+      g.fillRect(fx - h * .6, y - h * .15, h * 1.2, h * 1.2); }
     g.restore();
   },
 };
@@ -359,7 +388,7 @@ const HIT52 = bb(52, 2.26);
     text: (ty, t) => { ty.ledHook(w, t, { x: 960, y: 520, size: 120, maxW: 1600, align: 'center', out: ws(9) - .9 }); } });
 }
 { const w = lines(9), t0 = ws(9) - .6, t1 = ws(10) - .35;
-  S.push({ t0, t1, kind: 'lattice', ...pk('ch1_fold', t0 + .2), fid: (u) => .7 + .3 * u, cam: push(.05),
+  S.push({ t0, t1, kind: 'lattice', ...pk(`ch1_fold_${FOLD}`, t0 + .2), fid: (u) => .7 + .3 * u, cam: push(.05),
     text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 230, size: 140, maxW: 900, out: t1 - .2 }); } });
 }
 { const w = lines(10), t0 = ws(10) - .35, t1 = bb(58, 1.64);   // "Nothing that I lived can come undone"; the bar-52 kick lands on "Nothing"
@@ -481,13 +510,17 @@ const HIT52 = bb(52, 2.26);
     FX.streaks(g, t, D0, B(105) - .3, 2);
     if (t < D0 + .9) { const f = Math.exp(-(t - D0) * 5); g.fillStyle = `rgba(255,250,240,${f})`; g.fillRect(0, 0, 1920, 1080); }
   };
-  const cuts = [  // [bar, plate, clip time at the cut, sun x,y]
-    [89, pk('dr_dance', 0).plate, .3, [960, 520]], [91, pk('dr_center', 0).plate, .4, [540, 300]], [93, pk('dr_run', 0).plate, .5, [1620, 560]],
-    [95, pk('dr_wushu', 0).plate, 2.0, [960, 300]], [97, pk('dr_dance', 0).plate, 4.2, [960, 520]], [99, pk('dr_center', 0).plate, 4.4, [600, 320]],
-    [101, pk('ch1_fold', 0).plate, .2, [960, 430]]];
-  cuts.forEach(([b0, plate, ct, sun], i) => {
+  // Jade 2026-10-24: wushu, not K-pop. Her collegiate team's changquan group set (bar 89), a half-vs-half duilian exchange, her jian solo
+  // (bar 95), the duilian closing into the salute line, then the fold. The wushu takes were made against this drop's own instrumental
+  // (tools/sd/shots_drop.py, v2 windows), so a cut's clip time = its bar offset from the take's window: whole-bar shifts stay on the beat.
+  const BAR = B(90) - B(89), at = (shot, bars) => ({ plate: pk(shot, 0).plate, s0: (b0) => B(b0) - bars * BAR });
+  const cuts = [  // [bar, plate, s0(b0) = song time of the clip's frame 0, sun x,y]
+    [89, at('dr_set', 0), [700, 230]], [91, at('dr_set', 2), [700, 230]], [93, at('dr_duilian_mid', 2), [960, 160]],
+    [95, at('dr_jian', 0), [1500, 470]], [97, at('dr_duilian', 1), [960, 160]], [99, at('dr_duilian', 3), [960, 160]],
+    [101, { plate: pk(`ch1_fold_${FOLD}`, 0).plate, s0: (b0) => B(b0) - .2 }, [960, 430]]];
+  cuts.forEach(([b0, { plate, s0 }, sun], i) => {
     const t0 = B(b0), t1 = B(b0 + 2);
-    S.push({ t0, t1, kind: 'lattice', look: 'paint', plate, s0: t0 - ct, fid: () => 1,
+    S.push({ t0, t1, kind: 'lattice', look: 'paint', plate, s0: s0(b0), fid: () => 1,
       cam: (u, t) => ({ dolly: punch(t, 1 - .05 * u, .035), orbit: (i % 2 ? -1 : 1) * .03 * (u - .5), over: 1.07 }),
       text: (ty, t) => { FX.sun(ty.g, t, { x: sun[0], y: sun[1], r: 150 + 40 * ooh(t), k: .42 + .3 * ooh(t) }); dropText(ty, t);
         if (i === 0 && t < D0 + 1.2) ty.ledHook([{ w: 'MAIN', start: D0 }], t, { x: 960, y: 690, size: 520, maxW: 2000, align: 'center', out: D0 + .5, lane: 1, scrim: false });
@@ -539,7 +572,7 @@ const ctxBar = (ty, t, pct) => { const g = ty.g; g.save(); g.font = '500 20px JB
     text: (ty, t) => { ty.ledHook(w, t, { x: 960, y: 190, size: 100, maxW: 1700, align: 'center', out: t1 - .13 }); } });
 }
 { const w = lines(22), t0 = B(129), t1 = ws(23) - .12;
-  S.push({ t0, t1, kind: 'lattice', ...pk('ch2_fold', t0 - .6), s0: t0 - .6, fid: () => 1, cam: (u, t) => ({ dolly: punch(t, 1 - .05 * u, .03), over: 1.06 }),
+  S.push({ t0, t1, kind: 'lattice', ...pk(`ch2_fold_${FOLD}`, t0 - .6), s0: t0 - .6, fid: () => 1, cam: (u, t) => ({ dolly: punch(t, 1 - .05 * u, .03), over: 1.06 }),
     text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 230, size: 140, maxW: 900, out: t1 - .2 });   // flash after the hook so its scrim doesn't cut the flash
       const f = Math.exp(-(t - t0) * 5); if (f > .01) { ty.g.fillStyle = `rgba(255,250,240,${f})`; ty.g.fillRect(0, 0, 1920, 1080); } } });
 }
@@ -549,19 +582,25 @@ const ctxBar = (ty, t, pct) => { const g = ty.g; g.save(); g.font = '500 20px JB
 }
 // ------------------------------------------------------------------------------------------ OUTRO bars 137–163
 // v2: two "Back to main" (237, 249); drums out bar 149 (arp alone); last hit bar 153, then pads + bass to the fade (song ends SONG_END).
-{ // full drums again: the afterglow dance (clip frame 0 = its beat-synced audio ref, a snare-pickup before bar 137)
-  const t0 = bb(136, 3.74), t1 = ws(25) - .08, tc = bb(140, 3.1);
-  S.push({ t0, t1: tc, kind: 'lattice', look: 'paint', ...pk('out_dance', t0), s0: t0, fid: () => 1, cam: push(.04),
+{ // full drums again: the orchestra of Jades (Jade 2026-10-24: piano, violin, electric guitar, main-Jade conducting every branch). Both takes
+  // were made on the v2 instrumental from a bar line (tools/sd/shots_outro.py), so their s0 (picks) keeps the playing on the beat.
+  const t0 = bb(136, 3.74), t1 = ws(25) - .08, tc = B(141);
+  S.push({ t0, t1: tc, kind: 'lattice', look: 'paint', ...pk('out_orch', t0), fid: () => 1, cam: push(.04),
     text: (ty, t) => ty.line(lines(24), t, { y: 980, size: 64, out: bb(139, 1.29) }) });
-  S.push({ t0: tc, t1, kind: 'lattice', look: 'paint', ...pk('dr_center', bb(139, .13)), s0: bb(139, .13), fid: () => 1, cam: push(.04) });
+  S.push({ t0: tc, t1, kind: 'lattice', look: 'paint', ...pk('out_orch_close', tc), fid: () => 1, cam: push(.05) });
 }
-{ // the final git log: every lane merged; the one that didn't, its commit still there, cherry-picked into main. Through "Back to main" #2 to the drums-out.
-  const t0 = ws(25) - .08, t1 = B(149), w25 = lines(25);
+{ // home: she sings the last "Back to main…" at sunrise (out_main, v2 line 25; Jade 2026-10-24), the held note carries into the git log
+  const t0 = ws(25) - .08, t1 = B(149) - 3.0;
+  S.push({ t0, t1, kind: 'lattice', ...pk('out_main', t0), fid: () => 1, cam: push(.05),
+    text: (ty, t) => { ty.ledHook(lines(25), t, { x: 110, y: 300, size: 120, maxW: 900, out: t1 - .3 }); } });
+}
+{ // the final git log: every lane merged; the one that didn't, its commit still there, cherry-picked into main. On the held "main" to the drums-out.
+  const t0 = B(149) - 3.0, t1 = B(149), w25 = lines(25);
   const lanes = [...['lf_piano_rose', 'lf_wushu_gold', 'lf_booth_sky', 'lf_poet_gold', 'lf_band_rose', 'lf_home_mint'].map((id) => { const x = life(id); return [x[2], x[1], x[3], x[4]]; }),
     [L.violet, 'jade/1420-mhz', 'learned: every road was worth it', 'f01d9ae']];
   const credits = ['docs: for every branch that never came home'];   // the real credits are on the end card; this log is her lives merging home
   S.push({ t0, t1, kind: 'card', text: (ty, t) => {
-    const g = ty.g, X0 = 260, top = 170, dy = 96, LW = 70, reveal = (t - t0) * 2.0;
+    const g = ty.g, X0 = 260, top = 170, dy = 96, LW = 70, reveal = (t - t0) * 3.2;
     const rows = []; lanes.forEach((l, i) => rows.push({ lane: i, ...{ c: l[0], br: l[1], msg: l[2] } })); credits.forEach((c) => rows.push({ credit: c }));
     const scroll = Math.max(0, (reveal - 7.5) * dy);
     g.save(); g.translate(0, -scroll); g.lineCap = 'round'; g.lineJoin = 'round';
@@ -615,16 +654,17 @@ const ctxBar = (ty, t, pct) => { const g = ty.g; g.save(); g.font = '500 20px JB
       g.restore(); }
   } });
 }
-{ const t0 = SONG_END, t1 = SONG_END + 12.2;   // post-credits, after the song: the Hilbert Hotel front desk (bell in tools/mix.py at s0 + 1.25)
-  S.push({ t0, t1, kind: 'lattice', ...pk('pc_hotel', t0), s0: t0 + .8, fid: () => 1, cam: (u) => ({ dolly: 1 - .05 * u, over: 1.06 }),
-    fade: (u, t) => ss(t0, t0 + 1.2, t) * (1 - ss(t1 - 1.4, t1, t)),
-    text: (ty, t) => { const g = ty.g;
-      if (t > t0 + 5.2) { const k = clamp((t - t0 - 5.2) / .5) * (1 - ss(t1 - 1.4, t1, t)); g.save(); g.globalAlpha = k;
-        g.fillStyle = 'rgba(8,8,14,.72)'; g.fillRect(560, 880, 800, 110); g.strokeStyle = 'rgba(255,241,220,.85)'; g.lineWidth = 2; g.strokeRect(560, 880, 800, 110);
-        g.font = '400 46px ISI'; g.fillStyle = '#FFF1DC'; g.textAlign = 'center'; g.fillText('“Of course we have space for you.”', 960, 950); g.restore(); }
-      ty.mono('HILBERT HOTEL · ∞ rooms · vacancy', t, t0 + .8, { x: 72, y: 84, size: 22, cps: 30 }); } });
+{ // post-credits (Jade 2026-10-24): the window from the intro. Adult Jade kneels beside her five-year-old self and, palm to palm, tries to send
+  // her an idea; she can only send a shape, and the light shows up in the frost: the logistic map's bifurcation (FX.frost). No equations, no title.
+  // Sound (tools/mix.py v2): one chime as the light passes, then 1-2-4-8 chimes as the shape blooms.
+  const P0 = SONG_END, P1 = P0 + 6.0, P2 = P0 + PC_LEN, F0 = P0 + 9.4, F1 = P0 + 13.0;
+  S.push({ t0: P0, t1: P1, kind: 'lattice', look: 'paint', ...pk('pc_kneel', P0), s0: P0 - .3, fid: () => 1, cam: (u) => ({ dolly: 1 - .04 * u, over: 1.06 }),
+    fade: (u, t) => ss(P0, P0 + 1.2, t) });
+  S.push({ t0: P1, t1: P2, kind: 'lattice', look: 'paint', ...pk('pc_beam', P1), s0: P1 - .2, fid: () => 1, cam: (u) => ({ dolly: 1 - .05 * u, over: 1.06 }),
+    fade: (u, t) => 1 - ss(P2 - 1.4, P2, t),
+    text: (ty, t) => { if (t > F0 - .2) FX.frost(ty.g, t, clamp((t - F0) / (F1 - F0)), { x: 110, y: 90, w: 940, h: 620, k: 1 - ss(P2 - 1.4, P2, t) }); } });
 }
-export const FILM_END = SONG_END + 12.2;
+export const FILM_END = SONG_END + PC_LEN;
 if (T.VERSION !== 'v1') console.log('[show] timing', T.VERSION, 'resync', JSON.stringify(RESYNC));
 // ?timing=v1: the frozen v1 EDL (pre-port), so the v1 render stays reproducible.
 export const shots = T.VERSION === 'v1' ? (await import('/engine/show/main_v1.js')).shots : S;

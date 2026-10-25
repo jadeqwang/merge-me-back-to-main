@@ -108,3 +108,10 @@
 - tools/mix.py --timing=v2 (default) -> out/mix_v3.wav (bell 284.566); --timing=v1 --total=297 reproduces out/mix_v2.wav byte-for-byte.
 - tools/teaser.py --timing=v2 (default): bar 17 -> bar 28 splice, end 101.12 (after "undone" + 1.2 s fade).
 - Review: out/review/v3_port_540.mp4; checks out/test/v2port/ (sheet.jpg, stills/, stills_grid*.jpg).
+
+## 2026-10-24 checkpoint 11 — v4: Jade's 12 decisions implemented (see docs/CLOUD_HANDOFF.md for the full state)
+- Canon face v4 everywhere + head turns; 10 singing shots re-animated on v2 (picks_manual.json / lags.json); wushu drop (set, duilian, jian);
+  fold gestures (?fold=palms|reach); home shot on line 25; orchestra outro; window post-credits with FX.frost (hotel cut); glyph-built figures
+  (?figlook=led); earlier films (?pv=flash|screens). Review: out/final/watch.html (v4 full film + comparison clips in out/review/v4/).
+- Tools: lipsync.py lag window from -1 s + small-face crop; intake/picks/batch timing-aware (notes.timing); tools/sd/shots_*.py hook.
+- Lesson: run ONE tools/sd/intake.py at a time (three parallel runs prepped the same take into one folder).

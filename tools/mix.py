@@ -18,7 +18,8 @@ T = json.load(open(os.path.join(ROOT, CFG["an"])))
 bar = lambda n: T["bars"][n - 1]["start"]
 SONG = os.path.join(ROOT, CFG["song"])
 song_end = CFG["song_end"] or round(T["audio"]["duration_s"], 3)          # v2: 282.516 (= the show's SONG_END)
-total = float(arg("total", CFG["total"] or round(song_end + 12.2, 3)))
+PC = 14.5   # v2 post-credits length (engine/show/main.js: window + palm-to-palm + frost); v1 kept the 12.2 s hotel
+total = float(arg("total", CFG["total"] or round(song_end + (PC if timing == "v2" else 12.2), 3)))
 CH = os.path.join(ROOT, "media/sfx/chime_b.mp3"); BELL = os.path.join(ROOT, "media/sfx/bell.mp3"); LOBBY = os.path.join(ROOT, "media/sfx/lobby.mp3")
 ins = ["-i", SONG]
 fc = ["[0:a]apad=whole_dur=%.3f[song]" % total]
@@ -30,9 +31,20 @@ for g in range(1, 11):
     ins += ["-i", CH]
     fc.append(f"[{k}:a]aresample=48000,asetrate={rate:.0f},aresample=48000,volume={-24 - g * .6:.1f}dB,adelay={int(t * 1000)}|{int(t * 1000)},apad=whole_dur={total:.3f}[c{g}]")
     mix.append(f"[c{g}]"); k += 1
-ins += ["-i", LOBBY]; fc.append(f"[{k}:a]aresample=48000,volume=-14dB,afade=t=in:d=1.2,adelay={int(song_end * 1000)}|{int(song_end * 1000)},apad=whole_dur={total:.3f}[lb]"); mix.append("[lb]"); k += 1
-bell_t = 286.85 if timing == "v1" else song_end + .8 + 1.25   # = hotel s0 (song end + 0.8) + 1.25 s; v1: s0 285.6 + 1.25
-ins += ["-i", BELL]; fc.append(f"[{k}:a]aresample=48000,volume=-6dB,adelay={int(bell_t * 1000)}|{int(bell_t * 1000)},apad=whole_dur={total:.3f}[bl]"); mix.append("[bl]"); k += 1
+if timing == "v2":
+    # post-credits v2 (Jade 2026-10-24): no lobby/bell. The intro's split chimes return: one as the light passes palm to palm (song end + 7.5),
+    # then period doubling made audible as the bifurcation blooms in the frost: 1, 2, 4, 8 chimes, each group a step higher and quieter.
+    pcs = [(7.5, 0, -20)] + [(9.6 + gi * 1.0 + j * (.42 / n), 2 + 2 * gi, -21 - 2.5 * gi) for gi, n in enumerate((1, 2, 4, 8)) for j in range(n)]
+    for i, (dt, semi, db) in enumerate(pcs):
+        t = song_end + dt; rate = 48000 * 2 ** (semi / 12)
+        ins += ["-i", CH]
+        fc.append(f"[{k}:a]aresample=48000,asetrate={rate:.0f},aresample=48000,volume={db:.1f}dB,adelay={int(t * 1000)}|{int(t * 1000)},apad=whole_dur={total:.3f}[p{i}]")
+        mix.append(f"[p{i}]"); k += 1
+    bell_t = None
+if timing == "v1":
+  ins += ["-i", LOBBY]; fc.append(f"[{k}:a]aresample=48000,volume=-14dB,afade=t=in:d=1.2,adelay={int(song_end * 1000)}|{int(song_end * 1000)},apad=whole_dur={total:.3f}[lb]"); mix.append("[lb]"); k += 1
+  bell_t = 286.85   # = hotel s0 285.6 + 1.25 s
+  ins += ["-i", BELL]; fc.append(f"[{k}:a]aresample=48000,volume=-6dB,adelay={int(bell_t * 1000)}|{int(bell_t * 1000)},apad=whole_dur={total:.3f}[bl]"); mix.append("[bl]"); k += 1
 fc.append("".join(mix) + f"amix=inputs={len(mix)}:normalize=0:duration=first,atrim=0:{total:.3f}[a]")
 subprocess.run([FF, "-v", "error", "-y"] + ins + ["-filter_complex", ";".join(fc), "-map", "[a]", "-ar", "48000", "-c:a", "pcm_s16le", out], check=True)
-print(out, timing, f"song_end={song_end} bell={bell_t:.3f} total={total:.3f}")
+print(out, timing, f"song_end={song_end} bell={bell_t} total={total:.3f}")
