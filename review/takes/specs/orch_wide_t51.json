@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "orch_wide_t51",
+ "notes": "{\"shot\": \"orch_wide\", \"s0\": 235.774, \"plate\": \"media/plates/outro/orch_wide.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Every life she has lived plays together at sunrise; the violet composer in the centre writes the music as they play. Through the rising sweep of the reference audio she holds a yellow pencil high; on the drop she slashes it down like a downbeat and the band crashes in: the rose guitarist hits one big open strum, the rose pianist lands both hands on a chord. Then the pianist's right hand ripples a fast, even broken-chord pattern while her left hand presses a low note on every beat; the guitarist chugs tight strums on every half beat, bouncing at the knees; the white violinist waits, bow resting on the string, and two seconds after the drop draws one long, slow bow stroke, eyes closed, never sawing on the beat. The composer writes in the air at head height with the glowing pencil tip, quick precise strokes left to right as if on an invisible staff, nodding on the beat and glancing at each player as she writes their part. All four play on together to the end. Very slow push in. Every copy keeps her face, hair and outfit from the first frame; only the band colours differ (the composer VIOLET, never orange, hair up in a bun with two pencils; the pianist and guitarist ROSE; the violinist WHITE). Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural hands with five fingers: the composer's pencil stays in her right hand, the pianist's fingers on the keys, the bow on the strings, the guitarist's hands on the neck and strings. The pencil leaves no marks or trails; only its tip glows. Nobody sings. One continuous shot, no cuts. No captions, no text, no symbols in the air.",
+  "image": "file:media/gen/refs/orch_wide_2048.jpg",
+  "duration": 13,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/orch_wide_v2_235.77_13s.mp3"
+  ]
+ }
+}
