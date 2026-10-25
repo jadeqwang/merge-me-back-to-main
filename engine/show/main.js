@@ -679,34 +679,36 @@ const HIT52 = bb(52, 2.26);
     const g = ty.g;
     FX.streaks(g, t, D0, B(105) - .3, 2);
     if (t < D0 + .9) { const f = Math.exp(-(t - D0) * 5); g.fillStyle = `rgba(255,250,240,${f})`; g.fillRect(0, 0, 1920, 1080); }
-    if (DROP === 'v5') for (const [hb, k] of [[93, .3], [97, .5]]) { const a = t - B(hb);   // v5: the group set's unison landings (phrase downbeats)
+    if (DROP === 'v5') for (const [hb, k] of [[93, .3], [97, .5]]) { const a = t - B(hb);   // v5: the group set's unison hits (the burst, the fall)
       if (a >= 0 && a < .6) { g.fillStyle = `rgba(255,250,240,${k * Math.exp(-a * 7)})`; g.fillRect(0, 0, 1920, 1080); } }
   };
   // Jade 2026-10-24: wushu, not K-pop. v4: her collegiate team's changquan group set (bar 89), a half-vs-half duilian exchange, her jian solo
   // (bar 95), the duilian closing into the salute line, then the fold. The wushu takes were made against this drop's own instrumental
   // (tools/sd/shots_drop.py, v2 windows), so a cut's clip time = its bar offset from the take's window: whole-bar shifts stay on the beat.
-  // v5 (Jade 2026-10-25: duilian first, then a group set "at least as good as the one I won a medal for"; docs/wushu_v5_design.md): duilian
-  // 89-92, then the group set 93-100 (ranks stamp on 93, her jian solo hides the change to the wedge on 95, unison jump landing on 97, ring on 98,
-  // tableau + salute on the "ooh" at 100, match cut on the V into the fold). Takes: tools/sd/shots_wushu.py, one bar of pre-roll (at(shot, 1)).
-  // The v5 group set is being reworked from her competition video (v5.1), so this wiring is a frame for it. ?drop=v4 | v5 forces a version;
+  // v5 (Jade 2026-10-25: duilian first, then a group set "at least as good as the one I won a medal for"; docs/wushu_v5_design.md section 9,
+  // rebuilt from her real routine): duilian 89-92, then the group set 93-100 by six branch copies (unison burst into bow stance on 93, her jian
+  // solo on 95, the group fall landing flat on 97 and held still through the bar, the halves trading phrases then cross pairs on 98, arms-out
+  // horse stance on 100 and main walking in for the salute on the "ooh", match cut on the V of seven into the fold). Takes:
+  // tools/sd/shots_wushu.py, one bar of pre-roll (at(shot, 1)); keys keep the draft names (dr_gs_tornado = the fall, dr_gs_ring = the pairs). ?drop=v4 | v5 forces a version;
   // default v5 only once every new drop shot has a picked take, else v4 unchanged. Forced v5 shows, for any new shot not yet picked, the v4
   // take that covered that bar on v4's clip clock.
   const BAR = B(90) - B(89), at = (shot, bars) => ({ plate: pk(shot, 0).plate, s0: (b0) => B(b0) - bars * BAR });
   // pin(shot, clipT, bar): the take's key frame (its stamp / landing at clip time clipT) lands on bar `bar`'s downbeat
   const pin = (shot, clipT, bar) => ({ plate: pk(shot, 0).plate, s0: () => B(bar) - clipT });
   const v4at = (shot, bars, b0) => ({ plate: pk(shot, 0).plate, s0: () => B(b0) - bars * BAR });   // a v4 cut's clip clock (its own bar b0)
-  // box, after intake: the clip time of each take's unison stamp / landing, read off its strip (planned values; keep within ±0.15 s of them)
+  // box, after intake: the clip time of each take's key frame (the burst, the fall hitting the water, the horse stance), read off its strip
+  // (planned values; keep within ±0.15 s of them)
   const KEY = { dr_gs_ranks: BAR, dr_gs_tornado: 2 * BAR, dr_gs_salute: BAR };
   const FOLDCUT = [101, { plate: pk(`ch1_fold_${FOLD}`, 0).plate, s0: (b0) => B(b0) - .2 }, [960, 430]];
   const v5 = (b0, shot, cut, sun, v4cut, v4sun) => (has(shot) ? [b0, cut, sun] : [b0, v4cut, v4sun]);
   const cuts = DROP === 'v5' ? [  // [bar, plate, s0(b0) = song time of the clip's frame 0, sun x,y]; each cut runs to the next cut's bar
     v5(89, 'dr_dl_wide', at('dr_dl_wide', 1), [960, 160], v4at('dr_set', 0, 89), [700, 230]),                         // duilian: three pairs clash on the drop
     v5(91, 'dr_dl_close', at('dr_dl_close', 1), [960, 330], v4at('dr_set', 2, 91), [700, 230]),                       // the front pair: sweep, leap, flying kick, freeze
-    v5(93, 'dr_gs_ranks', pin('dr_gs_ranks', KEY.dr_gs_ranks, 93), [960, 330], v4at('dr_duilian_mid', 2, 93), [960, 160]),   // group set: unison stamp, ripple
-    [95, at('dr_jian', 0), [1500, 470]],                                                                              // her jian solo, 1 bar (hides ranks -> wedge)
-    v5(96, 'dr_gs_tornado', pin('dr_gs_tornado', KEY.dr_gs_tornado, 97), [1040, 330], v4at('dr_jian', 0, 95), [1500, 470]),  // unison jump lands on 97
-    v5(98, 'dr_gs_ring', at('dr_gs_ring', 1), [960, 1180], v4at('dr_duilian', 1, 97), [960, 160]),                   // top-down ring (sun below frame)
-    v5(100, 'dr_gs_salute', pin('dr_gs_salute', KEY.dr_gs_salute, 100), [1040, 330], v4at('dr_duilian', 3, 99), [960, 160]),  // tableau + salute on the "ooh"
+    v5(93, 'dr_gs_ranks', pin('dr_gs_ranks', KEY.dr_gs_ranks, 93), [960, 330], v4at('dr_duilian_mid', 2, 93), [960, 160]),   // group set: unison burst, pubu
+    [95, at('dr_jian', 0), [1500, 470]],                                                                              // her jian solo, 1 bar
+    v5(96, 'dr_gs_tornado', pin('dr_gs_tornado', KEY.dr_gs_tornado, 97), [1040, 330], v4at('dr_jian', 0, 95), [1500, 470]),  // the group fall lands on 97
+    v5(98, 'dr_gs_ring', at('dr_gs_ring', 1), [960, 330], v4at('dr_duilian', 1, 97), [960, 160]),                    // halves trade, then cross pairs
+    v5(100, 'dr_gs_salute', pin('dr_gs_salute', KEY.dr_gs_salute, 100), [1040, 330], v4at('dr_duilian', 3, 99), [960, 160]),  // horse stance; main in for the salute
     FOLDCUT]
     : [[89, at('dr_set', 0), [700, 230]], [91, at('dr_set', 2), [700, 230]], [93, at('dr_duilian_mid', 2), [960, 160]],
       [95, at('dr_jian', 0), [1500, 470]], [97, at('dr_duilian', 1), [960, 160]], [99, at('dr_duilian', 3), [960, 160]], FOLDCUT];
