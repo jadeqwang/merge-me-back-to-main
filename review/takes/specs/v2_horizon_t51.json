@@ -1,0 +1,13 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "v2_horizon_t51",
+ "notes": "{\"shot\": \"v2_horizon\", \"s0\": null, \"plate\": \"media/plates/fix/v2_horizon.jpg\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She sits with her back to us and looks toward the faint gold glow on the very far horizon; the wind moves the loose strands of her hair; she breathes in slowly. The camera holds still. Her mouth stays gently closed; she does not sing or speak. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/v2_horizon_fix_2048.jpg",
+  "duration": 8,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9"
+ }
+}
