@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "orch_keys_t51",
+ "notes": "{\"shot\": \"orch_keys\", \"s0\": 239.252, \"plate\": \"media/plates/outro/orch_keys.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Close on the pianist's hands on the grand piano at sunrise: her right hand ripples a fast, even broken-chord pattern of four notes up and down high on the keyboard, light and precise, never stopping, while her left hand presses one low note on every beat of the reference audio. Golden light slides across the black lacquer and the keys; above, her face in soft profile, eyes half closed, smiling. The camera glides slowly along the keyboard. Same hands, sleeves and face as in the first frame; the cuff bands stay ROSE. Natural hands with five fingers each; the fingers stay on the keys and press real keys. Her mouth stays gently closed. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/orch_keys_2048.jpg",
+  "duration": 5,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/orch_keys_v2_239.25_5s.mp3"
+  ]
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "orch_line_t52",
+ "notes": "{\"shot\": \"orch_line\", \"s0\": null, \"plate\": \"media/plates/outro/orch_line.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Over the composer's shoulder at sunrise. In the foreground the violet composer, seen from behind in three-quarter profile with her hair up in a bun with two pencils through it, draws one long rising curve in the air with the glowing pencil tip and points the pencil gently at the violinist, as if handing her the melody. In the middle distance the white violinist answers at once: right at the start she sets the bow on the string and draws one single long, slow, singing bow stroke that lasts the whole shot, her left hand vibrating softly on one note, eyes closed, swaying slowly; the bow never changes direction. Far behind them, softly out of focus, the pianist and the guitarist play. The camera holds, drifting slightly toward the violinist. Every copy keeps her face, hair and outfit from the first frame; only the band colours differ (the composer VIOLET, never orange, hair up in a bun with two pencils; the pianist and guitarist ROSE; the violinist WHITE). Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural hands with five fingers: the composer's pencil stays in her right hand, the pianist's fingers on the keys, the bow on the strings, the guitarist's hands on the neck and strings. The pencil leaves no marks or trails; only its tip glows. Nobody sings. One continuous shot, no cuts. No captions, no text, no symbols in the air.",
+  "image": "file:media/gen/refs/orch_line_2048.jpg",
+  "duration": 5,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9"
+ }
+}
