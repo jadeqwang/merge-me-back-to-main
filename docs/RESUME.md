@@ -154,7 +154,13 @@
   - Checks: `node --check`; the EDL harness over 0–297 s for the default, `?drop=v4` and `?drop=v5` × 3 picks variants, with all, some or
     none of the new takes faked as picked: 0 exceptions, 0 bad args, 0 gaps, no held drop frames. `batch.py --dry`: 12 specs, schema OK.
   - Wushu queue: ≈ $18.51 of ≈ $70.5 (run sheet §2.1).
-- **Needs intake/render (box):** first `picks.py` (the new lags). Then the queue in V5_BOX_RUNSHEET.md §2 (≈ $70.5; generate with `--t0=13`),
-  one intake at a time, lags from word strips, picks, `tools/mix.py out/mix_v5.wav`, and review renders 62–80, 99–119, 206–216, 226–266 and
-  280–297.016 (720p), then the full film. Stills to fit after picking: the orchestra framings (`WIDE`/`CLOSE`), the post-credits `FR` and
+- Frozen-frame + fork-tree fixes (cloud, same day; Jade's OK; nothing generated, rendered or spent). Run sheet §1.1.
+  - `tools/edl_check.mjs` found 50 held plate clocks in 12 places (panes 4–22 s, fork copies, 0:42, 1:14, 1:51, 3:01, 3:48, 3:56 …). Now 0 in
+    every variant. Non-sung takes and panes slow just enough (`fit`, engine/src/clip.js); lip-synced takes are only trimmed (cut on the take's
+    first/last frame, `len` from picks.py); 3:01 opens on a 2-beat `v2_dish_sit` wide. No loops.
+  - Fork-tree copies are glyph-built (figGlyph tiers per screen cell; `?figlook=led` = LED). SwiftShader smoke test on a test plate only.
+- **Needs intake/render (box):** first `picks.py` (the new lags, and each take's `len`), then `node tools/edl_check.mjs` (expect held-clocks 0).
+  Then the queue in V5_BOX_RUNSHEET.md §2 (≈ $70.5; generate with `--t0=13`), one intake at a time, lags from word strips, picks,
+  `tools/mix.py out/mix_v5.wav`, and review renders 27–44, 53–90, 99–119, 124–153, 176–184, 206–216, 222–266 and 280–297.016 (720p), plus
+  64–80 with `figlook=led`, then the full film. Stills to fit after picking: the orchestra framings (`WIDE`/`CLOSE`), the post-credits `FR` and
   FX.mote paths, and the drop's `KEY` clip times.

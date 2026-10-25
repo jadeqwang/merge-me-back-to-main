@@ -83,11 +83,12 @@ mix, and review renders.
 earlier films as screens; the home shot on the final "Back to main…".
 
 **Waiting on Jade:** the v5 review renders (run sheet §4). Lip-sync by ear, after `picks.py`, for 0:32 / 0:44 / 1:11 / 3:54 and every
-re-take. The `lf_wushu_gold` caption nit. Whether to fix the pre-existing held frames listed in run sheet §4.
+re-take. The `lf_wushu_gold` caption nit. (Held frames: her OK, fixed; run sheet §1.1.)
 
 **Known nits / next ideas**
 - dr_jian: in the final balance her right sleeve faces camera, so the patch shows on the wrong arm (small at 720p).
-- The forktree copies are still LED sprites (`engine/src/scenes/forktree.js`); the life panes (`lf_*_t1`) keep pre-v4 faces.
+- The forktree copies are glyph-built now (`?figlook=led` for the LED look); the life panes (`lf_*_t1`) keep pre-v4 faces.
+- Held frames: `node tools/edl_check.mjs` after every `picks.py` (expect held-clocks 0).
 - Hair variants per life (wushu ponytail/buns done in the drop; tech/house teal tips, biology braids) for the life-montage plates.
 - After v5 is approved: render the 1080p master + X cut (`tools/teaser.py`) with `out/mix_v5.wav`.
 

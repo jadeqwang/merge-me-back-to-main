@@ -25,6 +25,7 @@ Ground rules (HANDOFF.md, CLOUD_HANDOFF.md):
 | 4:17 boring | The living graph replaces the git-log card and the bookend. Lives fork out of main in doublings as live panes, the log is read one commit per beat, everything merges home on the riser, and violet is cherry-picked last. It starts where the home shot ends; the end card keeps its bar-153 hit. No new takes. | `main.js` (4:15–4:24); `panels.js` `clip(t)` | |
 | post-credits: no touching, play once | The **violet branch** (`v2_horizon_t5`, Jade's pick) sends a drawn light toward the horizon. Cut to the intro's window: `ch0_window_t2` clip 0–4.57, slowed to fill the shot (no frozen frame, no replayed palm lift). The light touches the glass once at song end + 6.4 s, and the bifurcation grows from there, one fork per chime group. `mix.py` drops the lone chime, so the 1-2-4-8 cascade starts on the touch. No new takes; `pc_kneel`/`pc_beam` are unused. | `main.js` post-credits, `FX.frost`/`FX.mote`; `scenes/lattice.js` `clip(u,t)`; `tools/mix.py` `PC_TOUCH` | |
 | orchestra: playing should match the music; conductor boring | Seven cuts on the music (impact 137, violin 138, keys 139, composer 140, guitar 141, wide, composer). The **composer is the violet branch** (Jade's pick): bun with two pencils, violet bands, writing each part in violet light (`FX.score`), which lands on its player on the beat and finally folds into one orange line. Lyric captions are unchanged. Each cut uses a reframed v4 take until its new take is picked. | `main.js` ORCH v5; `tools/sd/shots_outro.py` `orch_*` + STILLS | `?orch=v4` |
+| held frames (Jade's OK, 2026-10-25: fix every take that runs out before its shot ends; never loop or ping-pong) + fork-tree dots | 50 held plate clocks in 12 places (0:30–3:56, 0.1–22 s each), all fixed: non-sung takes and panes slow just enough (`fit`), lip-synced takes are only trimmed (their cut moves to the take's first/last frame, the neighbour fills in). Fork-tree copies are glyph-built. Details and what to eyeball: §1.1. | `engine/src/clip.js`, `plateseq.js` `at(t, s0, fit)`, `main.js`, `scenes/forktree.js`; `tools/edl_check.mjs`; `picks.py` writes `len` | `?figlook=led` (fork tree) |
 | wushu: duilian first, then a medal-grade group set | v5.1, rebuilt from her real routine (box analysis: `docs/wushu_v5_design.md` §9, `docs/wushu_groupset_notes.md`; final map §10). Duilian 89–92 (three pairs). Group set 93–100 by six branch copies in one line, warm and cool alternating: unison burst on 93; jian solo on 95; **the group fall** lands flat on 97.1, bar 97 held still, rise as one on 98.1; the halves trade a phrase (98.3), then cross pairs (99.3); arms-out horse stance on 100.1; main steps into the V's point for the salute on the "ooh". Match cut into the fold at 101. Key frames are pinned to bars (`KEY`, `keyed()`). **Default = the v4 drop until all six new shots are picked.** | `main.js` drop block; `tools/sd/shots_wushu.py` (SHOTS + STILLS); `stills.py` `patch` tool | `?drop=v4` / `?drop=v5` |
 
 Already on the branch before this pass: the poem shown whole from frame 0, the title MERGE alone, the home commit message, the `fold=reach`
@@ -36,7 +37,39 @@ and `pv=screens` defaults, re-measured lags, and the 2:17 build stanza as annota
 - `fix_patch.py`: new `--prompt=FILE`.
 - `mix.py`: falls back to the ffmpeg on PATH.
 
-**Engine.** Both the lattice scene and panes have a `clip` time remap (slow motion with no held frames).
+**Engine.** Both the lattice scene and panes have a `clip` time remap (slow motion with no held frames). Lattice shots, panes and a panels back
+plate also take `fit` (src/clip.js): from `from` on, the clock slows just enough that the take's last frame lands on `to`, never faster than real
+time, so a longer re-take plays at 1x by itself.
+
+### 1.1 Frozen-frame + fork-tree fixes (cloud, 2026-10-25; nothing rendered)
+`tools/edl_check.mjs` runs the EDL under node with the real timing and picks and compares every plate clock with its take's real length (box:
+`work/plates/*/meta.json`; cloud: the mp4s in `review/cloud/takes`, the ledger's billed seconds). Before: 50 held clocks with the new lags (49
+with v4's): 33 panes, 7 fork copies, 10 shots. After: 0, for the default, `figlook=led`, `drop=v4/v5`, `orch=v4`, `fold=palms` and
+`pv=flash/off`, with the box's picks, with the new lags, and with every queued re-take faked as picked. Run it again after every `picks.py`
+(expect `held-clocks 0`).
+
+| time | held before | fix (take-aware: recomputed from the picked take's s0 and `len`) | eyeball |
+|---|---|---|---|
+| 0:30–0:33 | L1's 7 fork copies ran 0.9–6.3 s ahead of her: up to 2.5 s on the 6 s take's last frame | each copy runs a moment behind her (an echo of the line), inside what she has sung | copies at 0:29–0:33 |
+| 0:41 | `v1_light_hands` (lag −0.15) starts 0.7 s after its cut: first frame held | cut moved to the take's frame 0 (42.13); L2 `v1_track_rose` runs on to it at 0.92x | the 0:42.1 cut, L2 speed |
+| 0:54–1:05 | pre-chorus grid panes: last frame 4–6 s (after the head turn) | 1x to the turn (still together on `turn`), then ~0.23x through the fold | the slow head turn |
+| 1:18 | the fork tree's copy clocks (+1.7, 3.4, 5.1 s) ran past `intro_up`'s 8 s (0.5 s) | the scene spaces its four clocks to fit the take (1.25–1.7 s apart) | 1:15–1:19 copies |
+| 1:14.7 | `ch1_main_t11` (6 s) ended 0.3 s before its cut | cut on its last frame (interim: the 7 s re-take reaches the old cut) | the cut into the tree |
+| 1:23 | fold: first frame held 0.2 s (clip started 0.2 s late) | from frame 0 on the cut, 0.97x | — |
+| 1:40–1:52 | breakdown panes: last frame 3.7–8.5 s; `bd_float` back 1.8 s | panes start near their heads, ~0.68x; back ~0.84x | pane motion, back |
+| 1:51.8 | `bd_ahh` (lag −0.375) first frame 0.17 s | cut at its frame 0 (111.945); the breakdown runs on | — |
+| 2:05–2:31 | build panes: last frame 17–22 s | each take spans its pane's life (0.25–0.47x) | the 16-pane wall |
+| 3:00.8 | `v2_dish_close` first frame held 0.87 s (its window starts at 181.67) | the downbeat goes to the wide of her alone at the dish (`v2_dish_sit` clip 3–3.9, unused elsewhere), close-up from 3:01.67; context bar and chyron run on | the new 2-beat insert |
+| 3:48 | fold: last frame held 0.6 s | 0.9x | — |
+| 3:56.3 | `ch2_gone_close` (lag 0.3) ended 0.2 s early; then the orchestra stand-in's first frame 0.1–0.3 s | cut on its last frame; the stand-in eases in from frame 0 and is on the beat again 2 beats after bar 137 (the `orch_wide` take covers the head by itself) | the cut into the orchestra |
+
+**Fork tree** (1:07, 1:15, 2:57): the copies are built from glyphs like every other figure (decision 9): the soft underpaint and three glyph tiers
+of `LOOKS.ascii2.figGlyph`, per screen cell, 5 px for a big copy down to 2.5 px for the 1,024 tiny ones; lane recolour and the Banach–Tarski
+ownership as before. A SwiftShader smoke test on a test plate (the intro_up still, rough matte) compiled and drew them, with about the LED
+copies' brightness (`figGain`, default 1.2). Check the 1:07 face against `?figlook=led` (the old LED copies).
+
+**Review render ranges for these** (in §3's commands): 27–44 (L1 copies, the 0:42 cut), 53–90 (grid, origin, 1:15 tree, ch1 cut, fold),
+99–119 (breakdown), 124–153 (build), 176–184 (drop tree, the 3:01 insert), 222–266 (fold, the 3:56 cut), and 64–80 with `figlook=led`.
 
 ## 2. Generation queue (in this order; ≈ cost at list prices)
 
@@ -134,7 +167,8 @@ PY=/home/jade/Documents/1-music-shipped/moongazing/.venv/bin/python
 OSPY=/home/jade/Documents/1-music-shipped/orbital-sunrise-video/video/out/.venv/bin/python
 export FFMPEG=/home/jade/Documents/1-music-shipped/moongazing/.venv/lib/python3.12/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2
 python3 tools/gen/spend.py                                # pull first: the cap counts the committed ledger
-.venv/bin/python tools/sd/picks.py > /dev/null           # applies the re-measured lags.json before any review render
+.venv/bin/python tools/sd/picks.py > /dev/null           # applies the re-measured lags.json (and writes each take's len) before any review render
+node tools/edl_check.mjs                                  # held frames / exceptions with the real plates: expect "held-clocks 0" (after every picks.py)
 python3 tools/sd/stills.py                                # lists the v5 stills
 ```
 
@@ -170,7 +204,7 @@ $PY tools/gen/gen.py wait mergemain/...          # the job ids batch.py printed 
   structure when a take drops a held note (that is how v4 got 1.208 and 1.958). Write `docs/lags.json` `{take: lag}` and flag each value for
   Jade's ear.
 - Picks: `docs/picks_manual.json`. Pick `ch2_catch` from either `ch2_catch_t13/t14` or `ch2_catch_b_t13` (map `"ch2_catch"` to the chosen
-  take). Then `.venv/bin/python tools/sd/picks.py`.
+  take). Then `.venv/bin/python tools/sd/picks.py` and `node tools/edl_check.mjs` (a held frame shows as a HOLD line with its time).
 - Picking a re-take switches its interim trim off: 3:30 gets its full shot back, and the 4:12 home shot runs to 254.51, with the living graph
   starting there.
 - Orchestra: each cut switches from its stand-in to the new take as soon as that take is picked. Then tune the `WIDE`/`CLOSE`/`to`/`tip`
@@ -183,10 +217,14 @@ $PY tools/gen/gen.py wait mergemain/...          # the job ids batch.py printed 
 ```bash
 .venv/bin/python tools/mix.py out/mix_v5.wav                      # post-credits: 1-2-4-8 from song end + 6.4 s, no lone chime
 R='node engine/render.mjs --q show=/engine/show/main.js --res 1280x720 --audio --audiofile out/mix_v5.wav --workers 3'
-$R --from 62 --to 80 --mp4 out/review/v5/107_origin.mp4           # 1:07 + 1:15 forktrees (intro_up plays), pre-chorus grid panes
-$R --from 99 --to 119 --mp4 out/review/v5/146_breakdown.mp4      # glyph pane figures, bd_float back, bd_ahh
+$R --from 27 --to 44 --mp4 out/review/v5/030_verse1.mp4          # L1 copies echo behind her; L2 slowed into L3's new cut (0:42.1)
+$R --from 53 --to 90 --mp4 out/review/v5/107_origin.mp4           # grid panes' slow turn, 1:07 + 1:15 forktrees (glyph copies, intro_up plays), ch1 cut, fold
+$R --from 99 --to 119 --mp4 out/review/v5/146_breakdown.mp4      # glyph pane figures (slowed), bd_float back, bd_ahh from its frame 0
+$R --from 124 --to 153 --mp4 out/review/v5/205_build.mp4         # build panes, each take spanning its pane's life
+$R --from 176 --to 184 --mp4 out/review/v5/257_tree_dish.mp4     # drop forktree (glyph copies), the dish wide insert at 3:00.8, close-up from 3:01.7
 $R --from 206 --to 216 --mp4 out/review/v5/330_catch.mp4         # 3:30 cut + hook over the tree
-$R --from 226 --to 266 --mp4 out/review/v5/354_outro.mp4         # 3:54, orchestra, home 4:12, living graph, end-card hit
+$R --from 222 --to 266 --mp4 out/review/v5/354_outro.mp4         # ch2 fold, 3:54, the 3:56 cut, orchestra, home 4:12, living graph, end-card hit
+node engine/render.mjs --q "show=/engine/show/main.js&figlook=led" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 64 --to 80 --mp4 out/review/v5/107_led.mp4   # fork tree A/B
 $R --from 280 --to 297.016 --mp4 out/review/v5/postcredits.mp4   # violet sender, window, frost, chimes
 node engine/render.mjs --q "show=/engine/show/main.js&orch=v4" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 234 --to 252 --mp4 out/review/v5/orch_v4.mp4
 node engine/render.mjs --q "show=/engine/show/main.js&drop=v5" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 150 --to 182 --mp4 out/review/v5/drop_v5.mp4   # once picked
@@ -218,18 +256,13 @@ the kids), push, and add a "needs Jade" line in `docs/RESUME.md`.
   the lane mix (violet has two space buns). Jade decides whether to unify the two.
 - **Lip-sync by ear** (after `picks.py`):
   - 0:32 (lag .62)
-  - 0:44 (−.15; the take's first frame holds 0.7 s of silence before "Each")
+  - 0:44 (−.15; the take starts 0.7 s after bar 24 beat 3, so the cut now waits for its first frame at 0:42.1)
   - 1:11 (.40)
   - 3:54 (.30, interim)
   - every new re-take
-- **Held frames not in her notes** (pre-existing; the engine's new `clip` remap could fix any of them, so it's her call):
-  - pane last frames: the grid 4–6 s, the breakdown 3.5–8.5 s, the build 17–22 s (dimmed behind the graph)
-  - the bd_float back plate 1.8 s at 1:50
-  - 3:01 v2_dish_close: first frame held 0.9 s
-  - 3:48 fold: last frame held 0.6 s
-  - 1:11 ch1_main 0.4 s and 3:54 0.2 s (both go away with their re-takes)
-- Not yet in Jade's notes: the forktree copies are still LED sprites (`engine/src/scenes/forktree.js` copy shader). At 1:07 the single figure
-  now plays, but it is drawn as LED cells, not glyphs.
+- **Held frames** (Jade OK'd fixing them all, 2026-10-25; §1.1): none left. Look at the slowed panes (the grid's head turn ~0.23x, the build
+  wall 0.25–0.47x), the new 2-beat dish wide at 3:00.8, and the cuts that moved (0:42.1, 1:14.7, 1:51.9, 3:56.3).
+- **Fork-tree copies as glyphs** (1:07, 1:15, 2:57): is the 1:07 face readable? `?figlook=led` gives the LED copies for A/B.
 
 ## 5. A/B parameters (`--q "show=/engine/show/main.js&..."`)
 - `orch=v4`: the conductor orchestra.
@@ -237,5 +270,5 @@ the kids), push, and add a "needs Jade" line in `docs/RESUME.md`.
   each bar until it is.
 - `fold=palms` (default reach).
 - `pv=flash` | `pv=off` (default screens).
-- `figlook=led`: LED figures in lattice shots and panes.
+- `figlook=led`: LED figures in lattice shots, panes and the fork tree's copies.
 - `timing=v1`: the frozen v1 film.
