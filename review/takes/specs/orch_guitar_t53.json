@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "orch_guitar_t53",
+ "notes": "{\"shot\": \"orch_guitar\", \"s0\": 242.73, \"plate\": \"media/plates/outro/orch_guitar.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Low angle on the rose guitarist with the red electric guitar and the small amp beside her at sunrise. For the first second she chugs short, tight strums in time with the reference audio, her fretting hand low on the neck; then she slides the fretting hand up the neck and hits one huge open strum, arm swinging through, hair flying, and drives on with strong, steady strums on every half beat, bouncing at the knees, grinning toward someone off to the left. The camera pushes in slowly. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Same outfit as in the first frame, natural lips, no makeup; the jacket bands and headphone cups stay ROSE. Natural hands with five fingers: the picking hand stays over the strings, the fretting hand on the neck. Her mouth stays gently closed; she does not sing. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/orch_guitar_2048.jpg",
+  "duration": 5,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/orch_guitar_v2_242.73_5s.mp3"
+  ]
+ }
+}
