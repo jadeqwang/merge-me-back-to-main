@@ -266,8 +266,14 @@ const S = [];
   const poem = (g, t) => {
     const out = B(8) + beat, k = 1 - clamp((t - out) / .8); if (k <= 0) return;
     g.save(); g.globalAlpha = k; g.font = '400 34px ISI'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
-    g.shadowColor = 'rgba(4,5,12,.9)'; g.shadowBlur = 10; g.fillStyle = 'rgba(255,241,220,.92)';
-    POEM.forEach((ln, i) => g.fillText(ln, 72, 90 + i * 44));
+    // a soft dark scrim behind the block, the hooks' style (type.js ledHook), stretched to the three lines: over the frost glyphs of the window
+    // and blow plates the italic was hard to read (v5a QA 0:00-0:02)
+    const w = Math.max(...POEM.map((ln) => g.measureText(ln).width)), cx = 72 + w / 2, cy = 120, rx = w * .72 + 80, ry = 150;
+    g.save(); g.translate(cx, cy); g.scale(1, ry / rx); const sc = g.createRadialGradient(0, 0, 0, 0, 0, rx);
+    sc.addColorStop(0, 'rgba(4,5,12,.8)'); sc.addColorStop(.6, 'rgba(4,5,12,.55)'); sc.addColorStop(1, 'rgba(4,5,12,0)');
+    g.fillStyle = sc; g.fillRect(-rx, -rx, 2 * rx, 2 * rx); g.restore();
+    g.shadowColor = 'rgba(4,5,12,.95)'; g.shadowBlur = 14; g.fillStyle = 'rgba(255,241,220,.95)';
+    for (let pass = 0; pass < 2; pass++) POEM.forEach((ln, i) => g.fillText(ln, 72, 90 + i * 44));   // two passes: a denser shadow
     g.restore();
   };
   // counter + poem + title: one function of t, drawn by every intro shot
@@ -538,7 +544,10 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
           s: .26 * (1 - .8 * ret), a: clamp((t - t0 - i * .3) / .8) * (1 - ss(.9, 1, ret)), gain: 1.6 };
       } };
   });
-  S.push({ t0, t1: AHH_T0, kind: 'panels', panels, back: { ...pk('bd_float', t0), fit: { from: t0, to: AHH_T0 }, cellFig: 3, fid: () => 1 }, cam: () => ({}),   // back: 10 s take at ~0.84x
+  // back: the 10 s take at ~0.84x. Its glyph figure at .33 gain: the back is added rgb x coverage alpha (panels.js), and the glyph figure's four
+  // layers carry ~2.5x the LED figure's coverage, so at gain 1 her jacket and face clipped to white (v5a QA 1:40-1:47). .3 = v4's LED light
+  // (SwiftShader stills of a test plate at 1:41.5 and 1:44: figure mean 64 vs 54, clipped 3.6% vs 3.8%; ?figlook=led ignores it)
+  S.push({ t0, t1: AHH_T0, kind: 'panels', panels, back: { ...pk('bd_float', t0), fit: { from: t0, to: AHH_T0 }, cellFig: 3, fid: () => 1, figGain: .3 }, cam: () => ({}),
     text: (ty, t) => { ty.line(w11, t, { y: 980, size: 64, out: ws(12) - 1.65 }); ty.line(w12, t, { y: 980, size: 64, out: t1 - .2 }); } });
 }
 { const t0 = AHH_T0, t1 = B(69);   // "Ahh"; cut on bar 69 = the leap to the second "ahh" + the kick pulse
@@ -646,8 +655,13 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
       const [nx, ny] = lanePt(i, dotU(j)), left = i % 2 === 0, sd = left ? -1 : 1, c = GLANES[i], pop = Math.exp(-(t - at) * 7);
       const col = left ? 674 : 1246;   // the scoresheet columns, just outside the outer lanes
       g.save();
-      if (!left) { const gr = g.createRadialGradient(col + 200, ny, 0, col + 200, ny, 280);   // right-hand words sit over the dimmed panes
-        gr.addColorStop(0, `rgba(4,5,12,${.6 * a})`); gr.addColorStop(1, 'rgba(4,5,12,0)'); g.fillStyle = gr; g.fillRect(col - 60, ny - 150, 600, 300); }
+      if (!left) {   // right-hand words sit over the panes: dimmed, then back at full light from bar 85 (v5a QA 2:26: "chess move" was lost on them).
+        // A soft dark ellipse fitted to the words (and mark), firmer as the panes return
+        g.font = '400 54px ISI'; const ww = g.measureText(w).width + (mark ? 56 : 0), back = ss(B(85) - .6, B(85), t);
+        const ex = col + 12 + ww / 2, rx = ww / 2 + 120, ry = 78;
+        g.save(); g.translate(ex, ny); g.scale(1, ry / rx); const gr = g.createRadialGradient(0, 0, 0, 0, 0, rx);
+        gr.addColorStop(0, `rgba(4,5,12,${(.62 + .3 * back) * a})`); gr.addColorStop(.65, `rgba(4,5,12,${(.45 + .35 * back) * a})`); gr.addColorStop(1, 'rgba(4,5,12,0)');
+        g.fillStyle = gr; g.fillRect(-rx, -rx, 2 * rx, 2 * rx); g.restore(); }
       g.globalAlpha = a; g.strokeStyle = c; g.shadowColor = c; g.shadowBlur = 12 + 18 * pop; g.lineWidth = 2.5;
       g.beginPath(); g.arc(nx, ny, 15 + 12 * pop, 0, 7); g.stroke();
       g.shadowBlur = 0; g.lineWidth = 2; g.globalAlpha = a * .7; g.beginPath(); g.moveTo(nx + 17 * sd, ny); g.lineTo(col, ny); g.stroke();
@@ -762,7 +776,8 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', t0), splitBar0: 3, splits: 10, treeTime: (t) => G1 - ss(t0, t1, t) * (G1 - B(3) + .1), trailT: 1e9, glow: (t) => .9 + .3 * ooh(t),
       text: (ty, t) => { FX.sun(ty.g, t, { x: 960, y: 540, r: 50 + 60 * ss(t1 - 1.5, t1, t), k: .15 + .2 * ss(t1 - 2.5, t1, t) + .15 * ooh(t), disc: true }); dropText(ty, t); } });
   }
-  S.push({ t0: B(105) - .3, t1: B(105) - .18, kind: 'card', bg: '#000000', text: (ty, t) => { const g = ty.g; const k = 1 - ss(B(105) - .3, B(105) - .18, t); g.fillStyle = `rgba(255,241,220,${k * .8})`; g.fillRect(0, 0, 1920, 1080); } });
+  // the flash fades to 30% here and the verse's first shot carries its tail to 0 (tailFlash, verse 2): v5a faded it to black, a dark frame before 3:00.8
+  S.push({ t0: B(105) - .3, t1: B(105) - .18, kind: 'card', bg: '#000000', text: (ty, t) => { const g = ty.g; const k = 1 - ss(B(105) - .3, B(105) - .18, t); g.fillStyle = `rgba(255,241,220,${.3 + k * .5})`; g.fillRect(0, 0, 1920, 1080); } });
 }
 // ------------------------------------------------------------------------------------------ VERSE 2 bars 105–120 — the branch that won't come back
 // (v2 re-phrases this verse: line 17 comes 1.4 s later, "again" ends 1.2 s before the chorus pickup — cuts follow the words)
@@ -772,10 +787,15 @@ const ctxBar = (ty, t, pct) => { const g = ty.g; g.save(); g.font = '500 20px JB
 { const w = lines(16), T0 = B(105) - .18, t1 = we(16) + .2;   // out after the held "way" (the take runs out ~0.5 s later)
   // 3:01: v2_dish_close_t11's first frame is 0.86 s after the downbeat cut (its audio window starts at 181.67). Until the close-up starts, the
   // wide of her alone at the dish (v2_dish_sit, a part of the take the verse doesn't use) carries the downbeat; context bar and chyron run on.
+  // The insert starts at clip 3.35 (v5a: 3.0): the take's dish highlight flickers over clip 3.0-3.3 (QA 3:00.8-3:01.1: luma 111/92/138 frame to
+  // frame, then a steady 93). It opens on the tail of the drop's white flash (the card before it fades to 30%, not to black), so the
+  // flash -> black -> dish pop is one decay.
   const t0 = head('v2_dish_close', T0), text = (ty, t) => { ctxBar(ty, t, .94 + .01 * (t - T0) / 5); ty.chyron('jade/1420-mhz', t, T0 + .2, t1, L.violet); };
-  if (t0 > T0 + 1 / 24) S.push({ t0: T0, t1: t0, kind: 'lattice', ...pk('v2_dish_sit', T0), s0: T0 - 3.0, fid: () => .25, lane: L.violet, laneAmt: .1, cam: push(.02), text });
+  const tailFlash = (ty, t) => { const f = .3 * Math.exp(-(t - T0) / .07); if (f > .01) { ty.g.fillStyle = `rgba(255,241,220,${f})`; ty.g.fillRect(0, 0, 1920, 1080); } };
+  if (t0 > T0 + 1 / 24) S.push({ t0: T0, t1: t0, kind: 'lattice', ...pk('v2_dish_sit', T0), s0: T0 - 3.35, fid: () => .25, lane: L.violet, laneAmt: .1, cam: push(.02),
+    text: (ty, t) => { text(ty, t); tailFlash(ty, t); } });
   S.push({ t0, t1, kind: 'lattice', ...pk('v2_dish_close', ws(16) - .33), fid: () => .25, lane: L.violet, laneAmt: .1, cam: push(.04),
-    text: (ty, t) => { text(ty, t); ty.line(w, t, { y: 980, size: 60, out: t1 - .2 }); } });
+    text: (ty, t) => { text(ty, t); tailFlash(ty, t); ty.line(w, t, { y: 980, size: 60, out: t1 - .2 }); } });   // (the tail: when no insert)
 }
 { const w = lines(17), t0 = we(16) + .2, t1 = we(17);
   S.push({ t0, t1, kind: 'lattice', ...pk('v2_horizon', t0), fid: () => .25, lane: L.violet, cam: push(.03),
@@ -873,15 +893,20 @@ if (ORCH === 'v4') { // full drums again: the orchestra of Jades (Jade 2026-10-2
     to: { piano: [272, 572], violin: [1462, 330], guitar: [1705, 572] } };
   const CLOSE = { y: 150, gap: 26, x0: 1000, x1: 1880, head: 1180, pps: -150, tip: [1150, 380], to: { piano: [300, 720], violin: [1475, 500], guitar: [1750, 735] } };
   const KEY = (e) => [560 + ((e.notes?.[0] ?? 67) - 64) * 46, 640];
+  // a stand-in close-up of the v4 wide: a 2D crop (LatticeView zoom: no parallax, kept inside the plate) with a +-1% push around the cut's
+  // midpoint, so the midpoint framing is the one the score positions were set on. v5a reframed with dolly .42-.52: the camera went deep into
+  // the depth lattice and the players tore (beige/black smears, QA 3:58-4:05). keys: the piano sits at the plate's left edge, so its pan is
+  // clamped (-.537, 63 px right of the old framing; its key targets moved with it).
+  const crop = (zoom, pan) => (u) => ({ zoom: zoom * (1 + .02 * (u - .5)), pan, over: 1.06 });
   const CUTS = [ // [t0, t1, v5 shot, view, v5 cam, stand-in [v4 shot, s0, cam, view overrides]]
     [t0, B(138), 'orch_wide', WIDE, push(.03), ['out_orch', B(137), push(.04), { tip: [1190, 240] }]],
     [B(138), B(139), 'orch_line', { y: 170, gap: 24, x0: 80, x1: 1240, head: 760, pps: 200, tip: [720, 300], parts: ['violin'], to: { violin: [1350, 430] } },
-      (u) => ({ dolly: 1 - .03 * u, pan: [.02 * u, 0], over: 1.06 }), ['out_orch', B(137), () => ({ dolly: .52, pan: [.36, .1], over: 1.06 }), { tip: [606, 170], head: 640, to: { violin: [1090, 335] } }]],
+      (u) => ({ dolly: 1 - .03 * u, pan: [.02 * u, 0], over: 1.06 }), ['out_orch', B(137), crop(1 / .52, [.36, .1]), { tip: [606, 170], head: 640, x1: 680, to: { violin: [1090, 335] } }]],   // staff ends left of her head (QA 3:58.5)
     [B(139), B(140), 'orch_keys', { y: 90, gap: 22, x0: 60, x1: 1860, head: 1960, pps: 300, parts: ['piano'], to: { piano: KEY }, glowR: 120 },
-      (u) => ({ dolly: 1 - .03 * u, pan: [.03 * u, 0], over: 1.06 }), ['out_orch', B(137), () => ({ dolly: .42, pan: [-.56, .025], over: 1.06 }), { to: { piano: (e) => [760 + ((e.notes?.[0] ?? 67) - 64) * 36, 560] } }]],
+      (u) => ({ dolly: 1 - .03 * u, pan: [.03 * u, 0], over: 1.06 }), ['out_orch', B(137), crop(1 / .42, [-.56, .025]), { to: { piano: (e) => [697 + ((e.notes?.[0] ?? 67) - 64) * 36, 560] } }]],
     [B(140), B(141), 'orch_pencil', { ...CLOSE, parts: ['violin'] }, push(.04), ['out_orch_close', B(139), push(.05), { tip: [1560, 520] }]],
     [B(141), B(142), 'orch_guitar', { y: 100, gap: 22, x0: 0, x1: 1300, head: -60, pps: -260, parts: ['guitar', 'violin'], to: { guitar: [1250, 640] } },
-      push(.04), ['out_orch', B(137), () => ({ dolly: .5, pan: [.47, .04], over: 1.06 }), { to: { guitar: [1380, 690] } }]],
+      push(.04), ['out_orch', B(137), crop(2, [.47, .04]), { to: { guitar: [1380, 690] } }]],
     [B(142), bb(143, 3), 'orch_wide', WIDE, (u) => ({ dolly: .96 + .08 * u, over: 1.06 }), ['out_orch', B(139), (u) => ({ dolly: 1.02 - .06 * u, over: 1.06 }), { tip: [1190, 240] }]],
     [bb(143, 3), t1, 'orch_pencil', { ...CLOSE, parts: [], merge: (t) => ss(B(144) - .1, t1 - .05, t) }, push(.04), ['out_orch_close', B(141), push(.05), { tip: [1560, 520] }]],
   ];
@@ -978,13 +1003,16 @@ const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) +
         g.globalAlpha = p.a * .9; g.fillStyle = n[1]; g.beginPath(); g.arc(x - hw + 6, y - hh - 12, 5, 0, 7); g.fill();
         g.font = '500 17px JBM'; g.fillStyle = 'rgba(255,241,220,.9)'; g.fillText(n[2], x - hw + 18, y - hh - 6); });
       g.globalAlpha = 1;
-      // the log itself, bottom centre: the last three commits read (one per beat, newest at the bottom, typed in)
+      // the log itself, bottom centre: the last three commits read (one per beat, newest at the bottom, typed in). One hash column for every line
+      // (the block centred on the longest message), and the oldest line's top (~982) below the lowest bottom-row pane edges (gen 2: ~968 with the
+      // read pulse): v5a centred each line and set them 34 px apart from 1052, so a popped pane clipped the oldest hash (QA 4:18.4)
       const c = Math.floor((t - B(149)) / T.beatLen(149) + 1e-6);
       if (c >= 0 && t < B(152) + .3) { const k0 = 1 - clamp((t - B(152)) / .3);
-        for (let j = Math.max(0, c - 2); j <= Math.min(c, READ.length - 1); j++) { const n = N[READ[j]], tc = bb(149, j), age = c - j, y = 1052 - 34 * age;
+        g.font = '600 24px JBM'; const wh = g.measureText('0000000  ').width; g.font = '400 30px ISI';
+        const x = 960 - (wh + Math.max(...READ.map((r) => g.measureText(N[r][4]).width))) / 2;
+        for (let j = Math.max(0, c - 2); j <= Math.min(c, READ.length - 1); j++) { const n = N[READ[j]], tc = bb(149, j), age = c - j, y = 1060 - 28 * age;
           const msg = n[4].slice(0, Math.ceil(clamp((t - tc) / .3) * n[4].length)); g.globalAlpha = k0 * [1, .55, .3][age];
-          g.font = '600 26px JBM'; const wh = g.measureText(n[3] + '  ').width; g.font = '400 34px ISI'; const wm = g.measureText(n[4]).width, x = 960 - (wh + wm) / 2;
-          g.font = '600 26px JBM'; g.fillStyle = n[1]; g.fillText(n[3], x, y); g.font = '400 34px ISI'; g.fillStyle = '#FFF1DC'; g.fillText(msg, x + wh, y); } }
+          g.font = '600 24px JBM'; g.fillStyle = n[1]; g.fillText(n[3], x, y); g.font = '400 30px ISI'; g.fillStyle = '#FFF1DC'; g.fillText(msg, x + wh, y); } }
       g.restore();
       ty.mono('$ git log --graph --all', t, t0 + .1, { x: 802, y: 84, size: 22, cps: 30, out: B(152) });   // top centre, over main (the corners hold panes)
       ty.mono('HEAD -> main', t, bb(152, 2.4), { x: 881, y: 84, size: 22, cps: 30 });

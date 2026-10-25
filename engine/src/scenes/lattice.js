@@ -135,7 +135,7 @@ export default class LatticeScene {
   async render(t, u) {
     const { ctx, shot } = this;
     const s0 = shot.s0 ?? shot.t0;
-    if (shot.clip) await this.seq.seek(shot.clip(u, t) * this.seq.meta.fps);
+    if (shot.clip) await this.seq.clock((x) => shot.clip((x - shot.t0) / (shot.t1 - shot.t0), x), t);   // (u, t) as main.js passes them; slowed: frame blend
     else await this.seq.at(t, s0, shot.fit && { from: shot.t0, to: shot.t1, ...(shot.fit === true ? {} : shot.fit) });
     for (const { c, seq } of this.copies) if (seq !== this.seq) await seq.at(t + c.dt, s0);
     for (const { sc, seq } of this.screens) await seq.at(t, sc.s0 ?? s0);

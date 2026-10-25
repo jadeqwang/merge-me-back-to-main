@@ -1,8 +1,10 @@
 // Panels: several lattice-rendered clips, each into its own target, placed as quads in a 3D space.
 // shot: { panels: [{ plate, s0, clip?(t) -> clip time in s (overrides s0: slow motion / time remap), fit?: {from, to} (song times: from `from`
 //                    the pane's clock slows just enough that its take's last frame lands on `to`, never a held frame; src/clip.js),
-//                    look?, cellFig?, cellWorld?, fid?, w, h, xf(t)->{x,y,z,rx,ry,rz,s,a}, frame?: '#hex', label?, ledFig? }],
-//         back?: { plate, s0, fit?, look?, cam? }  (a full-frame lattice behind the panels)
+//                    look?, cellFig?, cellWorld?, fid?, figGain?, w, h, xf(t)->{x,y,z,rx,ry,rz,s,a}, frame?: '#hex', label?, ledFig? }],
+//         back?: { plate, s0, fit?, look?, cam?, figGain? }  (a full-frame lattice behind the panels; it is added with SrcAlpha blending, so its light
+//                is scaled by its coverage alpha, and a glyph-built figure (four overlapping layers) carries ~2.5x the LED figure's: figGain < 1
+//                brings it back to the LED figure's light)
 //         cam?(t)->{fov, z}, text?(ty,t,u) }
 // Pane figures are built from glyphs like the lattice scene's (look.figGlyph; Jade's 2026-10-24 decision 9); ?figlook=led or ledFig: true
 // restore the LED emitters.
@@ -31,11 +33,12 @@ class Pane {
       : mk(look.fig, 1, p.cellFig);
     this.layers.push(...flat(this.fig));
     if (p.lane) { this.fig.set('uTint', p.lane); this.fig.set('uTintAmt', p.laneAmt ?? .12); }
+    if (glyphFig && p.figGain != null) this.fig.set('uGain', p.figGain);   // a multiplier on each glyph layer's own gain (the LED figure ignores it)
     this.rt = new THREE.WebGLRenderTarget(this.W, this.H, { type: THREE.HalfFloatType });
   }
   async render(t) {
     const { p } = this;
-    if (p.clip) await this.seq.seek(p.clip(t) * this.seq.meta.fps); else await this.seq.at(t, p.s0 ?? 0, p.fit);
+    if (p.clip) await this.seq.clock(p.clip, t); else await this.seq.at(t, p.s0 ?? 0, p.fit);   // slowed clocks blend frames (plateseq.js)
     const mvp = this.view.frame(this.seq.aspect, p.cam ? p.cam(t) : {});
     if (p.fid) this.fig.set('uDensity', p.fid(t));
     this.view.render(this.layers, mvp, t);

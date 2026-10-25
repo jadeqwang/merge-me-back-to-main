@@ -74,7 +74,7 @@ export default class ForkTree {
     this.trails = new THREE.Mesh(tgeo, trailMat); this.trails.frustumCulled = false;
     // ---------------------------------------------------------------- copies (glyph-built sprites; LED with ?figlook=led)
     this.seqs = [];
-    for (let k = 0; k < 4; k++) this.seqs.push(await PlateSeq.open(shot.plate));
+    for (let k = 0; k < 4; k++) this.seqs.push(Object.assign(await PlateSeq.open(shot.plate), { blend: false }));   // its shaders read one frame per clock
     const s0 = shot.s0 ?? shot.t0;
     this.clk = { s0, step: spread(this.seqs[0].last, shot.t0 - s0, shot.t1 - shot.t0), fit: { from: shot.t0, to: shot.t1 } };
     this.glyph = ctx.P.get('figlook') !== 'led' && !shot.ledFig;
@@ -171,11 +171,13 @@ export default class ForkTree {
 
   // the copies built from glyphs: per screen cell (as the LED emitters were) the cell's colour, brightness and Sobel edge pick a character of
   // the structural atlas (atlas 2: brightness tiers, edge strokes along her contours), in three tiers over a soft underpaint, with the
-  // figGlyph values of scenes/lattice.js. uCell = tier-1 cell (px), from the copy's size on screen (5 px for a big copy, down to 2.5 px).
+  // figGlyph values of scenes/lattice.js. uCell = tier-1 cell (px) = the copy's height on screen / 160 (2.5..5 px): a copy keeps its cell count
+  // at any output size, and a big copy gets finer cells, not coarser (v5a QA: the 1:07 hero copy at 5 px was ~10 cells across the face, unreadable;
+  // at 1/160 it is ~17 at 720p and its features resolve).
   glyphMat() {
     const { ctx } = this, atlas = atlasFor(ctx, LOOKS.ascii2), lv = this.seqs[0].figLevels;
     Object.assign(this.cU, { uAtlas: { value: atlas.tex }, uAtlasN: { value: atlas.n }, uTierOff: { value: atlas.tierOff }, uTierN: { value: atlas.tierN },
-      uEdgeOff: { value: atlas.edgeOff }, uLevels: { value: new THREE.Vector2(lv[0], lv[1]) }, uCell: { value: 5 }, uT: { value: 0 } });
+      uEdgeOff: { value: atlas.edgeOff }, uLevels: { value: new THREE.Vector2(lv[0], lv[1]) }, uCell: { value: 5 }, uT: { value: 0 }, uShadow: { value: .9 } });
     this.cU.uGain.value = this.shot.figGain ?? 1.2;   // about the LED copies' light (SwiftShader still of a test plate: figure mean 38 vs 38)
     const [under, a, b, c] = LOOKS.ascii2.figGlyph, f = (x) => Number(x).toFixed(3), v2 = (x) => `vec2(${f(x[0])}, ${f(x[1])})`;
     const tier = (o, seed) => `tier(k, li, dx, dy, uCell * ${f(o.cell / a.cell)}, vec3(${o.cov.map(f).join(', ')}), ${v2(o.edgeK)}, ${f(o.tierBias)}, ` +
@@ -187,7 +189,7 @@ export default class ForkTree {
         void main(){ vec4 c = modelViewMatrix * vec4(cpos.xy, 0., 1.); c.xy += position.xy * uSize; gl_Position = projectionMatrix * c;
           vUv = uv; vLane = cpos.z; vVar = cpos.w; vK = caux.x; vPar = caux.y; }`,
       fragmentShader: `uniform sampler2D uTex[4]; uniform sampler2D uMat[4]; uniform sampler2D uAtlas; uniform vec3 uLanes[8];
-        uniform float uGain, uAtlasN, uTierOff, uTierN, uEdgeOff, uCell, uT; uniform vec2 uLevels;
+        uniform float uGain, uAtlasN, uTierOff, uTierN, uEdgeOff, uCell, uT, uShadow; uniform vec2 uLevels;
         varying vec2 vUv; varying float vLane, vVar, vK, vPar;
         vec3 rgb2hsv(vec3 c){ vec4 K=vec4(0.,-1./3.,2./3.,-1.); vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g)); vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r)); float d=q.x-min(q.w,q.y); float e=1e-10; return vec3(abs(q.z+(q.w-q.y)/(6.*d+e)),d/(q.x+e),q.x); }
         vec3 hsv2rgb(vec3 c){ vec3 p=abs(fract(c.xxx+vec3(0.,2./3.,1./3.))*6.-3.); return c.z*mix(vec3(1.),clamp(p-1.,0.,1.),c.y); }
@@ -206,13 +208,15 @@ export default class ForkTree {
         // light colour as the lattice FS: saturation, chroma-normalise (glyph shape carries the brightness), brightness floor
         vec3 shade(vec3 c, float b, float sat, float norm){ c = max(mix(vec3(lum(c)), c, sat), 0.);
           return mix(c, c / max(max(c.r, max(c.g, c.b)), .03) * (.18 + .82 * b), norm); }
-        // the soft underpaint: her image blurred over ~2 cells of P px at low gain, so the face reads as one continuous image
+        // the soft underpaint: her image blurred over ~2 cells of P px at low gain, so the face reads as one continuous image; uShadow fills her
+        // dark parts (hair, the black top) with their own colour, as the LED emitters did, so her silhouette and the frame of her face read on black
         vec3 under(int k, int li, vec2 dx, vec2 dy, float P, float gain, float gm, float sat){
           vec2 o1 = (dx + dy) * P * .6, o2 = (dx - dy) * P * .6;
           vec3 c = .25 * (C(k, vUv + o1) + C(k, vUv - o1) + C(k, vUv + o2) + C(k, vUv - o2));
           float m = .25 * (M(k, vUv + o1) + M(k, vUv - o1) + M(k, vUv + o2) + M(k, vUv - o2));
           float b = bri(c, gm);
-          return shade(lane(c, li), b, sat, 0.) * smoothstep(.3, .6, m) * own(floor(gl_FragCoord.xy / P)) * gain * b; }
+          vec3 lc = lane(c, li);
+          return (shade(lc, b, sat, 0.) * gain * b + lc * uShadow * (1. - b)) * smoothstep(.3, .6, m) * own(floor(gl_FragCoord.xy / P)); }
         // one glyph tier: cells of P screen px; cov = coverage [base, light, edge], ek = edge thresholds, tb = tier bias, sz = glyph size (cells),
         // g = [gain, gamma, floor, crisp], q = [sat, norm, flicker]
         vec3 tier(int k, int li, vec2 dx, vec2 dy, float P, vec3 cov, vec2 ek, float tb, vec2 sz, vec4 g, vec3 q, float seed){
@@ -304,7 +308,7 @@ export default class ForkTree {
     const fig = Math.min(.95, Math.max(pxW * 6, spacing * .7));
     this.cU.uSize.value.set(fig * this.seqs[0].aspect, fig);
     this.cU.uPitch.value = Math.max(2.5, Math.min(4, 3));
-    if (this.glyph) { this.cU.uCell.value = 5 * Math.max(.5, Math.min(1, fig / pxW / 360)); this.cU.uT.value = tt; }   // glyph cells: copy height / 72, 2.5..5 px
+    if (this.glyph) { this.cU.uCell.value = Math.max(2.5, Math.min(5, fig / pxW / 160)); this.cU.uT.value = tt; }   // glyph cells: copy height / 160, 2.5..5 px
     const P = this.cPos.array, A = this.cAux.array;
     for (let i = 0; i < n; i++) {
       const p = this.pos(g, i, t);

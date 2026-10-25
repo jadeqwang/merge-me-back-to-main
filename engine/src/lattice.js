@@ -70,7 +70,7 @@ export function levels(img, lo = 0.02, hi = 0.985, matteImg = null, inside = tru
 const VS = /* glsl */`
 precision highp float;
 in vec3 position; in vec2 home; in float gid; in float rnd; in vec2 cxy;
-uniform sampler2D uRgb, uDepth, uMatte;
+uniform sampler2D uRgb, uDepth, uMatte, uRgb2, uDepth2, uMatte2; uniform float uMix; uniform vec2 uEye;
 uniform vec2 uCellUv; uniform float uAspect, uRegion, uDepthAmt, uTime;
 uniform vec2 uLevels; uniform float uSizeMin, uSizeMax, uGamma, uAniso;
 uniform float uDrift, uScatter; uniform vec3 uScatterDir; uniform vec2 uOffset;
@@ -78,7 +78,11 @@ uniform mat4 uMVP; uniform float uCamD; uniform float uDensity, uScale; uniform 
 uniform float uRamp, uRampOff, uRampN, uWords;
 uniform vec4 uCov; uniform vec2 uEdgeK; uniform vec3 uJit; uniform float uTierBias, uEdgeRot, uFlick, uTierOff, uTierN, uEdgeOff, uEdgeB; uniform vec4 uClust;
 out vec2 vUv; out vec3 vCol; out float vW, vGid, vB;
-float L(vec2 p){ return dot(texture(uRgb,p).rgb, vec3(.299,.587,.114)); }
+// the plate at this frame; slowed playback blends in the next frame by uMix (plateseq.js), uMix = 0 reads one frame as before
+vec3 RGB(vec2 p){ vec3 a = texture(uRgb, p).rgb; return uMix > 0. ? mix(a, texture(uRgb2, p).rgb, uMix) : a; }
+float MAT(vec2 p){ float a = texture(uMatte, p).r; return uMix > 0. ? mix(a, texture(uMatte2, p).r, uMix) : a; }
+float DEP(vec2 p){ float a = texture(uDepth, p).r; return uMix > 0. ? mix(a, texture(uDepth2, p).r, uMix) : a; }
+float L(vec2 p){ return dot(RGB(p), vec3(.299,.587,.114)); }
 float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
   return mix(mix(h21(i), h21(i + vec2(1., 0.)), f.x), mix(h21(i + vec2(0., 1.)), h21(i + vec2(1., 1.)), f.x), f.y); }
@@ -93,9 +97,9 @@ void main(){
   float vis = clamp((dens - rank) * 64. + .5, 0., 1.);
   float grow = 1. / sqrt(dens);
   vec2 h = home + vec2(.5, -.5) * (grow - 1.) * uCellUv * step(dens, .999);
-  vec3 c = texture(uRgb, h).rgb;
-  float m = texture(uMatte, h).r;
-  float d = texture(uDepth, h).r;
+  vec3 c = RGB(h);
+  float m = MAT(h);
+  float d = DEP(h);
   float keep = (uRegion > 1.5 ? 1.0 : (uRegion > .5 ? smoothstep(.45,.7,m) : 1.0 - smoothstep(.25,.5,m))) * vis;
   float lum = dot(c, vec3(.299,.587,.114));
   float b = pow(clamp((lum - uLevels.x) / max(uLevels.y - uLevels.x, 1e-3), 0., 1.), uGamma);
@@ -151,7 +155,7 @@ void main(){
   }
   vec3 p0 = vec3((h.x-.5)*uAspect, h.y-.5, 0.);
   float kz = clamp((d-.5)*uDepthAmt / uCamD, -.9, .9);
-  vec3 p = mix(p0, vec3(0., 0., uCamD), kz);
+  vec3 p = mix(p0, vec3(uEye, uCamD), kz);   // depth moves a cell along its ray from the eye (uEye: the camera's pan under a zoom, else 0)
   // drift: loose cells breathe; scatter: cells peel off along a direction with per-cell delay
   p.xy += uDrift * .003 * vec2(sin(uTime*1.3+rnd*40.), cos(uTime*1.1+rnd*37.));
   float s = clamp(uScatter * 1.6 - rnd * .6, 0., 1.);
@@ -227,6 +231,8 @@ export class LatticeLayer {
     }, opts);
     this.u = {
       uRgb: { value: plate.rgb }, uDepth: { value: plate.depth }, uMatte: { value: plate.matte },
+      uRgb2: { value: plate.rgb2 || plate.rgb }, uDepth2: { value: plate.depth2 || plate.depth }, uMatte2: { value: plate.matte2 || plate.matte },
+      uMix: plate.mixU || { value: 0 }, uEye: { value: new THREE.Vector2(0, 0) },   // uMix: the plate's own uniform (shared by its layers)
       uAtlas: { value: atlas.tex }, uAtlasN: { value: atlas.n },
       uCellUv: { value: new THREE.Vector2(1 / cols, 1 / rows) }, uAspect: { value: aspect }, uRegion: { value: region },
       uDepthAmt: { value: o.depthAmt }, uTime: { value: 0 }, uLevels: { value: new THREE.Vector2(...(region === 1 ? plate.figLevels : plate.levels)) },
@@ -264,9 +270,16 @@ export class LatticeView {
     this.scene = new THREE.Scene(); this.sceneP = new THREE.Scene();
     this.cam = new THREE.PerspectiveCamera(30, W / H, .01, 100);
   }
-  // camera that makes a plate of height 1 and width `aspect` cover the frame with `over` overscan
-  frame(aspect, { over = 1.06, orbit = 0, dolly = 1, pan = [0, 0], roll = 0 } = {}) {
-    const A = this.W / this.H, visH = (aspect >= A ? 1 : aspect / A) / over;
+  // camera that makes a plate of height 1 and width `aspect` cover the frame with `over` overscan.
+  // zoom: a 2D punch-in on `pan` (a crop: the depth lattice converges on the camera, so there is no parallax and nothing tears), the view kept
+  // inside the plate. dolly moves the camera through the depth lattice instead (parallax: past ~0.8 it tears at depth edges).
+  frame(aspect, { over = 1.06, orbit = 0, dolly = 1, pan = [0, 0], roll = 0, zoom = 0 } = {}) {
+    const A = this.W / this.H; let visH = (aspect >= A ? 1 : aspect / A) / over;
+    this.eye = [0, 0];
+    if (zoom) {
+      visH /= zoom; const mx = Math.max(0, (aspect - visH * A) / 2), my = Math.max(0, (1 - visH) / 2);
+      pan = [Math.max(-mx, Math.min(mx, pan[0])), Math.max(-my, Math.min(my, pan[1]))]; this.eye = pan;
+    }
     const dist = visH / 2 / Math.tan(THREE.MathUtils.degToRad(15)) * dolly;
     this.cam.position.set(pan[0] + Math.sin(orbit) * dist, pan[1], Math.cos(orbit) * dist);
     this.restD = visH / 2 / Math.tan(THREE.MathUtils.degToRad(15));
@@ -277,7 +290,7 @@ export class LatticeView {
   // returns {light, paint|null}; layers with paint:true go to the paint target (normalized at resolve)
   render(layers, mvp, t) {
     this.scene.children.length = 0; this.sceneP.children.length = 0;
-    for (const l of layers) { if (l.mvp) l.u.uMVP.value.copy(l.mvp); else l.u.uMVP.value.copy(mvp); l.u.uCamD.value = this.restD; l.u.uTime.value = t; (l.paint ? this.sceneP : this.scene).add(l.mesh); }
+    for (const l of layers) { if (l.mvp) l.u.uMVP.value.copy(l.mvp); else l.u.uMVP.value.copy(mvp); l.u.uCamD.value = this.restD; l.u.uEye.value.set(...(this.eye || [0, 0])); l.u.uTime.value = t; (l.paint ? this.sceneP : this.scene).add(l.mesh); }
     this.r.setClearColor(0x000000, 0);
     this.r.setRenderTarget(this.acc); this.r.clear(); this.r.render(this.scene, this.cam);
     const hasP = this.sceneP.children.length > 0;
