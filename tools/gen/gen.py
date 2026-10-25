@@ -292,6 +292,34 @@ def prepare(spec_path):
     return spec, model, tag, inp, est, why, body
 
 
+def run_image(model, inp, out_path, tag, timeout=1800):
+    """cf.generate() with GEN_IMAGES_VIA_RELAY=1: a sync image call sent through the relay queue instead (the relay's env.AI.run has no
+    HTTP timeout; a cloud container's direct /ai/run call dies at ~30 s). Submit + result are logged as a relay job (counted once by
+    spend.py); the file lands in media/gen/<tag>_<id>.<ext> and is copied to out_path (extension as in cf.save_media)."""
+    os.makedirs(SPECS, exist_ok=True)
+    tag = "".join(ch if ch.isalnum() or ch in "_.-" else "_" for ch in tag or os.path.basename(os.path.splitext(out_path)[0]))
+    sp = os.path.join(SPECS, f"img_{tag}.json")
+    with open(sp, "w") as f:
+        json.dump({"model": model, "tag": tag, "notes": f"image via relay -> {os.path.relpath(os.path.abspath(out_path), ROOT)}",
+                   "input": inp}, f, indent=1, ensure_ascii=False)
+    jid = submit(sp)
+    wait([jid], timeout=timeout, every=10)
+    j = read_manifest()["jobs"][jid]
+    if j["state"] != "done" or not j.get("files"):
+        raise cf.CFError(f"relay image {jid}: {j['state']} {(j.get('error') or j.get('collect_errors') or '')!s:.500}")
+    stem, ext0 = os.path.splitext(out_path)
+    paths = []
+    for i, f in enumerate(j["files"]):
+        data = open(os.path.join(ROOT, f), "rb").read()
+        ext = os.path.splitext(f)[1]
+        if ext0 and (ext0.lower() == ext or {ext0.lower(), ext} <= {".jpg", ".jpeg"}):
+            ext = ext0
+        p = (stem if len(j["files"]) == 1 else f"{stem}_{i}") + ext
+        cf._write(p, data)
+        paths.append(p)
+    return paths
+
+
 def submit(spec_path, dry_run=False):
     spec, model, tag, inp, est, why, body = prepare(spec_path)
     if dry_run:
@@ -381,7 +409,7 @@ def collect_one(jid):
     media = rec.get("media") or []
     if not media or all(f.get("error") for f in media):
         # relay mirrored nothing (e.g. minimax/h3 returns the raw provider task: result.task.content.url)
-        media = [{"url": u} for u in _urls(rec.get("result"))] or media
+        media = [{"url": u} for u in _urls(rec.get("result"))] or [{"data": d} for d in cf.media_items(rec.get("result"))] or media
     paths, probes, errs = [], [], []
     for i, f in enumerate(media):
         data = None
@@ -390,6 +418,8 @@ def collect_one(jid):
             parts = [kv_get(f["key"] if n == 1 else f"{f['key']}:{c}", raw=True) for c in range(n)]
             if all(p is not None for p in parts):
                 data = b"".join(parts)
+        if data is None and f.get("data"):
+            data, _ = cf.fetch_bytes(f["data"])
         if data is None and f.get("url"):
             try:
                 data, _ = cf.fetch_bytes(f["url"])
