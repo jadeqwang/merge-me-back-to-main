@@ -1,12 +1,15 @@
 // INTRO: one Jade on a black star-mirror, seen from above, Banach–Tarski-splitting on each bar (1 → 1,024).
-// Copies = LED sprites of a top-down clip (lane recoloured); trails = lane-coloured comet paths of an analytic binary tree;
-// floor = token text that lights up where the trails pass (trail map). Everything is a pure function of song time t.
-// shot: { plate (clip, prepped), s0, splitBar0 = 3, splits = 10, titleBar = 9, tiltBar = 15, text(ty, t, st) }
+// Copies = sprites of a top-down clip (lane recoloured), built from glyphs like every other figure (Jade's 2026-10-24 decision 9: the soft
+// underpaint + three glyph tiers of LOOKS.ascii2.figGlyph, drawn per screen cell so a copy of any size reads); ?figlook=led or shot.ledFig: true
+// restore v4's LED emitters. Trails = lane-coloured comet paths of an analytic binary tree; floor = token text that lights up where the trails
+// pass (trail map). Everything is a pure function of song time t.
+// shot: { plate (clip, prepped), s0, splitBar0 = 3, splits = 10, titleBar = 9, tiltBar = 15, text(ty, t, st), figGain? }
 // The copies play four clocks of the take (k = 0..3, `step` s apart): spread as far as the take allows over the shot (at most 1.7 s), so no clock
 // runs past the take's last frame (src/clip.js spread / fit).
 import * as THREE from 'three';
 import { PlateSeq } from '../plateseq.js';
 import { spread } from '../clip.js';
+import { LOOKS, atlasFor } from './lattice.js';
 
 export const LANES = ['#FF7A1A', '#FF5FA2', '#6FB6FF', '#4FE3B0', '#FFD23F', '#A57BFF', '#F4F4F8', '#FF8F6B'];
 const TAU = Math.PI * 2, TH0 = -Math.PI / 2;
@@ -69,11 +72,12 @@ export default class ForkTree {
           vec3 c = uLanes[int(vLane + .5)]; gl_FragColor = vec4(c * a * 1.2, a); }`,
     });
     this.trails = new THREE.Mesh(tgeo, trailMat); this.trails.frustumCulled = false;
-    // ---------------------------------------------------------------- copies (LED sprites)
+    // ---------------------------------------------------------------- copies (glyph-built sprites; LED with ?figlook=led)
     this.seqs = [];
     for (let k = 0; k < 4; k++) this.seqs.push(await PlateSeq.open(shot.plate));
     const s0 = shot.s0 ?? shot.t0;
     this.clk = { s0, step: spread(this.seqs[0].last, shot.t0 - s0, shot.t1 - shot.t0), fit: { from: shot.t0, to: shot.t1 } };
+    this.glyph = ctx.P.get('figlook') !== 'led' && !shot.ledFig;
     const nmax = 1 << this.G;
     const cgeo = new THREE.InstancedBufferGeometry();
     cgeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-.5, -.5, 0, .5, -.5, 0, .5, .5, 0, -.5, .5, 0]), 3));
@@ -124,7 +128,7 @@ export default class ForkTree {
           gl_FragColor = vec4(s.rgb * a * uGain, a);
         }`,
     });
-    this.copies = new THREE.Mesh(cgeo, copyMat); this.copies.frustumCulled = false;
+    this.copies = new THREE.Mesh(cgeo, this.glyph ? this.glyphMat() : copyMat); this.copies.frustumCulled = false;
     // ---------------------------------------------------------------- floor: token octaves lit by the trail map, plus stars
     this.mapRT = new THREE.WebGLRenderTarget(1536, 1536, { type: THREE.HalfFloatType });
     this.mapCam = new THREE.OrthographicCamera(-1, 1, 1, -1, -10, 10);
@@ -163,6 +167,87 @@ export default class ForkTree {
     this.scene = new THREE.Scene(); this.scene.add(this.floor, this.trails, this.copies);
     this.cam = new THREE.PerspectiveCamera(36, ctx.W / ctx.H, .001, 5000);
     this.acc = new THREE.WebGLRenderTarget(ctx.W, ctx.H, { type: THREE.HalfFloatType, depthBuffer: false });
+  }
+
+  // the copies built from glyphs: per screen cell (as the LED emitters were) the cell's colour, brightness and Sobel edge pick a character of
+  // the structural atlas (atlas 2: brightness tiers, edge strokes along her contours), in three tiers over a soft underpaint, with the
+  // figGlyph values of scenes/lattice.js. uCell = tier-1 cell (px), from the copy's size on screen (5 px for a big copy, down to 2.5 px).
+  glyphMat() {
+    const { ctx } = this, atlas = atlasFor(ctx, LOOKS.ascii2), lv = this.seqs[0].figLevels;
+    Object.assign(this.cU, { uAtlas: { value: atlas.tex }, uAtlasN: { value: atlas.n }, uTierOff: { value: atlas.tierOff }, uTierN: { value: atlas.tierN },
+      uEdgeOff: { value: atlas.edgeOff }, uLevels: { value: new THREE.Vector2(lv[0], lv[1]) }, uCell: { value: 5 }, uT: { value: 0 } });
+    this.cU.uGain.value = this.shot.figGain ?? 1.2;   // about the LED copies' light (SwiftShader still of a test plate: figure mean 38 vs 38)
+    const [under, a, b, c] = LOOKS.ascii2.figGlyph, f = (x) => Number(x).toFixed(3), v2 = (x) => `vec2(${f(x[0])}, ${f(x[1])})`;
+    const tier = (o, seed) => `tier(k, li, dx, dy, uCell * ${f(o.cell / a.cell)}, vec3(${o.cov.map(f).join(', ')}), ${v2(o.edgeK)}, ${f(o.tierBias)}, ` +
+      `${v2([o.sizeMin, o.sizeMax])}, vec4(${f(o.gain)}, ${f(o.gamma)}, ${f(o.floor)}, ${f(o.crisp)}), vec3(${f(o.sat)}, ${f(o.norm)}, ${f(o.flick)}), ${f(seed)})`;
+    return new THREE.ShaderMaterial({
+      uniforms: this.cU, transparent: true, depthTest: false, depthWrite: false,
+      blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+      vertexShader: `attribute vec4 cpos; attribute vec2 caux; uniform vec2 uSize; varying vec2 vUv; varying float vLane, vVar, vK, vPar;
+        void main(){ vec4 c = modelViewMatrix * vec4(cpos.xy, 0., 1.); c.xy += position.xy * uSize; gl_Position = projectionMatrix * c;
+          vUv = uv; vLane = cpos.z; vVar = cpos.w; vK = caux.x; vPar = caux.y; }`,
+      fragmentShader: `uniform sampler2D uTex[4]; uniform sampler2D uMat[4]; uniform sampler2D uAtlas; uniform vec3 uLanes[8];
+        uniform float uGain, uAtlasN, uTierOff, uTierN, uEdgeOff, uCell, uT; uniform vec2 uLevels;
+        varying vec2 vUv; varying float vLane, vVar, vK, vPar;
+        vec3 rgb2hsv(vec3 c){ vec4 K=vec4(0.,-1./3.,2./3.,-1.); vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g)); vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r)); float d=q.x-min(q.w,q.y); float e=1e-10; return vec3(abs(q.z+(q.w-q.y)/(6.*d+e)),d/(q.x+e),q.x); }
+        vec3 hsv2rgb(vec3 c){ vec3 p=abs(fract(c.xxx+vec3(0.,2./3.,1./3.))*6.-3.); return c.z*mix(vec3(1.),clamp(p-1.,0.,1.),c.y); }
+        vec3 C(int k, vec2 uv){ if (k == 0) return texture2D(uTex[0], uv).rgb; if (k == 1) return texture2D(uTex[1], uv).rgb; if (k == 2) return texture2D(uTex[2], uv).rgb; return texture2D(uTex[3], uv).rgb; }
+        float M(int k, vec2 uv){ if (k == 0) return texture2D(uMat[0], uv).r; if (k == 1) return texture2D(uMat[1], uv).r; if (k == 2) return texture2D(uMat[2], uv).r; return texture2D(uMat[3], uv).r; }
+        float lum(vec3 c){ return dot(c, vec3(.299, .587, .114)); }
+        float bri(vec3 c, float gm){ return pow(clamp((lum(c) - uLevels.x) / max(uLevels.y - uLevels.x, 1e-3), 0., 1.), gm); }
+        float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        // lane recolour: orange bands / cups -> lane colour
+        vec3 lane(vec3 c, int li){ vec3 hsv = rgb2hsv(c);
+          if (li > 0 && hsv.x > .02 && hsv.x < .12 && hsv.y > .45 && hsv.z > .25) { vec3 lh = rgb2hsv(uLanes[li]);
+            c = hsv2rgb(vec3(lh.x, lh.y < .1 ? .03 : max(hsv.y, lh.y * .9), hsv.z * (lh.y < .1 ? 1.25 : 1.))); }
+          return c; }
+        // Banach–Tarski: while splitting, each child owns every other cell, then becomes whole
+        float own(vec2 cell){ return vK >= 1. ? 1. : (abs(mod(cell.x + cell.y, 2.) - vPar) < .5 ? 1. : vK * vK); }
+        // light colour as the lattice FS: saturation, chroma-normalise (glyph shape carries the brightness), brightness floor
+        vec3 shade(vec3 c, float b, float sat, float norm){ c = max(mix(vec3(lum(c)), c, sat), 0.);
+          return mix(c, c / max(max(c.r, max(c.g, c.b)), .03) * (.18 + .82 * b), norm); }
+        // the soft underpaint: her image blurred over ~2 cells of P px at low gain, so the face reads as one continuous image
+        vec3 under(int k, int li, vec2 dx, vec2 dy, float P, float gain, float gm, float sat){
+          vec2 o1 = (dx + dy) * P * .6, o2 = (dx - dy) * P * .6;
+          vec3 c = .25 * (C(k, vUv + o1) + C(k, vUv - o1) + C(k, vUv + o2) + C(k, vUv - o2));
+          float m = .25 * (M(k, vUv + o1) + M(k, vUv - o1) + M(k, vUv + o2) + M(k, vUv - o2));
+          float b = bri(c, gm);
+          return shade(lane(c, li), b, sat, 0.) * smoothstep(.3, .6, m) * own(floor(gl_FragCoord.xy / P)) * gain * b; }
+        // one glyph tier: cells of P screen px; cov = coverage [base, light, edge], ek = edge thresholds, tb = tier bias, sz = glyph size (cells),
+        // g = [gain, gamma, floor, crisp], q = [sat, norm, flicker]
+        vec3 tier(int k, int li, vec2 dx, vec2 dy, float P, vec3 cov, vec2 ek, float tb, vec2 sz, vec4 g, vec3 q, float seed){
+          vec2 cell = floor(gl_FragCoord.xy / P), cc = (cell + .5) * P;
+          vec2 uvc = vUv + dx * (cc.x - gl_FragCoord.x) + dy * (cc.y - gl_FragCoord.y);
+          if (uvc.x < 0. || uvc.y < 0. || uvc.x > 1. || uvc.y > 1.) return vec3(0.);
+          float keep = smoothstep(.45, .7, M(k, uvc)); if (keep < .01) return vec3(0.);
+          vec3 c = C(k, uvc); float b = bri(c, g.y);
+          vec2 ex = dx * P * .55, ey = dy * P * .55;
+          float tl = bri(C(k, uvc - ex + ey), g.y), tc = bri(C(k, uvc + ey), g.y), tr = bri(C(k, uvc + ex + ey), g.y);
+          float ml = bri(C(k, uvc - ex), g.y), mr = bri(C(k, uvc + ex), g.y);
+          float bl = bri(C(k, uvc - ex - ey), g.y), bc = bri(C(k, uvc - ey), g.y), br = bri(C(k, uvc + ex - ey), g.y);
+          float gx = ((tr + 2. * mr + br) - (tl + 2. * ml + bl)) * .25, gy = ((tl + 2. * tc + tr) - (bl + 2. * bc + br)) * .25;
+          float ed = smoothstep(ek.x, ek.y, length(vec2(gx, gy))), pk = max(b, max(max(tl, tr), max(bl, br)) * .85);
+          float r1 = h21(cell + seed), r2 = h21(cell + seed + 17.3), r3 = h21(cell + seed + 41.9);
+          if (r1 > clamp(cov.x + cov.y * pk + cov.z * ed, 0., 1.)) return vec3(0.);
+          float v = floor(h21(cell + seed + 7.7 + floor(uT * q.z * 8. + r3 * 9.)) * 16.), gi;
+          if (ed > .15 + .7 * r2) gi = uEdgeOff + floor(mod(atan(gy, gx) + 1.9634954, 3.1415927) / .7853982) * 4. + mod(v, 4.);   // stroke along the contour
+          else gi = uTierOff + clamp(floor((pow(b, .8) + (r2 - .5) * .12) * uTierN + tb), 0., uTierN - 1.) * 8. + mod(v, 8.);       // brightness tier
+          float s = mix(sz.x, sz.y, b); vec2 l = (gl_FragCoord.xy - cc) / (P * s) + .5;
+          if (l.x < 0. || l.y < 0. || l.x > 1. || l.y > 1.) return vec3(0.);
+          int ig = int(gi + .5), an = int(uAtlasN + .5);
+          vec2 auv = (vec2(float(ig % an), float(ig / an)) + vec2(l.x, 1. - l.y)) / uAtlasN; auv.y = 1. - auv.y;
+          float a = textureLod(uAtlas, auv, max(0., log2(96. / (P * s)) - g.w)).r; a = mix(a, smoothstep(.18, .62, a), min(g.w, 1.));
+          return shade(lane(c, li), b, q.x, q.y) * a * keep * own(cell) * g.x * mix(g.z, 1., b); }
+        void main(){
+          vec2 dx = dFdx(vUv), dy = dFdy(vUv); int k = int(vVar + .5), li = int(vLane + .5);
+          vec3 c = under(k, li, dx, dy, uCell * ${f(under.cell / a.cell)}, ${f(under.gain)}, ${f(under.gamma)}, ${f(under.sat)})
+            + ${tier(a, 3)}
+            + ${tier(b, 11)}
+            + ${tier(c, 23)};
+          c *= uGain; if (max(c.r, max(c.g, c.b)) <= 0.) discard;
+          gl_FragColor = vec4(c, 1.);
+        }`,
+    });
   }
 
   textTex() {
@@ -219,6 +304,7 @@ export default class ForkTree {
     const fig = Math.min(.95, Math.max(pxW * 6, spacing * .7));
     this.cU.uSize.value.set(fig * this.seqs[0].aspect, fig);
     this.cU.uPitch.value = Math.max(2.5, Math.min(4, 3));
+    if (this.glyph) { this.cU.uCell.value = 5 * Math.max(.5, Math.min(1, fig / pxW / 360)); this.cU.uT.value = tt; }   // glyph cells: copy height / 72, 2.5..5 px
     const P = this.cPos.array, A = this.cAux.array;
     for (let i = 0; i < n; i++) {
       const p = this.pos(g, i, t);
