@@ -846,3 +846,10 @@
 {"ts": "2026-10-25T14:15:22Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_wide_t53", "job": "mergemain/dr_dl_wide_t53-84fbccad89", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-25T14:15:23Z", "model": "bytedance/seedance-2.5", "tag": "orch_guitar_t53", "job": "mergemain/orch_guitar_t53-20a5d1e87c", "event": "result", "ok": true, "est_usd": 1.156, "where": "cloud"}
 {"ts": "2026-10-25T14:16:26Z", "model": "bytedance/seedance-2.5", "tag": "ch2_gone_close_t53", "job": "mergemain/ch2_gone_close_t53-88792288a9", "event": "result", "ok": true, "est_usd": 1.8496, "where": "cloud"}
+{"ts": "2026-10-25T22:07:19Z", "model": "google/nano-banana-pro", "tag": "fixpatch_dr_duilian", "job": "mergemain/fixpatch_dr_duilian-aebfc94a82", "event": "submit", "ok": null, "est_usd": 0.1344, "where": "cloud"}
+{"ts": "2026-10-25T22:08:11Z", "model": "google/nano-banana-pro", "tag": "plate_lf_wushu_gold_v5", "job": "mergemain/plate_lf_wushu_gold_v5-4e44cef48d", "event": "submit", "ok": null, "est_usd": 0.1344, "where": "cloud"}
+{"ts": "2026-10-25T22:08:12Z", "model": "google/nano-banana-pro", "tag": "plate_lf_wushu_gold_v5", "job": "mergemain/plate_lf_wushu_gold_v5-02c134dbeb", "event": "submit", "ok": null, "est_usd": 0.1344, "where": "cloud"}
+{"ts": "2026-10-25T22:14:25Z", "model": "google/nano-banana-pro", "tag": "fixpatch_dr_duilian", "job": "mergemain/fixpatch_dr_duilian-aebfc94a82", "event": "result", "ok": true, "est_usd": 0.1344, "where": "cloud"}
+{"ts": "2026-10-25T22:14:26Z", "model": "google/nano-banana-pro", "tag": "fixpatch_dr_dl_close", "job": "mergemain/fixpatch_dr_dl_close-b634b8bd47", "event": "submit", "ok": null, "est_usd": 0.1344, "where": "cloud"}
+{"ts": "2026-10-25T22:14:50Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_wide_t53", "job": "mergemain/dr_dl_wide_t53-22b50b2f35", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-25T22:14:51Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_wide_t54", "job": "mergemain/dr_dl_wide_t54-fca0607355", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
