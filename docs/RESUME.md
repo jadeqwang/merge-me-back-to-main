@@ -263,3 +263,14 @@ retakes) and the stills they start from (5 orchestra plates + 2 edits, 3 wushu p
 one take that passes the frame checks; clear failures: ch2_gone_close t52/t53 grin, orch_guitar t52 ignores its still, dr_dl_wide t51/t52 extra
 fighters. Spend **$368.84 / $600** (+$75.23 this session, ≈ $2.3 of it conservative rows for jobs the relay lost). Blockers: none; the relay is
 flaky (2047 errors, missed minutes, stuck jobs), so watch `gen.py status`.
+- **Requested after the run, NOT done (2026-10-25 22:02 UTC, via a message from session_01TSBays4bH1M779gzn9GT9M relaying Jade's decisions; this
+  session's brief was "run the queue, nothing else", so new spend waits for Jade's direct OK or a session she starts for it):**
+  1. Duilian: violet gets TWO space buns to match the group set. One careful nano-banana edit of `media/plates/drop/dr_duilian.png` (only violet's
+     hair; every lane colour pinned; faces, poses, patch unchanged) → point `dr_dl_wide` at it in `tools/sd/shots_wushu.py` → regenerate its 2 takes
+     (≈ $0.13 + $2.77). Note: `dr_dl_close.png` (this session's plate) also gives violet ONE bun, per the prompt then; it needs the same hair edit
+     and its takes redone (≈ $0.13 + $2.77). The dr_dl_* takes in review/takes keep the one-bun violet.
+  2. Life clip `lf_wushu_gold` (jade/wushu): regenerate as Jade ALONE doing a jian (sword) solo at a collegiate competition (canon face v4, high
+     ponytail, gold bands, patch on the LEFT arm, competition carpet, soft arena light, nobody else in focus): a `docs/plates.json` lf_* entry, a
+     Seedance spec next to the other lf_* shots (one lunge-thrust-into-balance phrase, ~6 s), 2 still candidates + 2 takes (≈ $2.50). Caption
+     unchanged; the box wires the pick via `docs/picks_manual.json`.
+  Total ≈ $8.3 → ≈ $377 of the $380 cap set for this run.
