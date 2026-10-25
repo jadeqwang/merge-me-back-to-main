@@ -60,7 +60,7 @@ Spend ≈ $300 of the $600 cap (`tools/gen/spend.py`). Everything below is commi
   (envelope correlation from tools/sync/lipsync.py, checked against word strips `work/takes/*_ws.jpg` where it disagreed).
 - Drop = wushu: changquan group set (bar 89), duilian exchange, her jian solo (bar 95), duilian into the salute line, then the fold
   (`tools/sd/shots_drop.py`, plates `media/plates/drop/`).
-- Folds: two gestures, `?fold=palms` (default) | `?fold=reach`; centre copy has the canon face/hair.
+- Folds: two gestures, `?fold=reach` (one hand; default since Jade picked it 2026-10-25) | `?fold=palms`; centre copy has the canon face/hair.
 - Home shot on the final "Back to main…" (out_main, v2 line 25), then the git-log card.
 - Outro: orchestra of Jades (piano, violin, electric guitar, conductor) replaces the K-pop afterglow (`tools/sd/shots_outro.py`).
 - Post-credits (14.5 s after the song): adult Jade beside 5-year-old Jade at the frosted window, palm-to-palm light; the idea arrives in
@@ -68,11 +68,11 @@ Spend ≈ $300 of the $600 cap (`tools/gen/spend.py`). Everything below is commi
   idea"). Sound (`tools/mix.py` v2 → `out/mix_v4.wav`): one chime as the light passes, then 1-2-4-8 chimes as the shape blooms.
   **The Hilbert Hotel lobby is cut** (Jade, 2026-10-24: "window only"; v1 keeps it).
 - Figures are glyph-built (no LED dot grid): `figGlyph` in `engine/src/scenes/lattice.js`; `?figlook=led` restores the old look.
-- Her earlier films in the life montage, both ways for her to choose: `?pv=flash` | `?pv=screens` (default off).
+- Her earlier films in the life montage: `?pv=screens` (default since Jade picked it 2026-10-25) | `?pv=flash` | `?pv=off`.
 
 **Waiting on Jade** (review page `out/final/watch.html`, local):
-1. Fold gesture: palms vs reach (both folds).
-2. Earlier films: flash vs screens vs neither.
+1. ~~Fold gesture~~ → reach (one hand), Jade 2026-10-25.
+2. ~~Earlier films~~ → screens, Jade 2026-10-25.
 3. The full v4 film: lip-sync by ear (esp. 0:28 split, lag 1.21 s measured; 3:49 "Every life", lag 0.12 s by word strip), the drop, orchestra, post-credits.
 
 **Known nits / next ideas**

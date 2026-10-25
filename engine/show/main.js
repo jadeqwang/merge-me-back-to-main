@@ -7,8 +7,8 @@ const B = T.bar, W = T.words, bb = T.bb;
 const ws = (id, k = 0) => W(id)[k < 0 ? W(id).length + k : k].start, we = (id, k = -1) => W(id)[k < 0 ? W(id).length + k : k].end;   // word start / end
 const SONG_END = T.songEnd();
 const PC_LEN = 14.5;   // post-credits length after the song (tools/mix.py PC)
-// the fold's last gesture (Jade 2026-10-24: try both): ?fold=palms (open palms toward camera, default) | reach (one hand reaching out)
-const FOLD = new URLSearchParams(location.search).get('fold') || 'palms';
+// the fold's last gesture (Jade 2026-10-25 picked one hand): ?fold=reach (one hand reaching out, default) | palms (open palms toward camera)
+const FOLD = new URLSearchParams(location.search).get('fold') || 'reach';
 const fmt = (n) => n.toLocaleString('en-US');
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const ss = (a, b, x) => { const k = clamp((x - a) / (b - a)); return k * k * (3 - 2 * k); };
@@ -23,7 +23,7 @@ function spline(K) {
     const h = X[i + 1] - X[i], t = (x - X[i]) / h, t2 = t * t, t3 = t2 * t;
     return (2 * t3 - 3 * t2 + 1) * Y[i] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * Y[i + 1] + (t3 - t2) * h * m[i + 1]; };
 }
-const TITLE = 'MERGE', SUBTITLE = 'merge me back to main';   // the song's title (one word) and its hook
+const TITLE = 'MERGE';   // the song's title (one word); no subtitle (Jade 2026-10-25; v1 had the hook "merge me back to main" under it)
 const L = { orange: '#FF7A1A', rose: '#FF5FA2', sky: '#6FB6FF', mint: '#4FE3B0', gold: '#FFD23F', violet: '#A57BFF', white: '#F4F4F8' };
 // the branches are her lives: [shot, branch, lane, commit message, hash]
 const LIFE = [
@@ -37,7 +37,7 @@ const LIFE = [
   ['lf_band_rose', 'jade/robot-ninja-apocalypse', L.rose, 'turned the amp up', '9be44a1'],
   ['lf_house_gold', 'jade/chez-jj', L.gold, 'a full house at 2am, everyone shipping', 'a41e7d0'],
   ['lf_stage_sky', 'jade/open-source', L.sky, 'the live demo worked', 'c8f2a61'],
-  ['lf_home_mint', 'jade/home', L.mint, 'finished the Copernican model at 10:30pm', '2e7b0c4'],
+  ['lf_home_mint', 'jade/home', L.mint, 'taught kids the Copernican model at 10:30pm', '2e7b0c4'],
 ];
 const life = (id) => LIFE.find((x) => x[0] === id);
 // Lip-synced takes (sung to a vocal audio ref; tools/sd/batch.py SINGERS) -> the lyric line ids they sing.
@@ -150,13 +150,14 @@ const S = [];
   const tB0 = B(1) + 3 * (B(2) - B(1)) / 4, tC0 = B(SPLIT0) - beat;   // window | blow | tree (cuts on beat 4 of bar 1 and beat 4 of bar 2)
   // the takes: the window shot ends on her lifting her palm (clip end, 6.0 s); the blow lands the exhale + strand lift right before the swarm cut
   const winS0 = tB0 - 6.0, blowS0 = tC0 - 3.05, FPS_CH0 = 24;
-  // the opening lines, from her poem "Wednesday morning interlude" (Spaces Left Blank): typed small, top-left, gone before the title slam
+  // the opening lines, from her poem "Wednesday morning interlude" (Spaces Left Blank): small, top-left, all three on screen from frame 0 (Jade
+  // 2026-10-25: typed in, reading fought the girl's action for eyeballs; no fade-in, the plate starts hard too), gone before the title slam
   const POEM = ["The little girl's resting oblivious face", 'studies the delicate fractal crystals', 'forming on the window.'];
   const poem = (g, t) => {
-    const t0 = .35, cps = 22, out = B(8) + beat, k = 1 - clamp((t - out) / .8); if (k <= 0 || t < t0) return;
-    let left = (t - t0) * cps; g.save(); g.globalAlpha = k; g.font = '400 34px ISI'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+    const out = B(8) + beat, k = 1 - clamp((t - out) / .8); if (k <= 0) return;
+    g.save(); g.globalAlpha = k; g.font = '400 34px ISI'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
     g.shadowColor = 'rgba(4,5,12,.9)'; g.shadowBlur = 10; g.fillStyle = 'rgba(255,241,220,.92)';
-    POEM.forEach((ln, i) => { if (left <= 0) return; g.fillText(ln.slice(0, Math.floor(left)), 72, 90 + i * 44); left -= ln.length + 6; });
+    POEM.forEach((ln, i) => g.fillText(ln, 72, 90 + i * 44));
     g.restore();
   };
   // counter + poem + title: one function of t, drawn by every intro shot
@@ -177,9 +178,7 @@ const S = [];
       c.save(); c.globalAlpha = k * (1 - out); c.textAlign = 'center'; c.fontStretch = 'expanded';
       c.shadowColor = '#FFC46B'; c.shadowBlur = 30 * Math.exp(-(t - tt) * 2) + 5 * lift;
       c.translate(960, y); c.scale(s, s);
-      c.fillStyle = '#FFF1DC'; c.font = '900 300px ARCH'; c.fillText(TITLE, 0, 70); c.restore();
-      c.save(); c.globalAlpha = k * (1 - out); c.textAlign = 'center'; c.font = '500 30px JBM'; c.fillStyle = 'rgba(255,241,220,.85)';
-      const sy = y + (150 * s), ss2 = 1 - .25 * lift; c.translate(960, sy + 16 * lift); c.scale(ss2, ss2); c.fillText(SUBTITLE, 0, 0); c.restore();
+      c.fillStyle = '#FFF1DC'; c.font = '900 300px ARCH'; c.fillText(TITLE, 0, 70); c.restore();   // just MERGE (Jade 2026-10-25: no old-title subtitle)
     }
   };
   // frost on the glass: fern dendrites (the tree before the tree) drawn in light over the plate's frost, growing node by node
@@ -317,9 +316,9 @@ const MONTAGE0 = ws(4) - .18, MONTAGE1 = ws(5) - .51;   // first cut (just befor
   const w = lines(4), beats = T.beats().filter((b) => b >= B(28) - .02 && b < MONTAGE1);
   const len = [2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 2];
   let k = 0; const cut = [MONTAGE0]; len.forEach((n) => { k += n; cut.push(k < beats.length ? beats[k] : MONTAGE1); }); cut[cut.length - 1] = MONTAGE1;
-  // her earlier films (Jade 2026-10-24: see both ways, then decide): ?pv=flash = a half-beat flash of each at the end of four 2-beat cuts;
-  // ?pv=screens = the four as a 2x2 wall of glowing screens behind her in the live-demo branch. Default: neither.
-  const PV = new URLSearchParams(location.search).get('pv') || 'off';
+  // her earlier films (Jade 2026-10-25 picked screens): ?pv=screens (default) = the four as a 2x2 wall of glowing screens behind her in the
+  // open-source live-demo branch; ?pv=flash = a half-beat flash of each at the end of four 2-beat cuts; ?pv=off = neither.
+  const PV = new URLSearchParams(location.search).get('pv') || 'screens';
   const FLASH = { 0: ['pv_moongazing', 'jade/moongazing'], 3: ['pv_orbital', 'jade/orbital-sunrise'], 6: ['pv_rareearth', 'jade/rare-earth'], 10: ['pv_rewind', 'jade/rewind'] };
   const SCREENS = ['pv_moongazing', 'pv_orbital', 'pv_rareearth', 'pv_rewind'];
   LIFE.forEach(([id, br, lane], i) => {
