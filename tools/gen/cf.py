@@ -14,7 +14,8 @@ Every call (ok or failed) is appended to media/genlog.jsonl:
   {ts, model, tag, prompt_sha, prompt (first 300 chars), input (blobs summarised), est_usd, est_basis,
    out[], secs, ok, error, usage, request_id}
 
-Video models are long-running: use tools/gen/gen.py (async relay queue). cf.py refuses them unless
+Video models are long-running: use tools/gen/gen.py (async relay queue). GEN_IMAGES_VIA_RELAY=1 sends generate()'s image calls
+through that queue too (cloud sessions, whose direct calls time out at ~30 s); the default stays the direct call. cf.py refuses them unless
 --allow-video / allow_video=True (a direct sync call can hang for minutes and is billed anyway).
 Every call is checked against the project spend cap first (tools/gen/spend.py, $400 default).
 
@@ -361,6 +362,11 @@ def generate(model, inp, out_path, tag="", dry_run=False, allow_video=False, tim
     if dry_run:
         print(json.dumps({"dry_run": True, "model": model, "est_usd": est, "est_basis": why, "valid": True}))
         return []
+    if os.environ.get("GEN_IMAGES_VIA_RELAY") == "1":   # cloud: route through the relay queue (gen.py logs + checks the cap itself)
+        import gen
+        paths = gen.run_image(model, inp, out_path, tag)
+        print(f"[cf] {model} via relay -> {', '.join(os.path.relpath(x, ROOT) for x in paths)}  (${est} est)", file=sys.stderr)
+        return paths
     spend.check(est, f"{model} {tag}")
     t0 = time.time()
     try:
