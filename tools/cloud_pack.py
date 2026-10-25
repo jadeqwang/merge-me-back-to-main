@@ -99,13 +99,18 @@ for tk in sorted(singing | {k for k in keep_mp4 if k.startswith(("out_orch", "pc
 # refs the generation tools use
 for r in ("media/style/r6/canon_face_front.png", "media/style/r6/canon_face_34.png", "media/style/r7/turn_gpt_patch.png", "media/style/r7/bun_nbp.jpg",
           "media/style/canon_v4/canon_face.png", "media/style/canon_v4/canon_face_crop.jpg", "media/style/canon_v4/canon_eyes_crop.jpg",
-          "media/style/canon_v4/violet_test/violet_ref.png"):
+          "media/style/canon_v4/violet_test/violet_ref.png", "media/style/r7/patch_34.png"):
     p = os.path.join(ROOT, r)
     if os.path.exists(p): jpg(p, os.path.join(OUT, "refs", os.path.splitext(r.replace("media/style/", "").replace("/", "__"))[0] + ".jpg"))
 for f in sorted(os.listdir(os.path.join(ROOT, "media/plates/face_v4"))):
     if f.endswith(".png"): jpg(os.path.join(ROOT, "media/plates/face_v4", f), os.path.join(OUT, "refs", "face_v4__" + f[:-4] + ".jpg"))
+# the wushu drop start plates (finals + a/b candidates; not cand/ or prompts/)
+os.makedirs(os.path.join(OUT, "stills/drop"), exist_ok=True)
+for f in sorted(os.listdir(os.path.join(ROOT, "media/plates/drop"))):
+    if f.endswith(".png"): jpg(os.path.join(ROOT, "media/plates/drop", f), os.path.join(OUT, "stills/drop", f[:-4] + ".jpg"))
 # audio (Jade OK'd both public, 2026-10-24)
-for src, dst in (("inputs/Merge.wav", "Merge_320k.mp3"), ("analysis_v2/stems/vocals.wav", "Merge_vocals_320k.mp3")):
+for src, dst in (("inputs/Merge.wav", "Merge_320k.mp3"), ("analysis_v2/stems/vocals.wav", "Merge_vocals_320k.mp3"),
+                 ("analysis_v2/stems/instrumental.wav", "Merge_instrumental_320k.mp3")):
     subprocess.run([FF, "-v", "error", "-y", "-i", os.path.join(ROOT, src), "-c:a", "libmp3lame", "-b:a", "320k", os.path.join(OUT, "audio", dst)], check=True)
 
 with open(os.path.join(OUT, "manifest.md"), "w") as f:
@@ -119,7 +124,9 @@ with open(os.path.join(OUT, "manifest.md"), "w") as f:
     f.write("\nNotes\n- 1:07 is the forktree bookend (`intro_up_t5`, Jade seen from above while the tree forks), a real take, NOT a still fallback; its face predates v4.\n"
             "- 1:46 is the breakdown panels: the full-frame back is `bd_float_t1` (pre-v4 face); the panes are her life clips (the home one omitted).\n"
             "- 4:16-4:17 is the git-log card (engine-drawn).\n- picks/: work/picks.json + docs/picks_manual.json + docs/lags.json. sync/: .sync.json/.labial.json of the picked singing takes.\n"
-            "- refs/: canon v4 (canon_v4__*), older r6/r7 refs, and every face_v4 plate. audio/: the revised song and its vocal stem (Jade approved public).\n")
+            "- refs/: canon v4 (canon_v4__*), older r6/r7 refs (incl. the patch ref r7__patch_34), and every face_v4 plate.\n"
+            "- stills/drop/: the wushu drop start plates (dr_set, dr_duilian, dr_jian = finals; _a/_b = candidates).\n"
+            "- audio/: the revised song, its vocal stem and its instrumental stem, 320k mp3 (Jade approved public).\n")
 shutil.copy(os.path.join(ROOT, "work/edl_v4.json"), os.path.join(OUT, "edl_v4.json"))
 tot = sum(os.path.getsize(os.path.join(dp, fn)) for dp, _, fns in os.walk(OUT) for fn in fns)
 big = [(fn, os.path.getsize(os.path.join(dp, fn))) for dp, _, fns in os.walk(OUT) for fn in fns if os.path.getsize(os.path.join(dp, fn)) > 30e6]

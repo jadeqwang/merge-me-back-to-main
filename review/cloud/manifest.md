@@ -41,4 +41,6 @@ Notes
 - 1:46 is the breakdown panels: the full-frame back is `bd_float_t1` (pre-v4 face); the panes are her life clips (the home one omitted).
 - 4:16-4:17 is the git-log card (engine-drawn).
 - picks/: work/picks.json + docs/picks_manual.json + docs/lags.json. sync/: .sync.json/.labial.json of the picked singing takes.
-- refs/: canon v4 (canon_v4__*), older r6/r7 refs, and every face_v4 plate. audio/: the revised song and its vocal stem (Jade approved public).
+- refs/: canon v4 (canon_v4__*), older r6/r7 refs (incl. the patch ref r7__patch_34), and every face_v4 plate.
+- stills/drop/: the wushu drop start plates (dr_set, dr_duilian, dr_jian = finals; _a/_b = candidates).
+- audio/: the revised song, its vocal stem and its instrumental stem, 320k mp3 (Jade approved public).
