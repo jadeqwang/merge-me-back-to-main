@@ -203,3 +203,9 @@ Nothing was animated: the cloud token can't write Workers KV (401), so Seedance 
 between this container and Cloudflare, so only 3 of ~44 came back. Kept: the 3:09 jacket-back fix (band gone, patch on the left arm only) and
 one orchestra wide candidate (violet composer). Spend: $284.82 logged, plus $8.79 booked conservatively in case Cloudflare billed the timed-out
 attempts (ledger $293.61 / $600). To unblock: add **Workers KV Storage: Edit** to the cloud token, or let the box run the queue when you're back.
+
+### v5a QA fixes (cloud engine session, 2026-10-25; nothing rendered)
+Engine/EDL only, no takes, no spend. 1:07 glyph face readable (fork-tree cell = copy height / 160, dark parts filled); 1:41 `bd_float` back
+no longer blown (back `figGain .3`); orchestra stand-in close-ups are 2D crops (`zoom`, no parallax), no tearing, v5 orchestra stays default;
+slowed clocks (< 0.9x) blend frames; minors (2:26 scrim, 4:18 log, 3:00.8 insert/flash, poem scrim). edl_check: 0 exceptions, 0 held clocks
+(default, orch=v4, drop=v4/v5, figlook=led). **Next render:** eyeball V5_BOX_RUNSHEET §1.2's ranges.
