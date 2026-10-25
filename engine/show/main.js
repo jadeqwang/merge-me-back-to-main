@@ -451,19 +451,86 @@ const HIT52 = bb(52, 2.26);
     for (let y = -R; y <= R; y += 12) { const w = Math.sqrt(Math.max(0, R * R - y * y)); const gap = y > R * .1 && ((y / 12) | 0) % 3 === 0; if (gap) continue;
       for (let x = -w; x <= w; x += 12) { const f = (y + R) / (2 * R); g.fillStyle = `rgba(${255},${Math.round(200 - 110 * f)},${Math.round(80 + 80 * f)},${.85 * k})`;
         g.beginPath(); g.arc(cx + x, cy + y, 3.6 * (1 - .4 * f), 0, Math.PI * 2); g.fill(); } } };
+  // the poster's git graph: main up the middle, six lanes fork off it and merge back. Lane i: even = left of main; commit dots j = 1..4 (1 = lowest).
+  const GLANES = [L.rose, L.sky, L.mint, L.gold, L.violet, L.white], GTOP = 120, GBOT = 1000;
+  const laneGeo = (i) => { const r = Math.floor(i / 2); return { off: (90 + 80 * r) * (i % 2 ? 1 : -1), y0: GBOT - 60 - 70 * r, y1: GTOP + 160 + 70 * r }; };
+  const lanePt = (i, u) => { const { off, y0, y1 } = laneGeo(i); return [960 + off * ss(0, .18, u) * (1 - ss(.82, 1, u)), y0 + (y1 - y0) * u]; };
+  const dotU = (j) => .18 + .64 * j / 5;
+  const laneK = (i, t) => ss(B(81) + .3 * i, B(83) + .3 * i, t);   // how much of lane i is drawn (bars 81–83, staggered)
   const graph = (g, t, k) => {   // main line with lanes forking out and merging back, drawn on
-    const cx = 960, top = 120, bot = 1000, lanes = [L.rose, L.sky, L.mint, L.gold, L.violet, L.white];
     g.save(); g.globalAlpha = k; g.lineCap = 'round';
     g.strokeStyle = L.orange; g.lineWidth = 6; g.shadowColor = L.orange; g.shadowBlur = 18;
     const grow = ss(B(81), B(83), t);
-    g.beginPath(); g.moveTo(cx, bot); g.lineTo(cx, bot - (bot - top) * grow); g.stroke();
-    lanes.forEach((c, i) => { const side = i % 2 ? 1 : -1, off = (90 + 80 * Math.floor(i / 2)) * side, y0 = bot - 60 - 70 * Math.floor(i / 2), y1 = top + 160 + 70 * Math.floor(i / 2);
-      const kk = ss(B(81) + .3 * i, B(83) + .3 * i, t); if (kk <= 0) return;
+    g.beginPath(); g.moveTo(960, GBOT); g.lineTo(960, GBOT - (GBOT - GTOP) * grow); g.stroke();
+    GLANES.forEach((c, i) => { const kk = laneK(i, t); if (kk <= 0) return;
       g.strokeStyle = c; g.shadowColor = c; g.lineWidth = 4; g.beginPath();
-      const N = 60; for (let j = 0; j <= N * kk; j++) { const u = j / N, yy = y0 + (y1 - y0) * u, b = ss(0, .18, u) * (1 - ss(.82, 1, u)), xx = cx + off * b; j ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
-      g.stroke(); g.fillStyle = c; for (let j = 1; j < 5; j++) { const u = .18 + .64 * j / 5; if (u > kk) break; g.beginPath(); g.arc(cx + off, y0 + (y1 - y0) * u, 7, 0, 7); g.fill(); }
+      const N = 60; for (let j = 0; j <= N * kk; j++) { const [xx, yy] = lanePt(i, j / N); j ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+      g.stroke(); g.fillStyle = c; for (let j = 1; j < 5; j++) { const u = dotU(j); if (u > kk) break; const [xx, yy] = lanePt(i, u); g.beginPath(); g.arc(xx, yy, 7, 0, 7); g.fill(); }
       g.stroke(); });
     g.restore(); };
+  // her poem "Privilege Escalation" (Spaces Left Blank), first stanza: "Every victory · chess move · miscalculation · analysis mode", set as
+  // notation on the graph (Jade 2026-10-25: it was four full-frame slabs, too big). The moves land on the kicks, each on its own branch, in two
+  // columns either side of the sun like a scoresheet; the win and the misstep are on different lives, on opposite sides of main. Her words in
+  // ISI (the voice and size of the next stanza), marks in JBM in the branch's colour ("!!" brilliant, "?!" interesting; never "??").
+  // "analysis mode" is not a move but the state they're played in (Jade): the graph calculates from the moment it starts drawing (a candidate
+  // line runs up every lane, small evals flicker at the commits it passes, an engine header counts depth over six lines), and the words type
+  // into that header on the fourth kick, keeping the poem's order and naming what has been running all along.
+  const A0 = B(81), AN = bb(84, 2), BT = T.beatLen(81), RUN = 4 * BT;   // a candidate line runs a lane in one bar
+  const MOVES = [['every victory', '!!', 4, 4, B(83)], ['chess move', '', 5, 3, bb(83, 2)], ['miscalculation', '?!', 3, 1, B(84)]];   // [words, mark, lane, dot, at]
+  const EVALS = ['+0.4', '+0.2', '=', '+0.9', '+0.3', '+1.1', '+0.6', '=', '−0.2', '+0.7', '+1.4', '+0.5'];   // mostly good lines; one small minus
+  const marked = (i, j) => MOVES.some((m) => m[2] === i && m[3] === j);
+  const stanza = (g, t, k) => {
+    if (t < A0) return;
+    const on = clamp((t - A0) / .4) * k, hit = t >= AN ? Math.exp(-(t - AN) * 4) : 0;
+    g.save(); g.lineCap = 'round';
+    // analysis: one candidate line per lane (head + short tail, on the drawn part); the last commit it passed flashes and shows its eval
+    // (one eval per lane at a time, so at most six small numbers)
+    GLANES.forEach((c, i) => {
+      const kk = laneK(i, t); if (kk <= 0) return;
+      const ph = (t - A0) / RUN + i * .37, uh = ph % 1;
+      if (uh <= kk) {
+        g.fillStyle = c; g.shadowColor = c;
+        for (let s = 5; s >= 0; s--) { const u = uh - s * .014; if (u < 0) continue; const [x, y] = lanePt(i, u);
+          g.globalAlpha = on * (s ? .35 * (1 - s / 6) : .95); g.shadowBlur = s ? 0 : 14 + 10 * hit; g.beginPath(); g.arc(x, y, s ? 2.4 : 4 + 2.5 * hit, 0, 7); g.fill(); }
+      }
+      let j = 4; while (j > 0 && dotU(j) > uh) j--;
+      const lap = Math.floor(ph) - (j ? 0 : 1); if (!j) j = 4;                 // before the first dot: the previous lap's top commit
+      const u = dotU(j), since = (ph - lap - u) * RUN;
+      if (lap < 0 || u > kk || marked(i, j) || since > .8) return;
+      const a = on * (1 - since / .8), [x, y] = lanePt(i, u);
+      g.shadowBlur = 0; g.globalAlpha = a * .5; g.fillStyle = '#FFF1DC'; g.beginPath(); g.arc(x, y, 3 + 9 * (1 - since / .8), 0, 7); g.fill();   // the commit flashes
+      g.font = '600 17px JBM'; g.textBaseline = 'middle'; g.textAlign = i % 2 ? 'right' : 'left';
+      g.shadowColor = 'rgba(4,5,12,.95)'; g.shadowBlur = 6; g.globalAlpha = a * .85; g.fillStyle = c;   // its eval, on the side toward main
+      g.fillText(EVALS[(i * 5 + j * 3 + lap) % EVALS.length], x + (i % 2 ? -14 : 14), y);
+    });
+    // the engine header over the graph: › prompt and cursor, depth ticking up on the beats over six lines (one per branch); the name types in on AN
+    const HX0 = 660, HX1 = 1260, HY = 86;
+    g.globalAlpha = on; g.shadowBlur = 0; g.textBaseline = 'alphabetic';
+    g.strokeStyle = 'rgba(255,241,220,.28)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(HX0, HY + 16); g.lineTo(HX1, HY + 16); g.stroke();
+    g.font = '600 26px JBM'; g.textAlign = 'left'; g.fillStyle = L.orange; g.fillText('›', HX0, HY);
+    const name = 'analysis mode', typed = t >= AN ? name.slice(0, Math.ceil(clamp((t - AN) * 28 / name.length) * name.length)) : '';
+    g.fillStyle = 'rgba(255,241,220,.94)'; g.fillText(typed + (Math.floor(t * 2) % 2 ? '' : '▍'), HX0 + 26, HY);
+    g.font = '500 18px JBM'; g.textAlign = 'right'; g.fillStyle = 'rgba(255,241,220,.55)'; g.fillText(`depth ${8 + Math.floor((t - A0) / BT)} · 6 lines`, HX1, HY);
+    // the moves: the commit rings on the kick, a short leader out to its column, her words
+    MOVES.forEach(([w, mark, i, j, at]) => {
+      const a = clamp((t - at + .02) / .12) * k; if (a <= 0) return;
+      const [nx, ny] = lanePt(i, dotU(j)), left = i % 2 === 0, sd = left ? -1 : 1, c = GLANES[i], pop = Math.exp(-(t - at) * 7);
+      const col = left ? 674 : 1246;   // the scoresheet columns, just outside the outer lanes
+      g.save();
+      if (!left) { const gr = g.createRadialGradient(col + 200, ny, 0, col + 200, ny, 280);   // right-hand words sit over the dimmed panes
+        gr.addColorStop(0, `rgba(4,5,12,${.6 * a})`); gr.addColorStop(1, 'rgba(4,5,12,0)'); g.fillStyle = gr; g.fillRect(col - 60, ny - 150, 600, 300); }
+      g.globalAlpha = a; g.strokeStyle = c; g.shadowColor = c; g.shadowBlur = 12 + 18 * pop; g.lineWidth = 2.5;
+      g.beginPath(); g.arc(nx, ny, 15 + 12 * pop, 0, 7); g.stroke();
+      g.shadowBlur = 0; g.lineWidth = 2; g.globalAlpha = a * .7; g.beginPath(); g.moveTo(nx + 17 * sd, ny); g.lineTo(col, ny); g.stroke();
+      g.globalAlpha = a; g.textBaseline = 'middle'; g.textAlign = left ? 'right' : 'left';
+      let x = col + 12 * sd;
+      if (left && mark) { g.font = '700 30px JBM'; g.fillStyle = c; g.fillText(mark, x, ny - 6); x -= g.measureText(mark).width + 10; }
+      g.font = '400 54px ISI'; g.fillStyle = '#FFF1DC'; g.shadowColor = 'rgba(4,5,12,.95)'; g.shadowBlur = 14; g.fillText(w, x, ny + 2);
+      if (!left && mark) { const mw = g.measureText(w).width; g.shadowBlur = 0; g.font = '700 30px JBM'; g.fillStyle = c; g.fillText(mark, x + mw + 10, ny - 6); }
+      g.restore();
+    });
+    g.restore();
+  };
   S.push({ t0, t1, kind: 'panels', panels, cam: () => ({}),
     text: (ty, t) => {
       const g = ty.g, flash = Math.exp(-(t - t0) * 6);
@@ -480,9 +547,8 @@ const HIT52 = bb(52, 2.26);
       // poster homage, bars 81–85
       const pk2 = ss(B(81), B(81) + .5, t) * (1 - ss(collapse0 - .4, collapse0, t));
       if (pk2 > 0) { sun(g, 960, 470, 300 * (.9 + .1 * ss(B(81), B(85), t)), pk2 * .75); graph(g, t, pk2); }
-      // the slab, on the kicks — from her poem "Privilege Escalation" (Spaces Left Blank): "Every victory · chess move · miscalculation · analysis mode"
-      ty.slam('EVERY VICTORY', t, B(79), B(80), { y: 430, size: 150 }); ty.slam('CHESS MOVE', t, B(80), B(81) - .1, { y: 650, size: 210 });
-      ty.slam('MISCALCULATION', t, B(83), B(84), { y: 160, size: 150, glow: L.gold }); ty.slam('ANALYSIS MODE', t, B(84), collapse0 - .1, { y: 930, size: 170, glow: L.orange });
+      // her poem's first stanza as notation on the graph, in analysis mode (stanza(), above); it fades with the poster into the collapse
+      if (pk2 > 0) stanza(g, t, pk2);
       // …and the poem's next stanza, laid out in her own two-row grid, one life per two beats while every pane collapses into the point
       if (t >= collapse0 && t < strobe0 + .3) {
         const k = clamp((t - collapse0) / .3) * (1 - clamp((t - strobe0) / .3)), cols = [[620, 'musician', 'founder'], [960, 'scientist', 'investor'], [1300, 'poet', 'parent']];
