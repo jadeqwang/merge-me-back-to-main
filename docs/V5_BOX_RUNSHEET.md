@@ -2,7 +2,7 @@
 
 For the Remote Control / box session that turns the cloud integration (branch `claude/wonderful-mccarthy-f90kll`) into the v5 film. The cloud
 generated nothing, rendered nothing and spent nothing. The committed ledger shows **$284.32 of the $600 cap** (`python3 tools/gen/spend.py`;
-CLOUD_HANDOFF says ≈ $300 on the box). The full queue below is **≈ $70**.
+CLOUD_HANDOFF says ≈ $300 on the box). The full queue below is **≈ $70.5**.
 
 Ground rules (HANDOFF.md, CLOUD_HANDOFF.md):
 - **One** `tools/sd/intake.py` at a time.
@@ -25,7 +25,7 @@ Ground rules (HANDOFF.md, CLOUD_HANDOFF.md):
 | 4:17 boring | The living graph replaces the git-log card and the bookend. Lives fork out of main in doublings as live panes, the log is read one commit per beat, everything merges home on the riser, and violet is cherry-picked last. It starts where the home shot ends; the end card keeps its bar-153 hit. No new takes. | `main.js` (4:15–4:24); `panels.js` `clip(t)` | |
 | post-credits: no touching, play once | The **violet branch** (`v2_horizon_t5`, Jade's pick) sends a drawn light toward the horizon. Cut to the intro's window: `ch0_window_t2` clip 0–4.57, slowed to fill the shot (no frozen frame, no replayed palm lift). The light touches the glass once at song end + 6.4 s, and the bifurcation grows from there, one fork per chime group. `mix.py` drops the lone chime, so the 1-2-4-8 cascade starts on the touch. No new takes; `pc_kneel`/`pc_beam` are unused. | `main.js` post-credits, `FX.frost`/`FX.mote`; `scenes/lattice.js` `clip(u,t)`; `tools/mix.py` `PC_TOUCH` | |
 | orchestra: playing should match the music; conductor boring | Seven cuts on the music (impact 137, violin 138, keys 139, composer 140, guitar 141, wide, composer). The **composer is the violet branch** (Jade's pick): bun with two pencils, violet bands, writing each part in violet light (`FX.score`), which lands on its player on the beat and finally folds into one orange line. Lyric captions are unchanged. Each cut uses a reframed v4 take until its new take is picked. | `main.js` ORCH v5; `tools/sd/shots_outro.py` `orch_*` + STILLS | `?orch=v4` |
-| wushu: duilian first, then a medal-grade group set | Gated wiring: duilian 89–92, group set 93–100 (six copies; the group fall on 97; main walks in for the salute). **Default = the v4 drop until all six new shots are picked.** The plan was rebuilt from her real routine on the box (`docs/wushu_v5_design.md` §9, `docs/wushu_groupset_notes.md` on main) and is **pending a v5.1 rework** (plates, EDL block) by a follow-up session. | `main.js` drop block; `tools/sd/shots_wushu.py` | `?drop=v4` / `?drop=v5` |
+| wushu: duilian first, then a medal-grade group set | v5.1, rebuilt from her real routine (box analysis: `docs/wushu_v5_design.md` §9, `docs/wushu_groupset_notes.md`; final map §10). Duilian 89–92 (three pairs). Group set 93–100 by six branch copies in one line, warm and cool alternating: unison burst on 93; jian solo on 95; **the group fall** lands flat on 97.1, bar 97 held still, rise as one on 98.1; the halves trade a phrase (98.3), then cross pairs (99.3); arms-out horse stance on 100.1; main steps into the V's point for the salute on the "ooh". Match cut into the fold at 101. Key frames are pinned to bars (`KEY`, `keyed()`). **Default = the v4 drop until all six new shots are picked.** | `main.js` drop block; `tools/sd/shots_wushu.py` (SHOTS + STILLS); `stills.py` `patch` tool | `?drop=v4` / `?drop=v5` |
 
 Already on the branch before this pass: the poem shown whole from frame 0, the title MERGE alone, the home commit message, the `fold=reach`
 and `pv=screens` defaults, re-measured lags, and the 2:17 build stanza as annotated moves.
@@ -41,7 +41,8 @@ and `pv=screens` defaults, re-measured lags, and the 2:17 build stanza as annota
 ## 2. Generation queue (in this order; ≈ cost at list prices)
 
 Use `--t0=13` for every v5 take: the box is at t12, so tags never collide. The cloud dry-ran all of these specs in a scratch copy with the
-network blocked (`batch.py --dry`, 20 shots × 2 takes = 40 specs, schema OK). The wushu specs were re-checked after the box's v5.1 rebuild.
+network blocked (`batch.py --dry`, 20 shots × 2 takes = 40 specs, schema OK). The six wushu specs were dry-run again after the v5.1 rework
+(12 specs, schema OK, $16.65).
 Every prompt is under Seedance's 2000-character limit; the orchestra report's `orch_wide` was over it and is now trimmed.
 
 | # | step | shot tag(s) | first frame | takes | est. |
@@ -56,20 +57,73 @@ Every prompt is under Seedance's 2000-character limit; the orchestra report's `o
 | 8 | 1:46 canon face | `canonprop` `bd_float` (3 candidates), then `bd_float` (10 s) | `face_v4/bd_float.png` (new) | 3 + 2 | $5.32 |
 | 9 | orchestra stills | `orch_wide`, `orch_line`, `orch_keys`, `orch_pencil`, `orch_guitar` (GPT Image 2.5) | STILLS in `shots_outro.py` | 5 × 2 | $2.33 |
 | 10 | orchestra takes | `orch_wide` 13 s, `orch_line` 5 s, `orch_keys` 5 s, `orch_pencil` 8 s, `orch_guitar` 5 s | `media/plates/outro/orch_*.png` | 2 each | $16.64 |
-| 11 | wushu, **pending v5.1** (see 2.1) | plates `dr_dl_close`, `dr_gs_line6`, `dr_gs_v6` (+ patch fix); takes `dr_dl_wide`, `dr_dl_close`, `dr_gs_ranks`, `dr_gs_tornado` (the fall), `dr_gs_ring` (the pairs), `dr_gs_salute` | `media/plates/drop/` | 3 × 2 + 3; 2 each | $18.08 |
-| | **total** | | | | **≈ $70.0** (≈ $52 without wushu); spend after ≈ $354 of $600 |
+| 11 | wushu v5.1 (see 2.1) | plates `dr_dl_close`, `dr_gs_line6`, `dr_gs_v6` (GPT Image 2.5), then the patch fix (nano-banana-pro); takes `dr_dl_wide` 6 s, `dr_dl_close` 6 s, `dr_gs_ranks` 6 s, `dr_gs_tornado` 7 s (the fall), `dr_gs_ring` 6 s (halves + pairs), `dr_gs_salute` 5 s | `media/plates/drop/` (`dr_dl_wide`: the existing `dr_duilian.png`) | 3 × 2 + 3; 2 each | $18.51 |
+| | **total** | | | | **≈ $70.5** (≈ $52 without wushu); spend after ≈ $355 of $600 |
 
 Unit costs: Seedance 2.5 720p $0.2312/s (6 s $1.39, 8 s $1.85, 13 s $3.01). GPT Image 2.5 ≈ $0.23 per candidate. nano-banana-pro ≈ $0.13.
 
-### 2.1 Wushu queue (step 11), in order
-1. **Fill the swap slots from Jade's competition video** (link in the session chat). Analysis only: never send the video or frames to a
-   model, never commit them. **Done on the box 2026-10-25**: `docs/wushu_groupset_notes.md` (main), `docs/wushu_v5_design.md` §9, and
-   `tools/sd/shots_wushu.py` rebuilt (six copies, the group fall, main in for the salute).
-2. Wait for the v5.1 follow-up session. It reworks the plate prompts (`dr_gs_line6`, `dr_gs_v6`, `dr_dl_close`; §6's 7-copy prompts are
-   out of date) and the drop EDL block. Then generate the plates, fix the patches with lane colours pinned, and generate the takes.
-3. After intake, put the measured key-frame clip times into `KEY` in the drop block of `main.js` (the burst, the fall hitting the water, the
-   horse stance; keep each within ±0.15 s of the plan). Pick all six, and the drop switches to v5 by itself.
-4. Nit, not queued: the life-montage plate `lf_wushu_gold` shows a **sword group set with teammates**, which contradicts decision 4 (the
+### 2.1 Wushu queue (step 11), in order: plates → pick → patch fix → takes (≈ $18.51)
+The box analysed her real set (analysis only; never send the video or its frames to a model, never commit them): `docs/wushu_groupset_notes.md`,
+`docs/wushu_v5_design.md` §9. The v5.1 rework (§10) is in `tools/sd/shots_wushu.py`: the bar map in its docstring, SHOTS, and STILLS for the
+three plates and their patch fixes. Lanes and hair are pinned in every prompt.
+
+1. **Plates**: GPT Image 2.5, 2 candidates each, ≈ $0.24 per candidate with 4–5 refs, **$1.46**. Each command makes 2 calls in parallel,
+   so run them one after another (at most 3 image calls in parallel).
+   ```bash
+   python3 tools/sd/stills.py dr_dl_close dr_gs_line6 dr_gs_v6     # writes media/plates/v5_prompts/<id>.txt and prints these commands
+   $PY tools/plates/gpt_plate.py media/plates/drop/dr_dl_close media/plates/v5_prompts/dr_dl_close.txt --refs=media/plates/drop/dr_duilian.png,media/style/canon_v4/canon_face.png,media/style/r7/turn_gpt_patch.png,media/style/r7/patch_34.png --n=2
+   $PY tools/plates/gpt_plate.py media/plates/drop/dr_gs_line6 media/plates/v5_prompts/dr_gs_line6.txt --refs=media/plates/drop/dr_set.png,media/style/canon_v4/canon_face.png,media/style/r7/turn_gpt_patch.png,media/style/r7/patch_34.png --n=2
+   $PY tools/plates/gpt_plate.py media/plates/drop/dr_gs_v6 media/plates/v5_prompts/dr_gs_v6.txt --refs=media/plates/drop/dr_set.png,media/plates/face_v4/ch1_formation.png,media/style/canon_v4/canon_face.png,media/style/r7/turn_gpt_patch.png,media/style/r7/patch_34.png --n=2
+   ```
+2. **Pick** one candidate per plate. Pick before the patch fix, so only the chosen plate is edited. Check each one for:
+   - the copy count: `dr_dl_close` 6 (the front pair plus two small pairs); `dr_gs_line6` 6, with no orange; `dr_gs_v6` 6 in the V, plus
+     orange just behind the empty point;
+   - the lane order left to right: white, mint, rose, (orange), sky, gold, violet;
+   - hair per lane, as in the docstring;
+   - orange's canon face (`docs/canon_face_v4.md` checks);
+   - heads and feet clear of the 16:9 crop (80 px off the top and the bottom);
+   - `dr_gs_v6` framed like `face_v4/ch1_formation.png`, with the sun behind the point (the match cut at 101).
+   ```bash
+   python3 tools/sd/stills.py dr_dl_close --pick=a       # a or b -> media/plates/drop/dr_dl_close.png (1536x864); same for the other two
+   python3 tools/sd/stills.py dr_gs_line6 --pick=a
+   python3 tools/sd/stills.py dr_gs_v6 --pick=a
+   ```
+3. **Patch fix**: nano-banana-pro, one call at a time, every lane colour pinned in the prompt, 3 × $0.134 = **$0.40**.
+   ```bash
+   python3 tools/sd/stills.py dr_dl_close_patch dr_gs_line6_patch dr_gs_v6_patch
+   ```
+   For each plate it prints: keep the pick (`<id>_nopatch.png`), `fix_patch.py drop/<id> --prompt=...`, check `media/plates/fix/<id>.jpg`,
+   save it back over `media/plates/drop/<id>.png` as a real PNG, and `rm` the cached first frame.
+4. **Takes**: Seedance 720p, 2 each, 6 + 6 + 6 + 7 + 6 + 5 = 36 s per set, **$16.65**. Dry-run only once the plates are final: a cached first
+   frame in `media/gen/refs/` wins over a newer plate. `dr_dl_wide` starts from the existing `dr_duilian.png`, the same first frame as
+   dr_duilian_t1/t2.
+   ```bash
+   $PY tools/sd/batch.py dr_dl_wide dr_dl_close dr_gs_ranks dr_gs_tornado dr_gs_ring dr_gs_salute --takes=2 --t0=13 --dry
+   $PY tools/sd/batch.py dr_dl_wide dr_dl_close dr_gs_ranks dr_gs_tornado dr_gs_ring dr_gs_salute --takes=2 --t0=13
+   git add docs/spend_ledger.jsonl && git commit -m "ledger: wushu v5.1 plates and takes" && git push
+   $PY tools/gen/gen.py wait mergemain/...          # the job ids batch.py printed
+   ```
+5. **Intake, picks, key frames.** Run one intake at a time.
+   - Pick for: six bodies (seven once orange steps in) in every frame, the unison frames, the fall flat and still, the rise together, and
+     the right fist into the left palm.
+   - Write the picks to `docs/picks_manual.json`, then run `picks.py`. Once all six are picked, the drop switches to v5 by itself.
+   - Read the key frames off each strip and put them into `KEY` in the drop block of `main.js`. Keep each within ±0.15 s of the plan:
+
+     | take | key frame | planned clip time | lands on |
+     |---|---|---|---|
+     | `dr_gs_ranks` | the burst into bow stance | 1.739 | 93.1 |
+     | `dr_gs_tornado` | the six hit the water | 3.478 | 97.1 |
+     | `dr_gs_tornado` | the first push-up of the rise | 5.218 | 98.1 |
+     | `dr_gs_salute` | the horse stance | 1.739 | 100.1 |
+     | `dr_gs_salute` | fist meets palm | 2.609 | 100.3, the "ooh" |
+
+     Between two keys, `keyed()` stretches or squeezes the clip so that bar 97 is all stillness and the salute lands on the "ooh". Keep each
+     stretch within 0.6–1.5×.
+   - Re-place each new cut's sun x,y on the picked stills; the values in the block are placeholders. Keep `dr_gs_salute` near the fold's
+     [960, 430].
+   - Render 150–182 s with `drop=v5`.
+   - If a take fails, use the fallbacks in `docs/wushu_v5_design.md` §5 and §9.
+6. Nit, not queued: the life-montage plate `lf_wushu_gold` shows a **sword group set with teammates**, which contradicts decision 4 (the
    group set is barehand; jian was her solo). Re-caption that branch as her jian solo, or regenerate it without teammates.
 
 ## 3. Commands
@@ -154,6 +208,14 @@ the kids), push, and add a "needs Jade" line in `docs/RESUME.md`.
 - **Post-credits**: the violet branch sends; the window girl in slow motion; the light's path and touch point; the shape growing from the
   touch; one chime cascade.
 - **Orchestra**: the timing and cuts (stand-ins now); the violet composer once the takes are picked; the score's legibility; `?orch=v4` for A/B.
+- **Drop (2:33–3:00)**, once all six wushu takes are picked (`?drop=v4` for A/B). Check:
+  - the duilian pairs;
+  - the group fall: they land on 97, the still bar, then rise together on 98.1;
+  - the halves trading, then the cross pairs;
+  - main stepping into the point for the salute on the "ooh", and the match cut into the fold.
+  
+  Hair: the duilian keeps the v4 plate's hair, so the cut from `dr_duilian` stays continuous (violet has one high bun). The group set uses
+  the lane mix (violet has two space buns). Jade decides whether to unify the two.
 - **Lip-sync by ear** (after `picks.py`):
   - 0:32 (lag .62)
   - 0:44 (−.15; the take's first frame holds 0.7 s of silence before "Each")

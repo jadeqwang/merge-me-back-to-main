@@ -144,7 +144,17 @@
   - `batch.py --dry` on all 20 v5 shots × 2 takes: schema OK.
   - mix.py ran end to end on stand-in audio.
 - Merged the box's wushu v5.1 rebuild (6439c70: six copies, the group fall, main in for the salute); a follow-up session reworks plates + EDL.
-- **Needs intake/render (box):** first `picks.py` (the new lags). Then the queue in V5_BOX_RUNSHEET.md §2 (≈ $70; generate with `--t0=13`),
+- Wushu v5.1 follow-up (cloud, same day; nothing generated or spent). Details: `docs/wushu_v5_design.md` §10.
+  - Plates: STILLS `dr_dl_close`, `dr_gs_line6` and `dr_gs_v6`, with refs and lanes pinned, plus `*_patch` edits through the new
+    `stills.py` `patch` tool.
+  - Takes: re-checked against the box's bar map. The fall take is now 7 s and its shot runs to 98.3, so the rise shows. The halves and
+    pairs window starts at bb(97, 2). Orange is in the salute plate, so she keeps the canon face.
+  - Audio cues: no "big hit" or choir cues where the instrumental has none.
+  - EDL: cuts at bar positions (98.5), and `keyed()` pins the fall's hit and rise and the salute's stance and palm to bars.
+  - Checks: `node --check`; the EDL harness over 0–297 s for the default, `?drop=v4` and `?drop=v5` × 3 picks variants, with all, some or
+    none of the new takes faked as picked: 0 exceptions, 0 bad args, 0 gaps, no held drop frames. `batch.py --dry`: 12 specs, schema OK.
+  - Wushu queue: ≈ $18.51 of ≈ $70.5 (run sheet §2.1).
+- **Needs intake/render (box):** first `picks.py` (the new lags). Then the queue in V5_BOX_RUNSHEET.md §2 (≈ $70.5; generate with `--t0=13`),
   one intake at a time, lags from word strips, picks, `tools/mix.py out/mix_v5.wav`, and review renders 62–80, 99–119, 206–216, 226–266 and
   280–297.016 (720p), then the full film. Stills to fit after picking: the orchestra framings (`WIDE`/`CLOSE`), the post-credits `FR` and
   FX.mote paths, and the drop's `KEY` clip times.

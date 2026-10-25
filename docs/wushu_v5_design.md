@@ -204,6 +204,8 @@ That is denser than a real 1–3 min set because each phrase is its highlight re
 
 ## 5. Seedance shots (drop-in `tools/sd/shots_wushu.py`; full file at `wushu/shots_wushu.py`)
 
+*Superseded by section 10 and `tools/sd/shots_wushu.py`. The draft below is kept for its fallbacks.*
+
 Every take is made against the drop instrumental, with its **audio window starting one bar before its cut** (EDL `at(shot, 1)` / `pin`). The
 model gets a bar to start moving, and we use clip ≈ 1.74 s onward. batch.py adds `PIN` in front and `GUARD_GROUP` after each prompt. Checked:
 the keys don't collide with batch.py/shots_*.py.
@@ -248,6 +250,9 @@ Fallbacks if a shot fails:
 
 ## 6. Plates (4 new, made the way the existing drop plates were)
 
+*Superseded: these 7-copy prompts are out of date. The v5.1 plates are `dr_dl_close`, `dr_gs_line6` and `dr_gs_v6`, in STILLS in
+`tools/sd/shots_wushu.py` (section 10).*
+
 Use GPT Image 2.5 via `tools/plates/gpt_plate.py OUT_STEM PROMPT_FILE --refs=… --n=2`, crop 1536×1024 → 1536×864, pick one, copy it to
 `media/plates/drop/<id>.png`. Then run `tools/plates/fix_patch.py` and **pin each lane colour in NOTES**, because repairs drift to orange.
 
@@ -289,6 +294,8 @@ Prompt = gen_plates STYLE line + the prompt + tail (plates.json style):
 ---
 
 ## 7. EDL change (`engine/show/main.js`, drop block; full patch at `wushu/edl/edl_drop.diff`; `node` syntax check OK)
+
+*Superseded by the v5.1 drop block in `main.js` (section 10): gated by `?drop=v4|v5`, `keyed()` key frames, and the cut at 98.3.*
 
 Before applying it, add the picks: `docs/picks_manual.json` needs `"dr_dl_wide"`, `"dr_dl_close"`, `"dr_gs_ranks"`, `"dr_gs_tornado"`,
 `"dr_gs_ring"`, `"dr_gs_salute"` → `<take>` (then run picks.py). Without them, `pk()` falls back to a non-existent `still_*` plate. After
@@ -453,3 +460,63 @@ only full stop in bars 93–100, so it reads as the stop. The rise on 98.1 start
 place are the real set's call-and-response between the halves, the cross-colour pairs, and a level closing line. Still in: 3 unison hits
 (93 punch, 97 fall, 100 horse stance), the held bar, the salute, and the match cut. The draft's fallbacks in section 5 still apply, with one
 exception: if the fall take loses copies, use the old `at('dr_set', 2)` tuck-jump landing at bar 96 and keep 97 as a still frame of it.
+
+---
+
+## 10. v5.1 (cloud follow-up, 2026-10-25): final bar map, plates, EDL
+
+The section 9 bar map stands, with four fixes. All of them are in `tools/sd/shots_wushu.py` (docstring, SHOTS, STILLS) and in the drop block
+of `engine/show/main.js`.
+
+1. **The rise is shown.** In section 9 the fall shot cut at 98.1, exactly where the six push up, so "rise as one" was never on screen.
+   - The fall shot now runs 96.1 → 98.3. Its take is 7 s: the hit at clip 3.478, still until 5.218, the rise on 98.1, standing by about 6 s.
+   - The halves and pairs shot runs 98.3 → 100.1. Its window starts at bb(97, 2) = 167.949, so the 1-bar pre-roll is kept.
+   - The warm half strikes on 98.3, the cool half answers on 99.1, and the cross pairs attack and block on 99.3. Their mirrored freeze falls
+     after the cut and is unused.
+   - Bar 97 stays the held still bar.
+2. **Key frames are pinned to bars, not just offset.** `keyed(shot, [[bar, clip], …])` lands each measured key frame on its bar position
+   and runs real time outside the keys. Between two keys it stretches the clip linearly. The keys are:
+   - the fall's hit (97.1) and the start of the rise (98.1): bar 97 is always the stillness, whatever the take's timing;
+   - the salute's horse stance (100.1) and fist meets palm (100.3, the "ooh").
+
+   Planned values make the clock identical to `at(shot, 1)`. The box measures the real ones after intake (run sheet §2.1, step 5).
+3. **Main is in the salute's first frame.** `dr_gs_v6` shows the six in the fold's V (ch1_formation order) with the point empty. Orange
+   stands just behind the point, between rose and sky.
+   - She takes two steps forward into the point after the horse-stance hit, and all seven salute on the "ooh".
+   - A copy that walks in from off-frame would get a face Seedance invents. Orange in the first frame keeps the canon face.
+   - It is also the only way to reach the point in under a second.
+4. **Audio cues match the reference audio.**
+   - The drop instrumental is a flat four-on-the-floor after bar 89: every beat measures the same, with no crash on 93, 97 or 100.
+   - The "ooh" is only in the vocal stem: 173.08, about −20 dB in the vocal stem, nothing in the instrumental.
+   - So only `dr_dl_wide` cues "the big hit" (the drop). The others cue second marks "exactly on a beat". The salute no longer waits for
+     a choir note that its reference audio doesn't contain.
+
+| bar.beat | song s | take (clip s) | move |
+|---|---|---|---|
+| 89.1 | 153.17 | dr_dl_wide (1.74) | three pairs clash on the drop; a strike per beat; spinning kick ducked ~90.3 (4.35) |
+| 91.1 | 156.65 | dr_dl_close (1.74) | sweep; jump over; flying kick at its peak on 92.1 (3.48); mirrored freeze 92.3 (4.35) |
+| 93.1 | 160.12 | dr_gs_ranks (1.74, `KEY`) | unison burst into bow stance + punch; pubu 93.3; arm-overhead pose from 94.1, held |
+| 95.1 | 163.60 | dr_jian_t2 (0) | her jian solo, 1 bar |
+| 96.1 | 165.34 | dr_gs_tornado (1.74) | two driving steps; dive 96.4 (3.04) |
+| **97.1** | 167.08 | fall (3.478, `KEY`) | all six hit the water flat; **bar 97 held still** |
+| **98.1** | 168.82 | fall (5.218, `KEY`) | **they rise as one** |
+| 98.3 | 169.69 | dr_gs_ring (1.74) | warm half (white, rose, gold) strikes; the cool half holds |
+| 99.1 | 170.56 | ring (2.61) | cool half (mint, sky, violet) answers |
+| 99.3 | 171.43 | ring (3.48) | cross pairs white–mint, rose–sky, gold–violet: punch vs rising block, sweep jumped |
+| 100.1 | 172.30 | dr_gs_salute (1.74, `KEY`) | the six drop into an arms-out horse stance; orange steps forward into the point |
+| 100.3 | 173.17 | salute (2.61, `KEY`) | all seven: feet together, baoquan salute, held (the "ooh" starts at 173.08) |
+| 101.1 | 174.04 | fold (unchanged) | match cut on the V of seven |
+
+**Plates (STILLS):**
+- `dr_dl_close` refs `dr_duilian.png` + canon face + `turn_gpt_patch` + `patch_34`.
+- `dr_gs_line6` refs `dr_set.png` + canon face + `turn_gpt_patch` + `patch_34`.
+- `dr_gs_v6` refs `dr_set.png` + `face_v4/ch1_formation.png` + canon face + `turn_gpt_patch` + `patch_34`.
+- Each has a `*_patch` edit with its lane colours pinned.
+
+**Hair:**
+- The group-set plates follow the lane table (section 4; Jade's decision 2).
+- `dr_dl_close` keeps `dr_duilian`'s hair, because it cuts straight on from `dr_dl_wide`: violet, rose and gold wear one high bun; mint and
+  sky wear a ponytail.
+- So violet's hair changes at the group set. Flagged for Jade.
+
+Cost: $18.51 (run sheet §2.1).

@@ -71,8 +71,8 @@ mix, and review renders.
 - 4:15–4:24: the **living git graph** (lives fork out of main as panes, merge home, violet cherry-picked last) replaces the git-log card and
   the bookend. It starts where the home shot ends.
 - Drop: duilian, then the group set rebuilt from Jade's real routine (six copies, the group fall on bar 97, main in for the salute). It is
-  wired to replace the v4 drop only once all six takes are picked (`?drop=v4|v5`). Pending a v5.1 rework of plates and the EDL block
-  (`docs/wushu_v5_design.md` §9, `docs/wushu_groupset_notes.md` on main).
+  wired to replace the v4 drop only once all six takes are picked (`?drop=v4|v5`). The v5.1 plates (STILLS) and EDL are done
+  (`docs/wushu_v5_design.md` §9–10, `docs/wushu_groupset_notes.md`). The queue is in the run sheet, §2.1.
 - Post-credits: the **violet branch sends** the light (`v2_horizon_t5`); the girl alone at the intro's window (`ch0_window_t2`, slowed)
   sees it touch the glass once, and the bifurcation grows from that point. `tools/mix.py` plays one 1-2-4-8 chime cascade from the touch
   (`out/mix_v5.wav`). No new takes; `pc_kneel`/`pc_beam` are unused. The Hilbert Hotel lobby stays cut.

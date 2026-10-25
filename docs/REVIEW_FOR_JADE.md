@@ -59,7 +59,7 @@ Spend so far: $146.03 (list-price estimate) of the $600 cap (`tools/gen/spend.py
 
 ## Jade's notes, 2026-10-25 (v4 review)
 Each note, what the cloud session did (committed on `claude/wonderful-mccarthy-f90kll`), and what the box still has to generate or render.
-The run sheet `docs/V5_BOX_RUNSHEET.md` has the commands, the costs (≈ $70 queued; $284 of $600 spent) and what to check.
+The run sheet `docs/V5_BOX_RUNSHEET.md` has the commands, the costs (≈ $70.5 queued; $284 of $600 spent) and what to check.
 
 | time | your note | done | queued (box) |
 |---|---|---|---|
@@ -75,10 +75,12 @@ The run sheet `docs/V5_BOX_RUNSHEET.md` has the commands, the costs (≈ $70 que
 | 3:30 | ends too smiley; contemplative, eyes closing fine | Cut on "main" with her eyes still closed (interim); the hook carries over the drone tree | 8 s re-take with eyes closed, plus a variant that half-opens them, then closes them slowly |
 | 3:56–4:09 | orchestra: match the music; the conductor isn't doing anything useful | Cuts on the music (impact, violin, keys, composer, guitar). **Your pick: the composer is the violet branch** (bun, two pencils), writing the score in violet light that lands on each player on the beat and folds into one orange line. Reframed v4 takes stand in until the new ones are picked. `?orch=v4` keeps the old one. | 5 stills + 5 takes |
 | 4:17 | boring; show a bit of everything | **Your OK to lose the readable card**: the living git graph. Your lives fork out of main in doublings as live panes, the log is read one commit per beat, everything merges home, violet cherry-picked last. It starts where the home shot ends; the end card keeps its hit. | — (no new takes) |
-| 2:33–3:00 | wushu: duilian first, then a group set as good as your medal one | Duilian 89–92, then the group set rebuilt from your real routine on the box: six copies trading by halves, the group fall on 97, main walks in for the salute. It is wired so it only replaces the v4 drop once all its takes are picked (`?drop=v4`/`?drop=v5`). | The v5.1 rework (plates, EDL), then 3 plates + 6 takes |
+| 2:33–3:00 | wushu: duilian first, then a group set as good as your medal one | Duilian 89–92: three pairs, then the front pair's sweep, flying kick and freeze. Then your real group set, by six branch copies in one line, warm and cool alternating: a unison burst on 93, your jian solo, and **the group fall**, which lands on 97, holds still through the bar and rises as one on 98.1. Then the halves trade a phrase, the cross pairs attack and block, and an arms-out horse stance on 100. Main steps into the V's point for the salute on the "ooh" and cuts into the fold. It replaces the v4 drop only once all its takes are picked (`?drop=v4`/`?drop=v5`). | 3 plates + patch fix + 6 takes (≈ $18.51) |
 | post-credits | they shouldn't touch; play once | **Your pick: the violet branch sends** (existing takes): she sends the light toward the horizon; the girl alone at the intro's window watches it touch the glass once, and the shape grows there. One chime cascade. No new takes. | Remix + fit the light's path on stills |
 
 Nits for you:
 - The life-montage plate `lf_wushu_gold` shows a sword group set with teammates, but your group set was barehand and jian was your solo.
   Re-caption it or regenerate it?
 - Some held frames you didn't flag (listed in the run sheet §4). The engine can now slow a clip instead of freezing it.
+- Wushu hair: the duilian keeps the v4 plate's hair, because its new close-up cuts straight on from it (violet has one high bun). The group
+  set uses your ponytail and space-bun mix per lane (violet has two space buns). Keep both, or should one look apply to both?
