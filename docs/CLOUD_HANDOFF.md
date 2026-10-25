@@ -1,8 +1,48 @@
-# Handoff: continuing "Merge" from Claude Code on the web / phone (2026-10-24)
+# Handoff: continuing "Merge" from Claude Code on the web / phone (2026-10-24, updated 2026-10-25)
 
 Jade is travelling from 2026-10-25. This note is for whichever Claude picks the project up next: a cloud session (claude.ai/code,
 the phone app's Code tab) or a Remote Control session on the Linux box. Read this first, then `docs/HANDOFF.md` (ground rules, map,
 commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and `docs/RESUME.md` (checkpoint log).
+
+## START HERE (2026-10-25 night): Jade is flying, the box is unattended
+Last cloud session (2026-10-25) turned Jade's v4 review notes into **v5 in code** on `claude/wonderful-mccarthy-f90kll` (nothing generated,
+rendered or spent; spend still **$284.32 / $600**). Details: "Where things stand" below, `docs/V5_BOX_RUNSHEET.md` (what the box runs),
+`docs/REVIEW_FOR_JADE.md` → "Jade's notes, 2026-10-25" (each note → done / queued), `docs/RESUME.md` (checkpoint log).
+
+**What's in flight, and what to do first**
+1. **v5a review render (box, unattended).** Before leaving, Jade told the box session to: wait (≤ 2 h) for the frozen-frame + fork-tree fix
+   commit on this branch (look for "frozen" in `git log`), pull, rerun `tools/sd/picks.py` (lags changed) and `tools/mix.py`, render the whole
+   film with default params, and put it on **Google Drive** as one 1080p file (`merge_v5a_1080p.mp4`) if the box can upload there, else as
+   720p parts < 100 MB in `review/v5a/`; either way a `review/v5a/README.md` says where it is and what to eyeball. **No generation** until
+   Jade has watched v5a. First check whether `review/v5a/` exists on this branch; if not, the render may still be running or failed (you
+   can't see the box from the cloud; ask Jade).
+2. **Jade's go-ahead on the generation queue** (≈ $70.5, run sheet §2: singing re-takes 3:30 first, eyes 1:58/3:33, jacket 3:09, canon faces
+   1:07/1:46, orchestra, wushu §2.1). Don't start it without her OK. It needs the box (intake/picks/renders are GPU-only), so it waits until
+   she's back on the box or Remote Control is up.
+3. **Open questions for Jade:** violet's hair differs between the duilian (one bun, existing v4 plate) and the group set (two space buns); a new
+   duilian wide plate (~$0.25) would match them. `lf_wushu_gold` shows a sword group set with teammates, which contradicts her decision 4 (group
+   set barehand, jian solo): re-caption or regenerate. The post-credits glass region / light path were estimated without seeing that part of
+   the window take: fit on box stills.
+
+**How this cloud setup actually behaves (tested 2026-10-25; supersedes the "Generate" row in the table below)**
+- This container has the repo + `review/` only. **No renders**: every shot is drawn from prepped plate sequences (`work/plates/*`, depth +
+  matte from GPU models, ~14 GB on the box) and render.mjs launches a GPU Chrome. Show Jade video via the box (Drive or `review/vN/`).
+- **Source pack** for cloud analysis: `review/cloud/` on main (manifest.md timestamp → shot/take/S0/lag/face, `edl_v4.json`, picks, sync
+  jsons, first-frame stills, refs incl. face_v4, the 22 picked raw takes, the song + vocal + instrumental stems as mp3, drop plates).
+  The box rebuilds it with `tools/cloud_pack.py`. Lip-sync was measured from these (mouth openness in the raw take vs the vocal stem;
+  the render adds no A/V offset), which the film itself can't support: the glyph texture hides the mouth.
+- **Generation from the cloud is untested.** Jade added `GEN_KV_NS` to the cloud environment on 2026-10-25 (only new sessions see it).
+  Also needed: `CF_AUTH_VIA_PROXY=1`, and `CF_ACCOUNT_ID` (the env has `CLOUDFLARE_ACCOUNT_ID`, which `tools/gen/cfauth.py` does not read:
+  `export CF_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID"`). A KV GET through the proxy returned **401** on 2026-10-25, so the proxied token may lack
+  Workers KV read; check before any paid call, printing only the status code:
+  `curl -sS -o /dev/null -w '%{http_code}\n' "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/storage/kv/namespaces/$GEN_KV_NS/keys?limit=1"`.
+  Sung shots need PyAV (`pip install av`; without it a billed take is logged as failed). `faceedit.py`/`canonprop.py`/`hairswap.py` need a
+  Python 3.12 venv with mediapipe 0.10.21 + numpy<2. Generated takes still need the box for intake, so prefer letting the box generate.
+- No Drive connector in cloud sessions, so a cloud session can't fetch videos Jade puts on Drive; ask her for short clips in `review/` if
+  you need to look at frames. YouTube is blocked by the network policy here.
+- Never write Jade's competition-video URL into the repo (public; it shows her teammates). Its analysis is in `docs/wushu_groupset_notes.md`.
+- Working style Jade asked for: delegate generously to subagents and keep the main conversation lean; scratch reports live in the session
+  scratchpad and are gone with the container, so anything worth keeping goes into docs/ (as above).
 
 ## Jade's plan (2026-10-24): Claude Code cloud + GitHub + open-artifacts
 The Linux box stays on. Jade will mostly work through **cloud sessions on this GitHub repo**, plus an "open-artifacts" setup she's building
