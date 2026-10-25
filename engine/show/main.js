@@ -82,6 +82,8 @@ function pk(shot, t0) {
 }
 // the shot's picked take is still this one: interim EDL fixes for a flawed take switch themselves off once a re-take is picked
 const isTake = (shot, take) => PICKS[shot]?.take === take;
+// a real take is picked for the shot (tools/sd/picks.py also lists every unpicked shot as a still_ fallback, which doesn't count)
+const has = (shot) => !!PICKS[shot] && !(PICKS[shot].take || 'still_').startsWith('still_');
 const push = (k = .05) => (u) => ({ dolly: 1 - k * u, over: 1.06 });
 const lines = (i) => W(i);
 
@@ -673,53 +675,97 @@ const HOOK20 = { x: 110, y: 420, size: 170, maxW: 860, out: ws(21) - .47 };
 // 4:12 home (Jade 2026-10-25: too smiley at the end). Interim, while out_main_t12 is picked: it grins with teeth from 252.25 to the cut, so the
 // shot ends there and what follows starts earlier (the end card keeps its bar-153 hit). A re-take (tools/sd/shots_v5.py) gets the full shot.
 const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) + 1.95 : B(149) - 3.0;
-{ // home: she sings the last "Back to main…" at sunrise (out_main, v2 line 25; Jade 2026-10-24), the held note carries into the git log
+{ // home: she sings the last "Back to main…" at sunrise (out_main, v2 line 25; Jade 2026-10-24), the held note carries into the living graph
   const t0 = ws(25) - .08, t1 = OUT_MAIN_END;
   S.push({ t0, t1, kind: 'lattice', ...pk('out_main', t0), fid: () => 1, cam: push(.05),
     text: (ty, t) => { ty.ledHook(lines(25), t, { x: 110, y: 300, size: 120, maxW: 900, out: t1 - .3 }); } });
 }
-{ // the final git log: every lane merged; the one that didn't, its commit still there, cherry-picked into main. On the held "main" to the drums-out.
-  const t0 = OUT_MAIN_END, t1 = B(149), w25 = lines(25);
-  const lanes = [...['lf_piano_rose', 'lf_wushu_gold', 'lf_booth_sky', 'lf_poet_gold', 'lf_band_rose', 'lf_home_mint'].map((id) => { const x = life(id); return [x[2], x[1], x[3], x[4]]; }),
-    [L.violet, 'jade/1420-mhz', 'learned: every road was worth it', 'f01d9ae']];
-  const credits = ['docs: for every branch that never came home'];   // the real credits are on the end card; this log is her lives merging home
-  S.push({ t0, t1, kind: 'card', text: (ty, t) => {
-    const g = ty.g, X0 = 260, top = 170, dy = 96, LW = 70, reveal = (t - t0) * 3.2;
-    const rows = []; lanes.forEach((l, i) => rows.push({ lane: i, ...{ c: l[0], br: l[1], msg: l[2] } })); credits.forEach((c) => rows.push({ credit: c }));
-    const scroll = Math.max(0, (reveal - 7.5) * dy);
-    g.save(); g.translate(0, -scroll); g.lineCap = 'round'; g.lineJoin = 'round';
-    const Y = (r) => top + r * dy, nShown = Math.min(rows.length, reveal);
-    g.strokeStyle = L.orange; g.lineWidth = 7; g.shadowColor = L.orange; g.shadowBlur = 16;
-    g.beginPath(); g.moveTo(X0, Y(-.5)); g.lineTo(X0, Y(nShown + .2)); g.stroke();
-    rows.forEach((r, i) => {
-      const k = clamp(reveal - i); if (k <= 0) return; const y = Y(i);
-      if (r.credit) { g.shadowBlur = 0; g.fillStyle = L.orange; g.beginPath(); g.arc(X0, y, 11, 0, 7); g.fill();
-        g.globalAlpha = k; g.font = '500 34px JBM'; g.fillStyle = 'rgba(255,241,220,.95)'; g.fillText(r.credit, X0 + 60, y + 12); g.globalAlpha = 1; return; }
-      const x = X0 + LW, merged = r.lane < lanes.length - 1;
-      g.strokeStyle = r.c; g.shadowColor = r.c; g.shadowBlur = 14; g.lineWidth = 5; g.beginPath();
-      g.moveTo(X0, y - dy * .55); g.quadraticCurveTo(x, y - dy * .55, x, y - dy * .1); g.lineTo(x, y + dy * .1);
-      if (merged) g.quadraticCurveTo(x, y + dy * .55, X0, y + dy * .55); g.stroke();
-      g.fillStyle = r.c; g.beginPath(); g.arc(x, y, 11, 0, 7); g.fill(); g.shadowBlur = 0;
-      g.globalAlpha = k; g.font = '600 34px JBM'; g.fillStyle = L.gold; const hash = lanes[r.lane][3];
-      g.fillText(hash, X0 + 130, y + 12); g.fillStyle = r.c; const bw = g.measureText(hash + '  ').width; g.fillText(`(${r.br})`, X0 + 130 + bw, y + 12);
-      const mw = g.measureText(`(${r.br})  `).width; g.fillStyle = 'rgba(255,241,220,.95)';
-      if (!merged) g.font = '400 46px ISI'; g.fillText(r.msg, X0 + 130 + bw + mw, y + 12);
-      if (!merged && reveal > i + 1.2) { const a = clamp(reveal - i - 1.2); g.setLineDash([8, 12]); g.strokeStyle = L.violet; g.shadowColor = L.violet; g.shadowBlur = 12; g.lineWidth = 4;
-        g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + 40, y + dy * .6, X0, y + dy * (.2 + .6 * a)); g.stroke(); g.setLineDash([]); g.shadowBlur = 0;
-        g.font = '500 28px JBM'; g.fillStyle = `rgba(233,221,255,${a})`; g.fillText('↳ cherry-picked into main', X0 + 130, y + 56); }
+{ // 4:15–4:24, the held "main" + the arp alone (bars 149–152): "a bit of everything" (Jade 2026-10-25 on the git-log card: "a bit boring, could
+  // be a good opportunity to show us a bit of everything"; she OK'd losing the readable card). Replaces the text-only git-log card AND the
+  // lone-Jade bookend with one shot: her git log as a living graph seen from above. Main is a point of light in the centre; her lives fork out of
+  // it in doublings on the bar (the intro's 1 -> 2 -> 4 -> 8): generation 1 on the cut (the girl at the window, then piano), 4 on bar 148, 8 on
+  // the drums-out bar 149, each a pane playing that life in its lane colour, joined by dotted drone-light strands (the drone tree, from above).
+  // Bars 149–151 read the log one commit per beat (the pane flashes, its line types in at the bottom). Bar 152 (the riser) merges every lane home
+  // into the point, the violet 1420 MHz lane last and straight in (the cherry-pick); the point flares into the bar-153 hit and the MERGE end card.
+  // It starts where the home shot ends (OUT_MAIN_END: 252.25 while out_main_t12 is trimmed, else B(149) - 3), so the end card keeps its timing.
+  // No new takes: every plate is already picked (the orchestra pane switches to orch_wide once that is picked).
+  const t0 = OUT_MAIN_END, t1 = B(153), w25 = lines(25), BAR = B(150) - B(149), A = 480 / 270, S0 = .16;
+  const G = [t0 + .05, B(148), B(149)];                                                              // pop time of generation 1, 2, 3
+  const M = { 3: [bb(152, 0), bb(152, 1.6)], 2: [bb(152, 1), bb(152, 2.6)], 1: [bb(152, 2), bb(152, 3.4)], cherry: [bb(152, 2.4), bb(152, 3.5)] };
+  const lf = (id) => { const x = life(id); return [id, x[2], x[1], x[4], x[3]]; };   // [plate, lane, branch, hash, message]
+  // generation 1 pops on the cut; when the cut comes early (the trimmed home shot) its second node waits for bar 147, so main forks 1 -> 2 on bars
+  const popT = (i) => (N[i][5] > 1 ? G[N[i][5] - 1] : i === 0 ? G[0] : Math.max(G[0], B(147)));
+  // a life's clip clock: its take (c0..c1 s) spans the pane's whole life, pop to merged home, so nothing holds a frame (the merge lands on bars)
+  const clock = (i, c0, c1) => (t) => c0 + (c1 - c0) * clamp((t - popT(i)) / (M[N[i][5]][1] - popT(i)));
+  const ORCH_PANE = has('orch_wide') ? ['orch_wide', B(149) - 3 * BAR] : ['out_orch', B(149) - 2 * BAR];   // bar-aligned windows: whole bars keep the beat
+  // [plate, lane, label, hash, message, gen, parent (-1 = main's point), home x, home y (frame units: 1 = frame height, +y up), s0 or clip(t)]
+  const N = [
+    ['ch0_window', L.orange, 'main · age 5', '', '', 1, -1, -.31, 0, clock(0, 0, 6.0)],           // the girl at the window: where main starts
+    [...lf('lf_piano_rose'), 1, -1, .31, 0, clock(1, .2, 7.8)],
+    [...lf('lf_violin_white'), 2, 0, -.31, .31, clock(2, .3, 7.9)],
+    ['dr_set', ...lf('lf_wushu_gold').slice(1), 2, 0, -.31, -.31, B(148) - BAR],             // her wushu life = the drop's group set (bar-aligned take)
+    [...lf('lf_lab_mint'), 2, 1, .31, .31, clock(4, .3, 7.9)],
+    [...lf('lf_booth_sky'), 2, 1, .31, -.31, clock(5, .3, 7.9)],
+    [...lf('lf_poet_gold'), 3, 2, -.64, .38, G[2] - .5], [...lf('lf_ames_white'), 3, 2, -.64, .13, G[2] - .5],
+    [...lf('lf_band_rose'), 3, 3, -.64, -.13, G[2] - .5], [...lf('lf_house_gold'), 3, 3, -.64, -.38, G[2] - .5],
+    [...lf('lf_stage_sky'), 3, 4, .64, .38, G[2] - .5], [...lf('lf_home_mint'), 3, 4, .64, .13, G[2] - .5],
+    ['v2_dish_sit', L.violet, 'jade/1420-mhz', 'f01d9ae', 'learned: every road was worth it', 3, 5, .64, -.13, G[2] - 1],
+    [ORCH_PANE[0], L.orange, 'main · now', '', '', 3, 5, .64, -.38, ORCH_PANE[1]],          // every life playing together
+  ];
+  const CHERRY = 12, READ = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];                     // commits read on the beats of bars 149–151, oldest first
+  const Z = spline([[t0, 1.55], [G[1] - .1, 1.5], [G[1] + .5, 1.2], [G[2] - .1, 1.17], [G[2] + .6, 1], [B(152), .96]]);   // the camera rising a step per fork
+  const node = (i, t) => {   // where node i is at t: {x, y (frame units), s (pane height), a}; -1 = main's point (centre)
+    if (i < 0) return { x: 0, y: 0, s: 0, a: 1 };
+    const n = N[i], z = Z(t), par = node(n[6], t), pop = ss(popT(i), popT(i) + .45, t);
+    const [m0, m1] = i === CHERRY ? M.cherry : M[n[5]], m = ss(m0, m1, t), to = i === CHERRY ? node(-1, t) : par;   // merge home: into the parent (violet: straight into main)
+    const x = par.x + (n[7] * z - par.x) * pop, y = par.y + (n[8] * z - par.y) * pop;
+    return { x: x + (to.x - x) * m, y: y + (to.y - y) * m, s: S0 * z * (.2 + .8 * pop) * (1 - .88 * m), a: pop * (1 - ss(.8, 1, m)) };
+  };
+  const readAt = (i) => { const c = READ.indexOf(i); return c < 0 ? -1 : bb(149, c); };
+  const panels = N.map((n, i) => ({ plate: pk(n[0], 0).plate, ...(typeof n[9] === 'function' ? { clip: n[9] } : { s0: n[9] }),
+    lane: n[1], laneAmt: .1, frame: n[1], rw: 480, rh: 270, cellFig: 3, cellWorld: 7, fid: () => 1,
+    xf: (t) => { const p = node(i, t); if (p.a <= .001) return null; const tc = readAt(i), hit = tc >= 0 && t >= tc ? Math.exp(-(t - tc) * 5) : 0;
+      return { x: p.x, y: p.y, z: 0, s: p.s * (1 + .08 * hit), a: p.a, gain: 1.15 + 1.3 * hit + .9 * Math.exp(-Math.max(0, t - popT(i)) * 6) }; } }));
+  const px = (p) => [960 + p.x * 1080, 540 - p.y * 1080];
+  const edge = (a, b) => {   // the point on a's pane border (main: a 14 px dot) on the way to b
+    const [ax, ay] = px(a), [bx, by] = px(b), dx = bx - ax, dy = by - ay, hw = a.s ? a.s * 540 * A : 14, hh = a.s ? a.s * 540 : 14;
+    const k = Math.min(1, hw / Math.max(1e-6, Math.abs(dx)), hh / Math.max(1e-6, Math.abs(dy))); return [ax + dx * k, ay + dy * k]; };
+  const strand = (g, a, b, col, t, born) => {   // a lane: dotted drone light; a comet draws it out on the fork, then a pulse runs out on every beat (home in bar 152)
+    const [x0, y0] = edge(a, b), [x1, y1] = edge(b, a), len = Math.hypot(x1 - x0, y1 - y0); if (len < 6) return;
+    const n = Math.max(1, Math.floor(len / 12)), drawn = clamp((t - born) / .35), ph = ((t - B(149)) / T.beatLen(149)) % 1, home = t >= B(152);
+    g.fillStyle = col; g.shadowColor = col; g.shadowBlur = 8;
+    for (let j = 0; j <= n; j++) { const f = j / n; if (f > drawn) break; const q = home ? 1 - f : f, pu = t >= B(149) ? Math.exp(-Math.pow((q - ph) * 6, 2)) : 0;
+      g.globalAlpha = (.45 + .55 * pu) * Math.min(a.a, b.a); g.beginPath(); g.arc(x0 + (x1 - x0) * f, y0 + (y1 - y0) * f, 2.2 + 1.2 * pu, 0, 7); g.fill(); }
+    g.globalAlpha = 1; g.shadowBlur = 0; };
+  S.push({ t0, t1, kind: 'panels', panels, cam: () => ({}),
+    text: (ty, t) => {
+      const g = ty.g, P = N.map((_, i) => node(i, t)), C = node(-1, t);
+      g.save(); g.lineCap = 'round'; g.textBaseline = 'alphabetic';
+      N.forEach((n, i) => { if (P[i].a > .01) strand(g, n[6] < 0 ? C : P[n[6]], P[i], n[1], t, popT(i)); });
+      if (t >= M.cherry[0] - .6 && P[CHERRY].a > .01) {   // the violet lane goes home its own way: dashed, straight into main
+        const [x0, y0] = edge(P[CHERRY], C), k = clamp((t - (M.cherry[0] - .6)) / .5); g.setLineDash([8, 12]); g.strokeStyle = L.violet; g.shadowColor = L.violet; g.shadowBlur = 12; g.lineWidth = 4;
+        g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + (960 - x0) * k, y0 + (540 - y0) * k); g.stroke(); g.setLineDash([]); g.shadowBlur = 0;
+        g.globalAlpha = k * P[CHERRY].a; g.font = '500 24px JBM'; g.fillStyle = '#E9DDFF'; g.fillText('↳ cherry-picked into main', x0 - 120, y0 + 130); g.globalAlpha = 1; }
+      // main: a point of light that everything merges into; it flares over the riser into the bar-153 hit
+      const fl = ss(bb(152, 2.6), t1 - .03, t), r = 10 + 5 * T.pulse(t, .2) + 230 * fl * fl, gr = g.createRadialGradient(960, 540, 0, 960, 540, r * 3);
+      gr.addColorStop(0, 'rgba(255,250,240,1)'); gr.addColorStop(.2, 'rgba(255,196,107,.9)'); gr.addColorStop(1, 'rgba(255,122,26,0)'); g.fillStyle = gr; g.fillRect(960 - r * 3, 540 - r * 3, r * 6, r * 6);
+      // branch label (lane dot + name) over each pane
+      N.forEach((n, i) => { const p = P[i]; if (p.a < .05 || p.s < .06) return; const [x, y] = px(p), hw = p.s * 540 * A, hh = p.s * 540;
+        g.globalAlpha = p.a * .9; g.fillStyle = n[1]; g.beginPath(); g.arc(x - hw + 6, y - hh - 12, 5, 0, 7); g.fill();
+        g.font = '500 17px JBM'; g.fillStyle = 'rgba(255,241,220,.9)'; g.fillText(n[2], x - hw + 18, y - hh - 6); });
       g.globalAlpha = 1;
-    });
-    g.restore();
-    ty.line(w25, t, { y: 1030, size: 56, out: t1 - .35 });
-  } });
-}
-{ // bookend on the arp alone (bars 149–152, the intro's arp): where she started. One Jade among the stars, seen from above, the camera rising away;
-  // to black over the riser into the last hit. (v1's "home" shot out_main sang the third "Back to main", which this song no longer has.)
-  const t0 = B(149), t1 = B(153), f0 = bb(152, 1);
-  S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', t0 - .5), splitBar0: 3, splits: 10, treeTime: () => 1.2, trailT: -1,
-    rise: (t) => 1 + 2.2 * ss(t0, t1, t), text: (ty, t) => { const g = ty.g; const k = 1 - ss(f0, t1 - .05, t);
-      if (k < 1) { g.fillStyle = `rgba(0,0,0,${1 - k})`; g.fillRect(0, 0, 1920, 1080); }
-      ty.mono('HEAD -> main', t, t0 + .8, { x: 72, y: 84, size: 22, cps: 20 }); } });
+      // the log itself, bottom centre: the last three commits read (one per beat, newest at the bottom, typed in)
+      const c = Math.floor((t - B(149)) / T.beatLen(149) + 1e-6);
+      if (c >= 0 && t < B(152) + .3) { const k0 = 1 - clamp((t - B(152)) / .3);
+        for (let j = Math.max(0, c - 2); j <= Math.min(c, READ.length - 1); j++) { const n = N[READ[j]], tc = bb(149, j), age = c - j, y = 1052 - 34 * age;
+          const msg = n[4].slice(0, Math.ceil(clamp((t - tc) / .3) * n[4].length)); g.globalAlpha = k0 * [1, .55, .3][age];
+          g.font = '600 26px JBM'; const wh = g.measureText(n[3] + '  ').width; g.font = '400 34px ISI'; const wm = g.measureText(n[4]).width, x = 960 - (wh + wm) / 2;
+          g.font = '600 26px JBM'; g.fillStyle = n[1]; g.fillText(n[3], x, y); g.font = '400 34px ISI'; g.fillStyle = '#FFF1DC'; g.fillText(msg, x + wh, y); } }
+      g.restore();
+      ty.mono('$ git log --graph --all', t, t0 + .1, { x: 802, y: 84, size: 22, cps: 30, out: B(152) });   // top centre, over main (the corners hold panes)
+      ty.mono('HEAD -> main', t, bb(152, 2.4), { x: 881, y: 84, size: 22, cps: 30 });
+      ty.line(w25, t, { y: 1030, size: 56, out: B(149) - .35 });   // the held "main" (as on the old card)
+    } });
 }
 { const t0 = B(153), t1 = SONG_END;   // end card on the last hit (bar 153); pads + bass sustain to the fade
   S.push({ t0, t1, kind: 'card', bloom: .25, text: (ty, t) => {

@@ -1,9 +1,10 @@
 // Panels: several lattice-rendered clips, each into its own target, placed as quads in a 3D space.
-// shot: { panels: [{ plate, s0, look?, cellFig?, cellWorld?, fid?, w, h, xf(t)->{x,y,z,rx,ry,rz,s,a} , frame?: '#hex', label?, ledFig? }],
-// Pane figures are built from glyphs like the lattice scene's (look.figGlyph; Jade's 2026-10-24 decision 9); ?figlook=led or ledFig: true
-// restore the LED emitters.
+// shot: { panels: [{ plate, s0, clip?(t) -> clip time in s (overrides s0: slow motion / time remap), look?, cellFig?, cellWorld?, fid?, w, h,
+//                    xf(t)->{x,y,z,rx,ry,rz,s,a}, frame?: '#hex', label?, ledFig? }],
 //         back?: { plate, s0, look?, cam? }  (a full-frame lattice behind the panels)
 //         cam?(t)->{fov, z}, text?(ty,t,u) }
+// Pane figures are built from glyphs like the lattice scene's (look.figGlyph; Jade's 2026-10-24 decision 9); ?figlook=led or ledFig: true
+// restore the LED emitters.
 import * as THREE from 'three';
 import { LatticeLayer, LatticeView } from '../lattice.js';
 import { PlateSeq } from '../plateseq.js';
@@ -33,7 +34,7 @@ class Pane {
   }
   async render(t) {
     const { p } = this;
-    await this.seq.at(t, p.s0 ?? 0);
+    if (p.clip) await this.seq.seek(p.clip(t) * this.seq.meta.fps); else await this.seq.at(t, p.s0 ?? 0);
     const mvp = this.view.frame(this.seq.aspect, p.cam ? p.cam(t) : {});
     if (p.fid) this.fig.set('uDensity', p.fid(t));
     this.view.render(this.layers, mvp, t);
