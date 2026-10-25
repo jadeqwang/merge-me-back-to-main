@@ -1,0 +1,141 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>token dawn proto</title>
+<style>html,body{margin:0;background:#05060d;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const P = new URLSearchParams(location.search);
+const W = +P.get('w') || 1920, H = +P.get('h') || 1080;
+const PLATE = P.get('plate') || '/work/proto/still1';
+const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+document.body.appendChild(renderer.domElement);
+
+const meta = await (await fetch(PLATE + '/meta.json')).json();
+const tl = new THREE.TextureLoader();
+const load = u => new Promise(r => tl.load(u, t => { t.colorSpace = u.includes('rgb') ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.minFilter = THREE.LinearFilter; r(t); }));
+const [rgb, depth, matte] = await Promise.all(['rgb', 'depth', 'matte'].map(k => load(`${PLATE}/${k}/000000.${k === 'rgb' ? 'jpg' : 'png'}`)));
+
+// --- glyph atlas: the lyrics are the particles ---
+const TEXT = 'I split myself a thousand ways down every road the night could hold each one a light I sent ahead each one a story to unfold and every branch remembers where I started from merge me back to main every road I ran becomes the one fold me in again nothing that I lived is ever gone ';
+const chars = [...new Set(TEXT)];
+const AC = 16, AS = 64; // atlas 16x16 cells of 64px
+const atlasCv = document.createElement('canvas'); atlasCv.width = atlasCv.height = AC * AS;
+const g = atlasCv.getContext('2d');
+g.fillStyle = '#000'; g.fillRect(0, 0, AC * AS, AC * AS);
+g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+g.font = `600 ${AS * 0.82}px "DejaVu Sans Mono", monospace`;
+chars.forEach((c, i) => g.fillText(c === ' ' ? '·' : c, (i % AC + 0.5) * AS, (Math.floor(i / AC) + 0.54) * AS));
+const atlas = new THREE.CanvasTexture(atlasCv); atlas.minFilter = THREE.LinearMipmapLinearFilter; atlas.generateMipmaps = true;
+
+// --- particle field: one instanced quad per cell, two densities (world, figure) ---
+const aspect = meta.w / meta.h;
+function makeLayer(cell, isFig) {
+  const cols = Math.round(W / cell), rows = Math.round(cols / aspect);
+  const n = cols * rows;
+  const home = new Float32Array(n * 2), gid = new Float32Array(n), rnd = new Float32Array(n);
+  let k = 0;
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++, k++) {
+    home[k * 2] = (x + 0.5) / cols; home[k * 2 + 1] = 1 - (y + 0.5) / rows;
+    gid[k] = chars.indexOf(TEXT[(k) % TEXT.length]);
+    rnd[k] = Math.random();
+  }
+  const geo = new THREE.InstancedBufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-.5, -.5, 0, .5, -.5, 0, .5, .5, 0, -.5, .5, 0]), 3));
+  geo.setIndex([0, 1, 2, 0, 2, 3]);
+  geo.setAttribute('home', new THREE.InstancedBufferAttribute(home, 2));
+  geo.setAttribute('gid', new THREE.InstancedBufferAttribute(gid, 1));
+  geo.setAttribute('rnd', new THREE.InstancedBufferAttribute(rnd, 1));
+  geo.instanceCount = n;
+  const mat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: {
+      uRgb: { value: rgb }, uDepth: { value: depth }, uMatte: { value: matte }, uAtlas: { value: atlas },
+      uCell: { value: new THREE.Vector2(1 / cols, 1 / rows) }, uAspect: { value: aspect },
+      uFid: { value: 0.0 }, uTime: { value: 0 }, uFig: { value: isFig ? 1 : 0 }, uLane: { value: new THREE.Color('#ff7a1a') },
+      uDepthAmt: { value: 0.35 }, uSplit: { value: 0 },
+    },
+    vertexShader: /* glsl */`
+      attribute vec2 home; attribute float gid; attribute float rnd;
+      uniform sampler2D uRgb, uDepth, uMatte; uniform vec2 uCell; uniform float uAspect, uFid, uTime, uFig, uDepthAmt, uSplit;
+      varying vec2 vUv; varying vec3 vCol; varying float vGid, vA, vLum, vM;
+      void main(){
+        vec3 c = texture2D(uRgb, home).rgb;
+        float d = texture2D(uDepth, home).r;
+        float m = texture2D(uMatte, home).r;
+        float keep = uFig > .5 ? smoothstep(.35,.6,m) : 1.0 - smoothstep(.55,.85,m)*.85;
+        float lum = dot(c, vec3(.299,.587,.114));
+        vec3 p = vec3((home.x - .5) * uAspect, home.y - .5, (d - .5) * uDepthAmt);
+        // breathing drift for loose (low-fidelity) particles
+        float loose = 1.0 - uFid;
+        p.xy += loose * 0.004 * vec2(sin(uTime*1.3 + rnd*40.), cos(uTime*1.1 + rnd*37.));
+        float sz = mix(0.55 + 0.75*sqrt(lum), 2.2, uFid);
+        vec2 q = position.xy * uCell * vec2(uAspect,1.) * sz;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        mv.xy += q;
+        gl_Position = projectionMatrix * mv;
+        vUv = position.xy + .5; vCol = c; vGid = gid; vA = keep; vLum = lum; vM = m;
+      }`,
+    fragmentShader: /* glsl */`
+      uniform sampler2D uAtlas; uniform float uFid, uFig; uniform vec3 uLane;
+      varying vec2 vUv; varying vec3 vCol; varying float vGid, vA, vLum, vM;
+      void main(){
+        if (vA < .01) discard;
+        vec2 cell = vec2(mod(vGid, 16.), floor(vGid / 16.));
+        vec2 auv = (cell + vec2(vUv.x, 1.-vUv.y)) / 16.;
+        auv.y = 1. - auv.y;
+        float glyph = texture2D(uAtlas, auv).r;
+        float r = length(vUv - .5) * 2.;
+        float splat = exp(-r*r*3.2);
+        float shape = mix(glyph, splat, smoothstep(.15,.9,uFid));
+        vec3 col = vCol * (1.25 + 0.6*(1.-uFid));
+        col = mix(col, col + uLane*0.35*(1.-vLum), (1.-uFid)*.5);
+        float a = shape * vA * mix(1.0, 0.42, uFid);
+        gl_FragColor = vec4(col * a, a);
+      }`,
+  });
+  const mesh = new THREE.Mesh(geo, mat); mesh.frustumCulled = false;
+  return mesh;
+}
+
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.01, 100);
+const camDist = 0.5 / Math.tan(THREE.MathUtils.degToRad(15));
+cam.position.set(0, 0, camDist);
+const bgL = makeLayer(+P.get('cb') || 11, false), figL = makeLayer(+P.get('cf') || 7, true);
+scene.add(bgL, figL);
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, cam));
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.85, 0.55, 0.18); composer.addPass(bloom);
+const grade = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, uTime: { value: 0 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float uTime; varying vec2 vUv;
+    float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+    void main(){ vec3 c=texture2D(tDiffuse,vUv).rgb;
+      vec2 d=vUv-.5; c*=1.-dot(d,d)*0.9;
+      c=mix(c, c*vec3(1.02,.96,1.08), .5);
+      c+= (h(vUv*1000.+uTime)-.5)*0.035;
+      gl_FragColor=vec4(c,1.);}`
+}); composer.addPass(grade);
+composer.addPass(new OutputPass());
+
+window.renderAt = (t, fid = +P.get('fid') || 0, orbit = 0) => {
+  for (const L of [bgL, figL]) { L.material.uniforms.uTime.value = t; L.material.uniforms.uFid.value = fid; }
+  cam.position.set(Math.sin(orbit) * camDist * 0.35, 0, camDist * (1 - 0.06 * Math.abs(orbit)));
+  cam.lookAt(0, 0, 0);
+  grade.uniforms.uTime.value = t;
+  composer.render();
+};
+window.renderAt(0, +P.get('fid') || 0, +P.get('orbit') || 0);
+window.READY = true;
+</script></body></html>

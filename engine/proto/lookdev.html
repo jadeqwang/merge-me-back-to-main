@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>lookdev</title>
+<style>@font-face{font-family:JBM;src:url(/engine/fonts/JetBrainsMono[wght].ttf)}html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { LatticeLayer, LatticeView, glyphAtlas, loadPlate } from '/engine/src/lattice.js';
+import { Post } from '/engine/src/post.js';
+const P = new URLSearchParams(location.search);
+const W = +(P.get('w') || 1920), H = +(P.get('h') || 1080);
+await document.fonts.load('700 64px JBM');
+const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); document.body.appendChild(renderer.domElement);
+const plate = await loadPlate(P.get('plate') || '/work/proto/formation');
+const atlas = glyphAtlas((await import('/engine/src/lattice.js')).DEFAULT_TEXT);
+
+// looks: [world layer, figure layer, post]
+const LOOKS = {
+  halftone: [{ cell: 9, shape: [1,0,0,0], sizeMin: .12, sizeMax: 1.05, gain: 1.5 }, { cell: 6, shape: [1,0,0,0], sizeMin: .15, sizeMax: 1.1, gain: 1.6 }, { paint: 0, bloom: .55 }],
+  led:      [{ cell: 6, shape: [0,1,0,0], sizeMin: .55, sizeMax: .9, gain: 1.3 }, { cell: 4, shape: [0,1,0,0], sizeMin: .6, sizeMax: .95, gain: 1.35 }, { paint: 0, bloom: .7 }],
+  tokens:   [{ cell: 15, shape: [0,0,1,0], sizeMin: .5, sizeMax: 1.05, gain: 1.8 }, { cell: 9, shape: [0,0,1,0], sizeMin: .55, sizeMax: 1.1, gain: 1.9 }, { paint: 0, bloom: .8 }],
+  mixed:    [{ cell: 14, shape: [0,0,1,0], sizeMin: .4, sizeMax: 1.0, gain: 1.4 }, { cell: 4, shape: [0,1,0,0], sizeMin: .6, sizeMax: .95, gain: 1.35 }, { paint: 0, bloom: .45 }],
+  inverse:  [{ cell: 4, shape: [0,1,0,0], sizeMin: .6, sizeMax: .95, gain: 1.3 }, { cell: 9, shape: [0,0,1,0], sizeMin: .55, sizeMax: 1.1, gain: 2.0 }, { paint: 0, bloom: .7 }],
+  dawn:     [{ cell: 14, shape: [0,0,1,0], sizeMin: .45, sizeMax: 1.0, gain: 1.5, gamma: .8, floor: .25 }, { cell: 3.5, shape: [0,1,0,0], sizeMin: .65, sizeMax: .95, gain: 1.45 }, { paint: 0, bloom: .45, under: { cell: 10, shape: [0,0,0,1], sizeMin: 2.4, sizeMax: 2.4, gain: .085, sat: 1.25 } }],
+  paint:    [{ cell: 5, shape: [0,0,0,1], sizeMin: 2.2, sizeMax: 2.6, aniso: 1.6, gain: 1 }, { cell: 3, shape: [0,0,0,1], sizeMin: 2.2, sizeMax: 2.6, aniso: 1.2, gain: 1 }, { paint: 1, bloom: .35 }],
+};
+const [wl, fl, po] = LOOKS[P.get('look') || 'halftone'];
+const view = new LatticeView(renderer, W, H);
+const post = new Post(renderer, W, H, { bloom: po.bloom });
+post.resolve.uniforms.uPaint.value = po.paint;
+const world = new LatticeLayer({ plate, cell: wl.cell, W, region: 0, atlas, opts: wl });
+const fig = new LatticeLayer({ plate, cell: fl.cell, W, region: 1, atlas, opts: fl });
+const under = po.under ? new LatticeLayer({ plate, cell: po.under.cell, W, region: 0, atlas, opts: po.under }) : null;
+const layers = under ? [under, world, fig] : [world, fig];
+window.renderAt = (t) => { const mvp = view.frame(plate.aspect, { orbit: +(P.get('orbit') || 0) }); post.render(view.render(layers, mvp, t), t); };
+window.renderAt(0); window.READY = true;
+</script></body></html>

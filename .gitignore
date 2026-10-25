@@ -1,0 +1,21 @@
+# media, renders, scratch (large; and they contain Jade's likeness) — code, docs and timing only
+work/
+work_v2/
+media/
+out/
+inputs/
+*.mp4
+*.wav
+*.mp3
+*.flac
+.venv/
+engine/node_modules/
+analysis/stems/
+analysis_v2/stems/
+__pycache__/
+*.pyc
+# secrets (never commit)
+work/cf_account_id.txt
+work/gen_kv_ns.txt
+*.env
+.env*

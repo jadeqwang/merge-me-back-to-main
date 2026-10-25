@@ -1,0 +1,173 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>token dawn proto 2</title>
+<style>
+@font-face{font-family:JBM;src:url(/engine/fonts/JetBrainsMono[wght].ttf)}
+html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { TexturePass } from 'three/addons/postprocessing/TexturePass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const P = new URLSearchParams(location.search);
+const num = (k, d) => P.has(k) ? +P.get(k) : d;
+const W = num('w', 1920), H = num('h', 1080);
+const PLATE = P.get('plate') || '/work/proto/still1';
+await document.fonts.load('700 64px JBM');
+
+const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H);
+document.body.appendChild(renderer.domElement);
+
+const meta = await (await fetch(PLATE + '/meta.json')).json();
+const tl = new THREE.TextureLoader();
+const load = (u, srgb) => new Promise(r => tl.load(u, t => { t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; r(t); }));
+const [rgb, depth, matte] = await Promise.all([load(`${PLATE}/rgb/000000.jpg`, true), load(`${PLATE}/depth/000000.png`), load(`${PLATE}/matte/000000.png`)]);
+
+const TEXT = (P.get('text') || 'merge me back to main every road i ran becomes the one fold me in again nothing that i lived is ever gone i split myself a thousand ways down every road the night could hold each one a light i sent ahead each one a story to unfold and every branch remembers where i started from ').toUpperCase();
+const chars = [...new Set(TEXT)];
+const AC = 8, AS = 128;
+const acv = document.createElement('canvas'); acv.width = acv.height = AC * AS;
+const g = acv.getContext('2d');
+g.fillStyle = '#000'; g.fillRect(0, 0, acv.width, acv.height);
+g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+g.font = `700 ${AS * 0.9}px JBM`;
+chars.forEach((c, i) => g.fillText(c === ' ' ? '·' : c, (i % AC + 0.5) * AS, (Math.floor(i / AC) + 0.53) * AS));
+const atlas = new THREE.CanvasTexture(acv); atlas.colorSpace = THREE.NoColorSpace;
+
+const aspect = meta.w / meta.h;
+// accumulation target: rgb = sum(col*w), a = sum(w)
+const acc = new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, depthBuffer: false });
+
+function layer(cell, fig, mode) {
+  // cell in output px; grid laid over the plate's fitted rect
+  const cols = Math.ceil(W / cell * 1.1), rows = Math.ceil(cols / aspect);
+  const n = cols * rows, home = new Float32Array(n * 2), gid = new Float32Array(n), rnd = new Float32Array(n);
+  for (let y = 0, k = 0; y < rows; y++) for (let x = 0; x < cols; x++, k++) {
+    home[k * 2] = (x + 0.5) / cols; home[k * 2 + 1] = 1 - (y + 0.5) / rows;
+    gid[k] = chars.indexOf(TEXT[(y * 7 + x) % TEXT.length]); rnd[k] = Math.random();
+  }
+  const geo = new THREE.InstancedBufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-.5, -.5, 0, .5, -.5, 0, .5, .5, 0, -.5, .5, 0]), 3));
+  geo.setIndex([0, 1, 2, 0, 2, 3]);
+  geo.setAttribute('home', new THREE.InstancedBufferAttribute(home, 2));
+  geo.setAttribute('gid', new THREE.InstancedBufferAttribute(gid, 1));
+  geo.setAttribute('rnd', new THREE.InstancedBufferAttribute(rnd, 1));
+  geo.instanceCount = n;
+  const mat = new THREE.RawShaderMaterial({
+    glslVersion: THREE.GLSL3, transparent: true, depthTest: false, depthWrite: false,
+    blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+    uniforms: {
+      uRgb: { value: rgb }, uDepth: { value: depth }, uMatte: { value: matte }, uAtlas: { value: atlas },
+      uTexel: { value: new THREE.Vector2(1 / meta.w, 1 / meta.h) }, uCellUv: { value: new THREE.Vector2(1 / cols, 1 / rows) },
+      uAspect: { value: aspect }, uFig: { value: fig }, uMode: { value: mode }, uTime: { value: 0 },
+      uLo: { value: num('lo', 0.08) }, uHi: { value: num('hi', 0.85) }, uDepthAmt: { value: num('dz', 0.25) },
+      uSize: { value: num(mode ? 'ss' : 'gs', mode ? 2.6 : 1.0) }, uLane: { value: new THREE.Color(P.get('lane') || '#ff7a1a') },
+      uMVP: { value: new THREE.Matrix4() },
+    },
+    vertexShader: `
+      precision highp float;
+      in vec3 position; in vec2 home; in float gid; in float rnd;
+      uniform sampler2D uRgb, uDepth, uMatte; uniform vec2 uTexel, uCellUv; uniform float uAspect, uFig, uMode, uTime, uLo, uHi, uDepthAmt, uSize;
+      uniform mat4 uMVP;
+      out vec2 vUv; out vec3 vCol; out float vW, vGid, vB;
+      float L(vec2 p){ return dot(texture(uRgb,p).rgb, vec3(.299,.587,.114)); }
+      void main(){
+        vec2 h = home;
+        vec3 c = texture(uRgb, h).rgb;
+        float m = texture(uMatte, h).r;
+        float d = texture(uDepth, h).r;
+        float keep = uFig > .5 ? smoothstep(.3,.6,m) : 1.0 - smoothstep(.4,.7,m);
+        float lum = dot(c, vec3(.299,.587,.114));
+        float b = pow(smoothstep(uLo, uHi, lum), 1.15);
+        // structure orientation from luminance gradient (splat mode)
+        vec2 e = uCellUv * .6;
+        float gx = L(h+vec2(e.x,0.)) - L(h-vec2(e.x,0.));
+        float gy = L(h+vec2(0.,e.y)) - L(h-vec2(0.,e.y));
+        float gm = length(vec2(gx,gy));
+        vec2 dir = gm > 1e-4 ? normalize(vec2(-gy, gx)) : vec2(1.,0.);
+        float aniso = uMode > .5 ? mix(1.0, 3.2, smoothstep(.01,.12,gm)) : 1.0;
+        vec2 q = position.xy;
+        if (uMode > .5) { q = vec2(q.x*aniso, q.y/sqrt(aniso)); q = mat2(dir.x, dir.y, -dir.y, dir.x) * q; }
+        float sz = uMode > .5 ? uSize : uSize * (0.35 + 0.75*sqrt(b));
+        vec3 p = vec3((h.x-.5)*uAspect, h.y-.5, (d-.5)*uDepthAmt);
+        p.xy += q * uCellUv * vec2(uAspect,1.) * sz;
+        gl_Position = uMVP * vec4(p,1.);
+        vUv = position.xy + .5; vCol = c; vW = keep; vGid = gid; vB = b;
+      }`,
+    fragmentShader: `
+      precision highp float;
+      uniform sampler2D uAtlas; uniform float uMode; uniform vec3 uLane;
+      in vec2 vUv; in vec3 vCol; in float vW, vGid, vB;
+      out vec4 o;
+      void main(){
+        if (vW < .01) discard;
+        float w;
+        if (uMode < .5) {
+          vec2 cell = vec2(mod(vGid, 8.), floor(vGid/8.));
+          vec2 auv = (cell + vec2(vUv.x, 1.-vUv.y)) / 8.; auv.y = 1.-auv.y;
+          w = texture(uAtlas, auv).r * vB;
+          vec3 col = mix(vCol, vec3(1.), .15) * 1.6;
+          o = vec4(col * w * vW, w * vW);
+        } else {
+          float r2 = dot(vUv-.5, vUv-.5) * 4.;
+          w = exp(-r2 * 2.5) * vW;
+          o = vec4(vCol * w, w);
+        }
+      }`,
+  });
+  const mesh = new THREE.Mesh(geo, mat); mesh.frustumCulled = false;
+  return mesh;
+}
+
+const MODE = num('mode', 0);
+const layers = MODE < 0.5
+  ? [layer(num('cb', 16), 0, 0), layer(num('cf', 10), 1, 0)]
+  : [layer(num('cb', 5), 0, 1), layer(num('cf', 3.5), 1, 1)];
+const scene = new THREE.Scene(); layers.forEach(l => scene.add(l));
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.01, 100);
+// fit: plate height 1 fills frame height (plate aspect may differ; overscan slightly)
+const fitH = Math.max(1, aspect / (W / H)) ** -1;
+const dist = 0.5 / Math.tan(THREE.MathUtils.degToRad(15)) * (W / H >= aspect ? (aspect / (W / H)) : 1) * num('zoom', 0.94);
+
+// resolve: normalized colour, coverage from accumulated weight
+const resolve = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, tAcc: { value: acc.texture }, uK: { value: MODE ? 6.0 : 1.4 }, uMode: { value: MODE }, uTime: { value: 0 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+  fragmentShader: `uniform sampler2D tAcc; uniform float uK, uMode, uTime; varying vec2 vUv;
+    float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+    void main(){
+      vec4 a = texture2D(tAcc, vUv);
+      vec3 c;
+      if (uMode < .5) c = a.rgb;                       // light: glyphs glow on black
+      else c = a.rgb / max(a.a, 1e-4) * (1. - exp(-a.a * uK));
+      // ink-blue lift in the blacks, warm highlights
+      c = c + vec3(.008,.010,.028) * (1. - smoothstep(0., .2, dot(c, vec3(.333))));
+      vec2 d = vUv - .5; c *= 1. - dot(d,d) * .75;
+      c += (h(vUv*vec2(1920.,1080.) + uTime) - .5) * .03;
+      gl_FragColor = vec4(c, 1.);
+    }`,
+});
+resolve.uniforms.tAcc.value = acc.texture;
+const composer = new EffectComposer(renderer);
+composer.addPass(resolve);
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), num('bloom', MODE ? 0.35 : 0.9), 0.6, 0.55));
+composer.addPass(new OutputPass());
+
+window.renderAt = (t, orbit = num('orbit', 0)) => {
+  cam.position.set(Math.sin(orbit) * dist * .3, 0, dist * Math.cos(orbit * .3));
+  cam.lookAt(0, 0, 0); cam.updateMatrixWorld();
+  const mvp = new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
+  layers.forEach(l => { l.material.uniforms.uMVP.value.copy(mvp); l.material.uniforms.uTime.value = t; });
+  renderer.setRenderTarget(acc); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, cam);
+  renderer.setRenderTarget(null);
+  resolve.uniforms.uTime.value = t;
+  composer.render();
+};
+window.renderAt(0);
+window.READY = true;
+</script></body></html>

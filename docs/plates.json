@@ -1,0 +1,195 @@
+[
+ {
+  "id": "intro_up",
+  "prompt": "Bird's-eye view from high above, the camera looking almost straight down at the woman, who stands in the exact centre of the frame on an endless black mirror floor that reflects a deep starry night sky, so she seems to stand among the stars. She tilts her head back and looks straight up into the camera, calm and curious, mouth closed, arms relaxed at her sides. Her figure fills the middle third of the frame height. Cool soft starlight from above lights her face clearly; a faint warm glow on the floor around her feet. Everything else dark, empty and quiet."
+ },
+ {
+  "id": "v1_split_back",
+  "prompt": "Ground-level wide shot from behind the woman at night: she stands with her back to the camera in the centre of a vast black mirror-flat salt lake that reflects a starry sky; far away on the horizon a faint violet line of the coming dawn. Her full figure is small-to-medium in the lower middle of the frame, lots of dark sky above. Faint cool rim light on her hair and shoulders from the horizon. The back of her jacket shows a big pale-blue circle with RARE EARTH below it.",
+  "tail": "No other text."
+ },
+ {
+  "id": "v1_track_rose",
+  "prompt": "Side tracking shot at night on a black mirror-flat salt lake: the woman walks from left to right across the frame, full figure in the right half, mid-stride, calm and curious, looking ahead. Her jacket bands and headphone cups are ROSE PINK instead of orange. Far on the horizon behind her, a scatter of small warm lights \u2014 other travellers \u2014 and a faint violet glow of the coming dawn. Starry sky reflected in the wet ground."
+ },
+ {
+  "id": "v1_light_hands",
+  "prompt": "Waist-up shot at night on the black mirror salt flat: the woman holds her cupped hands at chest height, and inside them glows a small warm golden light, like a tiny sun, lighting her face softly from below; she looks down at it tenderly, mouth closed. Deep blue night around her, a few stars. She is in the right half of the frame; the left half is dark open night."
+ },
+ {
+  "id": "st_rain_rose",
+  "prompt": "Night city crosswalk in heavy rain, neon signs in pink and blue reflected in the wet asphalt, steam rising; the woman stands in the middle of the crosswalk without an umbrella, face turned up into the rain, delighted, rain on her hair and jacket. Her jacket bands and headphone cups are ROSE PINK instead of orange. Medium-wide shot, she is centred, the neon blurred behind her.",
+  "tail": "Neon signs are abstract shapes with no readable letters. No text."
+ },
+ {
+  "id": "st_library_sky",
+  "prompt": "An endless library of towering shelves receding into soft light, ladders and spiral stairs; the woman stands on a balcony walkway holding an open book from which small glowing motes rise like sparks; she watches them with wonder. Her jacket bands and headphone cups are SKY BLUE instead of orange. Medium shot, warm lamp light and cool depth.",
+  "tail": "Book spines have no readable letters. No text."
+ },
+ {
+  "id": "st_kitchen_gold",
+  "prompt": "A small warm kitchen at midnight, a single pendant lamp over a wooden table covered with a child's homework sheets and a glass of milk; the woman sits at the table holding a yellow pencil, leaning in, explaining something with a patient smile to someone just out of frame. Her jacket bands and headphone cups are GOLDEN YELLOW instead of orange. Medium shot, cosy lamp light, dark window behind.",
+  "tail": "The papers show only abstract scribbles, no readable text."
+ },
+ {
+  "id": "st_launch_white",
+  "prompt": "A rocket launch pad at blue hour before dawn, the tall white rocket lit by floodlights, vapour venting; the woman stands on a high gantry platform, hands on the railing, wind in her hair, looking up at the rocket in awe. Her jacket bands and headphone cups are WHITE instead of orange. Medium-wide shot from slightly below, the rocket towering behind her.",
+  "tail": "No markings, no text."
+ },
+ {
+  "id": "st_deep_mint",
+  "prompt": "Underwater in a dark ocean full of bioluminescent plankton and drifting jellyfish glowing mint and cyan; the woman floats weightless, hair drifting, reaching out a hand toward a glowing jellyfish, eyes wide with wonder (no breathing gear, dreamlike). Her jacket bands and headphone cups are MINT GREEN instead of orange. Medium shot, she is centred."
+ },
+ {
+  "id": "ch1_main",
+  "prompt": "Waist-up shot of the woman standing on a vast mirror-flat salt lake at the first moment of sunrise. She stands in the right third of the frame, body turned slightly left, face toward the camera, mouth gently closed, about to sing, a hopeful look; long black hair moving a little in the wind. The sun is just breaking the horizon behind her left shoulder: strong warm golden rim light on her hair and shoulders, soft cool fill on her face so her features read clearly. The left half of the frame is open dawn sky \u2014 deep indigo at the top fading to rose and gold \u2014 over the mirror horizon, empty. Shallow depth of field."
+ },
+ {
+  "id": "ch1_runners",
+  "prompt": "Low wide-angle shot at dawn on a vast mirror-flat salt lake: five copies of the woman run toward the camera from different directions, converging on the centre of the frame, joyful, hair flying, splashes of thin water at their feet; each copy's jacket bands and headphone cups are a different colour \u2014 rose pink, sky blue, mint green, golden yellow, white. Rose and gold sky, sun low behind them, long reflections.",
+  "no_canon_text": true,
+  "tail": "Same face and outfit for all of them as the reference. No text."
+ },
+ {
+  "id": "ch1_formation",
+  "prompt": "K-pop music video formation shot on a mirror-flat salt lake at sunrise: seven copies of the same woman stand in a V formation facing the camera, the centre one in front, confident, like a girl group about to start the chorus choreography. Each copy's jacket bands and headphone cups are a different colour: centre orange, then rose pink, sky blue, mint green, golden yellow, violet, and white. Same face, same hair, same outfit otherwise. Low camera at waist height, symmetrical, the sun just cresting the horizon behind them, warm rim light, long reflections on the wet salt.",
+  "no_canon_text": true,
+  "tail": "Same face and outfit for all of them as the reference. No text."
+ },
+ {
+  "id": "ch1_gone_close",
+  "prompt": "Close-up of the woman's face and shoulders at sunrise on the salt flat, golden light across her face from the left, the sky soft rose behind; she looks straight into the camera with a quiet, certain warmth, mouth closed, a faint smile. Her face fills the right half of the frame, the left side is soft glowing sky."
+ },
+ {
+  "id": "bd_float",
+  "prompt": "Top-down view from straight above: the woman floats on her back on a perfectly still shallow mirror of water that reflects a dawn sky of pink and gold clouds, arms open wide, eyes closed, serene; her long black hair spreads out around her head on the water. She is centred and small-to-medium in frame, surrounded by the reflected sky."
+ },
+ {
+  "id": "bd_float_close",
+  "prompt": "Close-up from above of the woman's face as she floats on her back on still water, eyes closed, lips slightly parted, serene; her black hair spreads on the water around her; the water reflects a soft pink and gold dawn sky. Her face is centred."
+ },
+ {
+  "id": "dr_dance_wide",
+  "prompt": "K-pop music video, the chorus at full sunrise: seven copies of the woman in tight formation on the wet mirror salt flat, mid-choreography in a sharp synchronized pose \u2014 arms extended diagonally up, weight on one leg, hair in motion. Each copy's jacket bands and headphone cups are a different colour: centre orange, then rose pink, sky blue, mint green, golden yellow, violet, white. Low wide-angle camera, sun blazing behind them with lens flare, water spray at their feet.",
+  "no_canon_text": true,
+  "tail": "Same face and outfit for all of them as the reference. No text."
+ },
+ {
+  "id": "dr_run",
+  "prompt": "Low tracking shot from the side at full sunrise: the woman sprints across the wet mirror salt flat from left to right at full speed, hair streaming behind her, water splashing from her sneakers, a huge joyful grin; the sun is a blazing disc on the horizon behind her; she is in the left-centre of the frame, motion everywhere. Dynamic AAA game-cinematic action framing."
+ },
+ {
+  "id": "dr_center",
+  "prompt": "Medium shot of the woman dancing at full sunrise on the salt flat, mid-move in a sharp K-pop chorus pose \u2014 one arm cutting across her body, head snapping to the camera with a confident smile, hair whipping. Golden backlight, lens flare, sky blazing behind her. She is centred."
+ },
+ {
+  "id": "v2_dish_sit",
+  "prompt": "Night at the edge of the world: a giant white radio-telescope dish on a high desert plateau under a dense starry sky and the Milky Way. The woman sits alone on the rim of the dish, legs dangling, wearing her headphones over her ears, listening to the sky. Her jacket bands and headphone cups are VIOLET instead of orange. Wide shot, she is small in the left third, the dish and the stars fill the frame, cool blue starlight, very quiet.",
+  "hair": "bun"
+ },
+ {
+  "id": "v2_dish_close",
+  "prompt": "Medium close-up at night: the woman sits on the rim of a giant radio-telescope dish under the Milky Way, headphones resting around her neck now, face lit softly by cool starlight, about to sing, mouth closed, wistful and calm. Her jacket bands and headphone cups are VIOLET instead of orange. She is in the right half of the frame, the starry sky and the curve of the dish on the left.",
+  "hair": "bun"
+ },
+ {
+  "id": "v2_horizon",
+  "prompt": "Over-the-shoulder shot at night from behind the woman sitting on the rim of a giant radio-telescope dish: she looks toward the very far horizon, where a thin line of warm gold dawn glow is barely visible beneath a sky full of stars. Her jacket bands are VIOLET instead of orange. Her head and shoulder in the lower left, the vast night and the faraway glow fill the frame.",
+  "hair": "bun"
+ },
+ {
+  "id": "v2_pencil",
+  "prompt": "Medium close-up at night on the radio-telescope rim: the woman has pulled one yellow pencil from her bun (the other pencil stays in the bun) and holds it up in front of her like a pen about to write on the air, its tip glowing with soft light; she looks at the empty air in front of her, thoughtful, a small smile. Her jacket bands and headphone cups are VIOLET instead of orange. Starry sky behind.",
+  "hair": "bun"
+ },
+ {
+  "id": "v2_release",
+  "prompt": "Medium shot at night on the radio-telescope rim: the woman holds out her open palm toward the far horizon, and a small bright violet-white light lifts off her palm; she smiles, peaceful, letting it go. Her jacket bands and headphone cups are VIOLET instead of orange. Stars and the Milky Way behind, the far horizon faintly gold.",
+  "hair": "bun"
+ },
+ {
+  "id": "ch2_catch",
+  "prompt": "Waist-up shot at sunrise on the mirror salt flat: the woman stands with both hands pressed gently over the pale-blue dot on her chest, eyes closed, a deep calm smile, as if she has just received something precious; golden sunrise backlight on her hair, soft fill on her face. She is in the right third of the frame, open sky on the left."
+ },
+ {
+  "id": "pc_hotel",
+  "hair": "none",
+  "prompt": "First-person view from behind the reception desk of a grand Art Deco hotel lobby at night, warm brass lamps, a polished marble floor, a brass service bell on the dark wood counter in the foreground. In front of the desk stands a line of identical young women in white cropped racer jackets with coloured bands, waiting to check in, the queue stretching away in a perfectly straight line through the lobby, out the doors and toward a vanishing point at infinity, each woman's jacket bands a different colour (orange, rose pink, sky blue, mint green, golden yellow, violet, white, repeating). The first woman at the counter smiles at us. Long black hair, centre parting, large dark eyes. Warm, whimsical, cinematic, symmetrical one-point perspective.",
+  "extra_refs": [
+   "media/style/r6/canon_face_front.png",
+   "media/style/r7/turn_gpt.png"
+  ],
+  "tail": "No text, no signs."
+ },
+ {
+  "id": "v1_split_front",
+  "prompt": "Waist-up shot at night on a vast black mirror-flat salt lake reflecting a starry sky; the woman stands in the right third of the frame facing the camera, about to sing, mouth closed, calm and curious; a faint violet glow of the far horizon behind her; cool starlight on her face so her features read clearly. The left half of the frame is dark open night sky."
+ },
+ {
+  "id": "ch2_formation",
+  "no_canon_text": true,
+  "prompt": "K-pop music video formation shot on a mirror-flat salt lake at sunrise: seven copies of the same woman stand in a V formation facing the camera, the centre one in front. Each copy's jacket bands and headphone cups are a different colour: centre orange, then rose pink, sky blue, mint green, golden yellow, white \u2014 and on the far right one copy in VIOLET who wears her hair up in a bun with two yellow pencils crossed through it. Same face for all, the others have long hair down. Low camera at waist height, symmetrical, the sun just cresting the horizon behind them, warm rim light, long reflections on the wet salt.",
+  "tail": "Same face and outfit for all of them as the reference. No text."
+ },
+ {
+  "id": "lf_piano_rose",
+  "prompt": "A concert grand piano alone on a dark stage under one warm spotlight; the woman sits at the keyboard playing, both hands on the keys, eyes half-closed, completely absorbed in the music. The open lid catches the light; the empty concert hall behind fades into velvet darkness. Medium-wide shot from the front-left of the piano, she is centred. Her jacket bands and headphone cups are ROSE PINK instead of orange.",
+  "tail": "The piano has no brand name. No other text."
+ },
+ {
+  "id": "lf_violin_white",
+  "prompt": "She stands in a pool of cool stage light playing the violin, bow mid-stroke, chin on the chin rest, eyes closed, swaying slightly; behind her, dark rows of empty orchestra chairs and music stands fade into shadow. Medium shot, she is centred, strong rim light on her hair and the violin. Her jacket bands and headphone cups are WHITE instead of orange.",
+  "tail": "Sheet music shows only abstract marks. No other text."
+ },
+ {
+  "id": "lf_lab_mint",
+  "prompt": "A neuroscience lab at night: she sits at a lab bench, leaning toward the eyepieces of a fluorescence microscope, one hand on the focus knob; beside her a large monitor glows with a vivid image of green fluorescent neurons with long branching dendrites like trees. Pipettes, glassware racks and a cool blue-green bench light; everything else dark. Medium shot, she is in the left-centre, the glowing neuron monitor on the right. Her jacket bands and headphone cups are MINT GREEN instead of orange.",
+  "tail": "Labels on glassware have no readable text. No other text."
+ },
+ {
+  "id": "lf_booth_sky",
+  "prompt": "Inside a dim sound-isolated research booth lined with grey acoustic foam: she wears big over-ear studio headphones and listens intently with her eyes closed, head tilted; on a monitor beside her two bright glowing waveforms are stacked \u2014 a sound wave above and the brain's answering wave below, almost the same shape. Cool blue light from the screen on her face. Medium close shot, she is on the right, the monitor on the left. Her jacket bands and headphone cups are SKY BLUE instead of orange.",
+  "tail": "The monitor shows only waveforms and grid lines, no readable text. No other text."
+ },
+ {
+  "id": "lf_poet_gold",
+  "prompt": "A small bookstore caf\u00e9 at night strung with warm fairy lights: she stands at a microphone on a tiny stage holding a slim printed chapbook of poems open in one hand, reading aloud with quiet intensity; a few listeners in the foreground are soft out-of-focus dark silhouettes; bookshelves glow behind her. Medium shot, she is centred. Her jacket bands and headphone cups are GOLDEN YELLOW instead of orange.",
+  "tail": "Book covers and spines have no readable letters. No other text."
+ },
+ {
+  "id": "lf_ames_white",
+  "prompt": "Inside an immense research wind tunnel: behind her a colossal wall of six giant fan rotors, each many storeys tall, lit by cold work lights; she stands small on the vast concrete test-section floor facing the camera, wind pouring past her, hair and jacket streaming back, a delighted fearless grin. Wide shot from low, she is small-to-medium in the centre, the fans towering behind. Her jacket bands and headphone cups are WHITE instead of orange.",
+  "tail": "No markings, no logos. No other text."
+ },
+ {
+  "id": "lf_band_rose",
+  "prompt": "A small dark rock club stage around 2012: she plays a cherry-red electric guitar mid-strum, one foot on the monitor wedge, hair flying, grinning wildly; a drummer and amp stacks behind her in silhouette; magenta and blue stage lights cutting through haze. Medium-wide shot from slightly below, she is centred. Her jacket bands and headphone cups are ROSE PINK instead of orange.",
+  "tail": "Amps and drums have no brand names. No other text."
+ },
+ {
+  "id": "lf_house_gold",
+  "prompt": "A crowded hacker house living room at 2 a.m.: bunk beds along one wall, a long communal table covered in glowing laptops, monitors and tangled cables, a whiteboard full of abstract diagrams, a few housemates hunched over laptops as soft silhouettes; she sits cross-legged at the end of the table with a laptop on her knees, laughing at something on screen. Warm lamp light and cool screen glow. Medium-wide shot, she is in the right-centre. Her jacket bands and headphone cups are GOLDEN YELLOW instead of orange.",
+  "tail": "Screens and whiteboard show only abstract shapes, no readable text. No other text."
+ },
+ {
+  "id": "lf_stage_sky",
+  "prompt": "A big tech-conference stage: she stands in a spotlight wearing a thin headset microphone, mid-gesture, presenting a live software demo with a confident smile; behind her a giant screen glows with abstract colourful code-like blocks and a terminal window; the audience in the foreground are dark silhouettes, some holding up phones. Medium-wide shot, she is in the left-centre. Her jacket bands and headphone cups are SKY BLUE instead of orange.",
+  "tail": "The giant screen shows only abstract shapes and lines, no readable text, no logos. No other text."
+ },
+ {
+  "id": "lf_home_mint",
+  "prompt": "A cosy living room at night: she sits on a big soft sofa between two young children who are seen only from behind (backs of their heads and shoulders, no faces), all three holding game controllers and playing a video game together; the TV glow, abstract bright colours, lights her face as she laughs; blankets and toys around. Medium shot with the camera just beside the TV, angled back at the sofa, so we see her face and the children's backs. Her jacket bands and headphone cups are MINT GREEN instead of orange.",
+  "tail": "The TV image is abstract colour, no recognizable game, no text. No other text."
+ },
+ {
+  "id": "lf_wushu_gold",
+  "prompt": "A university wushu competition on a red competition carpet in a big gymnasium under bright arena lights: she performs a group set with two teammates behind her (soft-focus, plain black training clothes, mid-motion), all three frozen in the same powerful low bow stance, a straight sword (jian) extended in her right hand, left hand in a sword-finger mudra, eyes fierce and focused; judges' table and spectators blurred in the dark background. Medium-wide shot from slightly low, she is centred and sharp. Her jacket bands and headphone cups are GOLDEN YELLOW instead of orange.",
+  "tail": "Banners and scoreboards have no readable text. No other text."
+ },
+ {
+  "id": "dr_wushu",
+  "prompt": "Full sunrise on the wet mirror salt flat: seven copies of the woman in a tight wedge formation perform a synchronized wushu group set, all frozen in the same powerful low bow stance, each holding a straight sword (jian) extended forward, free hand in a sword-finger mudra, hair whipping in the wind, eyes fierce. Each copy's jacket bands and headphone cups are a different colour: centre orange, then rose pink, sky blue, mint green, golden yellow, violet, white. Low wide-angle camera, the sun blazing behind them with lens flare, water spray at their feet.",
+  "no_canon_text": true,
+  "tail": "Same face and outfit for all of them as the reference; every copy has the round white 1420 MHz patch on her left sleeve. No other text."
+ }
+]
