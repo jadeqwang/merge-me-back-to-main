@@ -1,0 +1,1 @@
+{"clip": "media/gen/v1_split_front_t11_be8b364663.mp4", "s0": 28.22, "fps": 24.0, "frames": 145, "face_found": 145, "win": [28.419999999999998, 34.12], "best_lag_s": 1.208, "corr": 0.655, "top5": [[1.208, 0.655], [1.167, 0.653], [1.25, 0.634], [1.125, 0.632], [1.083, 0.607]], "eye_dist_ratio_min_max": [0.99, 1.534], "face_h_ratio_min_max": [0.999, 1.494], "eye_dist_px_f0": 48.8}

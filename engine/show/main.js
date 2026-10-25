@@ -991,5 +991,7 @@ const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) +
 }
 export const FILM_END = SONG_END + PC_LEN;
 if (T.VERSION !== 'v1') console.log('[show] timing', T.VERSION, 'resync', JSON.stringify(RESYNC));
+// ?dumpedl=1: print the edit list (tools/cloud_pack.py builds review/cloud/manifest.md from it)
+if (new URLSearchParams(location.search).has('dumpedl')) console.log('[edl] ' + JSON.stringify(S.map((x) => ({ t0: +x.t0.toFixed(3), t1: +x.t1.toFixed(3), kind: x.kind, look: x.look, plate: x.plate, s0: x.s0 != null ? +x.s0.toFixed(3) : null, screens: x.screens && x.screens.map((c) => c.plate), panels: x.panels && x.panels.map((p) => [p.plate, p.s0 != null ? +p.s0.toFixed(3) : null]), back: x.back && x.back.plate }))));
 // ?timing=v1: the frozen v1 EDL (pre-port), so the v1 render stays reproducible.
 export const shots = T.VERSION === 'v1' ? (await import('/engine/show/main_v1.js')).shots : S;

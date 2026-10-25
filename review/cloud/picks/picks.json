@@ -1,0 +1,413 @@
+{
+ "bd_ahh": {
+  "plate": "/work/plates/bd_ahh_t12_d2cff0c504",
+  "s0": 111.945,
+  "take": "bd_ahh_t12_d2cff0c504",
+  "timing": "v2",
+  "lag": -0.375
+ },
+ "bd_float": {
+  "plate": "/work/plates/bd_float_t1_1d7694f532",
+  "s0": null,
+  "take": "bd_float_t1_1d7694f532",
+  "timing": "v1",
+  "lag": 0
+ },
+ "ch0_blow": {
+  "plate": "/work/plates/ch0_blow_t2_51327aafa9",
+  "s0": null,
+  "take": "ch0_blow_t2_51327aafa9",
+  "timing": "v1",
+  "lag": 0
+ },
+ "ch0_window": {
+  "plate": "/work/plates/ch0_window_t2_fe1e173ba9",
+  "s0": null,
+  "take": "ch0_window_t2_fe1e173ba9",
+  "timing": "v1",
+  "lag": 0
+ },
+ "ch1_fold_palms": {
+  "plate": "/work/plates/ch1_fold_palms_t11_2d7d5c7f74",
+  "s0": null,
+  "take": "ch1_fold_palms_t11_2d7d5c7f74",
+  "timing": "v2",
+  "lag": 0
+ },
+ "ch1_fold_reach": {
+  "plate": "/work/plates/ch1_fold_reach_t11_a8112f8c1f",
+  "s0": null,
+  "take": "ch1_fold_reach_t11_a8112f8c1f",
+  "timing": "v2",
+  "lag": 0
+ },
+ "ch1_fold": {
+  "plate": "/work/plates/ch1_fold_t5_d2b5352a85",
+  "s0": null,
+  "take": "ch1_fold_t5_d2b5352a85",
+  "timing": "v1",
+  "lag": 0
+ },
+ "ch1_gone_close": {
+  "plate": "/work/plates/ch1_gone_close_t12_872aeaaac5",
+  "s0": 89.118,
+  "take": "ch1_gone_close_t12_872aeaaac5",
+  "timing": "v2",
+  "lag": 0.042
+ },
+ "ch1_main": {
+  "plate": "/work/plates/ch1_main_t11_647f537e3a",
+  "s0": 68.82,
+  "take": "ch1_main_t11_647f537e3a",
+  "timing": "v2",
+  "lag": 0.3
+ },
+ "ch1_runners": {
+  "plate": "/work/plates/ch1_runners_t1_1423594adf",
+  "s0": null,
+  "take": "ch1_runners_t1_1423594adf",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "ch2_catch": {
+  "plate": "/work/plates/ch2_catch_t11_03c5dd87e5",
+  "s0": 207.548,
+  "take": "ch2_catch_t11_03c5dd87e5",
+  "timing": "v2",
+  "lag": 0.292
+ },
+ "ch2_fold_palms": {
+  "plate": "/work/plates/ch2_fold_palms_t12_2cc0102b23",
+  "s0": null,
+  "take": "ch2_fold_palms_t12_2cc0102b23",
+  "timing": "v2",
+  "lag": 0
+ },
+ "ch2_fold_reach": {
+  "plate": "/work/plates/ch2_fold_reach_t12_81f4767eb0",
+  "s0": null,
+  "take": "ch2_fold_reach_t12_81f4767eb0",
+  "timing": "v2",
+  "lag": 0
+ },
+ "ch2_fold": {
+  "plate": "/work/plates/ch2_fold_t5_331403f809",
+  "s0": null,
+  "take": "ch2_fold_t5_331403f809",
+  "timing": "v1",
+  "lag": 0
+ },
+ "ch2_gone_close": {
+  "plate": "/work/plates/ch2_gone_close_t12_b30af2db05",
+  "s0": 228.49,
+  "take": "ch2_gone_close_t12_b30af2db05",
+  "timing": "v2",
+  "lag": 0.12
+ },
+ "dr_center": {
+  "plate": "/work/plates/dr_center_t5_42dcbc6f08",
+  "s0": 163.0,
+  "take": "dr_center_t5_42dcbc6f08",
+  "timing": "v1",
+  "lag": 0
+ },
+ "dr_dance": {
+  "plate": "/work/plates/dr_dance_t1_e70ed35b11",
+  "s0": 153.6,
+  "take": "dr_dance_t1_e70ed35b11",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "dr_duilian": {
+  "plate": "/work/plates/dr_duilian_t2_4e9556bd6b",
+  "s0": 165.34,
+  "take": "dr_duilian_t2_4e9556bd6b",
+  "timing": "v2",
+  "lag": 0
+ },
+ "dr_jian": {
+  "plate": "/work/plates/dr_jian_t2_ddfcbf5ebb",
+  "s0": 163.601,
+  "take": "dr_jian_t2_ddfcbf5ebb",
+  "timing": "v2",
+  "lag": 0
+ },
+ "dr_run": {
+  "plate": "/work/plates/dr_run_t5_993beb3403",
+  "s0": null,
+  "take": "dr_run_t5_993beb3403",
+  "timing": "v1",
+  "lag": 0
+ },
+ "dr_set": {
+  "plate": "/work/plates/dr_set_t1_46e828e934",
+  "s0": 153.167,
+  "take": "dr_set_t1_46e828e934",
+  "timing": "v2",
+  "lag": 0
+ },
+ "dr_wushu": {
+  "plate": "/work/plates/dr_wushu_t2_4c9a83052c",
+  "s0": 163.8,
+  "take": "dr_wushu_t2_4c9a83052c",
+  "timing": "v1",
+  "lag": 0
+ },
+ "intro_up": {
+  "plate": "/work/plates/intro_up_t5_dbec8cd48a",
+  "s0": null,
+  "take": "intro_up_t5_dbec8cd48a",
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_ames_white": {
+  "plate": "/work/plates/lf_ames_white_t1_3748f7bbe8",
+  "s0": null,
+  "take": "lf_ames_white_t1_3748f7bbe8",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_band_rose": {
+  "plate": "/work/plates/lf_band_rose_t1_924e262209",
+  "s0": null,
+  "take": "lf_band_rose_t1_924e262209",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_booth_sky": {
+  "plate": "/work/plates/lf_booth_sky_t1_eda2270a36",
+  "s0": null,
+  "take": "lf_booth_sky_t1_eda2270a36",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_home_mint": {
+  "plate": "/work/plates/lf_home_mint_t1_e194828541",
+  "s0": null,
+  "take": "lf_home_mint_t1_e194828541",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_house_gold": {
+  "plate": "/work/plates/lf_house_gold_t1_9d4aead589",
+  "s0": null,
+  "take": "lf_house_gold_t1_9d4aead589",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_lab_mint": {
+  "plate": "/work/plates/lf_lab_mint_t1_193d5a1944",
+  "s0": null,
+  "take": "lf_lab_mint_t1_193d5a1944",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_piano_rose": {
+  "plate": "/work/plates/lf_piano_rose_t1_47cd4fb6de",
+  "s0": null,
+  "take": "lf_piano_rose_t1_47cd4fb6de",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_poet_gold": {
+  "plate": "/work/plates/lf_poet_gold_t1_074524df98",
+  "s0": null,
+  "take": "lf_poet_gold_t1_074524df98",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_stage_sky": {
+  "plate": "/work/plates/lf_stage_sky_t1_5393480502",
+  "s0": null,
+  "take": "lf_stage_sky_t1_5393480502",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_violin_white": {
+  "plate": "/work/plates/lf_violin_white_t1_e363be16eb",
+  "s0": null,
+  "take": "lf_violin_white_t1_e363be16eb",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "lf_wushu_gold": {
+  "plate": "/work/plates/lf_wushu_gold_t1_4d8ba664f2",
+  "s0": null,
+  "take": "lf_wushu_gold_t1_4d8ba664f2",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "out_dance": {
+  "plate": "/work/plates/out_dance_t1_672a95b09a",
+  "s0": 236.4,
+  "take": "out_dance_t1_672a95b09a",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "out_main": {
+  "plate": "/work/plates/out_main_t12_d9d33a9749",
+  "s0": 249.35,
+  "take": "out_main_t12_d9d33a9749",
+  "timing": "v2",
+  "lag": -0.25
+ },
+ "out_orch_close": {
+  "plate": "/work/plates/out_orch_close_t1_88bac16b5e",
+  "s0": 243.6,
+  "take": "out_orch_close_t1_88bac16b5e",
+  "timing": "v2",
+  "lag": 0
+ },
+ "out_orch": {
+  "plate": "/work/plates/out_orch_t2_a06a77a8ce",
+  "s0": 236.64,
+  "take": "out_orch_t2_a06a77a8ce",
+  "timing": "v2",
+  "lag": 0
+ },
+ "pc_beam": {
+  "plate": "/work/plates/pc_beam_t1_0a8e53006b",
+  "s0": null,
+  "take": "pc_beam_t1_0a8e53006b",
+  "timing": "v2",
+  "lag": 0
+ },
+ "pc_hotel": {
+  "plate": "/work/plates/pc_hotel_t5_da213b53e5",
+  "s0": null,
+  "take": "pc_hotel_t5_da213b53e5",
+  "timing": "v1",
+  "lag": 0
+ },
+ "pc_kneel": {
+  "plate": "/work/plates/pc_kneel_t1_5ddeaba121",
+  "s0": null,
+  "take": "pc_kneel_t1_5ddeaba121",
+  "timing": "v2",
+  "lag": 0
+ },
+ "st_deep_mint": {
+  "plate": "/work/plates/st_deep_mint_t1_37a22f2407",
+  "s0": null,
+  "take": "st_deep_mint_t1_37a22f2407",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "st_kitchen_gold": {
+  "plate": "/work/plates/st_kitchen_gold_t1_e4bc0ef557",
+  "s0": null,
+  "take": "st_kitchen_gold_t1_e4bc0ef557",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "st_launch_white": {
+  "plate": "/work/plates/st_launch_white_t1_f14bd95eec",
+  "s0": null,
+  "take": "st_launch_white_t1_f14bd95eec",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "st_library_sky": {
+  "plate": "/work/plates/st_library_sky_t1_77f4b38d59",
+  "s0": null,
+  "take": "st_library_sky_t1_77f4b38d59",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "st_rain_rose": {
+  "plate": "/work/plates/st_rain_rose_t1_2422385dba",
+  "s0": null,
+  "take": "st_rain_rose_t1_2422385dba",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "v1_light_hands": {
+  "plate": "/work/plates/v1_light_hands_t12_7418e105bc",
+  "s0": 41.313,
+  "take": "v1_light_hands_t12_7418e105bc",
+  "timing": "v2",
+  "lag": 0.667
+ },
+ "v1_split_back": {
+  "plate": "/work/plates/v1_split_back_t1_7dcf266655",
+  "s0": null,
+  "take": "v1_split_back_t1_7dcf266655",
+  "_corr": 0,
+  "timing": "v1",
+  "lag": 0
+ },
+ "v1_split_front": {
+  "plate": "/work/plates/v1_split_front_t11_be8b364663",
+  "s0": 27.012,
+  "take": "v1_split_front_t11_be8b364663",
+  "timing": "v2",
+  "lag": 1.208
+ },
+ "v1_track_rose": {
+  "plate": "/work/plates/v1_track_rose_t5_ecb7683ed7",
+  "s0": null,
+  "take": "v1_track_rose_t5_ecb7683ed7",
+  "timing": "v1",
+  "lag": 0
+ },
+ "v2_dish_close": {
+  "plate": "/work/plates/v2_dish_close_t11_d6fceda232",
+  "s0": 181.67,
+  "take": "v2_dish_close_t11_d6fceda232",
+  "timing": "v2",
+  "lag": 0
+ },
+ "v2_dish_sit": {
+  "plate": "/work/plates/v2_dish_sit_t5_ff92436eac",
+  "s0": null,
+  "take": "v2_dish_sit_t5_ff92436eac",
+  "timing": "v1",
+  "lag": 0
+ },
+ "v2_horizon": {
+  "plate": "/work/plates/v2_horizon_t5_97da4dc230",
+  "s0": null,
+  "take": "v2_horizon_t5_97da4dc230",
+  "timing": "v1",
+  "lag": 0
+ },
+ "v2_pencil": {
+  "plate": "/work/plates/v2_pencil_t11_28b3018d96",
+  "s0": 195.013,
+  "take": "v2_pencil_t11_28b3018d96",
+  "timing": "v2",
+  "lag": 0.167
+ },
+ "v2_release": {
+  "plate": "/work/plates/v2_release_t12_1bf7fde028",
+  "s0": 200.1,
+  "take": "v2_release_t12_1bf7fde028",
+  "timing": "v2",
+  "lag": 0.5
+ },
+ "dr_duilian_mid": {
+  "plate": "/work/plates/dr_duilian_t1_4b6ac49001",
+  "take": "dr_duilian_t1_4b6ac49001",
+  "s0": 165.34,
+  "lag": 0
+ }
+}
