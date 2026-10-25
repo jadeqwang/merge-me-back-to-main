@@ -5,7 +5,8 @@ Nothing is generated or spent here; run the printed command on the box (it goes 
   python3 tools/sd/stills.py ID [ID ...]     write media/plates/v5_prompts/ID.txt and print the command(s) for each
   python3 tools/sd/stills.py ID --pick=a     after a gpt candidate is chosen: centre-crop OUT_a.png (1536x1024) to 16:9 (1536x864) as OUT.png
 STILLS entries: tool = gpt (tools/plates/gpt_plate.py, GPT Image 2.5; refs[0] is the image to edit for "Edit" prompts) | canonprop (canon face onto
-a still, tools/plates/canonprop.py; fill in --box) | fix (one nano-banana-pro edit via tools/plates/fix_patch.py --prompt=). ~$0.21-0.25 per gpt
+a still, tools/plates/canonprop.py; fill in --box) | fix (one nano-banana-pro edit via tools/plates/fix_patch.py --prompt=) | patch (the sleeve-patch
+edit of a picked gpt plate, a PNG: fix_patch.py --prompt= with every lane colour pinned, then saved back over the PNG). ~$0.21-0.25 per gpt
 candidate, ~$0.13 per nano-banana edit."""
 import glob, importlib.util, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -29,6 +30,13 @@ def cmds(k, s, pf):
         return [f"cp {s['src']} {s['src'].replace('.jpg', '_v4.jpg')}   # keep the old still",
                 f"cp {s['src']} media/plates/{s['name']}.jpg && $PY tools/plates/fix_patch.py {s['name']} --prompt={pf}",
                 f"# check media/plates/fix/{s['name']}.jpg, then: cp media/plates/fix/{s['name']}.jpg {s['to']}", s.get("then", "")]
+    if s["tool"] == "patch":   # fix_patch.py NAME reads media/plates/NAME(.png) and writes media/plates/fix/<basename>.jpg
+        stem = os.path.splitext(s["src"])[0]; base = os.path.basename(stem); fixed = f"media/plates/fix/{base}.jpg"
+        return [f"cp {s['src']} {stem}_nopatch.png   # keep the pick",
+                f"$PY tools/plates/fix_patch.py {stem.replace('media/plates/', '', 1)} --prompt={pf}",
+                f"# check {fixed}: the patch on every visible LEFT sleeve and every band colour unchanged (never orange on a branch); then:",
+                f"python3 -c \"from PIL import Image; Image.open('{fixed}').convert('RGB').save('{s['src']}')\"   # a real PNG (cf.py types by extension)",
+                f"rm -f media/gen/refs/{base}.jpg   # no stale cached first frame (batch.py reuses it)"]
     raise SystemExit(f"{k}: unknown tool {s['tool']}")
 
 
@@ -36,7 +44,7 @@ def main():
     ids = [a for a in sys.argv[1:] if not a.startswith("--")]
     pick = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--pick=")), None)
     if not ids:
-        for k, s in STILLS.items(): print(f"{k:16s} {s['tool']:9s} {s['file']:16s} -> {s.get('to') or s['out'] + '.png'}")
+        for k, s in STILLS.items(): print(f"{k:18s} {s['tool']:9s} {s['file']:16s} -> {s.get('to') or s.get('src') or s['out'] + '.png'}")
         return
     for k in ids:
         s = STILLS[k]
