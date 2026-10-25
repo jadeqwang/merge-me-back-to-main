@@ -160,6 +160,78 @@ const FX = {
       gr.addColorStop(0, `rgba(255,248,235,${.8 * f * k})`); gr.addColorStop(1, 'rgba(255,200,140,0)'); g.fillStyle = gr; g.fillRect(px - R, py - R, 2 * R, 2 * R); }
     g.restore();
   },
+  // outro orchestra v5 (Jade 2026-10-25): the composer's score. A five-line staff of light hangs at her pencil. Each glyph appears at the
+  // write head (v.head) when she writes it (e.wt) and drifts away at v.pps px/s (negative = to the right), so the score is a live timeline,
+  // like the git log. A glyph with `fly` leaves the staff and lands on its player (v.to[part]: [x,y] or (e) => [x,y]) on the beat the part
+  // sounds (e.at), where a ring bursts; env[part](t) makes the player glow in her lane colour while the part plays. v.parts: parts shown here.
+  // e = { kind: 'note'|'chord'|'slash'|'bar', wt, at?, end? (held: its light streams on), notes: [midi], c, part?, targets?, fly?, flight?, beam?, small?, key? }
+  score(g, t, v, E, env = {}) {
+    const k = v.k ?? 1, gap = v.gap ?? 22, y0 = v.y, mg = v.merge ? v.merge(t) : 0, open = clamp((t - (v.open ?? -1e9)) / .45);
+    const dia = (m) => Math.floor(m / 12) * 7 + [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6][m % 12];   // staff step, sharps spelling (D major)
+    const Y = (m) => y0 + 4 * gap - (dia(m) - dia(64)) * gap / 2, yMid = y0 + 2 * gap;              // treble staff: bottom line E4
+    const X = (e, at = t) => v.head - (at - e.wt) * v.pps, dir = v.pps < 0 ? 1 : -1;
+    const fade = (x) => clamp((x - v.x0) / 80) * clamp((v.x1 - x) / 80);
+    const vis = (e) => e.wt <= t && (e.key || !e.part || e.part === 'all' || !v.parts || v.parts.includes(e.part));   // key: shown in every framing
+    const PC = { piano: L.rose, violin: L.white, guitar: L.rose }, rgba = (h, a) => `rgba(${[1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)).join(',')},${a})`;
+    const tgt = (p, e) => { const q = v.to?.[p]; return typeof q === 'function' ? q(e) : q; };
+    const kick = T.pulse(t, .12);
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineJoin = 'round';
+    // the staff unrolls from the head on her first stroke (v.open); on merge the five lines fold into one orange line (main) across the frame
+    const a0 = v.head - open * (v.head - v.x0) - mg * 2400, a1 = v.head + open * (v.x1 - v.head) + mg * 2400;
+    for (let i = 0; i < 5; i++) {
+      const y = y0 + i * gap + (yMid - y0 - i * gap) * ss(0, .7, mg), c = mg > .35 ? L.orange : '#FFF1DC';
+      g.globalAlpha = k * (i === 2 ? 1 : 1 - mg) * (.3 + .25 * kick + .6 * mg); g.strokeStyle = c; g.shadowColor = c; g.shadowBlur = 12; g.lineWidth = 2 + 5 * mg;
+      g.beginPath(); g.moveTo(a0, y); g.lineTo(a1, y); g.stroke();
+    }
+    const nh = (x, y, c, s, a) => { g.globalAlpha = a; g.fillStyle = c; g.shadowColor = c; g.shadowBlur = 16; g.beginPath(); g.ellipse(x, y, gap * .62 * s, gap * .43 * s, -.38, 0, 7); g.fill(); };
+    const ledgers = (x, y, a) => { g.globalAlpha = a * .7; g.strokeStyle = '#FFF1DC'; g.lineWidth = 2;
+      for (let yy = y0 - gap; yy >= y - 1; yy -= gap) { g.beginPath(); g.moveTo(x - gap, yy); g.lineTo(x + gap, yy); g.stroke(); }
+      for (let yy = y0 + 5 * gap; yy <= y + 1; yy += gap) { g.beginPath(); g.moveTo(x - gap, yy); g.lineTo(x + gap, yy); g.stroke(); } };
+    const beams = {}, cur = {}; let lastW = -1e9;
+    for (const e of E) {
+      if (!vis(e)) continue; lastW = Math.max(lastW, e.wt); if (e.part && e.at <= t) cur[e.part] = e;
+      const x = X(e), a = k * (1 - mg) * fade(x) * clamp((t - e.wt) / .08); if (a <= 0) continue;
+      const c = e.c || '#FFF1DC', s = e.small ? .8 : 1, flash = 1 + 1.5 * Math.exp(-(t - e.wt) / .15);
+      g.strokeStyle = c; g.shadowColor = c; g.shadowBlur = 14;
+      if (e.kind === 'bar') { const ext = e.big ? 2 * gap : 0; g.globalAlpha = Math.min(1, a * flash); g.lineWidth = e.big ? 5 : 3;
+        g.beginPath(); g.moveTo(x, y0 - ext); g.lineTo(x, y0 + 4 * gap + ext); g.stroke();
+        if (e.double) { g.lineWidth = 9; g.beginPath(); g.moveTo(x + 14 * dir, y0); g.lineTo(x + 14 * dir, y0 + 4 * gap); g.stroke(); }
+        continue; }
+      if (e.kind === 'slash') { g.globalAlpha = a; g.lineWidth = 6; g.beginPath(); g.moveTo(x - 7, yMid + gap * .7); g.lineTo(x + 7, yMid - gap * .7); g.stroke(); continue; }
+      const ys = e.notes.map(Y), lo = Math.max(...ys), hi = Math.min(...ys), up = !!e.beam || dia(e.notes[0]) < dia(71), rx = gap * .55 * s;
+      for (const y of ys) { ledgers(x, y, a); nh(x, y, c, s, Math.min(1, a * flash)); }
+      const sx = up ? x + rx : x - rx, sEnd = e.beam ? y0 - 2 * gap : up ? hi - 3.3 * gap : lo + 3.3 * gap;   // stem; runs share a beam per beat
+      g.globalAlpha = a; g.strokeStyle = c; g.lineWidth = 2.5; g.beginPath(); g.moveTo(sx, up ? lo : hi); g.lineTo(sx, sEnd); g.stroke();
+      if (e.beam) { const p = beams[e.beam]; if (p !== undefined) { g.lineWidth = 6; g.beginPath(); g.moveTo(p, sEnd); g.lineTo(sx, sEnd); g.stroke(); } beams[e.beam] = sx; }
+      if (e.end && t > e.at) { const xr = v.head - (t - Math.min(t, e.end)) * v.pps;   // a held note: its light streams on while it sounds
+        g.globalAlpha = a * (.55 + .2 * Math.sin(t * 34)); g.lineWidth = 5; g.beginPath(); g.moveTo(x + Math.sign(xr - x) * rx * 1.3, ys[0]); g.lineTo(xr, ys[0]); g.stroke(); }
+    }
+    // flights: a phrase leaves the staff and lands on its player on the beat it sounds; a ring bursts there
+    for (const e of E) {
+      if (!e.fly || !vis(e) || t > e.at + .6 || mg > .5) continue;
+      const dep = Math.max(e.wt + .06, e.at - (e.flight ?? .42)), xs = X(e, dep), ys = e.notes ? Y(e.notes[0]) : yMid;
+      for (const p of e.targets || (e.part === 'all' ? Object.keys(v.to || {}) : [e.part])) {
+        const q = tgt(p, e); if (!q) continue; const col = e.part === 'all' ? PC[p] : e.c;
+        g.fillStyle = col; g.strokeStyle = col; g.shadowColor = col; g.shadowBlur = 18;
+        if (t >= dep && t < e.at) { const u = ss(dep, e.at, t), mx = (xs + q[0]) / 2, my = Math.min(ys, q[1]) - 180;
+          for (let j = 0; j < 9; j++) { const w = Math.max(0, u - j * .035), r = 1 - w;
+            g.globalAlpha = k * (1 - j / 9); g.beginPath(); g.arc(r * r * xs + 2 * r * w * mx + w * w * q[0], r * r * ys + 2 * r * w * my + w * w * q[1], (j ? 5 : 9) * (1 - j / 14), 0, 7); g.fill(); } }
+        if (t >= e.at) { const w = (t - e.at) / .6; g.globalAlpha = k * (1 - w) * .9; g.lineWidth = 6 * (1 - w) + 1; g.beginPath(); g.arc(q[0], q[1], 20 + 150 * Math.sqrt(w), 0, 7); g.stroke(); }
+      }
+    }
+    // the players glow in their lane colours while their parts play
+    for (const [p, f] of Object.entries(env)) {
+      if (v.parts && !v.parts.includes(p)) continue; const q = tgt(p, cur[p] || { notes: [67] }); if (!q) continue;
+      const amp = f(t) * k * (1 - mg), R = v.glowR ?? 170; if (amp <= .01) continue;
+      const gr = g.createRadialGradient(q[0], q[1], 0, q[0], q[1], R); gr.addColorStop(0, rgba(PC[p], .42 * Math.min(1.5, amp))); gr.addColorStop(1, rgba(PC[p], 0));
+      g.globalAlpha = 1; g.fillStyle = gr; g.fillRect(q[0] - R, q[1] - R, 2 * R, 2 * R);
+    }
+    // her pencil tip: violet ink (the 1420 MHz branch's colour; her commit comes home in the git log next), a thread to the head as she writes
+    if (v.tip) { const q = typeof v.tip === 'function' ? v.tip(t) : v.tip, w = Math.exp(-Math.max(0, t - lastW) / .2) * (1 - mg);
+      g.globalAlpha = k * (.35 + .65 * w); g.fillStyle = '#E9DDFF'; g.shadowColor = L.violet; g.shadowBlur = 24; g.beginPath(); g.arc(q[0], q[1], 4 + 5 * w, 0, 7); g.fill();
+      if (w > .05) { g.globalAlpha = k * .5 * w; g.strokeStyle = L.violet; g.lineWidth = 2; g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(v.head, yMid); g.stroke(); } }
+    g.restore();
+  },
 };
 const punch = (t, base = 1, amt = .025) => base - amt * T.pulse(t, .14);
 
@@ -686,12 +758,70 @@ const HOOK20 = { x: 110, y: 420, size: 170, maxW: 860, out: ws(21) - .47 };
 }
 // ------------------------------------------------------------------------------------------ OUTRO bars 137–163
 // v2: two "Back to main" (237, 249); drums out bar 149 (arp alone); last hit bar 153, then pads + bass to the fade (song ends SONG_END).
-{ // full drums again: the orchestra of Jades (Jade 2026-10-24: piano, violin, electric guitar, main-Jade conducting every branch). Both takes
+const ORCH = new URLSearchParams(location.search).get('orch') || 'v5';   // ?orch=v4: the conductor version (two shots), for A/B
+if (ORCH === 'v4') { // full drums again: the orchestra of Jades (Jade 2026-10-24: piano, violin, electric guitar, main-Jade conducting every branch). Both takes
   // were made on the v2 instrumental from a bar line (tools/sd/shots_outro.py), so their s0 (picks) keeps the playing on the beat.
   const t0 = bb(136, 3.74), t1 = ws(25) - .08, tc = B(141);
   S.push({ t0, t1: tc, kind: 'lattice', look: 'paint', ...pk('out_orch', t0), fid: () => 1, cam: push(.04),
     text: (ty, t) => ty.line(lines(24), t, { y: 980, size: 64, out: bb(139, 1.29) }) });
   S.push({ t0: tc, t1, kind: 'lattice', look: 'paint', ...pk('out_orch_close', tc), fid: () => 1, cam: push(.05) });
+} else { // v5 (Jade 2026-10-25: the playing should match what's in the music; the conductor becomes a composer writing it in real time with a pencil).
+  // The composer is the violet branch herself (Jade's pick, 2026-10-25): the 1420 MHz Jade, bun with two pencils, violet bands, writing in violet
+  // light, while the main-world band (rose piano, white violin, rose guitar) plays what she writes. The branch that went off on her own writes the
+  // music the others play; seconds later the living graph cherry-picks her commit into main (as the post-credits, she is the one who sends).
+  // What plays (measured on the v2 mix + vocal stem): bar 137 impact, G: four-on-the-floor, offbeat hats, rolling sidechained bass, wide pads,
+  // the intro's 16th arp at full tilt; "main" held to 238.65. 138: the wordless vocal line enters (~238.6, D, long) = the violin's part.
+  // 139: nothing new = the arp = the piano's bar. 140: the line leaps (A 241.92, E 242.75, F# 243.42). 141: chord change G -> Bm (bass to B)
+  // = the guitar's hit; the F# holds (voice to 248.2, then a high synth F# from 247.1). 142-143: Bm, everyone. 144: breath, "Back to main" 249.44 -> home.
+  // Each cut features the player whose part enters, on that bar; she writes each part just before it sounds (FX.score) and it lands on the beat.
+  // Takes: tools/sd/shots_outro.py orch_* (v2 instrumental windows from a beat, so whole-beat s0 shifts keep the playing on the beat). Until a
+  // take is picked, its cut renders a reframe of the v4 takes (stand-in) so the timing can be reviewed now.
+  const t0 = bb(136, 3.74), t1 = ws(25) - .08, BT = T.beatLen(137);
+  // the violin's part = the sung line (vocal-stem pitch track); its F# is carried on by a high synth line from bar 143 (247.1) through the breath
+  const VLINE = [[238.60, 241.64, 62], [241.92, 242.62, 69], [242.75, 243.36, 76], [243.42, 250.40, 78]];   // [on, off, midi]
+  const since = (t, div) => { const b = T.barAt(t), f = (b - Math.floor(b)) * 4 * div; return (f - Math.floor(f)) * T.beatLen(Math.floor(b)) / div; };
+  const on = (a, e, t, att = .06, rel = .25) => ss(a - att, a + att, t) * (1 - ss(e - rel * .3, e + rel, t)), hit = (x, t, d = .35) => (t >= x ? Math.exp(-(t - x) / d) : 0);
+  const ENV = {   // how each player's light follows her part
+    piano: (t) => on(B(137), B(145), t) * (.25 + .75 * Math.exp(-since(t, 4) / .05)),                                   // the arp: every 16th
+    guitar: (t) => on(B(137), B(145), t) * (.2 + .45 * Math.exp(-since(t, 2) / .07)) + hit(B(137), t) + hit(B(141), t),   // the drive: 8ths; the two hits
+    violin: (t) => VLINE.reduce((s, [a, e]) => s + on(a, e, t, .08, .35), 0) * (.85 + .15 * Math.sin(t * 34)),           // the long line, with vibrato
+  };
+  const E = [{ kind: 'bar', wt: B(137) - .04, big: 1 }, { kind: 'chord', wt: B(137), at: B(137) + .12, notes: [62, 67, 71, 74], c: L.orange, part: 'all', targets: ['piano', 'guitar'], fly: 1, key: 1 }];
+  const ARP = { G: [67, 71, 74, 69], Bm: [71, 74, 78, 73] };   // the arp's notes as measured: G4 B4 D5 A4 / B4 D5 F#5 C#5
+  for (let n = 137; n <= 144; n++) for (let j = 0; j < 16; j++) { const at = bb(n, j / 4); if (at < bb(137, 1)) continue;   // beat 1 of 137 is the slam
+    E.push({ kind: 'note', small: 1, wt: at - BT, at, notes: [ARP[n < 141 ? 'G' : 'Bm'][j % 4]], c: L.rose, part: 'piano', beam: `${n}.${j >> 2}`, fly: j % 4 === 0 }); }
+  for (let n = 137; n <= 144; n++) for (let j = 0; j < 8; j++) { const at = bb(n, j / 2), ch = n === 141 && j === 0; if (at < bb(137, .5)) continue;
+    E.push(ch ? { kind: 'chord', wt: at - .2, at, notes: [59, 62, 66, 71], c: L.rose, part: 'guitar', fly: 1, flight: .14, key: 1 }          // the change: she taps B-D-F#, flicks it over
+      : { kind: 'slash', wt: at - BT, at, c: L.rose, part: 'guitar', fly: j % 2 === 0 }); }
+  VLINE.forEach(([a, e, m], i) => E.push({ kind: 'note', wt: a - (i ? .06 : .3), at: a, end: e, notes: [m], c: L.white, part: 'violin', fly: 1, flight: i ? .05 : .26 }));
+  E.push({ kind: 'bar', wt: bb(143, 3.4), double: 1, c: L.orange });   // her final double bar, as the line breathes
+  E.sort((a, b) => a.wt - b.wt);
+  // framings (1920-space; tune on the picked takes with a still at each cut's midpoint). Wide: the score hangs in the sky over the band.
+  const WIDE = { y: 66, gap: 26, x0: 140, x1: 1780, head: 960, pps: 230, tip: [930, 160], open: B(137) - .06,
+    to: { piano: [272, 572], violin: [1462, 330], guitar: [1705, 572] } };
+  const CLOSE = { y: 150, gap: 26, x0: 1000, x1: 1880, head: 1180, pps: -150, tip: [1150, 380], to: { piano: [300, 720], violin: [1475, 500], guitar: [1750, 735] } };
+  const KEY = (e) => [560 + ((e.notes?.[0] ?? 67) - 64) * 46, 640];
+  const CUTS = [ // [t0, t1, v5 shot, view, v5 cam, stand-in [v4 shot, s0, cam, view overrides]]
+    [t0, B(138), 'orch_wide', WIDE, push(.03), ['out_orch', B(137), push(.04), { tip: [1190, 240] }]],
+    [B(138), B(139), 'orch_line', { y: 170, gap: 24, x0: 80, x1: 1240, head: 760, pps: 200, tip: [720, 300], parts: ['violin'], to: { violin: [1350, 430] } },
+      (u) => ({ dolly: 1 - .03 * u, pan: [.02 * u, 0], over: 1.06 }), ['out_orch', B(137), () => ({ dolly: .52, pan: [.36, .1], over: 1.06 }), { tip: [606, 170], head: 640, to: { violin: [1090, 335] } }]],
+    [B(139), B(140), 'orch_keys', { y: 90, gap: 22, x0: 60, x1: 1860, head: 1960, pps: 300, parts: ['piano'], to: { piano: KEY }, glowR: 120 },
+      (u) => ({ dolly: 1 - .03 * u, pan: [.03 * u, 0], over: 1.06 }), ['out_orch', B(137), () => ({ dolly: .42, pan: [-.56, .025], over: 1.06 }), { to: { piano: (e) => [760 + ((e.notes?.[0] ?? 67) - 64) * 36, 560] } }]],
+    [B(140), B(141), 'orch_pencil', { ...CLOSE, parts: ['violin'] }, push(.04), ['out_orch_close', B(139), push(.05), { tip: [1560, 520] }]],
+    [B(141), B(142), 'orch_guitar', { y: 100, gap: 22, x0: 0, x1: 1300, head: -60, pps: -260, parts: ['guitar', 'violin'], to: { guitar: [1250, 640] } },
+      push(.04), ['out_orch', B(137), () => ({ dolly: .5, pan: [.47, .04], over: 1.06 }), { to: { guitar: [1380, 690] } }]],
+    [B(142), bb(143, 3), 'orch_wide', WIDE, (u) => ({ dolly: .96 + .08 * u, over: 1.06 }), ['out_orch', B(139), (u) => ({ dolly: 1.02 - .06 * u, over: 1.06 }), { tip: [1190, 240] }]],
+    [bb(143, 3), t1, 'orch_pencil', { ...CLOSE, parts: [], merge: (t) => ss(B(144) - .1, t1 - .05, t) }, push(.04), ['out_orch_close', B(141), push(.05), { tip: [1560, 520] }]],
+  ];
+  CUTS.forEach(([a, b, shot, view, cam, [alt, altS0, altCam, altView]]) => {
+    // each cut switches to its new take once one is picked (has(): a real take, not picks.py's still_ placeholder); until then the stand-in
+    const v5 = has(shot), v = v5 ? view : { ...view, ...altView }, composer = shot === 'orch_pencil';
+    const lead = !composer && v.parts?.[0], tint = lead && { piano: L.rose, violin: L.white, guitar: L.rose }[lead];
+    S.push({ t0: a, t1: b, kind: 'lattice', look: 'paint', ...(v5 ? pk(shot, a) : { plate: pk(alt, 0).plate, s0: altS0 }), fid: () => 1, cam: v5 ? cam : altCam,
+      ...(composer ? { lane: L.violet, laneAmt: .1 } : {}),   // her close-ups carry the violet lane, like every 1420 MHz shot
+      update: tint ? (sc, u, t) => { sc.fig.set('uTint', tint); sc.fig.set('uTintAmt', .04 + .18 * Math.min(1, ENV[lead](t))); } : undefined,   // the featured player lights up
+      text: (ty, t) => { FX.score(ty.g, t, v, E, ENV); if (t < B(139)) ty.line(lines(24), t, { y: 980, size: 64, out: we(24) + .25 }); } });
+  });
 }
 // 4:12 home (Jade 2026-10-25: too smiley at the end). Interim, while out_main_t12 is picked: it grins with teeth from 252.25 to the cut, so the
 // shot ends there and what follows starts earlier (the end card keeps its bar-153 hit). A re-take (tools/sd/shots_v5.py) gets the full shot.
