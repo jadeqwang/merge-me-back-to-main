@@ -880,3 +880,5 @@
 {"ts": "2026-10-25T23:08:17Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_close_t56", "job": "mergemain/dr_dl_close_t56-b77e9b74f0", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-25T23:09:10Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_close_t57", "job": "mergemain/dr_dl_close_t57-2996c73578", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-25T23:09:11Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_close_t58", "job": "mergemain/dr_dl_close_t58-5cb781f3c9", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-25T23:14:47Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_close_t57", "job": "mergemain/dr_dl_close_t57-2996c73578", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-25T23:14:47Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_close_t58", "job": "mergemain/dr_dl_close_t58-5cb781f3c9", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
