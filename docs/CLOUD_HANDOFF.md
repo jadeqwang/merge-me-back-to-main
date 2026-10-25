@@ -4,6 +4,17 @@ Jade is travelling from 2026-10-25. This note is for whichever Claude picks the 
 the phone app's Code tab) or a Remote Control session on the Linux box. Read this first, then `docs/HANDOFF.md` (ground rules, map,
 commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and `docs/RESUME.md` (checkpoint log).
 
+## Jade's plan (2026-10-24): Claude Code cloud + GitHub + open-artifacts
+The Linux box stays on. Jade will mostly work through **cloud sessions on this GitHub repo**, plus an "open-artifacts" setup she's building
+with another Claude instance (ask her for its details; don't guess at how it works). Consequences for a cloud session:
+- Pixel work (renders, stills, new takes, lip-sync picks) still runs only on the box. Until a bridge exists, write the change, push, and
+  add a **"needs render"** entry at the bottom of `docs/RESUME.md` (what, which `--q` params and time range) for the next box-side session.
+- Review media is big: the 720p film is ~1.2 GB and the comparison clips are 45–90 MB each. Artifact pages have size limits (claude.ai
+  artifacts: 16 MB per page), so plan on stills, contact sheets or short low-bitrate excerpts there, not the film itself.
+- If a render bridge is built (e.g. a GitHub Actions **self-hosted runner** on the box): the repo is **public**, so the bridge must never run
+  on pull requests from forks. Trigger it only on `workflow_dispatch` or pushes by Jade, and keep the Cloudflare credentials off it. Ask Jade first;
+  it's her machine.
+
 ## Two ways to work, and what each can do
 
 | | **Cloud session** (fresh VM, clone of github.com/jadeqwang/merge-me-back-to-main) | **Remote Control** (a session on Jade's Linux box, driven from web/phone) |
