@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_gs_salute_t52",
+ "notes": "{\"shot\": \"dr_gs_salute\", \"s0\": 170.558, \"plate\": \"media/plates/drop/dr_gs_v6.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. The close of the group set. Six copies stand in a V pointing at the camera with its point left empty, and the main copy in ORANGE (high ponytail, orange bands and headphones) stands just behind the empty point, between the rose and sky copies. The six sweep both arms out and, about 1.7 seconds in, exactly on a beat of the reference audio, drop together into a deep horse stance with both arms stretched straight out to the sides, level, and hold it still. Right after, the orange copy takes two quick steps forward through the gap into the empty point nearest the camera. About 2.6 seconds in, all seven rise together, bring their feet together and give the wushu salute: right fist pressed into the open left palm in front of the chest, arms rounded, chins up, proud small smiles at the camera, and they hold it perfectly still to the end. Low frontal camera at waist height, symmetrical and still. Exactly seven copies stay in frame for the whole shot (the six in the V and the orange copy); nobody leaves, merges, splits or disappears. Their mouths stay closed; nobody sings or speaks. Every copy keeps the same face and outfit as in the first frame, only the band colours differ. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/dr_gs_v6_2048.jpg",
+  "duration": 5,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/dr_gs_salute_v2_170.56_5s.mp3"
+  ]
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_gs_ranks_t52",
+ "notes": "{\"shot\": \"dr_gs_ranks\", \"s0\": 158.384, \"plate\": \"media/plates/drop/dr_gs_line6.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. A wushu team's barehand changquan group set. Six copies stand in one line facing the camera, evenly spaced, feet together, fists chambered at the hips, absolutely still, eyes forward. About 1.7 seconds in, exactly on a beat of the reference audio, all six burst out together into a deep bow stance with a straight punch, in the same frame; about 2.6 seconds in they all drop into a very low drop stance, one leg stretched straight out along the water, the arm sweeping low over it; about 3.5 seconds in they all rise back into the bow stance and whip the rear arm up overhead into a sharp pose, heads snapping to the camera, and hold it dead still to the end. Crisp, powerful, exactly in unison, like one body. Low frontal camera, slow push in. Exactly six copies stay in frame for the whole shot, in the same order along the line (there is no orange copy); nobody leaves, merges, splits or disappears. Their mouths stay closed; nobody sings or speaks. Every copy keeps the same face and outfit as in the first frame, only the band colours differ. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/dr_gs_line6_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/dr_gs_ranks_v2_158.38_6s.mp3"
+  ]
+ }
+}
