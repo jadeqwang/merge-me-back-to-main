@@ -676,3 +676,16 @@
 {"ts": "2026-10-25T10:57:46Z", "model": "google/nano-banana-pro", "tag": "fixpatch_v2_horizon_v5src", "ok": false, "est_usd": 0.1344, "where": "cloud"}
 {"ts": "2026-10-25T10:58:47Z", "model": "google/nano-banana-pro", "tag": "fixpatch_v2_horizon_v5src", "ok": true, "est_usd": 0.1344, "where": "cloud"}
 {"ts": "2026-10-25T11:00:41Z", "model": "google/nano-banana-pro", "tag": "fixpatch_v2_horizon_v5src", "ok": true, "est_usd": 0.1344, "where": "cloud"}
+{"ts": "2026-10-25T11:02:56Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_wide_0", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:02:57Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_wide_1", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:03:27Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_wide_0", "ok": true, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:04:43Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_wide_1", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:06:30Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_wide_1", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:08:16Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_line_0", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:08:17Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_line_1", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:10:03Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_line_0", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:10:03Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_line_1", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:11:50Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_line_0", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:11:50Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "drop_orch_line_1", "ok": false, "est_usd": 0.2256, "where": "cloud"}
+{"ts": "2026-10-25T11:20:00Z", "model": "openai/gpt-image-2.5-sunburst", "tag": "cloud_502_timeouts_maybe_billed_x36", "event": "conservative_estimate", "ok": true, "est_usd": 8.1216, "where": "cloud"}
+{"ts": "2026-10-25T11:20:00Z", "model": "google/nano-banana-pro", "tag": "cloud_502_timeouts_maybe_billed_x5", "event": "conservative_estimate", "ok": true, "est_usd": 0.672, "where": "cloud"}

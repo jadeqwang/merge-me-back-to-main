@@ -167,3 +167,39 @@
 - **v5a rendered (box, 2026-10-25 05:46 CDT), needs Jade:** `review/v5a/` (4 × 720p parts, 75–80 MB; README has the eyeball table). Branch at 54bf08e,
   default params, `picks.py` + `edl_check` (held-clocks 0) + `mix.py out/mix_v5.wav` first. No Drive upload route on the box, so no 1080p file.
   No generation (stand-ins everywhere v5 needs new takes). Master: box `out/review/v5a/merge_v5a_720.mp4`.
+- **Cloud generation attempt (cloud, 2026-10-25 ~11:00 UTC; Jade flying; needs intake/render + Jade):** the v5 queue could NOT run from the cloud.
+  Two blockers, both outside the repo:
+  1. **Seedance blocked: KV 401.** The read-only probe in `docs/CLOUD_GEN.md` (check 1) returned `401 Authentication error`: the proxied
+     Cloudflare token has no Workers KV permission, so `gen.py` can't queue relay jobs. **Jade: add "Workers KV Storage: Edit" (account
+     scope) to the cloud token.** The same token passes `/user/tokens/verify` and `/ai/models/search` (200), so only the KV scope is missing.
+  2. **Image calls time out at ~30 s.** `/ai/run` works, but every attempt that runs longer than ~30 s comes back as `HTTP 502: upstream
+     request failed` (plain text, not Cloudflare JSON; every failed attempt lasted 30.5 s). GPT Image 2.5 `high` and nano-banana-pro
+     usually take longer, so only 3 of ~44 attempts returned. The upstream may still have billed the timed-out ones, so the ledger carries a
+     **conservative $8.79 row** (36 GPT Image + 5 nano-banana attempts, tags `cloud_502_timeouts_maybe_billed_*`). Delete those two rows
+     once the Cloudflare bill shows they weren't charged. I stopped image work after the orchestra plates kept failing. Once KV works,
+     image calls can go through the relay (async, no 30 s hop), or the box can make them.
+  - **Made (in `review/takes/stills/`; box: copy into place, then `rm` the cached first frame):**
+    - `v2_horizon_v5.jpg` (3:09 jacket back, queue 6): 2 nano-banana-pro calls from the 1600-px stand-in (`review/cloud/stills/v2_horizon_t5_*`).
+      **Pick b**: the violet band behind the circle is gone, the 1420 MHz patch is on her LEFT arm only, bands/collar/straps/headphones
+      stay violet, and the bun, pencils, dish and sky are unchanged. Candidate a removed the band but kept the patch on both sleeves. Box:
+      `cp media/plates/fix/v2_horizon.jpg media/plates/fix/v2_horizon_v4.jpg; cp review/takes/stills/v2_horizon_v5.jpg media/plates/fix/v2_horizon.jpg;
+      rm -f media/gen/refs/v2_horizon_fix.jpg`. It's 2752×1536 (made from the stand-in, not the box's full-res plate); redo it from the box
+      plate if it looks soft. Then the `v2_horizon` takes (2 × 8 s).
+    - `orch_wide.png` (16:9 crop) + `orch_wide_a_uncropped.png` (queue 9): only candidate a returned (b timed out three times). It matches
+      the prompt: the violet composer (bun, two pencils, glowing pencil baton raised in her right hand, patch on her left arm), with the
+      rose pianist, white violinist and rose guitarist kept. Provisional pick: the centre crop clips the shoes a little, and the box may
+      want candidate b (`gpt_plate.py` reuses `_a` if it's in `media/plates/outro/`). Box: `cp review/takes/stills/orch_wide_a_uncropped.png
+      media/plates/outro/orch_wide_a.png`, make b, then pick.
+  - **Not made:** `orch_line/keys/pencil/guitar` plates, `intro_up`/`bd_float` canonprop candidates, the three wushu plates and their patch fixes,
+    and **every Seedance take** (queue 1–5, 6's takes, 7, 8, 10, 11). No `review/takes/*.mp4`. The canonprop windows for the box (on the
+    1600-px stand-ins; scale ×1.2 for the 1920-wide plates): `intro_up --box=425,0,480` (head + the long hair to the shoulders), `bd_float
+    --box=570,10,320` (the whole fanned hair).
+  - **Spend:** ledger $293.61 of $600 = $284.32 before + $0.49 logged (3 images) + $8.79 conservative for the timeouts. Hard stop was $365.
+  - **Next:** either Jade fixes the KV scope and a NEW cloud session reruns the queue (`--t0=51`; route the images through the relay too),
+    or the box runs V5_BOX_RUNSHEET §2 as written (then it can drop the two stills above into place instead of regenerating them).
+
+### Summary for Jade (cloud generation session, 2026-10-25)
+Nothing was animated: the cloud token can't write Workers KV (401), so Seedance can't queue. Image calls work but hit a ~30 s timeout
+between this container and Cloudflare, so only 3 of ~44 came back. Kept: the 3:09 jacket-back fix (band gone, patch on the left arm only) and
+one orchestra wide candidate (violet composer). Spend: $284.82 logged, plus $8.79 booked conservatively in case Cloudflare billed the timed-out
+attempts (ledger $293.61 / $600). To unblock: add **Workers KV Storage: Edit** to the cloud token, or let the box run the queue when you're back.
