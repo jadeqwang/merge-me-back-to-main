@@ -64,12 +64,30 @@ with v4's): 33 panes, 7 fork copies, 10 shots. After: 0, for the default, `figlo
 | 3:56.3 | `ch2_gone_close` (lag 0.3) ended 0.2 s early; then the orchestra stand-in's first frame 0.1–0.3 s | cut on its last frame; the stand-in eases in from frame 0 and is on the beat again 2 beats after bar 137 (the `orch_wide` take covers the head by itself) | the cut into the orchestra |
 
 **Fork tree** (1:07, 1:15, 2:57): the copies are built from glyphs like every other figure (decision 9): the soft underpaint and three glyph tiers
-of `LOOKS.ascii2.figGlyph`, per screen cell, 5 px for a big copy down to 2.5 px for the 1,024 tiny ones; lane recolour and the Banach–Tarski
+of `LOOKS.ascii2.figGlyph`, per screen cell (copy height / 160, 2.5–5 px since §1.2; it was 5 px for a big copy); lane recolour and the Banach–Tarski
 ownership as before. A SwiftShader smoke test on a test plate (the intro_up still, rough matte) compiled and drew them, with about the LED
 copies' brightness (`figGain`, default 1.2). Check the 1:07 face against `?figlook=led` (the old LED copies).
 
 **Review render ranges for these** (in §3's commands): 27–44 (L1 copies, the 0:42 cut), 53–90 (grid, origin, 1:15 tree, ch1 cut, fold),
 99–119 (breakdown), 124–153 (build), 176–184 (drop tree, the 3:01 insert), 222–266 (fold, the 3:56 cut), and 64–80 with `figlook=led`.
+
+### 1.2 v5a QA fixes (cloud, 2026-10-25; nothing rendered)
+The QA pass on `review/v5a/` found five problems. All are engine or EDL fixes; no new takes. Test stills were rendered with SwiftShader on test
+plates made from the raw takes in `review/cloud/takes` (not committed). `edl_check` reports 0 exceptions and 0 held clocks for the default,
+`orch=v4`, `drop=v4/v5`, `figlook=led` and `--fake=allnew`.
+
+| time | problem | fix | eyeball |
+|---|---|---|---|
+| 1:07 (+1:15, 2:57) | glyph face unreadable: ~10 cells across, hair lost | fork-tree glyph cell = copy height / 160 (2.5–5 px; was 5 px for a big copy), so the hero copy is ~17 cells across the face at 720p, with the same count at 1080p; the underpaint fills her dark parts with their own colour (`uShadow`, as the LED dots did), so hair frames the face. Test still: eyes, nose, mouth and hair resolve; frame mean unchanged (18.9 vs LED 18.6) | 1:05–1:10, A/B `figlook=led` |
+| 1:40–1:47 | `bd_float` back plate blown to white | the back is added rgb × coverage alpha, and the glyph figure (four layers) carries ~2.5x the LED's coverage: back `figGain: .3` (panels.js; LED ignores it). Test: figure mean 64 vs LED 54, clipped 3.6% vs 3.8% (was 135, 21%) | 1:40–1:52 |
+| 3:58–4:05 | stand-in close-ups tear (beige/black smears) | `LatticeView.frame({ zoom })`: a 2D punch-in (the depth lattice converges on the camera, so there is no parallax), clamped inside the plate. The three stand-in close-ups (line, keys, guitar) use it with a ±1% push instead of dolly .42–.52. Test on a random-block depth: the zoom renders the same as flat depth (diff 0.0; the dolly was 27). The line staff ends left of the violinist's head; the keys pan is clamped (targets moved 63 px). The v5 orchestra stays the default: the stand-ins are clean now, so no take gate is needed | 3:56–4:09, A/B `orch=v4` |
+| 0:54–1:05, 2:05–2:31 (+1:40, 4:12, 4:47) | slowed panes step at 3.5–7.5 images/s | frame blending (plateseq.js): a clock slower than 0.9x shows frames floor/ceil mixed by the fraction (rgb, depth, matte; lattice.js samples both). At normal speed the nearest frame is shown, as before. The fork tree opts out (its shader reads one frame; its clocks aren't slowed). Test: 6 frames at 0.46x give 6 distinct images, where nearest-frame gave 3 pairs | the grid's head turn, the build wall, the post-credits window |
+| 2:26 | "chess move" lost on the returning panes | a soft dark ellipse fitted to each right-hand word, firmer from bar 85 when the panes come back | 2:24–2:28 |
+| 4:18 | a popped pane clips the oldest log hash | one hash column (the block is centred on the longest message), 30/24 px type, 28 px apart from 1060: the oldest line's top (~982) clears the lowest pane edge (~968) | 4:15–4:22 |
+| 3:00.8 | dish flicker; near-black frame after the flash | the insert starts at `v2_dish_sit` clip 3.35 (the take flickers over 3.0–3.3). The drop's white card fades to 30% (not to black) and the verse carries the tail to 0 | 3:00.6–3:01.8 |
+| 0:00 | poem low-contrast on the frost | the hooks' radial scrim (.8/.55), fitted to the block, and a denser shadow | 0:00–0:03 |
+
+**Review render ranges**: 0–4, 53–70 (and 64–70 with `figlook=led`), 99–113, 124–152, 178–184, 235–253, 255–266 and 285–297.
 
 ## 2. Generation queue (in this order; ≈ cost at list prices)
 

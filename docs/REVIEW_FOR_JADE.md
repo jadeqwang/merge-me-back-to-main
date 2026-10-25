@@ -79,6 +79,8 @@ The run sheet `docs/V5_BOX_RUNSHEET.md` has the commands, the costs (≈ $70.5 q
 | all | (your OK) fix every frozen frame, never loop | 50 held take clocks found in 12 places and fixed: the life panes (the grid's head turn, the breakdown, the build wall) now play slowed so each take lasts as long as its pane; sung takes are only trimmed (cuts at 0:42.1, 1:14.7, 1:51.9, 3:56.3 moved to the take's own first or last frame); 3:01 opens on two beats of the wide at the dish before the close-up; the folds play at 0.97x and 0.9x. The fork-tree copies (1:07, 1:15, 2:57) are glyph-built like every other figure (`?figlook=led` for the old dots) | eyeball in the review render |
 | post-credits | they shouldn't touch; play once | **Your pick: the violet branch sends** (existing takes): she sends the light toward the horizon; the girl alone at the intro's window watches it touch the glass once, and the shape grows there. One chime cascade. No new takes. | Remix + fit the light's path on stills |
 
+After the v5a QA: the 1:07 glyph face now reads (finer cells, and her hair shows). The 1:41 back plate is no longer blown out. The orchestra stand-in close-ups are clean crops and no longer tear. Slowed panes blend frames instead of stepping. Also fixed: the 2:26 label, the 4:18 log, the 3:01 dish flicker and the poem's contrast (run sheet §1.2).
+
 Nits for you:
 - The life-montage plate `lf_wushu_gold` shows a sword group set with teammates, but your group set was barehand and jian was your solo.
   Re-caption it or regenerate it?
