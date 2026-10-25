@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate first-frame plates from docs/plates.json (list of {id, prompt, refs?, hair?: down|bun, ar?, extra_refs?}).
+"""Generate first-frame plates from docs/plates.json (list of {id, prompt, refs?, hair?: down|bun|ponytail, ar?, extra_refs?}).
+hair=ponytail (v5): canon face v4 + the patch turnaround refs, hair pulled up into a high ponytail.
 Skips plates that already exist unless --force. Run with the moongazing venv: $PY tools/plates/gen_plates.py [ID ...] [--force] [--n=2]
 Each plate gets the STYLE line and the face/body canon refs; output media/plates/<id>[_k].jpg"""
 import json, os, sys
@@ -16,6 +17,7 @@ COST = ("Costume as the reference turnaround: white cropped racer jacket with ON
  "orange straps; chunky white sneakers; orange headphones around the neck.")
 REFS = {"down": ["media/style/r6/canon_face_front.png", "media/style/r6/canon_face_34.png", "media/style/r7/turn_gpt_patch.png"],
         "bun": ["media/style/r6/canon_face_front.png", "media/style/r7/bun_nbp.jpg", "media/style/r7/turn_gpt_patch.png"],
+        "ponytail": ["media/style/canon_v4/canon_face.png", "media/style/r7/turn_gpt_patch.png", "media/style/r7/patch_34.png"],
         "none": []}
 def main():
     specs = json.load(open(os.path.join(ROOT, "docs", "plates.json")))
@@ -36,6 +38,7 @@ def main():
                 tail += ' The only lettering anywhere on her is "1420 MHz" on the round white sleeve patch (and RARE EARTH on her jacket back when her back is visible).'
             p = f"{STYLE} {s['prompt']}" + (f" {FACE} {COST}" if people and not s.get("no_canon_text") else "") + " " + tail
             if hair == "bun": p = p.replace("long straight black hair with a centre parting", "black hair twisted up into a loose bun with two yellow pencils crossing through it in an X, eraser caps up (one pale blue, one pink), centre parting")
+            if hair == "ponytail": p = p.replace("long straight black hair with a centre parting", "long straight black hair with a centre parting, pulled up into a high ponytail")
             refs = REFS[hair] + s.get("extra_refs", [])
             inp = {"prompt": p, "aspect_ratio": s.get("ar", "16:9"), "image_size": "2K"}
             if refs: inp["image_input"] = ["file:" + r for r in refs[:3]]

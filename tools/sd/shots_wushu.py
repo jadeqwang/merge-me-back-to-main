@@ -15,7 +15,8 @@ after the drop (bar 89 is the only big hit, and the "ooh" is in the vocal stem, 
 Lanes/hair for the group-set plates (Jade's decision 2: a mix of high ponytails and space buns): orange = main, canon face, high ponytail; rose,
 sky = two space buns; mint, gold = high ponytails; white, violet = two space buns. Line left to right = the fold V minus its point: white, mint,
 rose | sky, gold, violet (warm, cool, warm | cool, warm, cool; cross pairs white-mint, rose-sky, gold-violet). The duilian keeps dr_duilian's
-hair (orange, mint, sky high ponytails; violet, rose, gold one high bun), so dr_dl_close cuts on from dr_dl_wide without a change.
+hair (orange, mint, sky high ponytails; rose, gold one high bun), so dr_dl_close cuts on from dr_dl_wide without a change; violet has two space
+buns in both (v5.2 hair edits, matching the group set).
 Plates: STILLS below. python3 tools/sd/stills.py ID -> GPT Image 2.5 (tools/plates/gpt_plate.py, 2 candidates) -> stills.py ID --pick=a|b (16:9
 PNG in media/plates/drop/) -> stills.py ID_patch (one nano-banana-pro sleeve-patch edit, every lane colour pinned, saved back over the PNG)."""
 I2 = "analysis_v2/stems/instrumental.wav"
@@ -43,6 +44,10 @@ SHOTS = {
  "dr_gs_salute": dict(plate="media/plates/drop/dr_gs_v6.png", dur=5, group=True, v2=True, audio=(I2, 170.558, 5),  # B(99); cut 100 = clip 1.739; salute 100.3 = 2.61; to 101 = 3.48
    act="The close of the group set. Six copies stand in a V pointing at the camera with its point left empty, and the main copy in ORANGE (high ponytail, orange bands and headphones) stands just behind the empty point, between the rose and sky copies. The six sweep both arms out and, about 1.7 seconds in, exactly on a beat of the reference audio, drop together into a deep horse stance with both arms stretched straight out to the sides, level, and hold it still. Right after, the orange copy takes two quick steps forward through the gap into the empty point nearest the camera. About 2.6 seconds in, all seven rise together, bring their feet together and give the wushu salute: right fist pressed into the open left palm in front of the chest, arms rounded, chins up, proud small smiles at the camera, and they hold it perfectly still to the end. Low frontal camera at waist height, symmetrical and still." + SEVEN + MUTE_G),
 }
+# v5.2 (Jade 2026-10-25: "Match: two space buns"): violet keeps the group set's two space buns in the duilian too. Edited copies of both plates
+# (STILLS dr_duilian_buns / dr_dl_close_buns: only violet's hair changes); the v4 dr_duilian shot keeps the original plate.
+SHOTS["dr_dl_wide"]["plate"] = "media/plates/drop/dr_duilian_v5.png"
+SHOTS["dr_dl_close"]["plate"] = "media/plates/drop/dr_dl_close_v5.png"
 
 # ---- Stills (tools/sd/stills.py ID writes media/plates/v5_prompts/ID.txt and prints the command; nothing here spends). Same world and light as
 # the v4 drop plates (dr_set, dr_duilian: low sun over the wet mirror flat, peach-gold sky, spray); canon face (docs/canon_face_v4.md) for every copy.
@@ -62,6 +67,17 @@ _PATCH = ("Edit the first image. Change ONLY the round patches on the women's LE
           "like the patch in the reference images, a round white embroidered patch with a thin black ring and the bold black text '1420' above "
           "'MHz', crisp and legible, following the curve and lighting of the sleeve. Apply it to every copy whose left sleeve is visible; if it is "
           "hidden or missing where a left sleeve is visible, add it there; never put one on a right sleeve. ")
+_BUNS = ("Edit the first image. Change ONLY the hair of the {who}, the fighter with VIOLET jacket bands, violet cargo straps and violet "
+         "headphones: instead of one high bun, her black hair is now in TWO SPACE BUNS, two round buns high on top of her head, one on each side "
+         "of a centre parting, with a few loose strands framing her face, exactly like the hairstyle in the second reference image. Keep her face, "
+         "eyes, expression, head angle, pose, headphones, jacket and sleeve patch exactly the same. Do not change any other copy's hair: {others}. "
+         "Keep every copy's colours exactly as in the first image: ORANGE for the main copy, VIOLET for her partner, and ROSE PINK, SKY BLUE, MINT "
+         "GREEN and GOLDEN YELLOW for the copies behind them; every branch's jacket bands, cargo straps and headphone cups stay her own colour, never "
+         "orange. Everyone's hair stays BLACK: the lane colours are only on jackets, straps and headphones, never on hair. Keep every round "
+         "white '1420 MHz' patch exactly as it is, where it is.")
+_OTHERS = ("the ORANGE fighter keeps her high ponytail; behind them ROSE PINK and GOLDEN YELLOW keep one high bun, SKY BLUE and MINT GREEN keep "
+           "their high ponytails")
+_BUNREF = ["media/style/v5/violet_space_buns.png"]   # violet's head from the picked dr_gs_line6 (review/takes/stills/violet_space_buns.png)
 _KEEP = (" Keep every other detail of the first image exactly the same: framing, poses, faces, hair, lighting, colours, water, sky and grain. Do "
          "not add any other text.")
 STILLS = {
@@ -81,6 +97,11 @@ STILLS = {
    prompt=_PATCH + "Keep every copy's colours exactly as in the first image: the fighter on the left is ORANGE and the fighter on the right is "
           "VIOLET (violet bands, straps and headphones, never orange); behind them ROSE PINK against SKY BLUE and MINT GREEN against GOLDEN "
           "YELLOW, each in her own colour, never orange." + _KEEP),
+ # v5.2: violet's two space buns in the duilian plates (one nano-banana-pro edit each, pick by eye)
+ "dr_duilian_buns": dict(tool="edit", src="media/plates/drop/dr_duilian.png", to="media/plates/drop/dr_duilian_v5.png", refs=_BUNREF,
+   prompt=_BUNS.format(who="woman on the RIGHT in front, facing left", others=_OTHERS) + _KEEP.replace("faces, hair,", "faces, every other copy's hair,")),
+ "dr_dl_close_buns": dict(tool="edit", src="media/plates/drop/dr_dl_close.png", to="media/plates/drop/dr_dl_close_v5.png", refs=_BUNREF,
+   prompt=_BUNS.format(who="woman on the RIGHT, facing left", others=_OTHERS) + _KEEP.replace("faces, hair,", "faces, every other copy's hair,")),
  # bars 93-99: ranks, the fall, the halves and pairs all start from this line (the fold's V minus its point, flattened into a line)
  "dr_gs_line6": dict(tool="gpt", out="media/plates/drop/dr_gs_line6", refs=["media/plates/drop/dr_set.png", _CANON] + _BODY,
    prompt=_STYLE + "Full sunrise on the wet mirror salt flat, the same world, light and outfits as the first reference image: a wushu team of six "

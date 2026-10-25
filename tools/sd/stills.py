@@ -6,7 +6,8 @@ Nothing is generated or spent here; run the printed command on the box (it goes 
   python3 tools/sd/stills.py ID --pick=a     after a gpt candidate is chosen: centre-crop OUT_a.png (1536x1024) to 16:9 (1536x864) as OUT.png
 STILLS entries: tool = gpt (tools/plates/gpt_plate.py, GPT Image 2.5; refs[0] is the image to edit for "Edit" prompts) | canonprop (canon face onto
 a still, tools/plates/canonprop.py; fill in --box) | fix (one nano-banana-pro edit via tools/plates/fix_patch.py --prompt=) | patch (the sleeve-patch
-edit of a picked gpt plate, a PNG: fix_patch.py --prompt= with every lane colour pinned, then saved back over the PNG). ~$0.21-0.25 per gpt
+edit of a picked gpt plate, a PNG: fix_patch.py --prompt= with every lane colour pinned, then saved back over the PNG) | edit (one nano-banana-pro
+edit of src with its own refs, fix_patch.py --prompt= --refs=, saved as a NEW PNG `to`, src kept). ~$0.21-0.25 per gpt
 candidate, ~$0.13 per nano-banana edit."""
 import glob, importlib.util, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -37,6 +38,12 @@ def cmds(k, s, pf):
                 f"# check {fixed}: the patch on every visible LEFT sleeve and every band colour unchanged (never orange on a branch); then:",
                 f"python3 -c \"from PIL import Image; Image.open('{fixed}').convert('RGB').save('{s['src']}')\"   # a real PNG (cf.py types by extension)",
                 f"rm -f media/gen/refs/{base}.jpg   # no stale cached first frame (batch.py reuses it)"]
+    if s["tool"] == "edit":
+        stem = os.path.splitext(s["src"])[0]; fixed = f"media/plates/fix/{os.path.basename(stem)}.jpg"
+        return [f"$PY tools/plates/fix_patch.py {stem.replace('media/plates/', '', 1)} --prompt={pf} --refs={','.join(s['refs'])} --force",
+                f"# check {fixed}: only what the prompt changes, every lane colour unchanged; then:",
+                f"python3 -c \"from PIL import Image; Image.open('{fixed}').convert('RGB').save('{s['to']}')\"",
+                f"rm -f media/gen/refs/{os.path.splitext(os.path.basename(s['to']))[0]}.jpg   # no stale cached first frame"]
     raise SystemExit(f"{k}: unknown tool {s['tool']}")
 
 

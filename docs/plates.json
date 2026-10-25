@@ -187,6 +187,12 @@
   "tail": "Banners and scoreboards have no readable text. No other text."
  },
  {
+  "id": "lf_wushu_gold_v5",
+  "hair": "ponytail",
+  "prompt": "A collegiate wushu competition in a big university gymnasium: she performs her straight-sword (jian) solo alone on the red competition carpet, caught mid-routine in a deep bow stance, the gleaming jian thrust straight out in her right hand at shoulder height, a short golden-yellow tassel hanging from the pommel, her left arm raised behind her head with the hand in the sword-finger mudra, eyes fierce and focused along the blade. Bright arena lights from above pour a pool of warm light onto the carpet and rim-light her hair; beyond the carpet's white boundary line the judges' table and the spectator stands fall away into soft, dark, out-of-focus shapes, and nobody else is in focus. Medium-wide shot from slightly low, she is centred and sharp, full-body with her sneakers on the carpet. Her black hair is in a high ponytail. Her jacket bands, cargo straps and headphone cups are GOLDEN YELLOW instead of orange.",
+  "tail": "Banners and scoreboards have no readable text. No other text."
+ },
+ {
   "id": "dr_wushu",
   "prompt": "Full sunrise on the wet mirror salt flat: seven copies of the woman in a tight wedge formation perform a synchronized wushu group set, all frozen in the same powerful low bow stance, each holding a straight sword (jian) extended forward, free hand in a sword-finger mudra, hair whipping in the wind, eyes fierce. Each copy's jacket bands and headphone cups are a different colour: centre orange, then rose pink, sky blue, mint green, golden yellow, violet, white. Low wide-angle camera, the sun blazing behind them with lens flare, water spray at their feet.",
   "no_canon_text": true,

@@ -1,0 +1,13 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "lf_wushu_gold_t53",
+ "notes": "{\"shot\": \"lf_wushu_gold\", \"s0\": null, \"plate\": \"media/plates/lf_wushu_gold_v5.jpg\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She performs her straight-sword (jian) solo alone on the competition carpet, one clear, sharp phrase: from the extended thrust she draws the sword back and steps through, swings the blade in one full circle over her head, then lunges low into a deep bow stance with a fast straight thrust on a sharp exhale, the tassel snapping; she rises smoothly onto her right leg into a still one-legged balance, left knee lifted high, the sword held level above her head, her left hand in the sword-finger mudra, and holds it, breath controlled, eyes fierce. In the last two seconds she turns her head to look off to the left, toward something far away, and grows still. She is alone on the carpet; nobody else comes into focus or into the frame. The camera holds steady at a low angle. Her mouth stays gently closed; she does not sing or speak. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/lf_wushu_gold_v5_2048.jpg",
+  "duration": 8,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9"
+ }
+}

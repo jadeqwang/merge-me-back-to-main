@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Repair costume details on existing plates with an image edit (nano-banana-pro), keeping everything else.
-  $PY tools/plates/fix_patch.py NAME[.jpg|.png] ... [--force] [--prompt=FILE]
+  $PY tools/plates/fix_patch.py NAME[.jpg|.png] ... [--force] [--prompt=FILE] [--refs=a.png,b.png]
 Writes media/plates/fix/<stem>.jpg. Default fix = the 1420 MHz sleeve patch; extra per-plate notes in NOTES. --prompt=FILE replaces the whole
-prompt (PATCH + NOTES) with that file's text, for other costume repairs (e.g. the v5 v2_horizon jacket back: tools/sd/stills.py v2_horizon_v5)."""
+prompt (PATCH + NOTES) with that file's text, for other costume repairs (e.g. the v5 v2_horizon jacket back: tools/sd/stills.py v2_horizon_v5).
+--refs= replaces the two patch references (at most 2: nano-banana-pro takes 3 images), e.g. a hair reference for the v5.2 duilian hair edits."""
 import os, sys
 from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "gen")); import cf
@@ -23,6 +24,8 @@ NOTES = {
     "v2_release": " This version of her wears VIOLET instead of orange everywhere: jacket bands, pant straps and headphones all stay VIOLET, never orange." " Also make the small pale-blue dot on her left chest clearly visible (exactly one).",
 }
 REFS = ["media/style/r7/turn_gpt_patch.png", "media/style/r7/patch_34.png"]
+_rf = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--refs=")), None)
+if _rf: REFS = [r for r in _rf.split(",") if r][:2]
 _pf = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--prompt=")), None)
 PROMPT = open(_pf).read().strip() if _pf else None
 

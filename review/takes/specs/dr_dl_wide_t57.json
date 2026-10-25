@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_dl_wide_t57",
+ "notes": "{\"shot\": \"dr_dl_wide\", \"s0\": 151.428, \"plate\": \"media/plates/drop/dr_duilian_v5.png\", \"timing\": \"v2\", \"relay_tag\": \"dr_dl_wide_t54\", \"renamed\": \"cloud session 3: the relay job was submitted as dr_dl_wide_t54, which the box/cloud session 2 already used\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Wushu duilian, a rehearsed sparring set performed as a show: three pairs of copies face off on the wet mirror salt flat, the orange copy against the violet copy in front, the rose copy against the sky copy in the middle behind them, the mint copy against the gold copy at the two sides. For the first moment every pair holds its guard, coiled and still. On the big hit of the reference audio, the drop, about 1.7 seconds in, all three pairs explode into a fast exchange with one strike on every beat: a lunging bow-stance punch met by a rising forearm block, a palm strike parried and countered, a low snap kick checked with a raised knee, then about 4.3 seconds in a high spinning kick that the partner ducks under. The front pair is the clearest; the pairs behind trade the same rhythm. Sharp, fast and powerful, focused faces, hair whipping, water spraying from every step. Low camera pushing slowly in between the two front fighters. Every strike is controlled and stops just short; nothing lands and nobody is hurt; they are partners showing a rehearsed set. Exactly six copies, three pairs, stay in frame for the whole shot; nobody leaves, merges, splits or disappears. Their mouths stay closed; nobody sings or speaks. Every copy keeps the same face and outfit as in the first frame, only the band colours differ. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/dr_duilian_v5_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/dr_dl_wide_v2_151.43_6s.mp3"
+  ]
+ }
+}
