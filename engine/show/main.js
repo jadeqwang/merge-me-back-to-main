@@ -80,6 +80,8 @@ function pk(shot, t0) {
   }
   return { plate: `/work/plates/still_${shot}`, s0: t0 };
 }
+// the shot's picked take is still this one: interim EDL fixes for a flawed take switch themselves off once a re-take is picked
+const isTake = (shot, take) => PICKS[shot]?.take === take;
 const push = (k = .05) => (u) => ({ dolly: 1 - k * u, over: 1.06 });
 const lines = (i) => W(i);
 
@@ -632,14 +634,23 @@ const ctxBar = (ty, t, pct) => { const g = ty.g; g.save(); g.font = '500 20px JB
 }
 // ------------------------------------------------------------------------------------------ CHORUS 2 bars 121–136
 // v2: opens on pads only (no hit) until bar 129 — the full-merge flash lands on the bar-129 hit (riser from bar 128).
-{ const w = lines(20), t0 = ws(20) - .03, t1 = ws(21) - .27;
+// 3:30 (Jade 2026-10-25: "ends way too smiley; it should end contemplative, closing the eyes is fine"). Interim, while ch2_catch_t11 is picked:
+// that take sings with closed eyes, then opens them at 212.2 (raw-take landmarks: blink .81 -> .09 over 212.17-212.26), smiles, and runs out at
+// 213.59 (a frozen frame to the old 214.70 cut). Cut on the onset of "main" instead, eyes still closed; the hook carries on unchanged over the
+// drone tree, so MAIN lands on the tree (main = its trunk). The 8 s re-take (tools/sd/shots_v5.py) covers the whole line: picking it restores
+// the full shot.
+const CATCH_CUT = isTake('ch2_catch', 'ch2_catch_t11_03c5dd87e5') ? ws(20, 4) - .03 : ws(21) - .27;
+const HOOK20 = { x: 110, y: 420, size: 170, maxW: 860, out: ws(21) - .47 };
+{ const w = lines(20), t0 = ws(20) - .03, t1 = CATCH_CUT;
   S.push({ t0, t1, kind: 'lattice', ...pk('ch2_catch', ws(20) - .28), fid: (u) => .7 + .3 * u, cam: push(.06),
-    text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 420, size: 170, maxW: 860, out: t1 - .2 }); } });
+    text: (ty, t) => { ty.ledHook(w, t, HOOK20); } });
 }
-{ const w = lines(21), t0 = ws(21) - .27, t1 = B(129);   // every road home: light runs from all 1,024 tips down into the trunk
+{ const w = lines(21), t0 = CATCH_CUT, t1 = B(129);   // every road home: light runs from all 1,024 tips down into the trunk
   S.push({ t0, t1, kind: 'dronetree', bloom: .7, gain: .7, flow: () => -5, flash: (u, t) => 1.4 * ss(B(128), t1, t),
     cam: (u) => ({ orbit: -.35 + .3 * u, height: 1.0, dist: 31 - 3 * u, lookY: 6.0 + .6 * u }),
-    text: (ty, t) => { ty.ledHook(w, t, { x: 960, y: 190, size: 100, maxW: 1700, align: 'center', out: t1 - .13 }); } });
+    text: (ty, t) => {
+      if (t < ws(21) - .05) ty.ledHook(lines(20), t, HOOK20);   // line 20's hook, carried over the cut (stops before line 21: the LED layer shares one fade)
+      ty.ledHook(w, t, { x: 960, y: 190, size: 100, maxW: 1700, align: 'center', out: t1 - .13 }); } });
 }
 { const w = lines(22), t0 = B(129), t1 = ws(23) - .12;
   S.push({ t0, t1, kind: 'lattice', ...pk(`ch2_fold_${FOLD}`, t0 - .6), s0: t0 - .6, fid: () => 1, cam: (u, t) => ({ dolly: punch(t, 1 - .05 * u, .03), over: 1.06 }),
@@ -659,13 +670,16 @@ const ctxBar = (ty, t, pct) => { const g = ty.g; g.save(); g.font = '500 20px JB
     text: (ty, t) => ty.line(lines(24), t, { y: 980, size: 64, out: bb(139, 1.29) }) });
   S.push({ t0: tc, t1, kind: 'lattice', look: 'paint', ...pk('out_orch_close', tc), fid: () => 1, cam: push(.05) });
 }
+// 4:12 home (Jade 2026-10-25: too smiley at the end). Interim, while out_main_t12 is picked: it grins with teeth from 252.25 to the cut, so the
+// shot ends there and what follows starts earlier (the end card keeps its bar-153 hit). A re-take (tools/sd/shots_v5.py) gets the full shot.
+const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) + 1.95 : B(149) - 3.0;
 { // home: she sings the last "Back to main…" at sunrise (out_main, v2 line 25; Jade 2026-10-24), the held note carries into the git log
-  const t0 = ws(25) - .08, t1 = B(149) - 3.0;
+  const t0 = ws(25) - .08, t1 = OUT_MAIN_END;
   S.push({ t0, t1, kind: 'lattice', ...pk('out_main', t0), fid: () => 1, cam: push(.05),
     text: (ty, t) => { ty.ledHook(lines(25), t, { x: 110, y: 300, size: 120, maxW: 900, out: t1 - .3 }); } });
 }
 { // the final git log: every lane merged; the one that didn't, its commit still there, cherry-picked into main. On the held "main" to the drums-out.
-  const t0 = B(149) - 3.0, t1 = B(149), w25 = lines(25);
+  const t0 = OUT_MAIN_END, t1 = B(149), w25 = lines(25);
   const lanes = [...['lf_piano_rose', 'lf_wushu_gold', 'lf_booth_sky', 'lf_poet_gold', 'lf_band_rose', 'lf_home_mint'].map((id) => { const x = life(id); return [x[2], x[1], x[3], x[4]]; }),
     [L.violet, 'jade/1420-mhz', 'learned: every road was worth it', 'f01d9ae']];
   const credits = ['docs: for every branch that never came home'];   // the real credits are on the end card; this log is her lives merging home
