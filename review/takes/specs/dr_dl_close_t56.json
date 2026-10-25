@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_dl_close_t56",
+ "notes": "{\"shot\": \"dr_dl_close\", \"s0\": 154.906, \"plate\": \"media/plates/drop/dr_dl_close_v5.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. The orange copy and the violet copy finish their sparring set with a sweep and a flying kick. For the first moment they circle each other in guard. About 1.7 seconds in, exactly on a beat of the reference audio, the orange copy drops into a deep low stance and sweeps her straight leg in a full circle along the water, throwing an arc of spray; the violet copy jumps straight up and tucks her knees over the sweep, lands, and springs straight into a flying front kick, her right foot snapping up head-high and slapped by her right hand at the top of the jump about 3.5 seconds in, aimed just past the orange copy, who leans back under it and blocks with both forearms. About 4.3 seconds in, as the violet copy lands, both spring apart into mirrored bow stances facing each other, fists up, and freeze, then grin at each other. Behind them, small and soft-focus, the other two pairs keep sparring in the same rhythm. Low side-on camera tracking with them, water flying. Every strike is controlled and stops just short; nothing lands and nobody is hurt; they are partners showing a rehearsed set. Exactly six copies stay in frame for the whole shot: the two fighters in front, the only ones in focus, and the two small pairs behind; nobody leaves, merges or disappears. Their mouths stay closed; nobody sings or speaks. Every copy keeps the same face and outfit as in the first frame, only the band colours differ. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/dr_dl_close_v5_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/dr_dl_close_v2_154.91_6s.mp3"
+  ]
+ }
+}
