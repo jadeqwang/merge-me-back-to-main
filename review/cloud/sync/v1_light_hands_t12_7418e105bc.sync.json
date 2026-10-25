@@ -1,0 +1,1 @@
+{"clip": "media/gen/v1_light_hands_t12_7418e105bc.mp4", "s0": 41.98, "fps": 24.0, "frames": 145, "face_found": 145, "win": [42.18, 47.879999999999995], "best_lag_s": 0.667, "corr": 0.809, "top5": [[0.667, 0.809], [0.708, 0.808], [0.75, 0.8], [0.625, 0.797], [0.792, 0.785]], "eye_dist_ratio_min_max": [0.95, 1.048], "face_h_ratio_min_max": [0.981, 1.448], "eye_dist_px_f0": 63.4}

@@ -1,0 +1,1 @@
+{"clip": "media/gen/v2_release_t12_1bf7fde028.mp4", "s0": 200.6, "fps": 24.0, "frames": 193, "face_found": 193, "win": [200.79999999999998, 208.5], "best_lag_s": 0.5, "corr": 0.662, "top5": [[0.5, 0.662], [0.458, 0.66], [0.542, 0.657], [0.417, 0.649], [0.583, 0.648]], "eye_dist_ratio_min_max": [0.953, 8.384], "face_h_ratio_min_max": [0.975, 6.174], "eye_dist_px_f0": 32.6}

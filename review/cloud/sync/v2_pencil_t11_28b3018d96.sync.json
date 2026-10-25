@@ -1,0 +1,1 @@
+{"clip": "media/gen/v2_pencil_t11_28b3018d96.mp4", "s0": 195.18, "fps": 24.0, "frames": 145, "face_found": 145, "win": [195.38, 201.08], "best_lag_s": 0.167, "corr": 0.705, "top5": [[0.167, 0.705], [0.208, 0.688], [0.125, 0.681], [0.25, 0.629], [0.083, 0.629]], "eye_dist_ratio_min_max": [0.971, 1.134], "face_h_ratio_min_max": [0.968, 1.139], "eye_dist_px_f0": 89.9}
