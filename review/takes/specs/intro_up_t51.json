@@ -1,0 +1,13 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "intro_up_t51",
+ "notes": "{\"shot\": \"intro_up\", \"s0\": null, \"plate\": \"media/plates/face_v4/intro_up.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She stands on the black mirror of stars looking straight up into the camera. She breathes, blinks slowly, and a small curious smile arrives, as if she has just woken up and already knows exactly who she is. Her hair stirs slightly. The camera stays high above, almost still. Her mouth stays gently closed; she does not sing or speak. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/intro_up_v4_2048.jpg",
+  "duration": 8,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9"
+ }
+}

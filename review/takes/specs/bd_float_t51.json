@@ -1,0 +1,13 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "bd_float_t51",
+ "notes": "{\"shot\": \"bd_float\", \"s0\": null, \"plate\": \"media/plates/face_v4/bd_float.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She floats on her back on the still mirror of water with her arms open and eyes closed, completely at peace, breathing slowly; tiny ripples spread from her fingertips; her hair drifts on the water. The camera rises very slowly straight up. Her mouth stays gently closed; she does not sing or speak. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/bd_float_v4_2048.jpg",
+  "duration": 10,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9"
+ }
+}

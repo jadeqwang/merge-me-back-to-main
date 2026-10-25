@@ -826,3 +826,5 @@
 {"ts": "2026-10-25T13:57:20Z", "model": "bytedance/seedance-2.5", "tag": "dr_gs_ring_t52", "job": "mergemain/dr_gs_ring_t52-d829fe1a9d", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-25T13:57:21Z", "model": "bytedance/seedance-2.5", "tag": "dr_gs_salute_t51", "job": "mergemain/dr_gs_salute_t51-486ca26105", "event": "submit", "ok": null, "est_usd": 1.156, "where": "cloud"}
 {"ts": "2026-10-25T13:57:21Z", "model": "bytedance/seedance-2.5", "tag": "dr_gs_salute_t52", "job": "mergemain/dr_gs_salute_t52-1653ce46e1", "event": "submit", "ok": null, "est_usd": 1.156, "where": "cloud"}
+{"ts": "2026-10-25T13:57:32Z", "model": "bytedance/seedance-2.5", "tag": "bd_float_t51", "job": "mergemain/bd_float_t51-722c1e8558", "event": "result", "ok": true, "est_usd": 2.312, "where": "cloud"}
+{"ts": "2026-10-25T13:57:33Z", "model": "bytedance/seedance-2.5", "tag": "bd_float_t52", "job": "mergemain/bd_float_t52-500a4e4b45", "event": "result", "ok": true, "est_usd": 2.312, "where": "cloud"}
