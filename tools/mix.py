@@ -9,6 +9,8 @@ and its clip at song end + 0.8 s (engine/show/main.js post-credits block) and la
 import json, os, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FF = "/home/jade/Documents/1-music-shipped/moongazing/.venv/lib/python3.12/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2"
+if not os.path.exists(FF):
+    import shutil; FF = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or FF   # another machine / cloud session
 out = sys.argv[1]
 arg = lambda k, d: next((a.split("=", 1)[1] for a in sys.argv if a.startswith(f"--{k}=")), d)
 timing = arg("timing", os.environ.get("MIX_TIMING", "v2"))
@@ -18,7 +20,8 @@ T = json.load(open(os.path.join(ROOT, CFG["an"])))
 bar = lambda n: T["bars"][n - 1]["start"]
 SONG = os.path.join(ROOT, CFG["song"])
 song_end = CFG["song_end"] or round(T["audio"]["duration_s"], 3)          # v2: 282.516 (= the show's SONG_END)
-PC = 14.5   # v2 post-credits length (engine/show/main.js: window + palm-to-palm + frost); v1 kept the 12.2 s hotel
+PC = 14.5   # v2 post-credits length (engine/show/main.js: the violet branch sends the light + the window + the frost); v1 kept the 12.2 s hotel
+PC_TOUCH = 6.4   # the light touches the glass this long after the song end (engine/show/main.js PC_TOUCH): the first chime
 total = float(arg("total", CFG["total"] or round(song_end + (PC if timing == "v2" else 12.2), 3)))
 CH = os.path.join(ROOT, "media/sfx/chime_b.mp3"); BELL = os.path.join(ROOT, "media/sfx/bell.mp3"); LOBBY = os.path.join(ROOT, "media/sfx/lobby.mp3")
 ins = ["-i", SONG]
@@ -32,9 +35,10 @@ for g in range(1, 11):
     fc.append(f"[{k}:a]aresample=48000,asetrate={rate:.0f},aresample=48000,volume={-24 - g * .6:.1f}dB,adelay={int(t * 1000)}|{int(t * 1000)},apad=whole_dur={total:.3f}[c{g}]")
     mix.append(f"[c{g}]"); k += 1
 if timing == "v2":
-    # post-credits v2 (Jade 2026-10-24): no lobby/bell. The intro's split chimes return: one as the light passes palm to palm (song end + 7.5),
-    # then period doubling made audible as the bifurcation blooms in the frost: 1, 2, 4, 8 chimes, each group a step higher and quieter.
-    pcs = [(7.5, 0, -20)] + [(9.6 + gi * 1.0 + j * (.42 / n), 2 + 2 * gi, -21 - 2.5 * gi) for gi, n in enumerate((1, 2, 4, 8)) for j in range(n)]
+    # post-credits v5 (Jade 2026-10-25: "play once, not twice"): no lobby/bell, and no chime for the send (v4's lone chime at +7.5 s made the
+    # cascade's single first chime sound like a repeat). The intro's split chimes return once, as the shape grows in the frost: 1 when the light
+    # touches the glass, then 2, 4, 8, one group per second, each on the fork it opens (main.js `front`), each a step higher and quieter.
+    pcs = [(PC_TOUCH + gi * 1.0 + j * (.42 / n), 2 + 2 * gi, -21 - 2.5 * gi) for gi, n in enumerate((1, 2, 4, 8)) for j in range(n)]
     for i, (dt, semi, db) in enumerate(pcs):
         t = song_end + dt; rate = 48000 * 2 ** (semi / 12)
         ins += ["-i", CH]

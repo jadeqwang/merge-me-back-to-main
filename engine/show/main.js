@@ -7,6 +7,7 @@ const B = T.bar, W = T.words, bb = T.bb;
 const ws = (id, k = 0) => W(id)[k < 0 ? W(id).length + k : k].start, we = (id, k = -1) => W(id)[k < 0 ? W(id).length + k : k].end;   // word start / end
 const SONG_END = T.songEnd();
 const PC_LEN = 14.5;   // post-credits length after the song (tools/mix.py PC)
+const PC_TOUCH = 6.4;   // post-credits: the light touches the glass this long after the song end (tools/mix.py PC_TOUCH: the first chime)
 // the fold's last gesture (Jade 2026-10-25 picked one hand): ?fold=reach (one hand reaching out, default) | palms (open palms toward camera)
 const FOLD = new URLSearchParams(location.search).get('fold') || 'reach';
 const fmt = (n) => n.toLocaleString('en-US');
@@ -113,30 +114,50 @@ const FX = {
       g.globalAlpha = 1 - age / .7; g.strokeStyle = gr; g.lineWidth = 5; g.beginPath(); g.moveTo(x - dir * 700, y + dir * 40); g.lineTo(x, y); g.stroke(); });
     g.restore();
   },
-  // post-credits: the idea adult-Jade sends arrives as a shape in the frost (Jade: no equations, no title, "only a shape, an idea"):
-  // the logistic map's bifurcation tree (period doubling into chaos) crystallising left to right as cold light. u: 0..1 reveal.
-  frost(g, t, u, { x = 1060, y = 220, w = 720, h = 520, k = 1 } = {}) {
-    const P = FX._bif || (FX._bif = (() => { const pts = []; let s = 7;
-      for (let c = 0; c < 900; c++) { const r = 2.85 + 1.15 * c / 899; let v = .5;
+  // post-credits: the idea adult-Jade sends arrives as a shape in the frost (Jade: no equations, no title, "only a shape, an idea"): the logistic
+  // map's bifurcation tree (period doubling into chaos) crystallising left to right as cold light, from the point where the light touched (the
+  // period-1 branch at r0, i.e. (x, y + h / r0)). front: 0..1 = how far the shape has grown (column fraction). The chaotic band is drawn as a fine
+  // mist (alpha ~ 4 / points in the column; v4 drew it as a solid glassy sheet) so the forks stay the bright lines; r1 = 3.86 ends just past the
+  // period-3 window.
+  frost(g, t, front, { x = 1060, y = 220, w = 720, h = 520, k = 1, r0 = 2.9, r1 = 3.86 } = {}) {
+    const key = `${r0},${r1}`, cache = (FX._bif ||= {});
+    const P = cache[key] || (cache[key] = (() => { const pts = []; let s = 7;
+      for (let c = 0; c < 900; c++) { const r = r0 + (r1 - r0) * c / 899; let v = .5;
         for (let i = 0; i < 400; i++) v = r * v * (1 - v);
-        const seen = new Set();                                 // one point per pixel row, so the stable branches don't over-brighten
-        for (let i = 0; i < 90; i++) { v = r * v * (1 - v); const q = Math.round(v * 700); if (seen.has(q)) continue; seen.add(q);
-          s = (s * 16807) % 2147483647; pts.push([c / 899, v, s / 2147483647]); } }
+        const col = new Set();                                 // one point per pixel row, so the stable branches don't over-brighten
+        for (let i = 0; i < 90; i++) { v = r * v * (1 - v); col.add(Math.round(v * 700)); }
+        const wgt = Math.min(1, 4 / col.size);                  // 1, 2, 4 points: full; the 90-point chaotic columns: a fine mist
+        for (const q of col) { s = (s * 16807) % 2147483647; pts.push([c / 899, q / 700, s / 2147483647, wgt]); } }
       return pts; })());
     g.save(); g.globalCompositeOperation = 'lighter';
-    for (const [cx, v, rnd] of P) {
-      const a = clamp((u * 1.15 - cx) / .15);                 // each column freezes in just behind the reveal front
+    for (const [cx, v, rnd, wgt] of P) {
+      const a = clamp((front - cx) / .04);                     // each column freezes in just behind the front
       if (a <= 0) continue;
       const tw = .75 + .25 * Math.sin(t * 2.3 + rnd * 40);    // frost glints
-      g.globalAlpha = k * a * tw * (.5 + .45 * rnd);
+      g.globalAlpha = k * a * tw * (.5 + .45 * rnd) * wgt;
       g.fillStyle = rnd > .93 ? '#FFFFFF' : '#CFE6FF';
       const sz = rnd > .985 ? 3.4 : 2.0;
       g.fillRect(x + cx * w, y + (1 - v) * h, sz, sz);
     }
-    // the reveal front: a soft breath of light moving through the frost
-    if (u < 1) { const fx = x + Math.min(1, u * 1.15) * w, gr = g.createRadialGradient(fx, y + h * .45, 0, fx, y + h * .45, h * .35);
+    // the front: a soft breath of light parked on the next fork, moving on with each chime group
+    if (front < 1) { const fx = x + front * w, gr = g.createRadialGradient(fx, y + h * .45, 0, fx, y + h * .45, h * .35);
       gr.addColorStop(0, `rgba(210,232,255,${.07 * k})`); gr.addColorStop(1, 'rgba(210,232,255,0)'); g.globalAlpha = 1; g.fillStyle = gr;
       g.fillRect(fx - h * .6, y - h * .15, h * 1.2, h * 1.2); }
+    g.restore();
+  },
+  // post-credits: the light itself, a warm point with a short tail on a slight arc from `from` to `to` (t0..t1), radius r[0] -> r[1]
+  // (growing = arriving, shrinking = flying away); flare: one soft bloom where it lands, at t1.
+  mote(g, t, { from, to, t0, t1, r = [4, 14], flare = true, k = 1 } = {}) {
+    if (t < t0 || t > t1 + (flare ? .9 : 0)) return;
+    const at = (q) => { const e = q * q * (3 - 2 * q); return [from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e - 60 * Math.sin(Math.PI * e)]; };
+    g.save(); g.globalCompositeOperation = 'lighter';
+    if (t <= t1) { const q = (t - t0) / (t1 - t0);
+      for (let j = 12; j >= 0; j--) { const qq = Math.max(0, q - j * .012), [px, py] = at(qq), R = (r[0] + (r[1] - r[0]) * qq) * (1 - j / 14), a = k * (j ? .25 * (1 - j / 13) : 1);
+        const gr = g.createRadialGradient(px, py, 0, px, py, R * 3); gr.addColorStop(0, `rgba(255,244,222,${a})`); gr.addColorStop(.3, `rgba(255,200,130,${a * .5})`); gr.addColorStop(1, 'rgba(255,160,90,0)');
+        g.fillStyle = gr; g.fillRect(px - R * 3, py - R * 3, R * 6, R * 6); } }
+    const f = flare && t >= t1 ? Math.exp(-(t - t1) / .25) : 0;
+    if (f > .01) { const [px, py] = to, R = 90 * (1 + (t - t1)), gr = g.createRadialGradient(px, py, 0, px, py, R);
+      gr.addColorStop(0, `rgba(255,248,235,${.8 * f * k})`); gr.addColorStop(1, 'rgba(255,200,140,0)'); g.fillStyle = gr; g.fillRect(px - R, py - R, 2 * R, 2 * R); }
     g.restore();
   },
 };
@@ -784,15 +805,31 @@ const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) +
       g.restore(); }
   } });
 }
-{ // post-credits (Jade 2026-10-24): the window from the intro. Adult Jade kneels beside her five-year-old self and, palm to palm, tries to send
-  // her an idea; she can only send a shape, and the light shows up in the frost: the logistic map's bifurcation (FX.frost). No equations, no title.
-  // Sound (tools/mix.py v2): one chime as the light passes, then 1-2-4-8 chimes as the shape blooms.
-  const P0 = SONG_END, P1 = P0 + 6.0, P2 = P0 + PC_LEN, F0 = P0 + 9.4, F1 = P0 + 13.0;
-  S.push({ t0: P0, t1: P1, kind: 'lattice', look: 'paint', ...pk('pc_kneel', P0), s0: P0 - .3, fid: () => 1, cam: (u) => ({ dolly: 1 - .04 * u, over: 1.06 }),
-    fade: (u, t) => ss(P0, P0 + 1.2, t) });
-  S.push({ t0: P1, t1: P2, kind: 'lattice', look: 'paint', ...pk('pc_beam', P1), s0: P1 - .2, fid: () => 1, cam: (u) => ({ dolly: 1 - .05 * u, over: 1.06 }),
-    fade: (u, t) => 1 - ss(P2 - 1.4, P2, t),
-    text: (ty, t) => { if (t > F0 - .2) FX.frost(ty.g, t, clamp((t - F0) / (F1 - F0)), { x: 110, y: 90, w: 940, h: 620, k: 1 - ss(P2 - 1.4, P2, t) }); } });
+{ // post-credits (Jade 2026-10-25: "they shouldn't directly interact. The adult just sends the light to the window and the girl sees it, and it
+  // should just simply play once, not twice"; her pick: the sender is the violet branch, from takes we already have). Two places, one pass, one
+  // sound event. The violet 1420 MHz branch at the dish (v2_horizon, back to us, facing the dawn glow on the horizon: the branch that never came
+  // home) sends the light off toward the horizon (FX.mote); cut to the window of the very first shot: the girl alone, studying the frost
+  // (ch0_window_t2 clip 0-4.57, the part the intro doesn't use, slowed to fill the shot so her palm lift isn't replayed and nothing holds a
+  // frame). The light arrives from outside, touches the glass once, and the idea grows there as a shape: the logistic map's period doubling
+  // (FX.frost), one fork per chime group (tools/mix.py: 1, 2, 4, 8 from PC_TOUCH). No equations, no title. (v4's pc_kneel + pc_beam each played
+  // the whole palm-to-palm hand-off and the light entering the frost, so it ran twice; those takes are no longer used.)
+  const P0 = SONG_END, CUT = P0 + 4.6, P2 = P0 + PC_LEN, TOUCH = P0 + PC_TOUCH;
+  const WIN_USED = 6.0 - (B(1) + 3 * (B(2) - B(1)) / 4);   // the intro shows ch0_window from this clip time (its cut at bar 1 beat 4) to the end
+  // fit on the box to the window still (stills at P0 + 5, 6.4, 7.6, 8.6, 9.6, 11, 13): the glass region (1080p px) where the shape grows, its stem
+  // at the left edge where the light touches ((FR.x, FR.y + FR.h / 2.9)), the chaos fanning out short of her face
+  const FR = { x: 150, y: 150, w: 860, h: 560 }, R = [2.9, 3.86], cx = (r) => (r - R[0]) / (R[1] - R[0]);
+  // the front parks on each fork and moves on with the chime group that opens it: 1 (the stem), 2, 4, 8 (into chaos)
+  const front = spline([[TOUCH, 0], [TOUCH + .4, cx(3)], [TOUCH + 1, cx(3)], [TOUCH + 1.5, cx(3.449)], [TOUCH + 2, cx(3.449)], [TOUCH + 2.3, cx(3.544)],
+    [TOUCH + 3, cx(3.544)], [TOUCH + 4.3, 1]]);
+  const out = (t) => 1 - ss(P2 - 1.4, P2, t), touchXY = [FR.x, FR.y + FR.h / R[0]];
+  S.push({ t0: P0, t1: CUT, kind: 'lattice', look: 'paint', ...pk('v2_horizon', P0), s0: P0 - .5, lane: L.violet, laneAmt: .1, fid: () => 1,
+    cam: (u) => ({ dolly: 1 - .03 * u, over: 1.06 }), fade: (u, t) => ss(P0, P0 + 1.0, t),
+    text: (ty, t) => FX.mote(ty.g, t, { from: [560, 470], to: [1240, 500], t0: P0 + 1.6, t1: CUT - .2, r: [14, 2], flare: false }) });   // it leaves her toward the horizon glow
+  S.push({ t0: CUT, t1: P2, kind: 'lattice', look: 'paint', ...pk('ch0_window', CUT), clip: (u) => WIN_USED * u, fid: () => 1,
+    cam: () => ({ dolly: 1, over: 1.06 }), fade: (u, t) => out(t),   // still camera: the shape is screen-locked
+    text: (ty, t) => {
+      FX.mote(ty.g, t, { from: [-40, 40], to: touchXY, t0: CUT + .3, t1: TOUCH, k: out(t) });   // it arrives from outside and touches the glass once
+      if (t >= TOUCH - .05) FX.frost(ty.g, t, front(t), { ...FR, r0: R[0], r1: R[1], k: out(t) }); } });
 }
 export const FILM_END = SONG_END + PC_LEN;
 if (T.VERSION !== 'v1') console.log('[show] timing', T.VERSION, 'resync', JSON.stringify(RESYNC));
