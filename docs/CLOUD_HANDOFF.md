@@ -9,6 +9,8 @@ commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and 
 through the relay too (`GEN_IMAGES_VIA_RELAY=1`, see `docs/CLOUD_GEN.md`). 41 takes in `review/takes/` (+ specs), the stills they start from in
 `review/takes/stills/`. Every tag, its shot, the preferred take and the failures: checkpoint 13 at the bottom of `docs/RESUME.md` (stills go into
 place before intake). Final spend: **$368.84 / $600**.
+**Then (cloud session 3, same night):** Jade's two follow-ups are generated: violet's two space buns in the duilian (new plates + takes) and
+`lf_wushu_gold` as her jian solo. Picks, stills and the box steps are in checkpoint 14 of `docs/RESUME.md`. Spend now **$380.14 / $600**.
 
 Last cloud session (2026-10-25) turned Jade's v4 review notes into **v5 in code** on `claude/wonderful-mccarthy-f90kll` (nothing generated,
 rendered or spent; spend still **$284.32 / $600**). Details: "Where things stand" below, `docs/V5_BOX_RUNSHEET.md` (what the box runs),

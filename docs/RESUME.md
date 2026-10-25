@@ -263,7 +263,7 @@ retakes) and the stills they start from (5 orchestra plates + 2 edits, 3 wushu p
 one take that passes the frame checks; clear failures: ch2_gone_close t52/t53 grin, orch_guitar t52 ignores its still, dr_dl_wide t51/t52 extra
 fighters. Spend **$368.84 / $600** (+$75.23 this session, ≈ $2.3 of it conservative rows for jobs the relay lost). Blockers: none; the relay is
 flaky (2047 errors, missed minutes, stuck jobs), so watch `gen.py status`.
-- **Requested after the run, NOT done (2026-10-25 22:02 UTC, via a message from session_01TSBays4bH1M779gzn9GT9M relaying Jade's decisions; this
+- **Requested after the run; DONE by cloud session 3 (checkpoint 14 below)** (2026-10-25 22:02 UTC, via a message from session_01TSBays4bH1M779gzn9GT9M relaying Jade's decisions; this
   session's brief was "run the queue, nothing else", so new spend waits for Jade's direct OK or a session she starts for it):**
   1. Duilian: violet gets TWO space buns to match the group set. One careful nano-banana edit of `media/plates/drop/dr_duilian.png` (only violet's
      hair; every lane colour pinned; faces, poses, patch unchanged) → point `dr_dl_wide` at it in `tools/sd/shots_wushu.py` → regenerate its 2 takes
@@ -274,3 +274,43 @@ flaky (2047 errors, missed minutes, stuck jobs), so watch `gen.py status`.
      Seedance spec next to the other lf_* shots (one lunge-thrust-into-balance phrase, ~6 s), 2 still candidates + 2 takes (≈ $2.50). Caption
      unchanged; the box wires the pick via `docs/picks_manual.json`.
   Total ≈ $8.3 → ≈ $377 of the $380 cap set for this run.
+  → **1 done**: plates `dr_duilian_v5.png` + `dr_dl_close_v5.png`; picks **dr_dl_wide_t56** (submitted as t53, renamed), **dr_dl_close_t53**.
+  → **2 done**: plate `lf_wushu_gold_v5.jpg` (candidate b); pick **lf_wushu_gold_t53** (wire via `docs/picks_manual.json` on the box).
+
+## 2026-10-25 checkpoint 14: duilian two space buns + lf_wushu_gold jian solo — NEEDS INTAKE/RENDER (box)
+Cloud session 3, started from Jade's instruction (her answers in session_01TSBays4bH1M779gzn9GT9M: "Match: two space buns", "Regenerate as your
+jian solo"; spend OK'd). Only those two items. Spend **$380.14 / $600** (+$11.30: 5 nano-banana-pro images ≈ $0.67, 5 × 6 s + 2 × 8 s Seedance
+≈ $10.64; hard stop was $385). No renders, nothing in engine/. Relay: two image jobs and the close takes missed cron minutes (requeued, not billed twice).
+- **Code**: `tools/sd/shots_wushu.py` STILLS `dr_duilian_buns` / `dr_dl_close_buns` (new stills.py tool `edit`: one nano-banana-pro edit with its own
+  refs, saved as a new PNG, src kept), and `dr_dl_wide` / `dr_dl_close` now start from `media/plates/drop/dr_duilian_v5.png` / `dr_dl_close_v5.png`
+  (the v4 `dr_duilian` shot keeps the original plate). `fix_patch.py --refs=`; `gen_plates.py hair=ponytail` (canon face v4 + patch refs);
+  `docs/plates.json` `lf_wushu_gold_v5`; `tools/sd/batch.py` `lf_wushu_gold` = alone, jian solo, `plate=lf_wushu_gold_v5.jpg`, `face=lf_wushu_gold_v5`
+  (so a box `face_v4/lf_wushu_gold.png` can't win). **8 s, not 6**: the sword phrase takes ~6 s, then the shared head turn left in the last 2 s,
+  because the pre-chorus panes cut every lf_* take on clip 6.3 (engine/show/main.js `turn - 6.3`); a 6 s take would hold its last frame there.
+- **Stills** (`review/takes/stills/`; box: copy into place, then `rm -f media/gen/refs/<name>.jpg`):
+  `dr_duilian_v5.png`, `dr_dl_close_v5.png` → `media/plates/drop/`; `lf_wushu_gold_v5.jpg` (+ candidates `_a`, `_b`) → `media/plates/`;
+  `violet_space_buns.png` (violet's head cropped from dr_gs_line6, the edit reference) → `media/style/v5/`.
+  - dr_duilian edit: violet has two space buns (seen in profile); faces, poses, patches, every lane and the other copies' hair unchanged. Made with the
+    prompt before the "hair stays BLACK" sentence was added.
+  - dr_dl_close: first edit **rejected** (the four background copies' hair dyed in their lane colours); the second, with "everyone's hair stays BLACK",
+    is right. It came back 1376×768 (the source is 1536×864).
+  - lf_wushu_gold_v5: **b** (gold bands/headphones, jian thrust in a bow stance, left hand in sword-finger, patch on her LEFT upper arm, red carpet,
+    arena lights, judges' table soft). a was rejected: its bands/headphones read orange. b's patch lettering is mushy at plate size (as on other plates).
+- **Takes** (`review/takes/<tag>_<id>.mp4` + `specs/<tag>.json`):
+
+| shot | tags | pick | why / failures |
+|---|---|---|---|
+| dr_dl_wide (89) | t56, t57, t55 | **t56** | starts on the still, violet's two buns hold, six fighters from ~2 s on; two extra background figures flash in around the drop (~1.7 s). **t57 fails** (doesn't start from the still: purple sky, far framing; violet gets a ponytail). **t55 fails** (8–9 background fighters, violet's buns become a ponytail). t56/t57 were submitted as `dr_dl_wide_t53/t54`; those tags were already taken (cloud session 2's retake t53), so the files and specs were renamed and each spec's notes say so (`relay_tag`). |
+| dr_dl_close (91) | t53, t54 | **t53** | sweep, jump over it, flying kick, mirrored freeze; violet keeps two buns; soft-focus background fighters multiply (6–8) as in t51/t52, t54 worse |
+| lf_wushu_gold (life montage) | t53, t54 | **t53** | alone; draw back, overhead circle, low lunge-thrust, one-legged balance with the blade level; head turns screen-left in the last 2 s; steel blade. t54 also works (sword overhead in the balance), but its blade turns pinkish and the end turn is weaker |
+
+- **Box next**: stills into place, copy the takes into `media/gen/` and specs into `media/gen/specs/`, intake one at a time, then `docs/picks_manual.json`:
+  `dr_dl_wide` → `dr_dl_wide_t56_22b50b2f35`, `dr_dl_close` → `dr_dl_close_t53_5b3390e313`, `lf_wushu_gold` → `lf_wushu_gold_t53_035fa485a9`;
+  `picks.py`, `node tools/edl_check.mjs`. Re-check the drop `at()` clip times for the two duilian shots, and the pre-chorus and breakdown panes that
+  show lf_wushu_gold (the pane turn cuts on clip 6.3). The caption (`LIFE` message) is unchanged. Note: the lives table near main.js line 955 shows
+  her wushu life with the `dr_set` plate, not this take.
+
+### Summary (cloud generation session 3, 2026-10-25)
+Did Jade's two follow-ups. Violet now has two space buns in both duilian plates (one edit each; the close plate needed a second try because the
+first dyed the background copies' hair) and in the new takes: picks dr_dl_wide_t56 and dr_dl_close_t53, both still with some extra soft-focus
+background fighters. The wushu life clip is now Jade alone doing a jian solo at a collegiate competition: plate b, take t53. Spend **$380.14 / $600**.
