@@ -28,6 +28,8 @@ def _local(env, fname, what):
     raise SystemExit(f"Set {env} or put the {what} in work/{fname} (gitignored)")
 
 
+if not os.environ.get("CF_ACCOUNT_ID") and os.environ.get("CLOUDFLARE_ACCOUNT_ID"):   # cloud env names it this way
+    os.environ["CF_ACCOUNT_ID"] = os.environ["CLOUDFLARE_ACCOUNT_ID"]
 ACCOUNT_ID = _local("CF_ACCOUNT_ID", "cf_account_id.txt", "Cloudflare account id")
 API = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}"
 

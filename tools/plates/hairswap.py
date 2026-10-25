@@ -7,6 +7,7 @@ Intermediates go next to OUT (_hairref.jpg, _model.*)."""
 import os, subprocess, sys, json, cv2, numpy as np, mediapipe as mp
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 GPY = "/home/jade/Documents/1-music-shipped/moongazing/.venv/bin/python"
+if not os.path.exists(GPY): GPY = os.environ.get("GEN_PY", sys.executable)   # cloud: a py3.12 venv with mediapipe 0.10.21 + numpy<2
 pos = [a for a in sys.argv[1:] if not a.startswith("--")]
 face_p, hair_p, out = pos[0], pos[1], pos[2]
 MASK = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--mask=")), "face")   # face (below the brows, incl. jaw) | none

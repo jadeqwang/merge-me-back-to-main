@@ -18,8 +18,9 @@ rendered or spent; spend still **$284.32 / $600**). Details: "Where things stand
    can't see the box from the cloud; ask Jade).
    **Done (box, 2026-10-25 05:46 CDT):** `review/v5a/` has the film as 4 × 720p parts + README (the box has no Drive upload route).
 2. **Jade's go-ahead on the generation queue** (≈ $70.5, run sheet §2: singing re-takes 3:30 first, eyes 1:58/3:33, jacket 3:09, canon faces
-   1:07/1:46, orchestra, wushu §2.1). Don't start it without her OK. It needs the box (intake/picks/renders are GPU-only), so it waits until
-   she's back on the box or Remote Control is up.
+   1:07/1:46, orchestra, wushu §2.1). **Jade OK'd the spend (2026-10-25, from the airport).** Generation
+   runs from a NEW cloud session (it sees `GEN_KV_NS`), per `docs/CLOUD_GEN.md`; takes go to `review/takes/` + a RESUME "needs intake/render"
+   entry, and the box does intake/picks/renders when Jade is back.
 3. **Open questions for Jade:** violet's hair differs between the duilian (one bun, existing v4 plate) and the group set (two space buns); a new
    duilian wide plate (~$0.25) would match them. `lf_wushu_gold` shows a sword group set with teammates, which contradicts her decision 4 (group
    set barehand, jian solo): re-caption or regenerate. The post-credits glass region / light path were estimated without seeing that part of

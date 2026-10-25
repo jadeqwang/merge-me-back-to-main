@@ -10,6 +10,7 @@ import json, os, subprocess, sys, cv2, numpy as np, mediapipe as mp
 from concurrent.futures import ThreadPoolExecutor
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 GPY = "/home/jade/Documents/1-music-shipped/moongazing/.venv/bin/python"
+if not os.path.exists(GPY): GPY = os.environ.get("GEN_PY", sys.executable)   # cloud: a py3.12 venv with mediapipe 0.10.21 + numpy<2
 pos = [a for a in sys.argv[1:] if not a.startswith("--")]
 opt = lambda k, d: next((a.split("=", 1)[1] for a in sys.argv if a.startswith(f"--{k}=")), d)
 src, out, pfile = pos; prompt = open(pfile).read().strip()
