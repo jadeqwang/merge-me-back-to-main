@@ -74,7 +74,7 @@ export function atlasFor(ctx, look) {
   if (look.atlas !== 2) return ctx.atlas;
   return ctx.atlas2 || (ctx.atlas2 = glyphAtlas2(ctx.atlas.text || DEFAULT_TEXT));
 }
-const withGain = (L) => { L.g0 = L.u.uGain.value; return L; };
+export const withGain = (L) => { L.g0 = L.u.uGain.value; return L; };
 // a screen = soft underpaint + two glyph tiers (the whole plate, region 2), so a small inset still reads as a picture
 const SCREEN = [
   { cell: 2.5, shape: [0, 0, 0, 1], sizeMin: 2.3, sizeMax: 2.3, gain: .32, gamma: .85, sat: 1.15 },
@@ -84,12 +84,12 @@ const SCREEN = [
     cov: [-.2, .5, .6], edgeK: [.08, .3], jit: [.35, .1, .12], tierBias: .5, edgeRot: .6, flick: .12, clust: [14, .5, 16] },
 ];
 // several glyph layers acting as one figure layer: set() fans out (uGain is a multiplier on each layer's own g0), u.<name>.value.set() too
-class FigGroup {
+export class FigGroup {
   constructor(ls) { this.ls = ls; this.g0 = 1;
     this.u = new Proxy({}, { get: (_, k) => ({ value: { set: (...a) => ls.forEach((l) => l.u[k].value.set(...a)) } }) }); }
   set(k, v) { for (const l of this.ls) l.set(k, k === 'uGain' ? l.g0 * v : v); }
 }
-const flat = (L) => (L instanceof FigGroup ? L.ls : [L]);
+export const flat = (L) => (L instanceof FigGroup ? L.ls : [L]);
 
 export default class LatticeScene {
   constructor(ctx, shot) { this.ctx = ctx; this.shot = shot; }

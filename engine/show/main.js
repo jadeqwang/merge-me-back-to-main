@@ -352,7 +352,11 @@ const MONTAGE0 = ws(4) - .18, MONTAGE1 = ws(5) - .51;   // first cut (just befor
   });
   const origin = bb(38, 1.69);
   const preText = (ty, t) => { ty.ledHook(w6, t, { x: 960, y: 900, size: 110, maxW: 1700, align: 'center', out: ws(7) - .45 }); };
-  S.push({ t0: origin, t1, kind: 'forktree', ...pk('intro_up', 0), splitBar0: 3, splits: 10, treeTime: () => 1.2, trailT: -1, text: (ty, t) => preText(ty, t) });
+  // the origin: one Jade among the stars before the first split. intro_up isn't sung (its picks s0 is null), so pk's second argument is its clip
+  // clock: clip 2.5 s on the cut = her breath, a slow blink, the smile arriving. (v4 passed 0, so every forktree use showed the take's last frame,
+  // frozen: Jade's 1:07 note.) A slow push-in keeps the hold alive.
+  S.push({ t0: origin, t1, kind: 'forktree', ...pk('intro_up', origin - 2.5), splitBar0: 3, splits: 10, treeTime: () => 1.2, trailT: -1,
+    rise: (t) => 1 - .1 * ss(origin, t1, t), text: (ty, t) => preText(ty, t) });
   S.push({ t0, t1: origin, kind: 'panels', panels, cam: () => ({}),
     text: (ty, t) => {
       // branch names on the grid cells, gone as each cell folds
@@ -378,7 +382,8 @@ const HIT52 = bb(52, 2.26);
 }
 { const w = lines(8), t0 = bb(44, .38), t1 = ws(8, 4) + .2;   // the tree runs home; cut on "becomes"
   const G1 = B(12) + 1.2;
-  S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', 0), splitBar0: 3, splits: 10, treeTime: (t) => G1 - (t - t0) / (t1 - t0) * (G1 - B(3) + .2),
+  // intro_up's clip clock starts on the cut (forktree runs four plate clocks at +0, 1.7, 3.4, 5.1 s, so this keeps most copies inside the 8 s take)
+  S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', t0), splitBar0: 3, splits: 10, treeTime: (t) => G1 - (t - t0) / (t1 - t0) * (G1 - B(3) + .2),
     trailT: 1e9, glow: () => 1.0,
     text: (ty, t) => { ty.ledHook(w, t, { x: 960, y: 520, size: 120, maxW: 1600, align: 'center', out: ws(9) - .9 }); } });
 }
@@ -592,7 +597,7 @@ const HIT52 = bb(52, 2.26);
         if (i === 6) ty.ledHook([{ w: 'ALL', start: B(101) }, { w: 'BRANCHES', start: B(101) + T.beatLen(101) }, { w: 'MERGED', start: B(102) }], t, { x: 960, y: 980, size: 110, maxW: 1800, align: 'center', out: B(103) - .4, lane: 1 }); } });
   });
   { const t0 = B(103), t1 = B(105) - .3, G1 = B(12) + 1.2;
-    S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', 0), splitBar0: 3, splits: 10, treeTime: (t) => G1 - ss(t0, t1, t) * (G1 - B(3) + .1), trailT: 1e9, glow: (t) => .9 + .3 * ooh(t),
+    S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', t0), splitBar0: 3, splits: 10, treeTime: (t) => G1 - ss(t0, t1, t) * (G1 - B(3) + .1), trailT: 1e9, glow: (t) => .9 + .3 * ooh(t),
       text: (ty, t) => { FX.sun(ty.g, t, { x: 960, y: 540, r: 50 + 60 * ss(t1 - 1.5, t1, t), k: .15 + .2 * ss(t1 - 2.5, t1, t) + .15 * ooh(t), disc: true }); dropText(ty, t); } });
   }
   S.push({ t0: B(105) - .3, t1: B(105) - .18, kind: 'card', bg: '#000000', text: (ty, t) => { const g = ty.g; const k = 1 - ss(B(105) - .3, B(105) - .18, t); g.fillStyle = `rgba(255,241,220,${k * .8})`; g.fillRect(0, 0, 1920, 1080); } });
@@ -697,7 +702,7 @@ const ctxBar = (ty, t, pct) => { const g = ty.g; g.save(); g.font = '500 20px JB
 { // bookend on the arp alone (bars 149–152, the intro's arp): where she started. One Jade among the stars, seen from above, the camera rising away;
   // to black over the riser into the last hit. (v1's "home" shot out_main sang the third "Back to main", which this song no longer has.)
   const t0 = B(149), t1 = B(153), f0 = bb(152, 1);
-  S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', 0), splitBar0: 3, splits: 10, treeTime: () => 1.2, trailT: -1,
+  S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', t0 - .5), splitBar0: 3, splits: 10, treeTime: () => 1.2, trailT: -1,
     rise: (t) => 1 + 2.2 * ss(t0, t1, t), text: (ty, t) => { const g = ty.g; const k = 1 - ss(f0, t1 - .05, t);
       if (k < 1) { g.fillStyle = `rgba(0,0,0,${1 - k})`; g.fillRect(0, 0, 1920, 1080); }
       ty.mono('HEAD -> main', t, t0 + .8, { x: 72, y: 84, size: 22, cps: 20 }); } });

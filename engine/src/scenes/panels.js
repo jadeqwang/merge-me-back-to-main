@@ -1,11 +1,13 @@
 // Panels: several lattice-rendered clips, each into its own target, placed as quads in a 3D space.
-// shot: { panels: [{ plate, s0, look?, cellFig?, cellWorld?, fid?, w, h, xf(t)->{x,y,z,rx,ry,rz,s,a} , frame?: '#hex', label? }],
+// shot: { panels: [{ plate, s0, look?, cellFig?, cellWorld?, fid?, w, h, xf(t)->{x,y,z,rx,ry,rz,s,a} , frame?: '#hex', label?, ledFig? }],
+// Pane figures are built from glyphs like the lattice scene's (look.figGlyph; Jade's 2026-10-24 decision 9); ?figlook=led or ledFig: true
+// restore the LED emitters.
 //         back?: { plate, s0, look?, cam? }  (a full-frame lattice behind the panels)
 //         cam?(t)->{fov, z}, text?(ty,t,u) }
 import * as THREE from 'three';
 import { LatticeLayer, LatticeView } from '../lattice.js';
 import { PlateSeq } from '../plateseq.js';
-import { LOOKS, atlasFor } from './lattice.js';
+import { LOOKS, atlasFor, FigGroup, flat, withGain } from './lattice.js';
 
 class Pane {
   constructor(ctx, p) { this.ctx = ctx; this.p = p; }
@@ -21,7 +23,11 @@ class Pane {
     if (look.under) this.layers.push(mk(look.under, 0));
     const ws = [].concat(look.world), wScale = p.cellWorld ? p.cellWorld / ws[Math.floor(ws.length / 2)].cell : 1;
     ws.forEach((o, k) => this.layers.push(mk(o, 0, o.cell * wScale, k)));
-    this.fig = mk(look.fig, 1, p.cellFig); this.layers.push(this.fig);
+    // her figure: glyph-built when the look has figGlyph (cells scaled by cellFig / 3, as in scenes/lattice.js), else the LED emitters
+    const glyphFig = look.figGlyph && ctx.P.get('figlook') !== 'led' && !p.ledFig;
+    this.fig = glyphFig ? new FigGroup(look.figGlyph.map((o, k) => withGain(mk(o, 1, o.cell * (p.cellFig ? p.cellFig / 3 : 1), 10 + k))))
+      : mk(look.fig, 1, p.cellFig);
+    this.layers.push(...flat(this.fig));
     if (p.lane) { this.fig.set('uTint', p.lane); this.fig.set('uTintAmt', p.laneAmt ?? .12); }
     this.rt = new THREE.WebGLRenderTarget(this.W, this.H, { type: THREE.HalfFloatType });
   }
