@@ -16,6 +16,7 @@ rendered or spent; spend still **$284.32 / $600**). Details: "Where things stand
    720p parts < 100 MB in `review/v5a/`; either way a `review/v5a/README.md` says where it is and what to eyeball. **No generation** until
    Jade has watched v5a. First check whether `review/v5a/` exists on this branch; if not, the render may still be running or failed (you
    can't see the box from the cloud; ask Jade).
+   **Done (box, 2026-10-25 05:46 CDT):** `review/v5a/` has the film as 4 × 720p parts + README (the box has no Drive upload route).
 2. **Jade's go-ahead on the generation queue** (≈ $70.5, run sheet §2: singing re-takes 3:30 first, eyes 1:58/3:33, jacket 3:09, canon faces
    1:07/1:46, orchestra, wushu §2.1). Don't start it without her OK. It needs the box (intake/picks/renders are GPU-only), so it waits until
    she's back on the box or Remote Control is up.

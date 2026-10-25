@@ -164,3 +164,6 @@
   `tools/mix.py out/mix_v5.wav`, and review renders 27–44, 53–90, 99–119, 124–153, 176–184, 206–216, 222–266 and 280–297.016 (720p), plus
   64–80 with `figlook=led`, then the full film. Stills to fit after picking: the orchestra framings (`WIDE`/`CLOSE`), the post-credits `FR` and
   FX.mote paths, and the drop's `KEY` clip times.
+- **v5a rendered (box, 2026-10-25 05:46 CDT), needs Jade:** `review/v5a/` (4 × 720p parts, 75–80 MB; README has the eyeball table). Branch at 54bf08e,
+  default params, `picks.py` + `edl_check` (held-clocks 0) + `mix.py out/mix_v5.wav` first. No Drive upload route on the box, so no 1080p file.
+  No generation (stand-ins everywhere v5 needs new takes). Master: box `out/review/v5a/merge_v5a_720.mp4`.
