@@ -50,36 +50,46 @@ starts a cloud session from the pushed branch. Keep git clean and pushed before 
 (we only use the relay through tools/gen). Don't attempt renders; write the change, push a branch, and leave a note in `docs/RESUME.md`. The repo is **public** (Jade's choice): code and docs only, never media, renders or
 her kids' anything.
 
-## Where things stand (end of 2026-10-24)
+## Where things stand (2026-10-25, after the v5 cloud integration)
 
-Spend ≈ $300 of the $600 cap (`tools/gen/spend.py`). Everything below is committed except media (local).
+Spend: $284.32 of the $600 cap in the committed ledger (`tools/gen/spend.py`; the box said ≈ $300). Code, docs and the ledger are committed;
+media stays local. **v4** is the last rendered film (`review/v4/`). **v5** is integrated in code on `claude/wonderful-mccarthy-f90kll`, with
+nothing generated or rendered yet. The box's next job is **`docs/V5_BOX_RUNSHEET.md`**: about $70 of re-takes and new shots, intake, picks,
+mix, and review renders.
 
-**Done since v3** (all of Jade's 12 decisions in REVIEW_FOR_JADE.md, "Jade's decisions, 2026-10-24"):
-- Canon face v4 on every face shot (`media/plates/face_v4/`), straight-on shots turned ~20° (they read more like her), sleeve patch fixed.
-- 10 singing shots re-animated on the revised song (v2 stems); picks in `docs/picks_manual.json`, lags in `docs/lags.json`
-  (envelope correlation from tools/sync/lipsync.py, checked against word strips `work/takes/*_ws.jpg` where it disagreed).
-- Drop = wushu: changquan group set (bar 89), duilian exchange, her jian solo (bar 95), duilian into the salute line, then the fold
-  (`tools/sd/shots_drop.py`, plates `media/plates/drop/`).
-- Folds: two gestures, `?fold=reach` (one hand; default since Jade picked it 2026-10-25) | `?fold=palms`; centre copy has the canon face/hair.
-- Home shot on the final "Back to main…" (out_main, v2 line 25), then the git-log card.
-- Outro: orchestra of Jades (piano, violin, electric guitar, conductor) replaces the K-pop afterglow (`tools/sd/shots_outro.py`).
-- Post-credits (14.5 s after the song): adult Jade beside 5-year-old Jade at the frosted window, palm-to-palm light; the idea arrives in
-  the frost as the logistic-map bifurcation (`FX.frost` in main.js), painted look. No equations, no book title (Jade: "only a shape, an
-  idea"). Sound (`tools/mix.py` v2 → `out/mix_v4.wav`): one chime as the light passes, then 1-2-4-8 chimes as the shape blooms.
-  **The Hilbert Hotel lobby is cut** (Jade, 2026-10-24: "window only"; v1 keeps it).
-- Figures are glyph-built (no LED dot grid): `figGlyph` in `engine/src/scenes/lattice.js`; `?figlook=led` restores the old look.
-- Her earlier films in the life montage: `?pv=screens` (default since Jade picked it 2026-10-25) | `?pv=flash` | `?pv=off`.
+**v5, in code** (Jade's v4 review + her decisions of 2026-10-25; note by note in REVIEW_FOR_JADE.md, "Jade's notes, 2026-10-25"):
+- Opening and title: the poem is shown whole from frame 0; the title is MERGE alone. The jade/home message reads "taught kids the Copernican
+  model at 10:30pm". Defaults: `?fold=reach`, `?pv=screens`.
+- Lags were re-measured from the raw takes and the vocal stem (`docs/lags.json`). The box must rerun `picks.py`.
+- 1:07: `intro_up` plays in every forktree use (v4 froze it on its last frame). Pane figures are glyph-built like the lattice scene
+  (`?figlook=led`).
+- 2:17 build: her poem "Privilege Escalation" as small annotated moves on the git graph.
+- 3:30 and 4:12: interim trims, active only while the old takes are picked. They end before the smile/grin; 3:30's hook carries over the
+  drone tree. A picked re-take restores each full shot.
+- Orchestra (3:56–4:09): cuts on the music, and the composer is the **violet branch** writing the score in light (`FX.score`). Reframed v4
+  takes stand in until the `orch_*` takes are picked. `?orch=v4` keeps the conductor version.
+- 4:15–4:24: the **living git graph** (lives fork out of main as panes, merge home, violet cherry-picked last) replaces the git-log card and
+  the bookend. It starts where the home shot ends.
+- Drop: duilian, then the group set rebuilt from Jade's real routine (six copies, the group fall on bar 97, main in for the salute). It is
+  wired to replace the v4 drop only once all six takes are picked (`?drop=v4|v5`). Pending a v5.1 rework of plates and the EDL block
+  (`docs/wushu_v5_design.md` §9, `docs/wushu_groupset_notes.md` on main).
+- Post-credits: the **violet branch sends** the light (`v2_horizon_t5`); the girl alone at the intro's window (`ch0_window_t2`, slowed)
+  sees it touch the glass once, and the bifurcation grows from that point. `tools/mix.py` plays one 1-2-4-8 chime cascade from the touch
+  (`out/mix_v5.wav`). No new takes; `pc_kneel`/`pc_beam` are unused. The Hilbert Hotel lobby stays cut.
+- Seedance specs: re-takes live in `tools/sd/shots_v5.py` (`RETAKES`, same keys) and new shots in the shots files. The eye guard now keeps
+  the still's eyes ("large … eyes" made redrawn eyes grow). First frames and edits are in the `STILLS` tables, run via `tools/sd/stills.py`.
 
-**Waiting on Jade** (review page `out/final/watch.html`, local):
-1. ~~Fold gesture~~ → reach (one hand), Jade 2026-10-25.
-2. ~~Earlier films~~ → screens, Jade 2026-10-25.
-3. The full v4 film: lip-sync by ear (esp. 0:28 split, lag 1.21 s measured; 3:49 "Every life", lag 0.12 s by word strip), the drop, orchestra, post-credits.
+**From v4, unchanged:** canon face v4 on every face shot; the 10 singing shots on the revised song; folds; glyph-built figures; her
+earlier films as screens; the home shot on the final "Back to main…".
+
+**Waiting on Jade:** the v5 review renders (run sheet §4). Lip-sync by ear, after `picks.py`, for 0:32 / 0:44 / 1:11 / 3:54 and every
+re-take. The `lf_wushu_gold` caption nit. Whether to fix the pre-existing held frames listed in run sheet §4.
 
 **Known nits / next ideas**
 - dr_jian: in the final balance her right sleeve faces camera, so the patch shows on the wrong arm (small at 720p).
-- dr_duilian take 2: one copy vanishes mid-take (6→5); its first ~4.5 s are slow (only the end is used).
+- The forktree copies are still LED sprites (`engine/src/scenes/forktree.js`); the life panes (`lf_*_t1`) keep pre-v4 faces.
 - Hair variants per life (wushu ponytail/buns done in the drop; tech/house teal tips, biology braids) for the life-montage plates.
-- After Jade picks: set the fold/pv defaults in main.js, render the 1080p master + X cut (`tools/teaser.py`), re-mix (`tools/mix.py`).
+- After v5 is approved: render the 1080p master + X cut (`tools/teaser.py`) with `out/mix_v5.wav`.
 
 ## Commands (Remote Control / local only)
 - Review render: `node engine/render.mjs --q "show=/engine/show/main.js" --from 0 --to 294.8 --res 1280x720 --audio --workers 3 --mp4 out/review/v4/x.mp4`

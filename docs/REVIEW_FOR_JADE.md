@@ -56,3 +56,29 @@ Spend so far: $146.03 (list-price estimate) of the $600 cap (`tools/gen/spend.py
 10. Clips from her earlier videos: build BOTH (quick flashes in the life montage, and screens inside the open-source/tech-demo branch); she'll decide.
 11. analysis_v2 click check: on the beat throughout. ✔
 12. Likeness notes stay public in the repo.
+
+## Jade's notes, 2026-10-25 (v4 review)
+Each note, what the cloud session did (committed on `claude/wonderful-mccarthy-f90kll`), and what the box still has to generate or render.
+The run sheet `docs/V5_BOX_RUNSHEET.md` has the commands, the costs (≈ $70 queued; $284 of $600 spent) and what to check.
+
+| time | your note | done | queued (box) |
+|---|---|---|---|
+| 0:00–0:16 | the typed poem fought the girl's action | Poem shown whole from frame 0; title MERGE alone. Also: jade/home reads "taught kids the Copernican model at 10:30pm"; earlier films as screens (your pick) | — |
+| 0:32, 0:44, 1:11, 3:54 | slight lip-sync issues | Lags re-measured from the raw takes against the vocal stem: 0.62, −0.15, 0.40, 0.30 | `picks.py` + render; your ear |
+| 1:07 | still, glitchy, old face | It played the take's last frame (a bug in all four uses): it now plays (breath, blink, smile) with a slow push-in | Canon-face still + re-take `intro_up` |
+| 1:11, 3:54, 4:12 | ends too smiley | 4:12 ends at 4:12.25, before the grin (interim, until a re-take is picked) | Re-takes: calm, mouth open on the held note, slow eye close, no grin (1:11 now 7 s) |
+| 1:24, 3:42 | fold gesture | Your pick: one hand reaching (default) | — |
+| 1:46 | updated likeness? | No: a first-round take. Pane figures are now glyph-built like the rest (your decision 9 had missed them) | Canon-face re-take `bd_float` (the small life panes not yet) |
+| 1:58, 3:33 | huge, alien eyes | The Seedance guard asked for "large" eyes, so redrawn eyes grew. It now keeps the still's eyes | `bd_ahh` with eyes closed throughout; `ch2_catch` re-take |
+| 2:17 | the poem's words too big | Small annotated moves on the git graph; "analysis mode" is the graph calculating | — |
+| 3:07/3:09 | extra violet band across the jacket back | Edit prompt written (band out, patch on the left sleeve only) | 1 edit + re-animate |
+| 3:30 | ends too smiley; contemplative, eyes closing fine | Cut on "main" with her eyes still closed (interim); the hook carries over the drone tree | 8 s re-take with eyes closed, plus a variant that half-opens them, then closes them slowly |
+| 3:56–4:09 | orchestra: match the music; the conductor isn't doing anything useful | Cuts on the music (impact, violin, keys, composer, guitar). **Your pick: the composer is the violet branch** (bun, two pencils), writing the score in violet light that lands on each player on the beat and folds into one orange line. Reframed v4 takes stand in until the new ones are picked. `?orch=v4` keeps the old one. | 5 stills + 5 takes |
+| 4:17 | boring; show a bit of everything | **Your OK to lose the readable card**: the living git graph. Your lives fork out of main in doublings as live panes, the log is read one commit per beat, everything merges home, violet cherry-picked last. It starts where the home shot ends; the end card keeps its hit. | — (no new takes) |
+| 2:33–3:00 | wushu: duilian first, then a group set as good as your medal one | Duilian 89–92, then the group set rebuilt from your real routine on the box: six copies trading by halves, the group fall on 97, main walks in for the salute. It is wired so it only replaces the v4 drop once all its takes are picked (`?drop=v4`/`?drop=v5`). | The v5.1 rework (plates, EDL), then 3 plates + 6 takes |
+| post-credits | they shouldn't touch; play once | **Your pick: the violet branch sends** (existing takes): she sends the light toward the horizon; the girl alone at the intro's window watches it touch the glass once, and the shape grows there. One chime cascade. No new takes. | Remix + fit the light's path on stills |
+
+Nits for you:
+- The life-montage plate `lf_wushu_gold` shows a sword group set with teammates, but your group set was barehand and jian was your solo.
+  Re-caption it or regenerate it?
+- Some held frames you didn't flag (listed in the run sheet §4). The engine can now slow a clip instead of freezing it.

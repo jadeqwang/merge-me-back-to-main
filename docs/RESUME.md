@@ -115,3 +115,36 @@
   (?figlook=led); earlier films (?pv=flash|screens). Review: out/final/watch.html (v4 full film + comparison clips in out/review/v4/).
 - Tools: lipsync.py lag window from -1 s + small-face crop; intake/picks/batch timing-aware (notes.timing); tools/sd/shots_*.py hook.
 - Lesson: run ONE tools/sd/intake.py at a time (three parallel runs prepped the same take into one folder).
+
+## 2026-10-25 checkpoint 12: v5 integration (cloud session; nothing generated, rendered or spent)
+- Jade's v4 notes and her 2026-10-25 decisions, applied on `claude/wonderful-mccarthy-f90kll`. Note by note: REVIEW_FOR_JADE.md, "Jade's
+  notes, 2026-10-25"; commands, queue and checks: **docs/V5_BOX_RUNSHEET.md**.
+- EDL (engine/show/main.js):
+  - intro_up plays in every forktree use (the 1:07 freeze).
+  - 3:30 and 4:12 interim trims, keyed on the old takes being picked (`isTake`).
+  - The 4:15 living graph replaces the git-log card and the bookend (starts at `OUT_MAIN_END`).
+  - Post-credits: the violet branch sends the light, the girl sees it, once (reuses v2_horizon_t5 + ch0_window_t2; PC_TOUCH 6.4).
+  - Orchestra v5: the violet composer, FX.score, stand-ins until picked (`?orch=v4`).
+  - Drop v5 wiring, default only once all six takes are picked (`?drop=v4|v5`).
+  - `has(shot)` ignores picks.py's still_ placeholders.
+- Engine:
+  - Pane figures are glyph-built (panels.js; `?figlook=led`).
+  - `clip` time remap in the lattice scene, `clip(u,t)`, and in panes, `clip(t)`.
+- Tools:
+  - batch.py: EYES guard (no more "large ... eyes"), RETAKES, `face=`.
+  - shots_v5.py: re-takes + STILLS.
+  - shots_outro.py: orch_* + STILLS.
+  - stills.py: prompt files + commands.
+  - fix_patch.py: `--prompt=`.
+  - mix.py: no lone post-credits chime, ffmpeg fallback.
+- Checks (cloud):
+  - An EDL harness ran the real timing + picks over 0–297 s with a mock canvas, for the default and `?orch=v4`, `?drop=v4/v5`,
+    `?fold=palms`, `?pv=off|flash`, `?figlook=led`. Picks variants: the box's picks.json, it with the new lags, it with still_
+    placeholders, and all new takes faked as picked. Result: 0 exceptions, 0 non-finite draw args, no gaps.
+  - `batch.py --dry` on all 20 v5 shots × 2 takes: schema OK.
+  - mix.py ran end to end on stand-in audio.
+- Merged the box's wushu v5.1 rebuild (6439c70: six copies, the group fall, main in for the salute); a follow-up session reworks plates + EDL.
+- **Needs intake/render (box):** first `picks.py` (the new lags). Then the queue in V5_BOX_RUNSHEET.md §2 (≈ $70; generate with `--t0=13`),
+  one intake at a time, lags from word strips, picks, `tools/mix.py out/mix_v5.wav`, and review renders 62–80, 99–119, 206–216, 226–266 and
+  280–297.016 (720p), then the full film. Stills to fit after picking: the orchestra framings (`WIDE`/`CLOSE`), the post-credits `FR` and
+  FX.mote paths, and the drop's `KEY` clip times.
