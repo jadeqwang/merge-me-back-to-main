@@ -274,13 +274,14 @@ flaky (2047 errors, missed minutes, stuck jobs), so watch `gen.py status`.
      Seedance spec next to the other lf_* shots (one lunge-thrust-into-balance phrase, ~6 s), 2 still candidates + 2 takes (≈ $2.50). Caption
      unchanged; the box wires the pick via `docs/picks_manual.json`.
   Total ≈ $8.3 → ≈ $377 of the $380 cap set for this run.
-  → **1 done**: plates `dr_duilian_v5.png` + `dr_dl_close_v5.png`; picks **dr_dl_wide_t56** (submitted as t53, renamed), **dr_dl_close_t53**.
+  → **1 done**: plates `dr_duilian_v5.png` + `dr_dl_close_v5.png`; picks **dr_dl_wide_t58**, **dr_dl_close_t57** (after the follow-up retakes, see checkpoint 14).
   → **2 done**: plate `lf_wushu_gold_v5.jpg` (candidate b); pick **lf_wushu_gold_t53** (wire via `docs/picks_manual.json` on the box).
 
 ## 2026-10-25 checkpoint 14: duilian two space buns + lf_wushu_gold jian solo — NEEDS INTAKE/RENDER (box)
 Cloud session 3, started from Jade's instruction (her answers in session_01TSBays4bH1M779gzn9GT9M: "Match: two space buns", "Regenerate as your
-jian solo"; spend OK'd). Only those two items. Spend **$380.14 / $600** (+$11.30: 5 nano-banana-pro images ≈ $0.67, 5 × 6 s + 2 × 8 s Seedance
-≈ $10.64; hard stop was $385). No renders, nothing in engine/. Relay: two image jobs and the close takes missed cron minutes (requeued, not billed twice).
+jian solo"; spend OK'd). Only those two items. Spend **$388.47 / $600** (+$19.63: 5 nano-banana-pro images ≈ $0.67, 11 × 6 s + 2 × 8 s Seedance
+≈ $18.96). The run's $385 stop was lifted mid-run (Jade, relayed by the parent session: "don't worry about the budget"), which paid for the
+duilian retakes wide t58/t59 and close t55–t58. No renders, nothing in engine/. Relay: two image jobs and the close takes missed cron minutes (requeued, not billed twice).
 - **Code**: `tools/sd/shots_wushu.py` STILLS `dr_duilian_buns` / `dr_dl_close_buns` (new stills.py tool `edit`: one nano-banana-pro edit with its own
   refs, saved as a new PNG, src kept), and `dr_dl_wide` / `dr_dl_close` now start from `media/plates/drop/dr_duilian_v5.png` / `dr_dl_close_v5.png`
   (the v4 `dr_duilian` shot keeps the original plate). `fix_patch.py --refs=`; `gen_plates.py hair=ponytail` (canon face v4 + patch refs);
@@ -300,17 +301,17 @@ jian solo"; spend OK'd). Only those two items. Spend **$380.14 / $600** (+$11.30
 
 | shot | tags | pick | why / failures |
 |---|---|---|---|
-| dr_dl_wide (89) | t56, t57, t55 | **t56** | starts on the still, violet's two buns hold, six fighters from ~2 s on; two extra background figures flash in around the drop (~1.7 s). **t57 fails** (doesn't start from the still: purple sky, far framing; violet gets a ponytail). **t55 fails** (8–9 background fighters, violet's buns become a ponytail). t56/t57 were submitted as `dr_dl_wide_t53/t54`; those tags were already taken (cloud session 2's retake t53), so the files and specs were renamed and each spec's notes say so (`relay_tag`). |
-| dr_dl_close (91) | t53, t54 | **t53** | sweep, jump over it, flying kick, mirrored freeze; violet keeps two buns; soft-focus background fighters multiply (6–8) as in t51/t52, t54 worse |
+| dr_dl_wide (89) | t58, t56, t57, t55, t59 | **t58** | starts on the still, violet's two buns hold, **exactly six fighters at every sampled frame** (0, 1.7, 3.3, 5.8 s). t56: OK but two extra background figures flash in around the drop (~1.7 s). **t59 fails** (doesn't start from the still). **t57 fails** (doesn't start from the still: purple sky, far framing; violet gets a ponytail). **t55 fails** (8–9 background fighters, violet's buns become a ponytail). t56/t57 were submitted as `dr_dl_wide_t53/t54`; those tags were already taken (cloud session 2's retake t53), so the files and specs were renamed and each spec's notes say so (`relay_tag`). |
+| dr_dl_close (91) | t57, t53, t56, t54, t55, t58 | **t57** | sweep, jump over it, head-high flying kick, mirrored freeze; violet keeps two buns; the freeze has **exactly four** figures behind the pair, but 1–2 extra soft-focus fighters appear mid-action (every close take does this). t57/t58 were made with the act naming the four background figures. t53/t56: same action, 7–8 fighters at the freeze. **t55 and t58 fail** (don't start from the still) |
 | lf_wushu_gold (life montage) | t53, t54 | **t53** | alone; draw back, overhead circle, low lunge-thrust, one-legged balance with the blade level; head turns screen-left in the last 2 s; steel blade. t54 also works (sword overhead in the balance), but its blade turns pinkish and the end turn is weaker |
 
 - **Box next**: stills into place, copy the takes into `media/gen/` and specs into `media/gen/specs/`, intake one at a time, then `docs/picks_manual.json`:
-  `dr_dl_wide` → `dr_dl_wide_t56_22b50b2f35`, `dr_dl_close` → `dr_dl_close_t53_5b3390e313`, `lf_wushu_gold` → `lf_wushu_gold_t53_035fa485a9`;
+  `dr_dl_wide` → `dr_dl_wide_t58_67a5ce5078`, `dr_dl_close` → `dr_dl_close_t57_2996c73578`, `lf_wushu_gold` → `lf_wushu_gold_t53_035fa485a9`;
   `picks.py`, `node tools/edl_check.mjs`. Re-check the drop `at()` clip times for the two duilian shots, and the pre-chorus and breakdown panes that
   show lf_wushu_gold (the pane turn cuts on clip 6.3). The caption (`LIFE` message) is unchanged. Note: the lives table near main.js line 955 shows
   her wushu life with the `dr_set` plate, not this take.
 
 ### Summary (cloud generation session 3, 2026-10-25)
 Did Jade's two follow-ups. Violet now has two space buns in both duilian plates (one edit each; the close plate needed a second try because the
-first dyed the background copies' hair) and in the new takes: picks dr_dl_wide_t56 and dr_dl_close_t53, both still with some extra soft-focus
-background fighters. The wushu life clip is now Jade alone doing a jian solo at a collegiate competition: plate b, take t53. Spend **$380.14 / $600**.
+first dyed the background copies' hair) and in the new takes: picks dr_dl_wide_t58 (six fighters throughout) and dr_dl_close_t57 (six at the freeze; a
+couple of extra soft-focus fighters mid-action). The wushu life clip is now Jade alone doing a jian solo at a collegiate competition: plate b, take t53. Spend **$388.47 / $600**.
