@@ -196,11 +196,20 @@ def prompt_of(inp):
     return ""
 
 
+LEDGER = os.path.join(ROOT, "docs", "spend_ledger.jsonl")   # committed, union-merged: the cap holds across the box and cloud sessions
+LEDGER_KEYS = ("ts", "model", "tag", "job", "event", "ok", "est_usd", "where")
+
+
 def log(entry):
     os.makedirs(os.path.dirname(LOG), exist_ok=True)
     entry = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), **entry}
     with open(LOG, "a") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    if entry.get("job") or entry.get("est_usd"):              # billing-relevant: a compact copy (no prompts/inputs) for spend.py
+        row = {k: entry[k] for k in LEDGER_KEYS if k in entry}
+        row["where"] = "cloud" if (os.environ.get("CLAUDE_CODE_REMOTE") or os.environ.get("CLAUDE_CODE_REMOTE_SESSION_ID")) else "box"
+        with open(LEDGER, "a") as f:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
 # ----------------------------------------------------------------------------- http

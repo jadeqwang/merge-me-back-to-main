@@ -9,6 +9,9 @@ import json, os, subprocess, sys, time
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PY = "/home/jade/Documents/1-music-shipped/moongazing/.venv/bin/python"
 FF = "/home/jade/Documents/1-music-shipped/moongazing/.venv/lib/python3.12/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2"
+if not os.path.exists(PY): PY = sys.executable            # cloud session / another machine
+if not os.path.exists(FF):
+    import shutil; FF = shutil.which("ffmpeg") or FF
 VOC, INST = "analysis/stems/vocals.wav", "analysis/stems/instrumental.wav"
 VOC2 = "analysis_v2/stems/vocals.wav"
 # v2 audio-ref starts: v2 line start - (v1 line start - v1 start), lines per engine/show/main.js SUNG (computed 2026-10-24).

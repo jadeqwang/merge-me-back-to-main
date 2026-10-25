@@ -7,13 +7,24 @@ commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and 
 ## Jade's plan (2026-10-24): Claude Code cloud + GitHub + open-artifacts
 The Linux box stays on. Jade will mostly work through **cloud sessions on this GitHub repo**, plus an "open-artifacts" setup she's building
 with another Claude instance (ask her for its details; don't guess at how it works). Consequences for a cloud session:
-- Pixel work (renders, stills, new takes, lip-sync picks) still runs only on the box. Until a bridge exists, write the change, push, and
-  add a **"needs render"** entry at the bottom of `docs/RESUME.md` (what, which `--q` params and time range) for the next box-side session.
+- **Generation works in the cloud** (Jade set up Cloudflare credentials on cc cloud, 2026-10-24). tools/gen reads, from the environment:
+  `CF_ACCOUNT_ID`, `GEN_KV_NS`, and either `CLOUDFLARE_API_TOKEN` or, when the token is a cloud *network secret* that the proxy attaches,
+  `CF_AUTH_VIA_PROXY=1`. Network access must allow `api.cloudflare.com`. The tools are stdlib-only Python (3.11+ for tomllib); `ffmpeg`
+  comes from apt (`apt-get install -y ffmpeg` in the setup script). Run them with `python3`, not the box's venv paths (batch.py falls back).
+- **Spend cap across machines:** every billing row is also written to the committed `docs/spend_ledger.jsonl` (union-merged), and
+  `tools/gen/spend.py` counts it, so the $600 cap holds in the cloud too. **Commit and push the ledger after every generation run.**
+- Renders, stills, depth/matte prep (`tools/sd/intake.py`) and lip-sync picks still run only on the box (GPU + plates). A cloud session that
+  generates takes must get the mp4s to the box (see "Media transfer" below) and add a **"needs intake/render"** entry at the bottom of
+  `docs/RESUME.md` (what, which `--q` params and time range).
 - Review media is big: the 720p film is ~1.2 GB and the comparison clips are 45–90 MB each. Artifact pages have size limits (claude.ai
   artifacts: 16 MB per page), so plan on stills, contact sheets or short low-bitrate excerpts there, not the film itself.
 - If a render bridge is built (e.g. a GitHub Actions **self-hosted runner** on the box): the repo is **public**, so the bridge must never run
   on pull requests from forks. Trigger it only on `workflow_dispatch` or pushes by Jade, and keep the Cloudflare credentials off it. Ask Jade first;
   it's her machine.
+
+## Media transfer (GitHub, files up to 100 MB)
+TBD with Jade: the code repo is public, and generated takes and review renders show her likeness. Proposed: a separate **private** repo for
+media (takes from cloud sessions, review excerpts ≤100 MB), which the box pulls into media/gen/ and out/review/. Not set up yet.
 
 ## Two ways to work, and what each can do
 
@@ -31,9 +42,8 @@ https://code.claude.com/docs/en/remote-control.md · cloud environments: https:/
 Moving between them: a cloud session's pushed branch can be pulled locally (`claude --teleport` or just `git pull`); `claude --cloud "task"`
 starts a cloud session from the pushed branch. Keep git clean and pushed before switching.
 
-**Cloud-session rules on top of HANDOFF.md:** never put the Cloudflare account id, KV namespace or any token in the environment's env vars
-(they're readable by anyone with the environment). Don't attempt renders or generation; write the change, push a branch, and leave a note
-in `docs/RESUME.md` saying what needs rendering. The repo is **public** (Jade's choice): code and docs only, never media, renders or
+**Cloud-session rules on top of HANDOFF.md:** never print, log or commit the Cloudflare values. Never deploy, modify or delete Workers or KV
+(we only use the relay through tools/gen). Don't attempt renders; write the change, push a branch, and leave a note in `docs/RESUME.md`. The repo is **public** (Jade's choice): code and docs only, never media, renders or
 her kids' anything.
 
 ## Where things stand (end of 2026-10-24)

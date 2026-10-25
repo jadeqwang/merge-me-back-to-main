@@ -60,7 +60,9 @@ def token():
 
 
 def headers(extra=None):
-    h = {"Authorization": f"Bearer {token()}"}
+    # CF_AUTH_VIA_PROXY=1: a Claude Code cloud "network secret" — the proxy attaches the Cloudflare token for api.cloudflare.com, so the VM
+    # never holds it and we send no Authorization header ourselves.
+    h = {} if os.environ.get("CF_AUTH_VIA_PROXY") == "1" else {"Authorization": f"Bearer {token()}"}
     if extra:
         h.update(extra)
     return h

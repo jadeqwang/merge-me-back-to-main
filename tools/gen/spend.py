@@ -4,6 +4,8 @@
 Logs read (list-price estimates; the real bill can't be read with the wrangler token):
   media/genlog.jsonl       every sync call by cf.py (images, TTS, music, ASR) and every relay submit/result by gen.py
   media/gen/spend.jsonl    vgen.py per-take submits/refunds (a subset of the relay submits; merged by job id, never double counted)
+  docs/spend_ledger.jsonl  committed compact copy of every billing row (cf.log) from the box and from cloud sessions, so the cap
+                           holds everywhere (git merges it with merge=union; .gitattributes). Deduped against genlog.
 
 Rules: failed sync calls (ok=false) are not counted; relay jobs count from submit and are refunded when they error
 (errored runs are normally not billed).
@@ -21,6 +23,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 GENLOG = os.path.join(ROOT, "media", "genlog.jsonl")
+LEDGER = os.path.join(ROOT, "docs", "spend_ledger.jsonl")   # committed compact copy of billing rows (cf.log), from the box AND cloud sessions
 VSPEND = os.path.join(ROOT, "media", "gen", "spend.jsonl")
 CAP_USD = float(os.environ.get("MERGEMAIN_CAP", "600"))
 
@@ -41,8 +44,11 @@ def _lines(p):
 
 def items():
     """List of (model, tag, usd, kind) for every billed (or still pending) item."""
-    rows, jobs, errored = [], {}, set()
-    for r in _lines(GENLOG):
+    rows, jobs, errored, seen = [], {}, set(), set()
+    for r in _lines(GENLOG) + _lines(LEDGER):                # the ledger repeats the local log's billing rows: dedupe
+        key = r.get("job") and (r["job"], r.get("event")) or (r.get("ts"), r.get("model"), r.get("tag"), r.get("est_usd"))
+        if key in seen: continue
+        seen.add(key)
         if r.get("job"):
             if r.get("event") == "submit":
                 jobs[r["job"]] = (r.get("model"), r.get("tag"), r.get("est_usd") or 0)

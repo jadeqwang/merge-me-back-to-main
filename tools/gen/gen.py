@@ -61,6 +61,8 @@ SPECS = os.path.join(OUT, "specs")
 REFS = os.path.join(OUT, "refs")
 MANIFEST = os.path.join(OUT, "manifest.json")
 FFMPEG = os.environ.get("FFMPEG", "/home/jade/Documents/1-music-shipped/moongazing/.venv/lib/python3.12/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2")  # static v7.0.2, no drawtext
+if not os.path.exists(FFMPEG):   # cloud session / another machine: system ffmpeg
+    import shutil; FFMPEG = shutil.which("ffmpeg") or FFMPEG
 PER_BUCKET = int(os.environ.get("GEN_PER_MINUTE", "2"))   # jobs started per cron minute
 LEAD_MIN = 2              # first bucket = now + 2 min (KV list is eventually consistent, ~60 s)
 MAX_JOB_BYTES = 24 * 1024 * 1024
