@@ -40,3 +40,19 @@ Lags live in `docs/lags.json`, take choices in `docs/picks_manual.json`; after e
 ## Re-render
 `node engine/render.mjs --q "show=/engine/show/main.js" --from 0 --to 297 --res 1920x1080 --mp4 out/final/x.mp4 --audio --audiofile out/mix_v2.wav --workers 3`
 Spend so far: $146.03 (list-price estimate) of the $600 cap (`tools/gen/spend.py`).
+
+## Jade's decisions, 2026-10-24 (out/review/decisions.html)
+1. Head-turned stills: keep take a for dr_center, ch2_catch, v1_split_front (installed in media/plates/face_v4/).
+2. Hair: wushu = high ponytail (and for the group sets, a MIX of ponytails and space buns); tech/house = teal tips. Biology braids; main-Jade half-up.
+3. Drop = wushu group set, then half-vs-half duilian; outro (~3:57, was the K-pop out_dance) = orchestra of Jades.
+4. Group set = barehand changquan (her collegiate team's event). She also competed sword (jian) solo: use for the solo wushu beat.
+5. Orchestra: piano, violin, electric guitar, a conductor Jade in the centre. (In Robot Ninja Apocalypse Ricky played electric; Jade and Charlie
+   played acoustic. She's played electric too and found it easier, so electric is fine.)
+6. Fold gesture: try BOTH open palms toward camera AND one hand reaching to camera; she'll pick.
+7. Last sung shot: new home shot singing the final "Back to main…" (line 25, 4:09).
+8. Post-credits: palm-to-palm beam, the light settles into the frost as a logistic-map bifurcation SHAPE. NO book title and NO written equations:
+   "the adult is only able to send a shape, an idea, and the light shows up in the frost". (Book can stay on the sill, untitled.)
+9. Figures in the glyph look too (drop the LED dot grid on figures).
+10. Clips from her earlier videos: build BOTH (quick flashes in the life montage, and screens inside the open-source/tech-demo branch); she'll decide.
+11. analysis_v2 click check: on the beat throughout. ✔
+12. Likeness notes stay public in the repo.

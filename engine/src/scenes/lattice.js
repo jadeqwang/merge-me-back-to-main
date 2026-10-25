@@ -1,8 +1,10 @@
 // A plate reconstructed as the light lattice.
-// world = tokens over dim underpaint ('dawn') or luminous painted splats ('paint'); figure = LED emitters.
+// world = tokens over dim underpaint ('dawn') or luminous painted splats ('paint'); figure = LED emitters, or (looks with figGlyph,
+// the default since Jade's 2026-10-24 call) the figure is BUILT from fine overlapping glyphs too; ?figlook=led restores the emitters.
 // shot: { plate, s0, look?, cellFig?, cellWorld?, fid?(u,t)->density 1/64..1 for the figure, worldFid?(u,t),
 //         cam?(u,t)->{orbit,dolly,pan,over}, lane?, laneAmt?, copies?: [{dt, off:[x,y], scale, lane, at, dens}],
-//         scatter?(u,t)->{k, dir:[x,y,z]}, text?(type,t,u), update?(scene,u,t), fade?(u,t) }
+//         scatter?(u,t)->{k, dir:[x,y,z]}, text?(type,t,u), update?(scene,u,t), fade?(u,t),
+//         screens?: [{plate, s0?, off:[x,y], scale, at?, dur?, gain?}] — other plates drawn small in the frame as glowing glyph screens }
 import * as THREE from 'three';
 import { LatticeLayer, LatticeView, glyphAtlas2, DEFAULT_TEXT } from '../lattice.js';
 import { PlateSeq } from '../plateseq.js';
@@ -44,6 +46,18 @@ export const LOOKS = {
       { cell: 11, shape: [0, 0, 1, 0], build: true, sizeMin: 1.0, sizeMax: 1.4, gain: .8, gamma: .7, floor: .25, sat: 1.2, norm: .2, words: 2, crisp: 1,
         cov: [-.35, .55, .2], edgeK: [.08, .3], jit: [.45, .12, .15], tierBias: .6, edgeRot: .6, flick: .12, clust: [10, .6, 12] },
     ],
+    // the merged figure in glyphs (Jade 2026-10-24: no cross-hatched LED grid on figures): finer than figText so faces stay readable,
+    // dense in light, edge strokes along her contours; the written (unmerged) figText is coarser and sparser, so merging still reads.
+    figGlyph: [
+      // soft overlapping underpaint of her (no grid: splats ~2.3 cells wide) so the face reads as one continuous image
+      { cell: 3, shape: [0, 0, 0, 1], sizeMin: 2.3, sizeMax: 2.3, gain: .34, gamma: .82, sat: 1.1 },
+      { cell: 5, shape: [0, 0, 1, 0], build: true, sizeMin: 1.0, sizeMax: 1.15, gain: 2.3, gamma: .74, floor: .3, sat: 1.15, norm: .2, words: 2, crisp: .9,
+        cov: [1.1, 0, .2], edgeK: [.07, .24], jit: [.25, .06, .08], tierBias: .4, edgeRot: .6, flick: .08, clust: [30, 0, 30] },
+      { cell: 7.5, shape: [0, 0, 1, 0], build: true, sizeMin: 1.0, sizeMax: 1.2, gain: 1.05, gamma: .74, floor: .25, sat: 1.15, norm: .2, words: 2, crisp: 1,
+        cov: [-.1, .2, 1.0], edgeK: [.06, .2], jit: [.3, .08, .1], tierBias: 0, edgeRot: .6, flick: .12, clust: [24, .3, 26] },
+      { cell: 11, shape: [0, 0, 1, 0], build: true, sizeMin: 1.0, sizeMax: 1.35, gain: .65, gamma: .74, floor: .25, sat: 1.15, norm: .2, words: 2, crisp: 1,
+        cov: [-.35, .5, .2], edgeK: [.08, .3], jit: [.4, .1, .14], tierBias: .6, edgeRot: .6, flick: .1, clust: [12, .6, 14] },
+    ],
   },
   // the drop: the world becomes painted light (normalized splats), the figure stays LED
   paint: {
@@ -52,12 +66,30 @@ export const LOOKS = {
   },
 };
 
+// the drop's painted world keeps its splats; its figures are glyph-built too (atlas 2 only affects glyph layers)
+LOOKS.paint.atlas = 2; LOOKS.paint.figGlyph = LOOKS.ascii2.figGlyph;
+
 // looks with atlas: 2 use the structural glyph atlas (built once per page, cached on ctx)
 export function atlasFor(ctx, look) {
   if (look.atlas !== 2) return ctx.atlas;
   return ctx.atlas2 || (ctx.atlas2 = glyphAtlas2(ctx.atlas.text || DEFAULT_TEXT));
 }
 const withGain = (L) => { L.g0 = L.u.uGain.value; return L; };
+// a screen = soft underpaint + two glyph tiers (the whole plate, region 2), so a small inset still reads as a picture
+const SCREEN = [
+  { cell: 2.5, shape: [0, 0, 0, 1], sizeMin: 2.3, sizeMax: 2.3, gain: .32, gamma: .85, sat: 1.15 },
+  { cell: 4, shape: [0, 0, 1, 0], build: true, sizeMin: 1.0, sizeMax: 1.15, gain: 1.6, gamma: .8, floor: .2, sat: 1.2, norm: .3, words: 2, crisp: .9,
+    cov: [1.0, .2, .3], edgeK: [.07, .24], jit: [.2, .05, .07], tierBias: .3, edgeRot: .6, flick: .1, clust: [30, 0, 30] },
+  { cell: 7, shape: [0, 0, 1, 0], build: true, sizeMin: 1.0, sizeMax: 1.25, gain: .6, gamma: .8, floor: .2, sat: 1.2, norm: .3, words: 2, crisp: 1,
+    cov: [-.2, .5, .6], edgeK: [.08, .3], jit: [.35, .1, .12], tierBias: .5, edgeRot: .6, flick: .12, clust: [14, .5, 16] },
+];
+// several glyph layers acting as one figure layer: set() fans out (uGain is a multiplier on each layer's own g0), u.<name>.value.set() too
+class FigGroup {
+  constructor(ls) { this.ls = ls; this.g0 = 1;
+    this.u = new Proxy({}, { get: (_, k) => ({ value: { set: (...a) => ls.forEach((l) => l.u[k].value.set(...a)) } }) }); }
+  set(k, v) { for (const l of this.ls) l.set(k, k === 'uGain' ? l.g0 * v : v); }
+}
+const flat = (L) => (L instanceof FigGroup ? L.ls : [L]);
 
 export default class LatticeScene {
   constructor(ctx, shot) { this.ctx = ctx; this.shot = shot; }
@@ -74,15 +106,26 @@ export default class LatticeScene {
     if (look.under) this.world.push(mk(look.under, 0));
     const ws = [].concat(look.world), wScale = shot.cellWorld ? shot.cellWorld / ws[Math.floor(ws.length / 2)].cell : 1;
     ws.forEach((o, k) => this.world.push(mk(o, 0, this.seq, { cell: o.cell * wScale, k })));
-    this.fig = mk(look.fig, 1, this.seq, shot.cellFig ? { cell: shot.cellFig } : {});
+    const glyphFig = look.figGlyph && ctx.P.get('figlook') !== 'led' && !shot.ledFig;
+    const mkFig = (seq) => (glyphFig ? new FigGroup(look.figGlyph.map((o, k) => withGain(mk(o, 1, seq, { k: 10 + k, cell: o.cell * (shot.cellFig ? shot.cellFig / 3 : 1) }))))
+      : mk(look.fig, 1, seq, shot.cellFig ? { cell: shot.cellFig } : {}));
+    this.fig = mkFig(this.seq);
     this.figTexts = look.figText && shot.written ? [].concat(look.figText).map((o, k) => mk(o, 1, this.seq, { k })) : [];
     this.figText = this.figTexts[0] || null;
+    // screens: another plate (e.g. a clip of her earlier films) built small into the frame from the same glyphs
+    this.screens = [];
+    for (const sc of shot.screens || []) {
+      const seq = await PlateSeq.open(sc.plate);
+      const ls = SCREEN.map((o, k) => mk(o, 2, seq, { k: 20 + k + this.screens.length * 3, depthAmt: 0 }));   // flat: a screen, not a scene
+      for (const l of ls) { l.set('uScale', sc.scale); l.u.uOffset.value.set(sc.off[0], sc.off[1]); }
+      this.screens.push({ sc, seq, ls });
+    }
     for (const f of [this.fig, ...this.figTexts]) if (f && shot.lane) { f.set('uTint', shot.lane); f.set('uTintAmt', shot.laneAmt ?? .1); }
     // fork copies: each its own plate clock (dt) so they move independently
     this.copies = [];
     for (const c of shot.copies || []) {
       const seq = c.dt ? await PlateSeq.open(shot.plate) : this.seq;
-      const L = mk(look.fig, 1, seq, shot.cellFig ? { cell: shot.cellFig } : {});
+      const L = mkFig(seq);
       if (c.lane) { L.set('uTint', c.lane); L.set('uTintAmt', c.laneAmt ?? .22); }
       this.copies.push({ c, seq, L });
     }
@@ -92,6 +135,7 @@ export default class LatticeScene {
     const s0 = shot.s0 ?? shot.t0;
     await this.seq.at(t, s0);
     for (const { c, seq } of this.copies) if (seq !== this.seq) await seq.at(t + c.dt, s0);
+    for (const { sc, seq } of this.screens) await seq.at(t, sc.s0 ?? s0);
     const cam = shot.cam ? shot.cam(u, t) : {};
     const mvp = this.view.frame(this.seq.aspect, cam);
     const fid = shot.fid ? shot.fid(u, t) : 1;
@@ -101,9 +145,9 @@ export default class LatticeScene {
       const k = Math.max(0, Math.min(1, (fid - .55) / .4)), led = k * k * (3 - 2 * k);
       this.fig.set('uDensity', 1); this.fig.set('uGain', this.fig.g0 * led);
       for (const f of this.figTexts) f.set('uGain', f.g0 * (1 - led));
-      if (led > .001) layers.push(this.fig);
+      if (led > .001) layers.push(...flat(this.fig));
       if (led < .999) layers.push(...this.figTexts);
-    } else { this.fig.set('uDensity', fid); layers.push(this.fig); }
+    } else { this.fig.set('uDensity', fid); layers.push(...flat(this.fig)); }
     if (shot.worldFid) for (const w of this.world) w.set('uDensity', shot.worldFid(u, t));
     for (const { c, L } of this.copies) {
       const k = c.at === undefined ? 1 : Math.max(0, Math.min(1, (t - c.at) / (c.dur ?? .6)));
@@ -113,7 +157,12 @@ export default class LatticeScene {
       L.set('uOffset', off); L.u.uOffset.value.set(off[0], off[1]);
       L.set('uScale', 1 + ((c.scale ?? 1) - 1) * e);
       L.set('uDensity', (c.dens ?? fid) * (c.share ? (k < 1 ? .5 + .5 * k * k : 1) : 1));
-      layers.push(L);
+      layers.push(...flat(L));
+    }
+    for (const { sc, ls } of this.screens) {
+      const k = sc.at === undefined ? 1 : Math.max(0, Math.min(1, (t - sc.at) / (sc.dur ?? .25)));
+      if (k <= 0) continue;
+      for (const l of ls) { l.set('uGain', l.g0 * k * (sc.gain ?? 1)); layers.push(l); }
     }
     if (shot.scatter) { const sc = shot.scatter(u, t); for (const l of [this.fig, ...this.figTexts, ...this.copies.map((x) => x.L)]) { l.set('uScatter', sc.k); l.u.uScatterDir.value.set(...sc.dir); } }
     if (shot.update) shot.update(this, u, t);
@@ -123,5 +172,5 @@ export default class LatticeScene {
     ctx.post.resolve.uniforms.uFade.value = shot.fade ? shot.fade(u, t) : 1;
     ctx.post.render(this.view.light, t, typeTex, this.view.paintTex);
   }
-  dispose() { for (const l of [...this.world, this.fig, ...this.figTexts, ...this.copies.map((c) => c.L)]) { l.mesh.geometry.dispose(); l.mesh.material.dispose(); } this.view.acc.dispose(); this.view.accP.dispose(); }
+  dispose() { for (const l of [...this.world, ...flat(this.fig), ...this.figTexts, ...this.copies.flatMap((c) => flat(c.L)), ...this.screens.flatMap((s) => s.ls)]) { l.mesh.geometry.dispose(); l.mesh.material.dispose(); } this.view.acc.dispose(); this.view.accP.dispose(); }
 }

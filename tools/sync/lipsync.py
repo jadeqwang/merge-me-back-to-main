@@ -16,15 +16,30 @@ opt = {a[2:].split("=")[0]: a.split("=", 1)[1] for a in sys.argv[1:] if a.starts
 clip, s0 = args[0], float(args[1])
 cap = cv2.VideoCapture(clip); fps = cap.get(cv2.CAP_PROP_FPS) or 24
 fm = mp.solutions.face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1, refine_landmarks=True, min_detection_confidence=.3)
+fm2 = mp.solutions.face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1, refine_landmarks=True, min_detection_confidence=.3)
+fd = mp.solutions.face_detection.FaceDetection(model_selection=1, min_detection_confidence=.3); last_box = None
 gap, eye, fh, cen = [], [], [], []
 while True:
     ok, f = cap.read()
     if not ok: break
     h, w = f.shape[:2]
-    r = fm.process(cv2.cvtColor(f, cv2.COLOR_BGR2RGB))
+    r = fm.process(cv2.cvtColor(f, cv2.COLOR_BGR2RGB)); X0, Y0, SX, SY = 0, 0, w, h
+    if not r.multi_face_landmarks:
+        # small face (medium/wide shot at 720p): find it, crop ~2.4x the face box, upscale, landmark the crop, map back
+        d = fd.process(cv2.cvtColor(f, cv2.COLOR_BGR2RGB))
+        if d.detections:
+            bb = max(d.detections, key=lambda q: q.score[0]).location_data.relative_bounding_box
+            box = np.array([(bb.xmin + bb.width / 2) * w, (bb.ymin + bb.height / 2) * h, max(bb.width * w, bb.height * h) * 2.4])
+            last_box = box if last_box is None else .6 * last_box + .4 * box
+        if last_box is not None:
+            cx, cy, sz = last_box; X0, Y0 = int(max(0, cx - sz / 2)), int(max(0, cy - sz / 2))
+            c = f[Y0:int(min(h, cy + sz / 2)), X0:int(min(w, cx + sz / 2))]
+            if c.size:
+                SX, SY = c.shape[1], c.shape[0]
+                r = fm2.process(cv2.cvtColor(cv2.resize(c, (480, int(480 * SY / SX))), cv2.COLOR_BGR2RGB))
     if not r.multi_face_landmarks:
         gap.append(np.nan); eye.append(np.nan); fh.append(np.nan); cen.append((np.nan, np.nan)); continue
-    L = r.multi_face_landmarks[0].landmark; P = lambda i: np.array([L[i].x * w, L[i].y * h])
+    L = r.multi_face_landmarks[0].landmark; P = lambda i: np.array([X0 + L[i].x * SX, Y0 + L[i].y * SY])
     H = np.linalg.norm(P(10) - P(152))
     gap.append(np.linalg.norm(P(13) - P(14)) / H); eye.append(np.linalg.norm(P(33) - P(263))); fh.append(H)
     cen.append(tuple((P(1) / [w, h]).round(4)))
@@ -39,7 +54,7 @@ a, b = max(0, int((win[0] - s0) * fps)), min(n, int((win[1] - s0) * fps))
 z = lambda x: (lambda x: (x - x.mean()) / (x.std() + 1e-9))(np.convolve(x, np.ones(3) / 3, mode="same"))
 res = []
 if g is not None:
-    for L in range(-int(.2 * fps), int(2.4 * fps) + 1):   # clip frame = song frame + L
+    for L in range(-int(1.0 * fps), int(2.4 * fps) + 1):   # clip frame = song frame + L (from -1 s: some v2 takes sing early)
         lo, hi = max(a, -L), min(b, n - L, len(env))
         if hi - lo < 12: continue
         x, yy = z(env[lo:hi]), z(g[lo + L:hi + L]); res.append((float(np.mean(x * yy)), L / fps))

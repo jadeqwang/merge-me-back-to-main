@@ -288,10 +288,19 @@ const MONTAGE0 = ws(4) - .18, MONTAGE1 = ws(5) - .51;   // first cut (just befor
   const w = lines(4), beats = T.beats().filter((b) => b >= B(28) - .02 && b < MONTAGE1);
   const len = [2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 2];
   let k = 0; const cut = [MONTAGE0]; len.forEach((n) => { k += n; cut.push(k < beats.length ? beats[k] : MONTAGE1); }); cut[cut.length - 1] = MONTAGE1;
+  // her earlier films (Jade 2026-10-24: see both ways, then decide): ?pv=flash = a half-beat flash of each at the end of four 2-beat cuts;
+  // ?pv=screens = the four as a 2x2 wall of glowing screens behind her in the live-demo branch. Default: neither.
+  const PV = new URLSearchParams(location.search).get('pv') || 'off';
+  const FLASH = { 0: ['pv_moongazing', 'jade/moongazing'], 3: ['pv_orbital', 'jade/orbital-sunrise'], 6: ['pv_rareearth', 'jade/rare-earth'], 10: ['pv_rewind', 'jade/rewind'] };
+  const SCREENS = ['pv_moongazing', 'pv_orbital', 'pv_rareearth', 'pv_rewind'];
   LIFE.forEach(([id, br, lane], i) => {
-    const t0 = cut[i], t1 = cut[i + 1];
-    S.push({ t0, t1, kind: 'lattice', ...pk(id, t0 - 1.0), s0: t0 - 1.0, fid: () => .25, written: true, lane, laneAmt: .1, cam: push(.04),
-      text: (ty, t) => { ty.chyron(br, t, t0 + .02, t1, lane); ty.line(w, t, { y: 960, size: 60 }); } });
+    const t0 = cut[i], t1 = cut[i + 1], fl = PV === 'flash' && FLASH[i], tf = fl ? t1 - (t1 - t0) / 4 : t1;
+    const screens = PV === 'screens' && id === 'lf_stage_sky' ? SCREENS.map((p, k) => ({ plate: `/work/plates/${p}`, s0: t0 - .1 * k, scale: .19,
+      off: [[-.6, .2], [-.25, .2], [-.6, .0], [-.25, .0]][k], at: t0 + .06 * k, dur: .2, gain: .9 })) : undefined;
+    S.push({ t0, t1: tf, kind: 'lattice', ...pk(id, t0 - 1.0), s0: t0 - 1.0, fid: () => .25, written: true, lane, laneAmt: .1, cam: push(.04), screens,
+      text: (ty, t) => { ty.chyron(br, t, t0 + .02, tf, lane); ty.line(w, t, { y: 960, size: 60 }); } });
+    if (fl) S.push({ t0: tf, t1, kind: 'lattice', plate: `/work/plates/${fl[0]}`, s0: tf - .35, fid: () => 1, cam: push(.03),
+      text: (ty, t) => { ty.chyron(fl[1], t, tf + .01, t1, lane); ty.line(w, t, { y: 960, size: 60 }); } });
   });
 }
 // ------------------------------------------------------------------------------------------ PRE-CHORUS bars 33–40 — the sync grid, then fold

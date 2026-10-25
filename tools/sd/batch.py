@@ -12,8 +12,8 @@ FF = "/home/jade/Documents/1-music-shipped/moongazing/.venv/lib/python3.12/site-
 VOC, INST = "analysis/stems/vocals.wav", "analysis/stems/instrumental.wav"
 VOC2 = "analysis_v2/stems/vocals.wav"
 # v2 audio-ref starts: v2 line start - (v1 line start - v1 start), lines per engine/show/main.js SUNG (computed 2026-10-24).
-# Not here: out_main (its line 26 is gone from the revised song), dr_center (instrumental dance; the drop is being re-choreographed).
-A2 = {"v1_split_front": 28.22, "v1_light_hands": 41.98, "ch1_main": 69.12, "ch1_gone_close": 89.16, "bd_ahh": 111.57, "v2_dish_close": 181.67,
+# out_main sings v2 line 25 (the final "Back to main..."; v1's line 26 is gone). Not here: dr_center (instrumental dance; the drop is being re-choreographed).
+A2 = {"out_main": 249.10, "v1_split_front": 28.22, "v1_light_hands": 41.98, "ch1_main": 69.12, "ch1_gone_close": 89.16, "bd_ahh": 111.57, "v2_dish_close": 181.67,
       "v2_pencil": 195.18, "v2_release": 200.60, "ch2_catch": 207.84, "ch2_gone_close": 228.61}
 
 PIN = "Animate the first frame exactly: same framing, composition, lighting, setting and character. "
@@ -64,13 +64,20 @@ SHOTS = {
  "v2_release": dict(plate="v2_release.jpg", dur=8, audio=(VOC, 200.75, 8), act="She sings softly to the small light on her open palm, then lets it go: it lifts off and flies away toward the far horizon; she watches it go with a peaceful, grateful smile." + SING),
  "ch2_catch": dict(plate="ch2_catch.jpg", dur=6, audio=(VOC, 208.50, 6), act="She has just received something precious from very far away and holds it against her chest; she sings with her eyes closed, then opens them and looks into the camera, overjoyed and calm." + SING),
  "out_dance": dict(plate="dr_dance_wide.jpg", dur=10, group=True, audio=(INST, 236.40, 10), act="The seven copies dance an exuberant, synchronized K-pop celebration routine on the beat of the reference audio: a jump with arms flung up, a sharp body wave down, a spin, a shoulder shimmy, laughing, then they break formation and run toward each other. Low camera, sun high and golden, water spraying."),
- "out_main": dict(plate="ch1_main.jpg", dur=6, audio=(VOC, 262.80, 6), act="She is home, completely. She sings the last words softly to the camera, a little tired and very happy, then smiles and closes her eyes for a moment in the warm morning light." + SING),
+ "out_main": dict(plate="ch1_main.jpg", dur=8, audio=(VOC, 262.80, 8), act="She is home, completely. She sings the last words softly to the camera, a little tired and very happy, then smiles and closes her eyes for a moment in the warm morning light." + SING),
  "pc_hotel": dict(plate="pc_hotel.jpg", dur=8, act="The woman at the front of the queue reaches out and taps the brass service bell once, then looks up at us with a bright, hopeful smile, as if asking whether there is still room. Behind her the endless queue of identical women shuffles patiently forward one small step. The camera holds still." + MUTE),
  "v1_split_front": dict(plate="v1_split_front.png", dur=6, audio=(VOC, 28.45, 6), act="She stands alone on the night salt flat and sings softly to the camera, low and intimate, like confiding something wonderful: that she is about to become many. Calm, a little smile in the eyes at the end. The camera drifts slowly in." + SING),
  "ch2_fold": dict(plate="ch2_formation.jpg", dur=6, group=True, act="The seven copies stand in the V formation, then on the beat the six outer copies step smoothly inward one after another and slide behind the centre copy until only the centre one is visible, like a K-pop formation change; the violet copy with the bun is the last to fold in, and she smiles as she does; the centre copy crosses her forearms over her chest and looks into the camera."),
  "ch2_gone_close": dict(plate="ch1_gone_close.jpg", dur=8, audio=(VOC, 228.30, 8), act="Everything has come home. She sings it straight to the camera with total warmth and certainty; on the long final note she smiles fully." + SING),
 }
-SINGERS = [k for k, v in SHOTS.items() if v.get("audio") and v["audio"][0] == VOC]
+# More shots live in tools/sd/shots_*.py (each defines SHOTS = {...}); entries there with v2=True already give their audio window in v2 song
+# time with v2 stems (e.g. ("analysis_v2/stems/instrumental.wav", 153.2, 8)), so no A2 remap. Import order is alphabetical; keys must be unique.
+import glob as _glob, importlib.util as _ilu
+for _f in sorted(_glob.glob(os.path.join(ROOT, "tools/sd/shots_*.py"))):
+    _sp = _ilu.spec_from_file_location(os.path.basename(_f)[:-3], _f); _m = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_m)
+    for _k, _v in _m.SHOTS.items():
+        assert _k not in SHOTS, f"duplicate shot {_k} in {_f}"; SHOTS[_k] = _v
+SINGERS = [k for k, v in SHOTS.items() if v.get("audio") and v["audio"][0] in (VOC, VOC2)]
 
 
 def main():
@@ -84,7 +91,7 @@ def main():
     specs = []
     for k in want:
         s = dict(SHOTS[k])
-        if tv == "v2" and s.get("audio"):
+        if tv == "v2" and s.get("audio") and not s.get("v2"):
             if k not in A2: sys.exit(f"{k}: no v2 audio window (see A2); use --timing=v1")
             s["audio"] = (VOC2, A2[k], s["audio"][2])
         prompt = PIN + s["act"] + (s["guard"] if s.get("guard") else GUARD_GROUP if s.get("group") else GUARD)
@@ -93,7 +100,7 @@ def main():
         canon = f"media/plates/face_v4/{k}.png"     # canon-face still (docs/canon_face_v4.md) wins over both under v2
         if tv == "v2" and os.path.exists(os.path.join(ROOT, canon)): src, ref = canon, f"media/gen/refs/{k}_v4.jpg"
         elif os.path.exists(os.path.join(ROOT, fixed)): src, ref = fixed, f"media/gen/refs/{stem}_fix.jpg"
-        else: src, ref = f"media/plates/{s['plate']}", f"media/gen/refs/{stem}.jpg"
+        else: src, ref = (s['plate'] if s['plate'].startswith('media/') else f"media/plates/{s['plate']}"), f"media/gen/refs/{os.path.basename(stem)}.jpg"
         if not os.path.exists(os.path.join(ROOT, ref)):
             subprocess.run([PY, "tools/gen/gen.py", "ref-image", src, ref, "--max=1600"], cwd=ROOT, env=env, check=True)
         args = ["--image", ref, "--set", f"duration={s['dur']}", "--set", f'resolution="{res}"', "--set", "use_virtual_avatar=true",
