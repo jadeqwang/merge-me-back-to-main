@@ -2,8 +2,11 @@
 // Copies = LED sprites of a top-down clip (lane recoloured); trails = lane-coloured comet paths of an analytic binary tree;
 // floor = token text that lights up where the trails pass (trail map). Everything is a pure function of song time t.
 // shot: { plate (clip, prepped), s0, splitBar0 = 3, splits = 10, titleBar = 9, tiltBar = 15, text(ty, t, st) }
+// The copies play four clocks of the take (k = 0..3, `step` s apart): spread as far as the take allows over the shot (at most 1.7 s), so no clock
+// runs past the take's last frame (src/clip.js spread / fit).
 import * as THREE from 'three';
 import { PlateSeq } from '../plateseq.js';
+import { spread } from '../clip.js';
 
 export const LANES = ['#FF7A1A', '#FF5FA2', '#6FB6FF', '#4FE3B0', '#FFD23F', '#A57BFF', '#F4F4F8', '#FF8F6B'];
 const TAU = Math.PI * 2, TH0 = -Math.PI / 2;
@@ -69,6 +72,8 @@ export default class ForkTree {
     // ---------------------------------------------------------------- copies (LED sprites)
     this.seqs = [];
     for (let k = 0; k < 4; k++) this.seqs.push(await PlateSeq.open(shot.plate));
+    const s0 = shot.s0 ?? shot.t0;
+    this.clk = { s0, step: spread(this.seqs[0].last, shot.t0 - s0, shot.t1 - shot.t0), fit: { from: shot.t0, to: shot.t1 } };
     const nmax = 1 << this.G;
     const cgeo = new THREE.InstancedBufferGeometry();
     cgeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-.5, -.5, 0, .5, -.5, 0, .5, .5, 0, -.5, .5, 0]), 3));
@@ -186,7 +191,7 @@ export default class ForkTree {
     const { ctx, shot } = this, r = ctx.renderer;
     const t = shot.treeTime ? shot.treeTime(tt) : tt;           // tree time (may run backwards)
     const trailT = shot.treeTime ? (shot.trailT ?? 1e9) : t;
-    for (let k = 0; k < 4; k++) await this.seqs[k].at(tt + k * 1.7, shot.s0 ?? shot.t0);
+    for (let k = 0; k < 4; k++) await this.seqs[k].at(tt + k * this.clk.step, this.clk.s0, this.clk.fit);
     const g = this.gen(t), n = 1 << g;
     // camera: frame the tips; then a final tilt to the horizon
     const Rtip = this.R(t) + .42;

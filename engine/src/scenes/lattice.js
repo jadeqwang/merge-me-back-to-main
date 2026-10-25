@@ -4,7 +4,8 @@
 // shot: { plate, s0, look?, cellFig?, cellWorld?, fid?(u,t)->density 1/64..1 for the figure, worldFid?(u,t),
 //         cam?(u,t)->{orbit,dolly,pan,over}, lane?, laneAmt?, copies?: [{dt, off:[x,y], scale, lane, at, dens}],
 //         scatter?(u,t)->{k, dir:[x,y,z]}, text?(type,t,u), update?(scene,u,t), fade?(u,t), clip?(u,t)->clip time in s (overrides s0 for the
-//         main plate: slow motion / time remap),
+//         main plate: slow motion / time remap), fit?: true | {from?, to?} (the main plate never runs off its take: from `from` (default t0)
+//         it slows just enough that the last frame lands on `to` (default t1); src/clip.js),
 //         screens?: [{plate, s0?, off:[x,y], scale, at?, dur?, gain?}] — other plates drawn small in the frame as glowing glyph screens }
 import * as THREE from 'three';
 import { LatticeLayer, LatticeView, glyphAtlas2, DEFAULT_TEXT } from '../lattice.js';
@@ -134,7 +135,8 @@ export default class LatticeScene {
   async render(t, u) {
     const { ctx, shot } = this;
     const s0 = shot.s0 ?? shot.t0;
-    if (shot.clip) await this.seq.seek(shot.clip(u, t) * this.seq.meta.fps); else await this.seq.at(t, s0);
+    if (shot.clip) await this.seq.seek(shot.clip(u, t) * this.seq.meta.fps);
+    else await this.seq.at(t, s0, shot.fit && { from: shot.t0, to: shot.t1, ...(shot.fit === true ? {} : shot.fit) });
     for (const { c, seq } of this.copies) if (seq !== this.seq) await seq.at(t + c.dt, s0);
     for (const { sc, seq } of this.screens) await seq.at(t, sc.s0 ?? s0);
     const cam = shot.cam ? shot.cam(u, t) : {};

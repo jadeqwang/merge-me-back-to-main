@@ -1,6 +1,7 @@
 // A prepped plate sequence (tools/prep/prep.py output) as three textures that are swapped per frame.
 import * as THREE from 'three';
 import { levels } from './lattice.js';
+import { last, fit } from './clip.js';
 
 const cache = new Map();   // url -> Promise<ImageBitmap>
 async function bitmap(url) {
@@ -43,6 +44,7 @@ export class PlateSeq {
     // prefetch ahead
     for (let k = 1; k <= 4; k++) { const g = String(Math.min(this.meta.n - 1, i + k)).padStart(6, '0'); bitmap(`${this.base}/rgb/${g}.jpg`); bitmap(`${this.base}/depth/${g}.png`); bitmap(`${this.base}/matte/${g}.png`); }
   }
-  // song time -> plate frame, with S0 = song time of the clip's frame 0
-  async at(tSong, s0) { await this.seek((tSong - s0) * this.meta.fps); }
+  get last() { return last(this.meta); }   // clip time of the take's last frame (s)
+  // song time -> plate frame, with S0 = song time of the clip's frame 0; f = { from, to }: never run off the take before `to` (clip.js fit)
+  async at(tSong, s0, f) { await this.seek(fit(tSong - s0, tSong, f, this.last) * this.meta.fps); }
 }

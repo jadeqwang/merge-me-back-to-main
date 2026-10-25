@@ -85,6 +85,19 @@ function pk(shot, t0) {
 const isTake = (shot, take) => PICKS[shot]?.take === take;
 // a real take is picked for the shot (tools/sd/picks.py also lists every unpicked shot as a still_ fallback, which doesn't count)
 const has = (shot) => !!PICKS[shot] && !(PICKS[shot].take || 'still_').startsWith('still_');
+// Held frames (Jade 2026-10-25: a take that runs out before its shot ends must not freeze; never loop or ping-pong). Lip-synced takes keep their
+// timing: when one starts after its cut or ends before it, the cut moves to the take's first / last frame and the neighbour fills the gap.
+// Other takes slow down just enough (`fit`, engine/src/clip.js) or start earlier. A take's length (clip time of its last frame): `len` in
+// picks.json (tools/sd/picks.py, from the prepped plate), else the measured length of the takes picked on 2026-10-24 (review/cloud/takes).
+const LEN = { v1_split_front_t11_be8b364663: 6, v1_light_hands_t12_7418e105bc: 6, ch1_main_t11_647f537e3a: 6, ch1_gone_close_t12_872aeaaac5: 11,
+  bd_ahh_t12_d2cff0c504: 7, v2_dish_close_t11_d6fceda232: 6, v2_pencil_t11_28b3018d96: 6, v2_release_t12_1bf7fde028: 8, ch2_catch_t11_03c5dd87e5: 6,
+  ch2_gone_close_t12_b30af2db05: 8, out_main_t12_d9d33a9749: 8 };
+const lenOf = (shot) => PICKS[shot]?.len ?? LEN[PICKS[shot]?.take];
+const synced = (shot) => has(shot) && PICKS[shot].s0 != null;                                     // a take with an audio window (s0)
+const head = (shot, t0) => (synced(shot) ? Math.max(t0, pk(shot, t0).s0) : t0);                   // cut no earlier than the take's frame 0
+const tail = (shot, t1) => (synced(shot) && lenOf(shot) != null ? Math.min(t1, pk(shot, t1).s0 + lenOf(shot)) : t1);   // ...nor after its last
+// a cut that starts before its take's frame 0 (s0 > t0, a bar-aligned take): ease in from frame 0 so it rejoins real time `k` s after s0
+const easeIn = (t0, s0, k) => (u, t) => (t >= s0 + k ? t - s0 : k * (t - t0) / (s0 + k - t0));
 const push = (k = .05) => (u) => ({ dolly: 1 - k * u, over: 1.06 });
 const lines = (i) => W(i);
 
@@ -388,22 +401,26 @@ const S = [];
     text: (ty, t) => introText(ty, t) });
 }
 // ------------------------------------------------------------------------------------------ VERSE 1 bars 17–32
+const L2_T0 = tail('v1_split_front', ws(2) - .08);   // cut just before "Down" (or on L1's last frame: with v4's lag 1.208 it ended 0.4 s early)
 { // L1 "I split myself a thousand ways": she splits again at ground level, copies walking apart
-  const w = lines(1), t0 = B(17), t1 = ws(2) - .08;   // cut just before "Down"
+  const w = lines(1), t0 = B(17), t1 = L2_T0;
   const at = [w[1].start, w[4].start, w[5].start];    // split, thousand, ways
-  const copies = [];
+  const copies = [], p = pk('v1_split_front', ws(1) - .32);
   const spread = [[-.42, .0], [.4, .0], [-.82, .02], [.78, .02], [-1.15, .04], [1.1, .04], [-1.45, .05]];
-  at.forEach((a, gi) => { const k = [1, 2, 4][gi]; for (let i = 0; i < k && copies.length < 7; i++) copies.push({ dt: (copies.length + 1) * .9, at: a, dur: .7, off: spread[copies.length], scale: .82 - .1 * gi, dens: .42 - .08 * gi, lane: Object.values(L)[(copies.length + 1) % 7], share: true }); });
-  S.push({ t0, t1, kind: 'lattice', ...pk('v1_split_front', ws(1) - .32), fid: () => 1, copies, cam: (u) => ({ dolly: 1 - .04 * u, over: 1.06 }),
+  // each copy runs its own clock a moment BEHIND hers (an echo of the line), inside the part of the take she has already sung when it splits
+  // off: v4's copies ran 0.9-6.3 s ahead and held the 6 s take's last frame for up to 3 s
+  at.forEach((a, gi) => { const k = [1, 2, 4][gi]; for (let i = 0; i < k && copies.length < 7; i++) copies.push({ dt: -(a - p.s0) * (i + 1) / (k + 1), at: a, dur: .7, off: spread[copies.length], scale: .82 - .1 * gi, dens: .42 - .08 * gi, lane: Object.values(L)[(copies.length + 1) % 7], share: true }); });
+  S.push({ t0, t1, kind: 'lattice', ...p, fid: () => 1, copies, cam: (u) => ({ dolly: 1 - .04 * u, over: 1.06 }),
     text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 250, size: 120, maxW: 1100, out: t1 - .3 }); } });
 }
-{ // L2 "Down every road the night could hold"
-  const w = lines(2), t0 = ws(2) - .08, t1 = bb(24, 3);
-  S.push({ t0, t1, kind: 'lattice', ...pk('v1_track_rose', t0), fid: () => .25, lane: L.rose, laneAmt: .12, cam: (u) => ({ dolly: 1, pan: [-.02 * u, 0], over: 1.08 }),
+const L3_T0 = head('v1_light_hands', bb(24, 3));   // 0:41: the L3 take's first frame comes 0.7 s after bar 24 beat 3 (lag -0.15); cut there
+{ // L2 "Down every road the night could hold" (runs on to L3's cut, slowed to fit its 8 s take)
+  const w = lines(2), t0 = L2_T0, t1 = L3_T0;
+  S.push({ t0, t1, kind: 'lattice', ...pk('v1_track_rose', t0), fit: true, fid: () => .25, lane: L.rose, laneAmt: .12, cam: (u) => ({ dolly: 1, pan: [-.02 * u, 0], over: 1.08 }),
     text: (ty, t) => { ty.line(w, t, { y: 960, size: 60, out: t1 - .4 }); ty.chyron('jade/down-every-road', t, t0 + .3, t1 - .2, L.rose); } });
 }
 { // L3 "Each one a light I sent ahead" (sync)
-  const w = lines(3), t0 = bb(24, 3), t1 = ws(4) - .18;
+  const w = lines(3), t0 = L3_T0, t1 = ws(4) - .18;
   S.push({ t0, t1, kind: 'lattice', ...pk('v1_light_hands', ws(3) - .34), fid: () => 1, cam: push(.06),
     text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 300, size: 118, maxW: 820, out: t1 - .25 }); } });
 }
@@ -435,11 +452,14 @@ const MONTAGE0 = ws(4) - .18, MONTAGE1 = ws(5) - .51;   // first cut (just befor
   const turn = bb(34, .73);    // every branch turns her head together, here
   const cols = 3, rows = 3, pw = 1 / 3, ph = 1 / 3;
   const foldStart = bb(36, 3.73);   // just before the bar-37 kick under the held "from"
+  const origin = bb(38, 1.69);      // cut to the origin (forktree)
   const panels = ids.map(([id, lane], i) => {
     const cx = i % cols, cy = Math.floor(i / cols);
     const gx = (cx - 1) * pw * 1.777, gy = (1 - cy) * ph;
     const p = pk(id, 0);
-    return { plate: p.plate, s0: turn - 6.3, lane, laneAmt: .1, rw: 640, rh: 360, cellFig: 2.5, cellWorld: 7, fid: () => 1,
+    // the turn is in each take's last 2 s (clip 6.3 on `turn`); after it the take slows (~0.23x) so she turns and grows still through the
+    // fold instead of holding the last frame for 4-6 s
+    return { plate: p.plate, s0: turn - 6.3, fit: { from: turn, to: origin }, lane, laneAmt: .1, rw: 640, rh: 360, cellFig: 2.5, cellWorld: 7, fid: () => 1,
       xf: (t) => {
         const appear = clamp((t - (t0 + i * .18)) / .35);
         const f = ss(foldStart + i * .55, foldStart + i * .55 + 1.1, t);      // origami fold toward the centre
@@ -447,7 +467,6 @@ const MONTAGE0 = ws(4) - .18, MONTAGE1 = ws(5) - .51;   // first cut (just befor
         return { x: gx * (1 - f), y: gy * (1 - f), z: 0, ry: f * Math.PI * (cx - 1 || .5), rx: f * .6 * (cy - 1 || .5), s: s * 1.0, a: appear * (1 - ss(.85, 1, f)) };
       } };
   });
-  const origin = bb(38, 1.69);
   const preText = (ty, t) => { ty.ledHook(w6, t, { x: 960, y: 900, size: 110, maxW: 1700, align: 'center', out: ws(7) - .45 }); };
   // the origin: one Jade among the stars before the first split. intro_up isn't sung (its picks s0 is null), so pk's second argument is its clip
   // clock: clip 2.5 s on the cut = her breath, a slow blink, the smile arriving. (v4 passed 0, so every forktree use showed the take's last frame,
@@ -473,13 +492,15 @@ const MONTAGE0 = ws(4) - .18, MONTAGE1 = ws(5) - .51;   // first cut (just befor
 // ------------------------------------------------------------------------------------------ CHORUS 1 bars 41–56
 // (stripped chorus: hits on bar 41 and under "Nothing" in bar 52 only — HIT52)
 const HIT52 = bb(52, 2.26);
-{ const w = lines(7), t0 = ws(7) - .1, t1 = bb(44, .38);   // cut as the held "main" ends
+// 1:14: cut as the held "main" ends, or on the take's last frame if it ends first (ch1_main_t11 is 6 s: 0.3 s early; the 7 s re-take reaches it)
+const CH1_MAIN_END = tail('ch1_main', bb(44, .38));
+{ const w = lines(7), t0 = ws(7) - .1, t1 = CH1_MAIN_END;
   S.push({ t0, t1, kind: 'lattice', ...pk('ch1_main', ws(7) - .3), fid: (u) => .55 + .45 * u, cam: push(.06),
     text: (ty, t) => { ty.mono('git merge --no-ff branch/*', t, t0 + .1, { x: 110, y: 200, size: 24, out: t1 - .4 }); ty.ledHook(w, t, { x: 110, y: 420, size: 170, maxW: 860, out: t1 - .45 }); } });
 }
-{ const w = lines(8), t0 = bb(44, .38), t1 = ws(8, 4) + .2;   // the tree runs home; cut on "becomes"
+{ const w = lines(8), t0 = CH1_MAIN_END, t1 = ws(8, 4) + .2;   // the tree runs home; cut on "becomes"
   const G1 = B(12) + 1.2;
-  // intro_up's clip clock starts on the cut (forktree runs four plate clocks at +0, 1.7, 3.4, 5.1 s, so this keeps most copies inside the 8 s take)
+  // intro_up's clip clock starts on the cut (the forktree spaces its four copy clocks so the last one ends on the take's last frame)
   S.push({ t0, t1, kind: 'forktree', ...pk('intro_up', t0), splitBar0: 3, splits: 10, treeTime: (t) => G1 - (t - t0) / (t1 - t0) * (G1 - B(3) + .2),
     trailT: 1e9, glow: () => 1.0,
     text: (ty, t) => { ty.ledHook(w, t, { x: 960, y: 520, size: 120, maxW: 1600, align: 'center', out: ws(9) - .9 }); } });
@@ -489,7 +510,8 @@ const HIT52 = bb(52, 2.26);
     text: (ty, t) => { ty.ledHook(w, t, { x: 960, y: 520, size: 120, maxW: 1600, align: 'center', out: ws(9) - .9 }); } });
 }
 { const w = lines(9), t0 = ws(9) - .6, t1 = ws(10) - .35;
-  S.push({ t0, t1, kind: 'lattice', ...pk(`ch1_fold_${FOLD}`, t0 + .2), fid: (u) => .7 + .3 * u, cam: push(.05),
+  S.push({ t0, t1, kind: 'lattice', ...pk(`ch1_fold_${FOLD}`, t0), fit: true, fid: (u) => .7 + .3 * u, cam: push(.05),   // from frame 0 on the cut (v4: 0.2 s
+    // late, its first frame held), 0.97x so the 6 s take spans the shot
     text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 230, size: 140, maxW: 900, out: t1 - .2 }); } });
 }
 { const w = lines(10), t0 = ws(10) - .35, t1 = bb(58, 1.64);   // "Nothing that I lived can come undone"; the bar-52 kick lands on "Nothing"
@@ -499,12 +521,16 @@ const HIT52 = bb(52, 2.26);
       const k = .22 * hit(t); if (k > .01) { ty.g.fillStyle = `rgba(255,246,232,${k})`; ty.g.fillRect(0, 0, 1920, 1080); } } });
 }
 // ------------------------------------------------------------------------------------------ BREAKDOWN bars 57–72
+// 1:51: bd_ahh's first frame (its lag) can come after the "Ahh" cut; the breakdown runs on to it
+const AHH_T0 = head('bd_ahh', ws(13) - .1);
 { const t0 = bb(58, 1.64), t1 = ws(13) - .1, w11 = lines(11), w12 = lines(12);
   const ids = ['lf_piano_rose', 'lf_wushu_gold', 'lf_lab_mint', 'lf_poet_gold', 'lf_ames_white', 'lf_band_rose', 'lf_stage_sky', 'lf_home_mint'];
   const wa0 = ws(11) - .27, wa1 = bb(62, .84), re0 = ws(12) - .25, re1 = t1 - .1;   // wander out on "Branch... and wander", return on "Merge... and return"
   const panels = ids.map((id, i) => {
     const a0 = i / ids.length * Math.PI * 2 + .4, p = pk(id, 0);
-    return { plate: p.plate, s0: t0 - i * .7, rw: 480, rh: 270, cellFig: 3, cellWorld: 8, fid: () => 1,
+    // each pane starts near its take's head (clip 0.2 i on its fade-in) and slows (~0.7x) so the 8 s take lasts until it is home (v4 started
+    // pane i at clip i and held the last frame for 3.7-8.5 s)
+    return { plate: p.plate, s0: t0 + .1 * i, fit: { from: t0 + .3 * i, to: re1 }, rw: 480, rh: 270, cellFig: 3, cellWorld: 8, fid: () => 1,
       xf: (t) => {
         const wander = ss(wa0, wa1, t), ret = ss(re0, re1, t);
         const r = .55 * (1 + .5 * wander) * (1 - ret);
@@ -512,10 +538,10 @@ const HIT52 = bb(52, 2.26);
           s: .26 * (1 - .8 * ret), a: clamp((t - t0 - i * .3) / .8) * (1 - ss(.9, 1, ret)), gain: 1.6 };
       } };
   });
-  S.push({ t0, t1, kind: 'panels', panels, back: { ...pk('bd_float', t0), cellFig: 3, fid: () => 1 }, cam: () => ({}),
+  S.push({ t0, t1: AHH_T0, kind: 'panels', panels, back: { ...pk('bd_float', t0), fit: { from: t0, to: AHH_T0 }, cellFig: 3, fid: () => 1 }, cam: () => ({}),   // back: 10 s take at ~0.84x
     text: (ty, t) => { ty.line(w11, t, { y: 980, size: 64, out: ws(12) - 1.65 }); ty.line(w12, t, { y: 980, size: 64, out: t1 - .2 }); } });
 }
-{ const t0 = ws(13) - .1, t1 = B(69);   // "Ahh"; cut on bar 69 = the leap to the second "ahh" + the kick pulse
+{ const t0 = AHH_T0, t1 = B(69);   // "Ahh"; cut on bar 69 = the leap to the second "ahh" + the kick pulse
   S.push({ t0, t1, kind: 'lattice', ...pk('bd_ahh', ws(13) - .3), fid: (u) => .7 + .3 * u, cam: (u) => ({ dolly: 1 - .08 * u, roll: Math.PI, over: 1.06 }) });
 }
 { const t0 = B(69), t1 = B(73);   // the scale reveal: every branch is one tree of light (drone show), drawing home into one point
@@ -532,8 +558,9 @@ const HIT52 = bb(52, 2.26);
     ...LIFE.slice(5).map((x) => [x[0], x[2], x[1]])].slice(0, 16);
   const collapse0 = B(86), collapse1 = bb(87, 1.8), strobe0 = bb(87, 3.5), riser1 = B(89) - .08;
   const panels = src.map(([id, lane], k) => {
-    const c = k % 4, r = Math.floor(k / 4), p = pk(id, 0);
-    return { plate: p.plate, s0: t0 - (k * 1.37) % 5, lane, laneAmt: .12, rw: 480, rh: 270, cellFig: 3, cellWorld: 7, fid: () => .25, frame: lane,
+    const c = k % 4, r = Math.floor(k / 4), p = pk(id, 0), ap0 = bt[k] ?? t0, c0 = (k * .37) % 1.1;
+    // each pane's take spans its whole life, pop to collapse (~23 s at 0.25-0.45x; v4 played them at 1x and held the last frame 17-22 s)
+    return { plate: p.plate, s0: ap0 - c0, fit: { from: ap0, to: collapse1 }, lane, laneAmt: .12, rw: 480, rh: 270, cellFig: 3, cellWorld: 7, fid: () => .25, frame: lane,
       xf: (t) => {
         const ap = bt[k] ?? t0;
         if (t < ap) return null;
@@ -742,9 +769,13 @@ const HIT52 = bb(52, 2.26);
 const ctxBar = (ty, t, pct) => { const g = ty.g; g.save(); g.font = '500 20px JBM'; g.fillStyle = 'rgba(255,241,220,.8)'; g.fillText('context', 64, 70);
   g.strokeStyle = 'rgba(255,241,220,.6)'; g.lineWidth = 1.5; g.strokeRect(150, 54, 300, 18); g.fillStyle = L.violet; g.fillRect(153, 57, 294 * pct, 12);
   g.fillStyle = 'rgba(255,241,220,.8)'; g.fillText(`${Math.round(pct * 100)}%`, 466, 70); g.restore(); };
-{ const w = lines(16), t0 = B(105) - .18, t1 = we(16) + .2;   // out after the held "way" (the take runs out ~0.5 s later)
+{ const w = lines(16), T0 = B(105) - .18, t1 = we(16) + .2;   // out after the held "way" (the take runs out ~0.5 s later)
+  // 3:01: v2_dish_close_t11's first frame is 0.86 s after the downbeat cut (its audio window starts at 181.67). Until the close-up starts, the
+  // wide of her alone at the dish (v2_dish_sit, a part of the take the verse doesn't use) carries the downbeat; context bar and chyron run on.
+  const t0 = head('v2_dish_close', T0), text = (ty, t) => { ctxBar(ty, t, .94 + .01 * (t - T0) / 5); ty.chyron('jade/1420-mhz', t, T0 + .2, t1, L.violet); };
+  if (t0 > T0 + 1 / 24) S.push({ t0: T0, t1: t0, kind: 'lattice', ...pk('v2_dish_sit', T0), s0: T0 - 3.0, fid: () => .25, lane: L.violet, laneAmt: .1, cam: push(.02), text });
   S.push({ t0, t1, kind: 'lattice', ...pk('v2_dish_close', ws(16) - .33), fid: () => .25, lane: L.violet, laneAmt: .1, cam: push(.04),
-    text: (ty, t) => { ctxBar(ty, t, .94 + .01 * (t - t0) / 5); ty.chyron('jade/1420-mhz', t, t0 + .2, t1, L.violet); ty.line(w, t, { y: 980, size: 60, out: t1 - .2 }); } });
+    text: (ty, t) => { text(ty, t); ty.line(w, t, { y: 980, size: 60, out: t1 - .2 }); } });
 }
 { const w = lines(17), t0 = we(16) + .2, t1 = we(17);
   S.push({ t0, t1, kind: 'lattice', ...pk('v2_horizon', t0), fid: () => .25, lane: L.violet, cam: push(.03),
@@ -786,11 +817,14 @@ const HOOK20 = { x: 110, y: 420, size: 170, maxW: 860, out: ws(21) - .47 };
       ty.ledHook(w, t, { x: 960, y: 190, size: 100, maxW: 1700, align: 'center', out: t1 - .13 }); } });
 }
 { const w = lines(22), t0 = B(129), t1 = ws(23) - .12;
-  S.push({ t0, t1, kind: 'lattice', ...pk(`ch2_fold_${FOLD}`, t0 - .6), s0: t0 - .6, fid: () => 1, cam: (u, t) => ({ dolly: punch(t, 1 - .05 * u, .03), over: 1.06 }),
+  S.push({ t0, t1, kind: 'lattice', ...pk(`ch2_fold_${FOLD}`, t0 - .6), s0: t0 - .6, fit: true, fid: () => 1,   // 0.9x: the 6 s take spans the shot
+    cam: (u, t) => ({ dolly: punch(t, 1 - .05 * u, .03), over: 1.06 }),
     text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 230, size: 140, maxW: 900, out: t1 - .2 });   // flash after the hook so its scrim doesn't cut the flash
       const f = Math.exp(-(t - t0) * 5); if (f > .01) { ty.g.fillStyle = `rgba(255,250,240,${f})`; ty.g.fillRect(0, 0, 1920, 1080); } } });
 }
-{ const w = lines(23), t0 = ws(23) - .12, t1 = bb(136, 3.74);   // "Every life I've lived, I have become"
+// 3:56: the orchestra comes in just before the bar-137 impact, or on ch2_gone_close's last frame if that take ends first (lag 0.3: 0.2 s early)
+const ORCH_T0 = tail('ch2_gone_close', bb(136, 3.74));
+{ const w = lines(23), t0 = ws(23) - .12, t1 = ORCH_T0;   // "Every life I've lived, I have become"
   S.push({ t0, t1, kind: 'lattice', ...pk('ch2_gone_close', ws(23) - .27), fid: () => 1, cam: push(.06),
     text: (ty, t) => { ty.ledHook(w, t, { x: 100, y: 250, size: 112, maxW: 760, out: we(23) + .15 }); } });
 }
@@ -799,8 +833,8 @@ const HOOK20 = { x: 110, y: 420, size: 170, maxW: 860, out: ws(21) - .47 };
 const ORCH = new URLSearchParams(location.search).get('orch') || 'v5';   // ?orch=v4: the conductor version (two shots), for A/B
 if (ORCH === 'v4') { // full drums again: the orchestra of Jades (Jade 2026-10-24: piano, violin, electric guitar, main-Jade conducting every branch). Both takes
   // were made on the v2 instrumental from a bar line (tools/sd/shots_outro.py), so their s0 (picks) keeps the playing on the beat.
-  const t0 = bb(136, 3.74), t1 = ws(25) - .08, tc = B(141);
-  S.push({ t0, t1: tc, kind: 'lattice', look: 'paint', ...pk('out_orch', t0), fid: () => 1, cam: push(.04),
+  const t0 = ORCH_T0, t1 = ws(25) - .08, tc = B(141), p = pk('out_orch', t0);
+  S.push({ t0, t1: tc, kind: 'lattice', look: 'paint', ...p, ...(p.s0 > t0 ? { clip: easeIn(t0, p.s0, 2 * T.beatLen(137)) } : {}), fid: () => 1, cam: push(.04),
     text: (ty, t) => ty.line(lines(24), t, { y: 980, size: 64, out: bb(139, 1.29) }) });
   S.push({ t0: tc, t1, kind: 'lattice', look: 'paint', ...pk('out_orch_close', tc), fid: () => 1, cam: push(.05) });
 } else { // v5 (Jade 2026-10-25: the playing should match what's in the music; the conductor becomes a composer writing it in real time with a pencil).
@@ -814,7 +848,7 @@ if (ORCH === 'v4') { // full drums again: the orchestra of Jades (Jade 2026-10-2
   // Each cut features the player whose part enters, on that bar; she writes each part just before it sounds (FX.score) and it lands on the beat.
   // Takes: tools/sd/shots_outro.py orch_* (v2 instrumental windows from a beat, so whole-beat s0 shifts keep the playing on the beat). Until a
   // take is picked, its cut renders a reframe of the v4 takes (stand-in) so the timing can be reviewed now.
-  const t0 = bb(136, 3.74), t1 = ws(25) - .08, BT = T.beatLen(137);
+  const t0 = ORCH_T0, t1 = ws(25) - .08, BT = T.beatLen(137);
   // the violin's part = the sung line (vocal-stem pitch track); its F# is carried on by a high synth line from bar 143 (247.1) through the breath
   const VLINE = [[238.60, 241.64, 62], [241.92, 242.62, 69], [242.75, 243.36, 76], [243.42, 250.40, 78]];   // [on, off, midi]
   const since = (t, div) => { const b = T.barAt(t), f = (b - Math.floor(b)) * 4 * div; return (f - Math.floor(f)) * T.beatLen(Math.floor(b)) / div; };
@@ -855,7 +889,8 @@ if (ORCH === 'v4') { // full drums again: the orchestra of Jades (Jade 2026-10-2
     // each cut switches to its new take once one is picked (has(): a real take, not picks.py's still_ placeholder); until then the stand-in
     const v5 = has(shot), v = v5 ? view : { ...view, ...altView }, composer = shot === 'orch_pencil';
     const lead = !composer && v.parts?.[0], tint = lead && { piano: L.rose, violin: L.white, guitar: L.rose }[lead];
-    S.push({ t0: a, t1: b, kind: 'lattice', look: 'paint', ...(v5 ? pk(shot, a) : { plate: pk(alt, 0).plate, s0: altS0 }), fid: () => 1, cam: v5 ? cam : altCam,
+    const p = v5 ? pk(shot, a) : { plate: pk(alt, 0).plate, s0: altS0 };   // a cut before its take's frame 0 (the stand-in at 3:56) eases in
+    S.push({ t0: a, t1: b, kind: 'lattice', look: 'paint', ...p, ...(p.s0 > a ? { clip: easeIn(a, p.s0, 2 * BT) } : {}), fid: () => 1, cam: v5 ? cam : altCam,
       ...(composer ? { lane: L.violet, laneAmt: .1 } : {}),   // her close-ups carry the violet lane, like every 1420 MHz shot
       update: tint ? (sc, u, t) => { sc.fig.set('uTint', tint); sc.fig.set('uTintAmt', .04 + .18 * Math.min(1, ENV[lead](t))); } : undefined,   // the featured player lights up
       text: (ty, t) => { FX.score(ty.g, t, v, E, ENV); if (t < B(139)) ty.line(lines(24), t, { y: 980, size: 64, out: we(24) + .25 }); } });

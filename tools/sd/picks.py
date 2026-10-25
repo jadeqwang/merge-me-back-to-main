@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Write work/picks.json: shot -> prepped plate dir (/work/plates/<take>). Manual overrides in docs/picks_manual.json win;
-otherwise the first prepped take (t1 before t2) is used. Also records s0 per shot from the spec notes."""
+otherwise the first prepped take (t1 before t2) is used. Also records s0 per shot from the spec notes, and len (the take's length in s)."""
 import glob, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 man = json.load(open(os.path.join(ROOT, "docs/picks_manual.json"))) if os.path.exists(os.path.join(ROOT, "docs/picks_manual.json")) else {}
@@ -33,6 +33,10 @@ for shot, v in out.items():
         m = json.load(open(sj)); lag = m.get("best_lag_s") if (m.get("corr") or 0) > .3 and abs(m.get("best_lag_s") or 9) < .8 else 0
     v["lag"] = lag or 0
     if v.get("s0") is not None: v["s0"] = round(v["s0"] - v["lag"], 4)
+# len: the take's length (clip time of its last frame, s) from its prepped plate; engine/show/main.js trims lip-synced shots to it (held frames)
+for shot, v in out.items():
+    mj = os.path.join(ROOT, "work/plates", v.get("take", ""), "meta.json")
+    if v.get("take") and os.path.exists(mj): m = json.load(open(mj)); v["len"] = round((m["n"] - 1) / m["fps"], 4)
 import importlib.util
 spec = importlib.util.spec_from_file_location("batch", os.path.join(ROOT, "tools/sd/batch.py")); bm = importlib.util.module_from_spec(spec); spec.loader.exec_module(bm)
 for shot, sd in bm.SHOTS.items():
