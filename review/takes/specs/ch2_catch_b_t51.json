@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ch2_catch_b_t51",
+ "notes": "{\"shot\": \"ch2_catch_b\", \"s0\": 207.84, \"plate\": \"media/plates/face_v4/ch2_catch.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She has just received something precious from very far away and holds it against her chest. She sings with her eyes closed, inward and contemplative; on 'back to' her eyes half-open and look down at her hands; on the long final note she slowly closes them again and keeps singing with her mouth open until the sound fades, still and thoughtful, her face calm and serious, lips soft. She does not smile broadly, grin or show her teeth. She sings the words of the reference audio with precise lip sync, shaping each word clearly and holding the long sustained notes with her mouth open. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/ch2_catch_b_v4_2048.jpg",
+  "duration": 8,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ch2_catch_b_v2_207.84_8s.mp3"
+  ]
+ }
+}

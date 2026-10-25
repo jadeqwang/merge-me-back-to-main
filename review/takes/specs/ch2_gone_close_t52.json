@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ch2_gone_close_t52",
+ "notes": "{\"shot\": \"ch2_gone_close\", \"s0\": 228.61, \"plate\": \"media/plates/face_v4/ch2_gone_close.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Everything has come home. She sings it straight to the camera, quiet and certain, with a calm, serious, contemplative expression, as if only now understanding what it cost. On the long final note she keeps her mouth open and keeps singing until the sound fades, then slowly lowers her eyes and closes them, at peace. Her lips stay soft. She does not smile broadly, grin or show her teeth. She sings the words of the reference audio with precise lip sync, shaping each word clearly and holding the long sustained notes with her mouth open. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/ch2_gone_close_v4_2048.jpg",
+  "duration": 8,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ch2_gone_close_v2_228.61_8s.mp3"
+  ]
+ }
+}

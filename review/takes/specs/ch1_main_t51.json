@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ch1_main_t51",
+ "notes": "{\"shot\": \"ch1_main\", \"s0\": 69.12, \"plate\": \"media/plates/face_v4/ch1_main.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She stands on the salt flat at the first sunrise after a very long night; everything she sent out into the world is about to come home. She sings to the camera, calm and serious, earnest and a little wistful, like greeting someone she has missed for a long time; only a faint warmth in her eyes. She closes her lips fully on the M of 'Merge', 'me' and 'main' and on the b of 'back', and holds the long last note with her mouth open until it fades, then slowly closes her eyes. The camera drifts slowly in. Her hair moves in the wind. She does not smile broadly, grin or show her teeth. She sings the words of the reference audio with precise lip sync, shaping each word clearly and holding the long sustained notes with her mouth open. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/ch1_main_v4_2048.jpg",
+  "duration": 7,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ch1_main_v2_69.12_7s.mp3"
+  ]
+ }
+}

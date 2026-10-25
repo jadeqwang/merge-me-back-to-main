@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "bd_ahh_t52",
+ "notes": "{\"shot\": \"bd_ahh\", \"s0\": 111.57, \"plate\": \"media/plates/face_v4/bd_ahh.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She floats on the water with her eyes closed and sings one long, high, wordless note of pure release, mouth open, the note rising; her eyes stay closed for the whole note, her face serene. The camera stays still at this distance; it does not move in. She sings the reference audio with precise lip sync, holding the long note with her mouth open. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/bd_ahh_v4_2048.jpg",
+  "duration": 7,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/bd_ahh_v2_111.57_7s.mp3"
+  ]
+ }
+}
