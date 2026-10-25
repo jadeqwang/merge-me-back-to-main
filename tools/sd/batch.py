@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Seedance 2.5 shot specs for the video. Each shot: plate, action (situation + subtext + one shift), optional audio window.
-  $PY tools/sd/batch.py [SHOT ...] [--takes=N] [--dry] [--res=720p] [--timing=v2|v1]
+  $PY tools/sd/batch.py [SHOT ...] [--takes=N] [--t0=K] [--dry] [--res=720p] [--timing=v2|v1]
 Writes media/gen/specs/<shot>_tK.json via gen.py spec and submits (unless --dry). Audio windows: (stem, start, dur) in song time;
 S0 (the song time of clip frame 0) = start. Log: media/gen/sd_batch.jsonl
 --timing=v2 (default): sung shots use the revised song (analysis_v2 stems, the windows in A2 below, same offset into each line as v1) and the
@@ -22,7 +22,11 @@ A2 = {"out_main": 249.10, "v1_split_front": 28.22, "v1_light_hands": 41.98, "ch1
 PIN = "Animate the first frame exactly: same framing, composition, lighting, setting and character. "
 SING = (" She sings the words of the reference audio with precise lip sync, shaping each word clearly and holding the long sustained notes with her "
         "mouth open.")
-GUARD = (" Same face as the first frame: large very dark brown eyes, natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. "
+# v5 (2026-10-25): the guard keeps her eyes as they are in the still. It said "large very dark brown eyes", and whenever Seedance had to redraw eyes
+# (reopening them at 1:58 bd_ahh and 3:33 ch2_catch) it made them bigger and rounder: "huge, alien eyes" (Jade). v4 takes were made with the old text.
+EYES = ("Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white "
+        "of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears.")
+GUARD = (" " + EYES + " Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. "
          "Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.")
 GUARD_GROUP = " Every copy keeps the same face and outfit as in the first frame, only the band colours differ. One continuous shot, no cuts. No captions, no text."
 MUTE = " Her mouth stays gently closed; she does not sing or speak."
@@ -75,11 +79,19 @@ SHOTS = {
 }
 # More shots live in tools/sd/shots_*.py (each defines SHOTS = {...}); entries there with v2=True already give their audio window in v2 song
 # time with v2 stems (e.g. ("analysis_v2/stems/instrumental.wav", 153.2, 8)), so no A2 remap. Import order is alphabetical; keys must be unique.
+# A shots file may also define RETAKES = {existing shot: new spec}: a re-take keeps the shot's key (so its face_v4 still, picks, lags and the
+# EDL keep working) with a new prompt/duration; generate it with a new --t0 so its tags don't collide (each take's spec JSON keeps the prompt
+# it was made with). A spec's face="shot" uses media/plates/face_v4/<shot>.png as its first frame (a prompt variant of an existing shot).
 import glob as _glob, importlib.util as _ilu
+_RETAKES = {}
 for _f in sorted(_glob.glob(os.path.join(ROOT, "tools/sd/shots_*.py"))):
     _sp = _ilu.spec_from_file_location(os.path.basename(_f)[:-3], _f); _m = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_m)
     for _k, _v in _m.SHOTS.items():
         assert _k not in SHOTS, f"duplicate shot {_k} in {_f}"; SHOTS[_k] = _v
+    for _k, _v in getattr(_m, "RETAKES", {}).items():
+        assert _k not in _RETAKES, f"duplicate re-take {_k} in {_f}"; _RETAKES[_k] = _v
+for _k, _v in _RETAKES.items():
+    assert _k in SHOTS, f"re-take of unknown shot {_k}"; SHOTS[_k] = _v
 SINGERS = [k for k, v in SHOTS.items() if v.get("audio") and v["audio"][0] in (VOC, VOC2)]
 
 
@@ -100,7 +112,7 @@ def main():
         prompt = PIN + s["act"] + (s["guard"] if s.get("guard") else GUARD_GROUP if s.get("group") else GUARD)
         stem = os.path.splitext(s['plate'])[0]
         fixed = f"media/plates/fix/{stem}.jpg"      # costume-repaired still (tools/plates/fix_patch.py) wins when present
-        canon = f"media/plates/face_v4/{k}.png"     # canon-face still (docs/canon_face_v4.md) wins over both under v2
+        canon = f"media/plates/face_v4/{s.get('face', k)}.png"   # canon-face still (docs/canon_face_v4.md) wins over both under v2
         if tv == "v2" and os.path.exists(os.path.join(ROOT, canon)): src, ref = canon, f"media/gen/refs/{k}_v4.jpg"
         elif os.path.exists(os.path.join(ROOT, fixed)): src, ref = fixed, f"media/gen/refs/{stem}_fix.jpg"
         else: src, ref = (s['plate'] if s['plate'].startswith('media/') else f"media/plates/{s['plate']}"), f"media/gen/refs/{os.path.basename(stem)}.jpg"
