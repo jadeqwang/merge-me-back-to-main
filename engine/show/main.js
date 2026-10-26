@@ -823,6 +823,9 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   const SYNC_KEY = {
     ws_open_t51_edd396ea5b: [[89, 1.42], [90, 3.5]],    // cross palms locked 1.42 (0.32 early) on 89.1, the pubu slap 3.50 on 90.1 (x1.2 between);
     // real speed after: up with a small hop 4.6-5.1, the stamp + fist into palm 5.23-5.35 lands on the 91 cut (a wide horse stance, held)
+    ws_open_t72_3f4fad11f6: [[90, 3.42], [90.75, 5]],   // round 5 (Jade: "the technique on the wheely arm is incorrect"): palms crossed,
+    // opening 1.92 just after 89.1; straight arms wheeling half a circle apart 2.0-3.3 (still partly across her front); pubu 3.42 on 90.1; up
+    // 4.25-4.6, the right arm over the top 4.79-4.92, fist into palm 5.00 + stamp 5.04 on 90.4 (x1.21), held
     ws_kicks_t51_c42416635a: [[93, 1.12], [94, 3.46]],  // the strike 1.12 (a forearm punch, not quite a coiling elbow) on 93.1; x1.35 squeezes her
     // frozen hold 1.16-2.30; snap kick 2.55 (~93.4), the slap kick's top 3.42-3.50 on 94.1; real speed after: shuffle, the balance from 4.98
     // Every model floats its jumps (0.8-1.35 s in the air; real ~0.5): keyed x1.7-1.8 from take-off to landing, so the air reads real.
@@ -837,6 +840,10 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     // 0.65), the wide bow stance from 5.0 on the 93 cut
     ws_feijiao_t58_705f4e5138: [[96, 3.64], [96.37, 4.8]],   // punch held 0.45-2.0 (the cut opens on it), hop-steps in place 2.3-3.4,
     // take-off 3.64 on 96.1, foot up + slap 3.9-4.4, both feet down 4.80 (1.16 s of air -> 0.64), knees bent, held to the 96.3 cut
+    ws_xuanfeng_t72_fc342602d4: [[96.62, 2.18], [97, 3.35], [98.5, 6]],   // round 5 (Jade: "I landed in front-back splits, not side"):
+    // an upright jump turning left ~270 deg (back to camera 3.1-3.25; off the left foot, no slap), 1.17 s of air keyed x1.77; lands 3.35 in
+    // FRONT-BACK splits side-on, left leg forward, arms out with standing palms, still 3.6-5.2 (bar 97); rises 5.3, the right arm up and over
+    // 5.5-5.8, fist into palm ~6.0 on 98.3
     ws_xuanfeng_t51_f613321301: [[96.71, 1.77], [97, 2.63], [98.5, 5.8]],   // take-off 1.77 (no spin: a facing-camera knee jump, 0.86 s ->
     // 0.5 s), lands 2.63 into a straddle split on 97.1 (THE hit), still 3.05-4.55, up 4.6-5.65, fist into palm 5.80 on 98.3 (x1.21),
     // the hop into the cover-step punch 6.45-6.66 on the 99 cut

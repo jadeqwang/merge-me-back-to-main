@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_xuanfeng_t81",
+ "notes": "{\"shot\": \"ws_xuanfeng\", \"s0\": 164.471, \"plate\": \"media/plates/drop/ws_solo.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Solo compulsory changquan, crisp and powerful. She steps her left foot out to the left, left palm pushing forward, right arm swinging back. About 1.7 seconds in her right foot steps across in front, toes turned in. About 2.0 seconds in she pushes off her RIGHT foot, her left leg swinging up, and both straight arms sweep down and then up and around to her LEFT, carrying one full turn to the LEFT in the air, upright like a spinning top, head above her hips (no flip): her back is to the camera halfway; near the end her straight RIGHT leg sweeps inward across in front of her face and her LEFT palm claps hard against its sole. About 2.6 seconds in she lands straight into FRONT-BACK splits: LEFT leg straight in front, heel down, toes up, RIGHT leg straight behind, body side-on to the camera, torso upright and square over the front leg, arms straight out to the sides, palms standing. She holds the splits dead still until about 4.3 seconds in, then draws the back leg in and rises; her right arm wheels back, up and over, and about 5.2 seconds in the back of her right fist pounds into her open left palm at the same instant her right foot stamps beside her left, feet together, half squat. She holds it. Each named move lands exactly on a beat of the reference audio. One fixed wide camera, no pan, tilt, zoom or cut; the horizon level; she stays in place and the same size. Jumps are quick and real, no slow motion. One woman only, two arms and two legs; nothing appears or detaches; planted feet never slide. Mouth closed, same face, high ponytail, orange bands, the round white '1420 MHz' patch on her LEFT upper arm. No text.",
+  "image": "file:media/gen/refs/ws_solo_2048.jpg",
+  "duration": 7,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ws_xuanfeng_v2_164.47_7s.mp3"
+  ]
+ }
+}

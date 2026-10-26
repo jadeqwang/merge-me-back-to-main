@@ -196,3 +196,25 @@ SHOTS["ws_xuanfeng"] = _P5(7, _B(95) + 2 * 60 / 138, "She steps her left foot ou
    "standing. She holds the splits dead still until about 4.3 seconds in, then draws the back leg in and rises. As she rises her right arm "
    "wheels back, up and over in a vertical circle, and about 5.2 seconds in the back of her right fist pounds into her open left palm at "
    "the same instant her right foot stamps, feet together in a half squat. She holds it.")
+
+# Round 6 (t81+), after round 5 (open t72 / xuanfeng t72 best): the arm wheels still crossed in front of her while she faced the camera, so the
+# body turns side-on FIRST and the circles stay in that plane (the camera sees them as wheels); the whirlwind takes off the right foot, and
+# the slap and the feet-together stamp are called out.
+SHOTS["ws_open"] = _P5(6, _B(88), "She stands at attention, feet together, fists at her hips, completely still. About 1.7 seconds in, on the big "
+   "hit, she snaps both open palms across in front of her chest. About 2.0 seconds in she turns her whole body SIDE-ON, facing the left edge "
+   "of the frame, so the camera sees her right side, and keeping her body side-on she wheels both STRAIGHT arms in big vertical circles in "
+   "that plane, like a windmill seen from the side: each arm swings forward and up past her ear, over the top, back and down past her hip, "
+   "one arm rising while the other falls, two full circles. About 3.5 seconds in she turns back to face the camera and drops into a drop "
+   "stance (pubu): right leg fully squatting, left leg straight along the water to her left, both feet flat, and her right palm comes over "
+   "the top and slaps down on the water beside the straight leg. About 4.3 seconds in she rises: the right arm wheels back, up and over, and "
+   "the back of her right fist pounds into her open left palm at the same instant her right foot stamps beside her left, feet together, "
+   "knees bent in a half squat. She holds it.")
+SHOTS["ws_xuanfeng"] = _P5(7, _B(95) + 2 * 60 / 138, "She steps her left foot out to the left, left palm pushing forward, right arm swinging "
+   "back. About 1.7 seconds in her right foot steps across in front, toes turned in. About 2.0 seconds in she pushes off her RIGHT foot, "
+   "her left leg swinging up, and both straight arms sweep down and then up and around to her LEFT, carrying one full turn to the LEFT in the "
+   "air, upright like a spinning top, head above her hips (no flip): her back is to the camera halfway; near the end her straight RIGHT leg "
+   "sweeps inward across in front of her face and her LEFT palm claps hard against its sole. About 2.6 seconds in she lands straight into "
+   "FRONT-BACK splits: LEFT leg straight in front, heel down, toes up, RIGHT leg straight behind, body side-on to the camera, torso upright "
+   "and square over the front leg, arms straight out to the sides, palms standing. She holds the splits dead still until about 4.3 seconds "
+   "in, then draws the back leg in and rises; her right arm wheels back, up and over, and about 5.2 seconds in the back of her right fist "
+   "pounds into her open left palm at the same instant her right foot stamps beside her left, feet together, half squat. She holds it.")
