@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_open_t71",
+ "notes": "{\"shot\": \"ws_open\", \"s0\": 151.428, \"plate\": \"media/plates/drop/ws_solo.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Solo compulsory changquan, crisp and powerful. She stands at attention, feet together, fists at her hips, completely still. About 1.7 seconds in, on the big hit, she snaps both open palms across in front of her chest (cross palms). About 2.2 seconds in she turns her body a quarter to her left and wheels both STRAIGHT arms in big VERTICAL circles beside her body, like the spokes of a wheel seen from the side: each arm swings forward and up past her ear, over the top, back and down past her hip, the two arms half a circle apart, one rising while the other falls. About 3.5 seconds in she drops into a drop stance (pubu): right leg fully squatting, left leg straight along the water to her left, both feet flat, and her right arm comes over the top of its circle and her palm slaps down on the water beside the straight leg. About 4.3 seconds in she rises: her right arm wheels back, up over her head and down, and the back of her right fist pounds into her open left palm in front of her belly at the same instant her right foot stamps beside her left, feet together in a half squat. She holds it. Each named move lands exactly on a beat of the reference audio. One fixed wide camera, no pan, tilt, zoom or cut; the horizon level; she stays in place and the same size. Jumps are quick and real, no slow motion. One woman only, two arms and two legs; nothing appears or detaches; planted feet never slide. Mouth closed, same face, high ponytail, orange bands, the round white '1420 MHz' patch on her LEFT upper arm. No text.",
+  "image": "file:media/gen/refs/ws_solo_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ws_open_v2_151.43_6s.mp3"
+  ]
+ }
+}

@@ -1215,3 +1215,10 @@
 {"ts": "2026-10-26T15:22:32Z", "model": "bytedance/seedance-2.5", "tag": "ws_xuanfeng_t72", "job": "mergemain/ws_xuanfeng_t72-fc342602d4", "event": "submit", "ok": null, "est_usd": 1.6184, "where": "cloud"}
 {"ts": "2026-10-26T15:22:32Z", "model": "bytedance/seedance-2.5", "tag": "ws_xuanfeng_t73", "job": "mergemain/ws_xuanfeng_t73-2b7e0f7643", "event": "submit", "ok": null, "est_usd": 1.6184, "where": "cloud"}
 {"ts": "2026-10-26T15:22:33Z", "model": "bytedance/seedance-2.5", "tag": "ws_xuanfeng_t74", "job": "mergemain/ws_xuanfeng_t74-ed6dca0f1a", "event": "submit", "ok": null, "est_usd": 1.6184, "where": "cloud"}
+{"ts": "2026-10-26T15:28:29Z", "model": "bytedance/seedance-2.5", "tag": "ws_open_t71", "job": "mergemain/ws_open_t71-027fb43442", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T15:29:06Z", "model": "bytedance/seedance-2.5", "tag": "ws_open_t73", "job": "mergemain/ws_open_t73-3a720d0e6d", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T15:29:06Z", "model": "bytedance/seedance-2.5", "tag": "ws_open_t74", "job": "mergemain/ws_open_t74-1b27bce1cd", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T15:30:16Z", "model": "bytedance/seedance-2.5", "tag": "ws_open_t72", "job": "mergemain/ws_open_t72-3f4fad11f6", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T15:30:17Z", "model": "bytedance/seedance-2.5", "tag": "ws_xuanfeng_t71", "job": "mergemain/ws_xuanfeng_t71-15b1932d7f", "event": "result", "ok": true, "est_usd": 1.6184, "where": "cloud"}
+{"ts": "2026-10-26T15:30:19Z", "model": "bytedance/seedance-2.5", "tag": "ws_xuanfeng_t72", "job": "mergemain/ws_xuanfeng_t72-fc342602d4", "event": "result", "ok": true, "est_usd": 1.6184, "where": "cloud"}
+{"ts": "2026-10-26T15:31:08Z", "model": "bytedance/seedance-2.5", "tag": "ws_xuanfeng_t74", "job": "mergemain/ws_xuanfeng_t74-ed6dca0f1a", "event": "result", "ok": true, "est_usd": 1.6184, "where": "cloud"}
