@@ -159,10 +159,12 @@ const FX = {
     g.restore();
   },
   // post-credits: the light itself, a warm point with a short tail on a slight arc from `from` to `to` (t0..t1), radius r[0] -> r[1]
-  // (growing = arriving, shrinking = flying away); flare: one soft bloom where it lands, at t1.
-  mote(g, t, { from, to, t0, t1, r = [4, 14], flare = true, k = 1 } = {}) {
+  // (growing = arriving, shrinking = flying away); flare: one soft bloom where it lands, at t1. path(q) -> [x, y] (q = 0..1 over t0..t1) replaces
+  // the arc, so the mote can ride a light that is in the take itself.
+  mote(g, t, { from, to, path, t0, t1, r = [4, 14], flare = true, k = 1 } = {}) {
     if (t < t0 || t > t1 + (flare ? .9 : 0)) return;
-    const at = (q) => { const e = q * q * (3 - 2 * q); return [from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e - 60 * Math.sin(Math.PI * e)]; };
+    const at = path || ((q) => { const e = q * q * (3 - 2 * q); return [from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e - 60 * Math.sin(Math.PI * e)]; });
+    if (path) to = path(1);
     g.save(); g.globalCompositeOperation = 'lighter';
     if (t <= t1) { const q = (t - t0) / (t1 - t0);
       for (let j = 12; j >= 0; j--) { const qq = Math.max(0, q - j * .012), [px, py] = at(qq), R = (r[0] + (r[1] - r[0]) * qq) * (1 - j / 14), a = k * (j ? .25 * (1 - j / 13) : 1);
@@ -566,17 +568,30 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     ['v1_light_hands', L.orange, 'jade/light-ahead'], ['ch1_runners', L.sky, 'jade/home-run'], ['v2_dish_sit', L.violet, 'jade/1420-mhz'], ['bd_float', L.orange, 'main'],
     ...LIFE.slice(5).map((x) => [x[0], x[2], x[1]])].slice(0, 16);
   const collapse0 = B(86), collapse1 = bb(87, 1.8), strobe0 = bb(87, 3.5), riser1 = B(89) - .08;
+  // ?bd=full (Jade's v5a note at 2:06.3, "curious to see a version where each one is fullscreen on the beat, and then we see the matrix of selves
+  // shrink into the corner"; a variant, the default stays): bars 73-76, each pane fills the frame on its own kick (16 cuts, one per beat, in the
+  // wall's order, each on the clock it keeps in the wall), then on the bar-77 downbeat (the 4-bar line) the whole 4x4 matrix appears at full size,
+  // holds two beats and shrinks over beats 3-4 into the bottom-right corner (K of its size, 38 px in from the edges), in place by bar 78. That
+  // corner is the one nothing else uses: the git log types from the top left (from bar 77 beat 4 here), then the poster's sun, graph and
+  // engine header sit in the centre and top, the stanza's right-hand words end above it (y < 740). The panes dim there through bars 81-85 like
+  // the default's, and collapse from the corner into the point on bar 86.
+  const FULL = new URLSearchParams(location.search).get('bd') === 'full';
+  const MAT0 = B(77), SHR = [bb(77, 2), B(78)], K = .28, CX = .8535 - .8494 * K, CY = -.465 + .4825 * K;   // the wall spans +-.8494 x +-.4825
+  const LOG0 = FULL ? bb(77, 3) : B(77);   // the git log starts once the shrinking matrix has cleared the top left
   const panels = src.map(([id, lane], k) => {
     const c = k % 4, r = Math.floor(k / 4), p = pk(id, 0), ap0 = bt[k] ?? t0, c0 = (k * .37) % 1.1;
-    // each pane's take spans its whole life, pop to collapse (~23 s at 0.25-0.45x; v4 played them at 1x and held the last frame 17-22 s)
-    return { plate: p.plate, s0: ap0 - c0, fit: { from: ap0, to: collapse1 }, lane, laneAmt: .12, rw: 480, rh: 270, cellFig: 3, cellWorld: 7, fid: () => .25, frame: lane,
+    // each pane's take spans its whole life, pop to collapse (~23 s at 0.25-0.45x; v4 played them at 1x and held the last frame 17-22 s).
+    // bd=full: one clock per take as well, at 1x through its full-frame beat, slowed from the next cut on (so the matrix continues it)
+    const slow = FULL ? bt[k + 1] ?? MAT0 : ap0;
+    return { plate: p.plate, s0: ap0 - c0, fit: { from: slow, to: collapse1 }, lane, laneAmt: .12, rw: 480, rh: 270, cellFig: 3, cellWorld: 7, fid: () => .25, frame: lane,
       xf: (t) => {
-        const ap = bt[k] ?? t0;
+        const ap = FULL ? MAT0 : bt[k] ?? t0;   // bd=full: the whole matrix pops on bar 77
         if (t < ap) return null;
-        const slide = ss(B(77), B(77) + .6, t), dim = ss(B(81), B(81) + .5, t) * (1 - ss(B(85) - .3, B(85), t));
-        const col = ss(collapse0, collapse1, t);
+        const slide = FULL ? 0 : ss(B(77), B(77) + .6, t), dim = ss(B(81), B(81) + .5, t) * (1 - ss(B(85) - .3, B(85), t));
+        const col = ss(collapse0, collapse1, t), m = FULL ? ss(SHR[0], SHR[1], t) : 0, sc = 1 - (1 - K) * m;
         let x = (c - 1.5) * .43, y = (1.5 - r) * .245, s = .23;
         x = x * (1 - .45 * slide) + .47 * slide; y *= 1 - .45 * slide; s *= 1 - .45 * slide;
+        x = x * sc + CX * m; y = y * sc + CY * m; s *= sc;   // bd=full: into the bottom-right corner (m = 0 otherwise: unchanged)
         x *= 1 - col; y *= 1 - col; s *= 1 - .97 * col;
         const pop = Math.exp(-(t - ap) * 9);
         return { x, y, z: 0, s: s * (1 + .12 * pop), a: (1 - .78 * dim) * (1 - ss(.9, 1, col)), gain: 1.2 + 1.5 * pop };
@@ -611,8 +626,9 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   // columns either side of the sun like a scoresheet; the win and the misstep are on different lives, on opposite sides of main. Her words in
   // ISI (the voice and size of the next stanza), marks in JBM in the branch's colour ("!!" brilliant, "?!" interesting; never "??").
   // "analysis mode" is not a move but the state they're played in (Jade): the graph calculates from the moment it starts drawing (a candidate
-  // line runs up every lane, small evals flicker at the commits it passes, an engine header counts depth over six lines), and the words type
-  // into that header on the fourth kick, keeping the poem's order and naming what has been running all along.
+  // line runs up every lane, small evals flicker at the commits it passes, an engine header counts depth over six lines). The header reads
+  // "› analysis mode" from the moment the screen loads (Jade's v5a note at 2:20.3: announcing it at the end, on the fourth kick, was odd); the
+  // fourth kick (AN, where the poem's fourth item falls) pulses it instead of typing it.
   const A0 = B(81), AN = bb(84, 2), BT = T.beatLen(81), RUN = 4 * BT;   // a candidate line runs a lane in one bar
   const MOVES = [['every victory', '!!', 4, 4, B(83)], ['chess move', '', 5, 3, bb(83, 2)], ['miscalculation', '?!', 3, 1, B(84)]];   // [words, mark, lane, dot, at]
   const EVALS = ['+0.4', '+0.2', '=', '+0.9', '+0.3', '+1.1', '+0.6', '=', '−0.2', '+0.7', '+1.4', '+0.5'];   // mostly good lines; one small minus
@@ -641,13 +657,14 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
       g.shadowColor = 'rgba(4,5,12,.95)'; g.shadowBlur = 6; g.globalAlpha = a * .85; g.fillStyle = c;   // its eval, on the side toward main
       g.fillText(EVALS[(i * 5 + j * 3 + lap) % EVALS.length], x + (i % 2 ? -14 : 14), y);
     });
-    // the engine header over the graph: › prompt and cursor, depth ticking up on the beats over six lines (one per branch); the name types in on AN
-    const HX0 = 660, HX1 = 1260, HY = 86;
-    g.globalAlpha = on; g.shadowBlur = 0; g.textBaseline = 'alphabetic';
-    g.strokeStyle = 'rgba(255,241,220,.28)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(HX0, HY + 16); g.lineTo(HX1, HY + 16); g.stroke();
-    g.font = '600 26px JBM'; g.textAlign = 'left'; g.fillStyle = L.orange; g.fillText('›', HX0, HY);
-    const name = 'analysis mode', typed = t >= AN ? name.slice(0, Math.ceil(clamp((t - AN) * 28 / name.length) * name.length)) : '';
-    g.fillStyle = 'rgba(255,241,220,.94)'; g.fillText(typed + (Math.floor(t * 2) % 2 ? '' : '▍'), HX0 + 26, HY);
+    // the engine header over the graph: "› analysis mode" and a cursor, in full from the screen's first frame (it fades in with the poster, k, not
+    // with the candidate lines); depth ticks up on the beats over six lines (one per branch); on AN the header pulses (glow, underline, 8% swell)
+    const HX0 = 660, HX1 = 1260, HY = 86, hp = t >= AN ? Math.exp(-(t - AN) * 5) : 0;
+    g.globalAlpha = k; g.shadowBlur = 0; g.textBaseline = 'alphabetic';
+    g.strokeStyle = `rgba(255,241,220,${.28 + .5 * hp})`; g.lineWidth = 1.5 + 1.5 * hp; g.beginPath(); g.moveTo(HX0, HY + 16); g.lineTo(HX1, HY + 16); g.stroke();
+    g.font = '600 26px JBM'; g.textAlign = 'left'; g.fillStyle = L.orange; g.shadowColor = L.orange; g.shadowBlur = 20 * hp; g.fillText('›', HX0, HY);
+    g.save(); g.translate(HX0 + 26, HY); g.scale(1 + .08 * hp, 1 + .08 * hp); g.fillStyle = 'rgba(255,241,220,.94)'; g.shadowBlur = 24 * hp;
+    g.fillText('analysis mode' + (Math.floor(t * 2) % 2 ? '' : '▍'), 0, 0); g.restore(); g.shadowBlur = 0;
     g.font = '500 18px JBM'; g.textAlign = 'right'; g.fillStyle = 'rgba(255,241,220,.55)'; g.fillText(`depth ${8 + Math.floor((t - A0) / BT)} · 6 lines`, HX1, HY);
     // the moves: the commit rings on the kick, a short leader out to its column, her words
     MOVES.forEach(([w, mark, i, j, at]) => {
@@ -674,14 +691,22 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     });
     g.restore();
   };
-  S.push({ t0, t1, kind: 'panels', panels, cam: () => ({}),
+  const slam = (g, t) => { const f = Math.exp(-(t - t0) * 6); if (f > .01) { g.fillStyle = `rgba(255,248,236,${f})`; g.fillRect(0, 0, 1920, 1080); } };   // the bar-73 slam
+  // bd=full: the 16 full-frame cuts (lattice shots, as the life montage shows the same lives), each on its pane's own clock and with its branch
+  // name; a kick punch on each cut; the bar-73 slam on the first
+  if (FULL) src.forEach(([, lane, br], k) => { const a = bt[k], b = bt[k + 1] ?? MAT0, pn = panels[k];
+    S.push({ t0: a, t1: b, kind: 'lattice', plate: pn.plate, s0: pn.s0, fit: pn.fit, fid: () => .25, written: true, lane, laneAmt: .12,
+      cam: (u, t) => ({ dolly: punch(t, 1 - .03 * u, .03), over: 1.06 }),
+      text: (ty, t) => { slam(ty.g, t); ty.chyron(br, t, a + .02, b, lane); } });
+  });
+  S.push({ t0: FULL ? MAT0 : t0, t1, kind: 'panels', panels, cam: () => ({}),
     text: (ty, t) => {
-      const g = ty.g, flash = Math.exp(-(t - t0) * 6);
-      if (flash > .01) { g.fillStyle = `rgba(255,248,236,${flash})`; g.fillRect(0, 0, 1920, 1080); }
+      const g = ty.g;
+      slam(g, t);
       // git log, bars 77–80
-      const lk = ss(B(77), B(77) + .4, t) * (1 - ss(B(81) - .2, B(81) + .3, t));
+      const lk = ss(LOG0, LOG0 + .4, t) * (1 - ss(B(81) - .2, B(81) + .3, t));
       if (lk > 0) { g.save(); g.globalAlpha = lk; g.font = '500 21px JBM'; g.textBaseline = 'alphabetic';
-        const shown = Math.floor((t - B(77)) * 6);
+        const shown = Math.floor((t - LOG0) * 6);
         LOG.slice(0, Math.max(0, shown)).forEach(([gr, h, br, msg], i) => { const y = 150 + i * 44 - Math.max(0, shown - 18) * 44;
           if (y < 110 || y > 1040) return;
           g.fillStyle = L.orange; g.fillText(gr, 64, y); g.fillStyle = L.gold; g.fillText(h, 130, y);
@@ -1038,8 +1063,9 @@ const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) +
 }
 { // post-credits (Jade 2026-10-25: "they shouldn't directly interact. The adult just sends the light to the window and the girl sees it, and it
   // should just simply play once, not twice"; her pick: the sender is the violet branch, from takes we already have). Two places, one pass, one
-  // sound event. The violet 1420 MHz branch at the dish (v2_horizon, back to us, facing the dawn glow on the horizon: the branch that never came
-  // home) sends the light off toward the horizon (FX.mote); cut to the window of the very first shot: the girl alone, studying the frost
+  // sound event. The violet 1420 MHz branch on the dish rim (the branch that never came home) lets the light go off her open palm toward the far
+  // glow (v2_release, below; v5a used v2_horizon_t5, a near-still back view with the violet band across the jacket back); cut to the window of
+  // the very first shot: the girl alone, studying the frost
   // (ch0_window_t2 clip 0-4.57, the part the intro doesn't use, slowed to fill the shot so her palm lift isn't replayed and nothing holds a
   // frame). The light arrives from outside, touches the glass once, and the idea grows there as a shape: the logistic map's period doubling
   // (FX.frost), one fork per chime group (tools/mix.py: 1, 2, 4, 8 from PC_TOUCH). No equations, no title. (v4's pc_kneel + pc_beam each played
@@ -1053,9 +1079,24 @@ const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) +
   const front = spline([[TOUCH, 0], [TOUCH + .4, cx(3)], [TOUCH + 1, cx(3)], [TOUCH + 1.5, cx(3.449)], [TOUCH + 2, cx(3.449)], [TOUCH + 2.3, cx(3.544)],
     [TOUCH + 3, cx(3.544)], [TOUCH + 4.3, 1]]);
   const out = (t) => 1 - ss(P2 - 1.4, P2, t), touchXY = [FR.x, FR.y + FR.h / R[0]];
-  S.push({ t0: P0, t1: CUT, kind: 'lattice', look: 'paint', ...pk('v2_horizon', P0), s0: P0 - .5, lane: L.violet, laneAmt: .1, fid: () => 1,
+  // The sender (Jade's v5a note at 4:44.1: "use the clip where she's sending off the light (which we have from this video, when her context is
+  // ending) so she's not just a still image"): v2_release, verse 2's last line (SUNG 19), where her context bar fills and she lets the light go.
+  // Its plate follows PICKS (pk) like every shot. Clip REL_C0..REL_C0 + 4.6 at 1x: the fade-in lands on the light resting over her open palm, it
+  // drifts off it and climbs up-right toward the far glow from ~clip 2.5, her hand drops as she watches it go (~5.0), and the cut comes at 5.2 on her
+  // smile. (It is a sung take: her mouth moves through ~0.8-4.8.) The drawn mote rides the take's own light (REL_ORB: the orb's centre
+  // in v2_release_t12, take px 1284x716, by clip time; measured, refit if another take is picked) and shrinks as it recedes; the window shot's
+  // mote then arrives from outside and touches the glass once (TOUCH = PC_TOUCH: tools/mix.py's chimes unchanged).
+  const REL_C0 = .6, REL_ORB = [[1, 735, 207], [1.5, 742, 206], [2, 748, 206], [2.5, 757, 208], [3, 780, 195], [3.5, 815, 181], [4, 853, 168],
+    [4.5, 889, 160], [5, 921, 159], [5.5, 946, 164]];
+  const relXY = (c, u) => {   // take px -> 1080p screen px: plate 1920 x 1071, lattice overscan 1.06 over the cam's dolly (the sky is at the plate plane)
+    let i = 0; while (i < REL_ORB.length - 2 && c > REL_ORB[i + 1][0]) i++;
+    const [ca, xa, ya] = REL_ORB[i], [cb, xb, yb] = REL_ORB[i + 1], f = clamp((c - ca) / (cb - ca)), q = 1920 / 1284, s = 1080 / 1071 * 1.06 / (1 - .03 * u);
+    return [960 + ((xa + (xb - xa) * f) * q - 960) * s, 540 + ((ya + (yb - ya) * f) * q - 535.5) * s]; };
+  const MT0 = P0 + .6;   // the mote lights up on her palm's light as the fade-in completes
+  S.push({ t0: P0, t1: CUT, kind: 'lattice', look: 'paint', ...pk('v2_release', P0), s0: P0 - REL_C0, lane: L.violet, laneAmt: .1, fid: () => 1,
     cam: (u) => ({ dolly: 1 - .03 * u, over: 1.06 }), fade: (u, t) => ss(P0, P0 + 1.0, t),
-    text: (ty, t) => FX.mote(ty.g, t, { from: [560, 470], to: [1240, 500], t0: P0 + 1.6, t1: CUT - .2, r: [14, 2], flare: false }) });   // it leaves her toward the horizon glow
+    text: (ty, t) => FX.mote(ty.g, t, { path: (q) => { const tt = MT0 + q * (CUT - MT0); return relXY(tt - P0 + REL_C0, (tt - P0) / (CUT - P0)); },
+      t0: MT0, t1: CUT, r: [12, 5], flare: false, k: ss(MT0, P0 + 1.4, t) }) });   // it leaves her palm toward the far glow
   S.push({ t0: CUT, t1: P2, kind: 'lattice', look: 'paint', ...pk('ch0_window', CUT), clip: (u) => WIN_USED * u, fid: () => 1,
     cam: () => ({ dolly: 1, over: 1.06 }), fade: (u, t) => out(t),   // still camera: the shape is screen-locked
     text: (ty, t) => {

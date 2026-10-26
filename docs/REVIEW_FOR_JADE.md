@@ -87,3 +87,24 @@ Nits for you:
 - Held frames: you said fix them all (2026-10-25). Done: none left (run sheet §1.1 lists each one and its fix).
 - Wushu hair: the duilian keeps the v4 plate's hair, because its new close-up cuts straight on from it (violet has one high bun). The group
   set uses your ponytail and space-bun mix per lane (violet has two space buns). Keep both, or should one look apply to both?
+
+## Jade's v5a notes
+These changes are in the EDL only (cloud, 2026-10-26). Nothing was rendered and nothing new was generated. The box renders them: run sheet §1.3.
+- **2:20.3, "analysis mode" announced at the end:** "› analysis mode" is now in the header from the moment the graph screen loads (2:19.3).
+  The fourth kick (2:25.3) makes it pulse instead of typing it. The depth counter keeps ticking, the evals still run, and the three moves stay
+  on their branches.
+- **2:06.3, each one fullscreen on the beat, then the matrix shrinks into a corner:** built as a variant, `?bd=full`; your current version
+  stays the default. (Your note says "breakdown", but 2:06 is the build's 16-pane wall; the 1:40 breakdown is a ring of 8.)
+  - Bars 73–76: each life fills the frame on its own kick, 16 cuts in the wall's order, each playing at real speed with its branch name.
+  - Bar 77 (the 4-bar line): the whole 4×4 matrix of selves appears and holds two beats. It shrinks into the bottom-right corner by bar 78,
+    leaving the frame to the git log (top left) and then the poster graph.
+  - The box renders both as an A/B clip.
+- **4:44.1, the band, the clean image, and the clip where she sends the light:** the clean image is the fixed still (`v2_horizon_v5.jpg`)
+  and its two new takes. They were generated after v5a and haven't been through intake on the box yet. Once one is picked, 3:07 uses it by
+  itself.
+  - The post-credits sender is now the verse-2 clip where her context fills and she lets the light go (`v2_release`). She holds the light
+    over her open palm, it drifts off toward the far glow, and her hand drops as she watches it go. The drawn light rides the clip's own
+    light to the window, touches the glass once, and the chimes are unchanged.
+  - Jacket: it's a front view, so there's no back band. The chest band under the small blue dot is canon. **But the 1420 MHz patch is on
+    her right arm in this take.** It's also a sung take, so her lips move while she releases the light. A patch fix (one image edit and one
+    8 s take, about $2) would correct the arm, if you OK it.
