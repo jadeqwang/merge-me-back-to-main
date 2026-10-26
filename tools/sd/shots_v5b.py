@@ -82,3 +82,42 @@ SHOTS["pc_send_v"] = dict(plate="v2_release.jpg", face="pc_send_v", dur=6,
        "drifts slowly up and away to the right toward the far horizon, and her hand lowers slowly to her side. Her eyes follow the light the "
        "whole time, a quiet, hopeful look. Her mouth stays gently closed; she does not sing or speak. The camera stays still."
        " The round 1420 MHz patch stays on her left upper arm; her bands, straps and headphones stay violet.")
+
+# ---- "main in violet's look" (Jade, review page 2026-10-26): "violet's face is actually better, but sometimes, the edits leave weird hair traces
+# where she has partial bang artifacts. maybe we keep violet's messy bun hair intact" / "what if we gave her violet's default hair here, but she's in
+# the orange jacket?" So NO face swap: each still is violet's own face and messy bun (with her two pencils, i.e. her hair left intact), wearing
+# MAIN's costume (orange lanes, patch on the LEFT upper arm, RARE EARTH + pale-blue circle on the back, no band behind it), posed and framed like
+# the shot's existing still (refs[0]). GPT Image 2.5 (gpt_plate.py), 2 candidates, 16:9 crop after. ch1_main_vl's still also serves out_main_vl
+# (the two shots shared ch1_main.png before too). v1_split_front_vl + ch1_gone_close_vl34 are candidates for the film; ch1_main_vl,
+# ch2_gone_close_vl and out_main_vl are a TEST ("experiment: violet look test") so Jade can decide whether main takes this look everywhere.
+_VL_REFS = ["media/style/v5b/violet_ref.jpg", "media/style/v5b/violet_dish_face.jpg", "media/style/r7/turn_gpt_patch.png"]
+def _vl(extra=""):
+    return ("Edit the first image. Replace the woman with the woman in reference images 2 and 3, unchanged: her exact face (face shape, eyes, "
+            "eyelids, brows, nose, lips, proportions) and her exact hair: black hair pulled up into a messy bun at the back of her head with her two "
+            "pencils through it, a few loose strands by her ears; her forehead is clear, with NO bangs or fringe and no stray hair across the "
+            "forehead or temples. Natural skin, no makeup. She wears MAIN's costume as in reference 4 and the first image: white cropped jacket with "
+            "ORANGE sleeve bands and orange collar trim, ORANGE headphones around her neck, black crop top, dark cargo pants with orange straps, and "
+            "the round white 1420 MHz patch on her LEFT upper arm only; no violet anywhere on her clothes or headphones. " + extra +
+            "Keep the first image's pose, framing, camera distance, lighting, background and render style exactly. Do not add any other text.")
+STILLS.update({
+ "v1_split_front_vl": dict(tool="gpt", out="media/plates/face_v4/cand/v1_split_front_vl", to="media/plates/face_v4/v1_split_front_vl.png",
+   refs=["media/gen/refs/v1_split_front_v4.jpg"] + _VL_REFS, prompt=_vl("She stands full length on the night salt flat, facing the camera, calm. ")),
+ "ch1_gone_close_vl34": dict(tool="gpt", out="media/plates/face_v4/cand/ch1_gone_close_vl34", to="media/plates/face_v4/ch1_gone_close_vl34.png",
+   refs=["media/plates/face_v4/ch1_gone_close_34v.png"] + _VL_REFS,
+   prompt=_vl("She is in a three-quarter view, turned toward the left of the image, her eyes just past the camera, mouth closed and relaxed, "
+              "placed a little right of centre in the frame, at sunrise on the salt flat. ")),
+ "ch1_main_vl": dict(tool="gpt", out="media/plates/face_v4/cand/ch1_main_vl", to="media/plates/face_v4/ch1_main_vl.png",
+   refs=["media/gen/refs/ch1_main_v4.jpg"] + _VL_REFS, prompt=_vl("She stands on the salt flat at sunrise facing the camera, mouth closed, calm. ")),
+ "ch2_gone_close_vl": dict(tool="gpt", out="media/plates/face_v4/cand/ch2_gone_close_vl", to="media/plates/face_v4/ch2_gone_close_vl.png",
+   refs=["media/plates/face_v4/ch2_gone_close.png"] + _VL_REFS, prompt=_vl("Close shot facing the camera at sunrise, mouth closed, calm. ")),
+})
+_LOCK = " The camera is locked: it does not move, push in, zoom or reframe."
+SHOTS.update({
+ "v1_split_front_vl": dict(plate="v1_split_front.png", face="v1_split_front_vl", dur=6, v2=True, audio=(VOC2, 28.22, 6),
+   act="She stands alone on the night salt flat and sings softly to the camera, low and intimate, like confiding something wonderful: that she is "
+       "about to become many." + _LOCK + HOPE + LIPS("ways", " 'myself' closes on the m.") + NO_GRIN + SING2),
+ "ch1_gone_close_vl34": dict(plate="ch1_gone_close.jpg", face="ch1_gone_close_vl34", dur=11, v2=True, audio=(VOC2, 89.16, 11), act=_GC),
+ "ch1_main_vl": dict(plate="ch1_main.jpg", face="ch1_main_vl", dur=7, v2=True, audio=(VOC2, 69.12, 7), act=_v5.RETAKES["ch1_main"]["act"]),
+ "ch2_gone_close_vl": dict(plate="ch1_gone_close.jpg", face="ch2_gone_close_vl", dur=8, v2=True, audio=(VOC2, 228.61, 8), act=_v5.RETAKES["ch2_gone_close"]["act"]),
+ "out_main_vl": dict(plate="ch1_main.jpg", face="ch1_main_vl", dur=8, v2=True, audio=(VOC2, 249.10, 8), act=_v5.RETAKES["out_main"]["act"]),
+})

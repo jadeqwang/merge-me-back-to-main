@@ -365,7 +365,13 @@ const L3_T0 = head('v1_light_hands', bb(24, 3));   // 0:41: the L3 take's first 
 }
 { // L3 "Each one a light I sent ahead" (sync)
   const w = lines(3), t0 = L3_T0, t1 = ws(4) - .18;
-  S.push({ t0, t1, kind: 'lattice', ...pk('v1_light_hands', ws(3) - .34), fid: () => 1, cam: push(.06),
+  // Jade (review page 2026-10-26) picked the v5a take t12: its mouth is right on "each one a light" (lag .05, docs/lags.json) but opens
+  // "ahead" ~0.3 s late. One lag can't fit both, so from mid-"light" the clip runs 3% fast (her limit for an unnoticed speed change):
+  // +0.05 s by "ahead", the most a gentle map can give. Keyed on the take, like the other interim fixes.
+  const lhP = pk('v1_light_hands', ws(3) - .34), LH_A = ws(3, 3) + .4;
+  const lhK = Math.max(0, Math.min(.03, ((lenOf('v1_light_hands') ?? 6) - .05 - (t1 - lhP.s0)) / (t1 - LH_A)));   // never past its last frame
+  const lhClip = isTake('v1_light_hands', 'v1_light_hands_t12_7418e105bc') ? { clip: (u, t) => t - lhP.s0 + lhK * Math.max(0, t - LH_A) } : {};
+  S.push({ t0, t1, kind: 'lattice', ...lhP, ...lhClip, fid: () => 1, cam: push(.06),
     text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 300, size: 118, maxW: 820, out: t1 - .25 }); } });
 }
 // L4 "Each one a story to unfold" — her lives, one per cut, the cuts quickening (2-1-1 beats) from bar 28; each branch is still written (ASCII)
@@ -926,7 +932,10 @@ if (ORCH === 'v4') { // full drums again: the orchestra of Jades (Jade 2026-10-2
 }
 // 4:12 home (Jade 2026-10-25: too smiley at the end). Interim, while out_main_t12 is picked: it grins with teeth from 252.25 to the cut, so the
 // shot ends there and what follows starts earlier (the end card keeps its bar-153 hit). A re-take (tools/sd/shots_v5.py) gets the full shot.
-const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) + 1.95 : B(149) - 3.0;
+// out_main_t61 (Jade, review page 2026-10-26: "her mouth says 'back to main me mo ohh' so it's only usable if you cut away the later part"):
+// raw-take mouth: the 'main' vowel is open over clip 1.33-1.67 (song 250.43-250.77, lag 0), closed by 1.83, then the extra syllables reopen
+// from 2.08 (251.18). Cut on beat 2 of bar 145 (250.99), before them; the living graph starts there (its second fork waits for bar 147).
+const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) + 1.95 : isTake('out_main', 'out_main_t61_7f8134e8f7') ? bb(145, 1) : B(149) - 3.0;
 { // home: she sings the last "Back to main…" at sunrise (out_main, v2 line 25; Jade 2026-10-24), the held note carries into the living graph
   const t0 = ws(25) - .08, t1 = OUT_MAIN_END;
   S.push({ t0, t1, kind: 'lattice', ...pk('out_main', t0), fid: () => 1, cam: push(.05),
