@@ -834,6 +834,57 @@
    "kind": "candidate",
    "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. wide canon, cleanest timing (91.3 / 92.1 / 92.3) and a new freeze, but the orange partner disappears under violet's handstand for ~0.3 s",
    "file": "review/previews/wushu_roll/dr_dl_ripple_t65_084f82f977.mp4"
+  },
+  {
+   "shot": "pc_send_v",
+   "film": "4:41.5-4:48.1",
+   "film_s": [
+    281.516,
+    288.116
+   ],
+   "shot_s": [
+    282.516,
+    287.116
+   ],
+   "take": "pc_send_v_t61_1cc469a978",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "silent send for the post-credits sender: light lifts off her palm and drifts up-right, staying in frame; hand lowers; mouth closed, soft hopeful look following it upward; patch on her LEFT arm. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
+   "file": "review/previews/postcredits/pc_send_v_t61_1cc469a978.mp4"
+  },
+  {
+   "shot": "pc_send_v",
+   "film": "4:41.5-4:48.1",
+   "film_s": [
+    281.516,
+    288.116
+   ],
+   "shot_s": [
+    282.516,
+    287.116
+   ],
+   "take": "pc_send_v_t62_7326637fa0",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "same action, but the light rises fast and leaves the top of frame by ~2.3 s. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
+   "file": "review/previews/postcredits/pc_send_v_t62_7326637fa0.mp4"
+  },
+  {
+   "shot": "pc_send_v",
+   "film": "4:41.5-4:48.1",
+   "film_s": [
+    281.516,
+    288.116
+   ],
+   "shot_s": [
+    282.516,
+    287.116
+   ],
+   "take": "pc_send_v_t63_67ed1e9eb5",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "same action as t61, light stays in frame; her gaze lifts less. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
+   "file": "review/previews/postcredits/pc_send_v_t63_67ed1e9eb5.mp4"
   }
  ]
 }

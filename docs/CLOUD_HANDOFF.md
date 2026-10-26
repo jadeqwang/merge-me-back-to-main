@@ -6,6 +6,12 @@ commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and 
 
 ## START HERE (2026-10-25 night): Jade is flying, the box is unattended
 **Spend cap raised to $1,000** (Jade, 2026-10-26: "Raise to $1,000"; `MERGEMAIN_CAP` default in `tools/gen/spend.py`). Older "$600" mentions below are historical.
+**v5b singing shots (cloud, 2026-10-26; Jade's v5a lip-sync + expression notes): NEEDS INTAKE/RENDER (box).** New picks for 7 of the 8 sung
+shots (ch1_main t61, ch1_gone_close t61, ch2_gone_close t63, out_main t61, v1_light_hands t62, bd_ahh t52, ch2_catch t52; v1_split_front stays
+t11 at .62), all lags re-measured by hand from the raw takes vs the vocal stem (`tools/sync/cloudsync.py`), written to `docs/picks_manual.json` +
+`docs/lags.json`. Experiments (violet face at 0:28, 3/4 profile at 1:29 with main's / violet's face) are separate keys, never default. Jade's
+phone previews of every candidate: `review/previews/<shot>/` + `review/previews/index.json`. Post-credits silent send `pc_send_v` (patch on her
+left arm) for the EDL's sender. Everything, shot by shot: **checkpoint 17** in `docs/RESUME.md`.
 **v5 queue GENERATED (cloud generation session 2, 2026-10-25 ~14:30 UTC); needs the box for intake/render.** The KV fix worked; images went
 through the relay too (`GEN_IMAGES_VIA_RELAY=1`, see `docs/CLOUD_GEN.md`). 41 takes in `review/takes/` (+ specs), the stills they start from in
 `review/takes/stills/`. Every tag, its shot, the preferred take and the failures: checkpoint 13 at the bottom of `docs/RESUME.md` (stills go into

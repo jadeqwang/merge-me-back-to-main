@@ -428,9 +428,18 @@ hopeful with depth, as if she has just said something profound; no shallow/adver
     soft closed smile at the end; t62 ignored the still (frontal), t64 reframed with the patch on the wrong arm.
   - (c) 1:29 3/4 profile, violet's face: still `ch1_gone_close_34v.png`. **t61 (0)** turns toward camera, clean held "undone"; **t62 (0)**
     keeps the 3/4 view looking past camera, mouth closes ~0.5 s late.
+- **Post-credits sender `pc_send_v`** (Jade's 4:44 note, relayed by the parent session): the v2_release action, silent, from the v2_release still
+  with the 1420 MHz patch moved to her LEFT (outstretched) arm. The nano-banana edit returned the image unchanged, then the relay errored and
+  timed out, so the still is a local OpenCV edit (`review/takes/stills/pc_send_v.png`: old patch inpainted, same patch pixels placed on the
+  left arm's band; a slight softness where the old one was). Same dish as v2_release (not the salt flat), so it cuts like the take it replaces.
+  **Pick t61** (light lifts off her palm and drifts up-right, staying in frame; hand lowers; mouth closed, hopeful gaze following it up).
+  t63 similar with less gaze lift; t62's light leaves the top of frame by ~2.3 s. Previews: `review/previews/postcredits/`.
+  `docs/picks_manual.json` has `pc_send_v`. **EDL (not edited here):** the post-credits sender in `engine/show/main.js` (~lines 1082–1099,
+  now `pk('v2_release')`, clip `REL_C0` 0.6–5.2) should switch to `pk('pc_send_v')` with `REL_C0` ≈ 0 and `REL_ORB` refit on t61 (the light
+  starts above her palm at ~(735, 207) take px like t12 and rises up-right more slowly).
 - **Box next:** copy `review/takes/*_t6[1-6]_*.mp4` + `_t5x` into `media/gen/`, specs into `media/gen/specs/`, the stills in
   `review/takes/stills/` (v1_split_front_violet / ch1_gone_close_34 / ch1_gone_close_34v .png → `media/plates/face_v4/`), intake one at a
-  time (picks first: ch1_main_t61, ch1_gone_close_t61, ch2_gone_close_t63, out_main_t61, v1_light_hands_t62, bd_ahh_t52, ch2_catch_t52), then
+  time (picks first: pc_send_v_t61, ch1_main_t61, ch1_gone_close_t61, ch2_gone_close_t63, out_main_t61, v1_light_hands_t62, bd_ahh_t52, ch2_catch_t52), then
   `picks.py` (docs/picks_manual.json + docs/lags.json are updated), `node tools/edl_check.mjs`, renders 27–48, 68–101, 110–119, 207–237, 248–256.
 - **Relay:** 2047 errors (refunded) and two jobs stuck in `running` with no result (`out_main_t63`, `v1_light_hands_t61`; counted at their
   estimate in the ledger). One extra GPT still request (`drop_ch1_gone_close_34_*`, 00:49 UTC) never returned.

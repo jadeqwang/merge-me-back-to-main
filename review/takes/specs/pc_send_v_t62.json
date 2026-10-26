@@ -1,0 +1,13 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "pc_send_v_t62",
+ "notes": "{\"shot\": \"pc_send_v\", \"s0\": null, \"plate\": \"media/plates/face_v4/pc_send_v.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She stands alone at the edge of the great dish under the stars, the small light resting just above her open palm. She lets it go: it drifts slowly up and away to the right toward the far horizon, and her hand lowers slowly to her side. Her eyes follow the light the whole time, a quiet, hopeful look. Her mouth stays gently closed; she does not sing or speak. The camera stays still. The round 1420 MHz patch stays on her left upper arm; her bands, straps and headphones stay violet. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/pc_send_v_v4_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9"
+ }
+}
