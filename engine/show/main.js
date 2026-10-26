@@ -815,7 +815,12 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   // planned clip time of each phrase's hit (shots_wushu_sync.py second marks; every take has one bar of pre-roll before its cut)
   const SYNC_PLAN = { ws_open: BAR, ws_lotus: BAR + 6 * BEAT, ws_kicks: BAR, ws_feijiao: 2 * BAR, ws_xuanfeng: BAR + 2 * BEAT, ws_close: BAR + 6 * BEAT };
   // picked take -> keyed() pairs measured from its frames (several beats when the model drifted; each stretch 0.6-1.5x); else the planned hit
-  const SYNC_KEY = {};
+  const SYNC_KEY = {
+    ws_open_t51_edd396ea5b: [[89, 1.42], [90, 3.5]],    // cross palms locked 1.42 (0.32 early) on 89.1, the pubu slap 3.50 on 90.1 (x1.2 between);
+    // real speed after: up with a small hop 4.6-5.1, the stamp + fist into palm 5.23-5.35 lands on the 91 cut (a wide horse stance, held)
+    ws_kicks_t51_c42416635a: [[93, 1.12], [94, 3.46]],  // the strike 1.12 (a forearm punch, not quite a coiling elbow) on 93.1; x1.35 squeezes her
+    // frozen hold 1.16-2.30; snap kick 2.55 (~93.4), the slap kick's top 3.42-3.50 on 94.1; real speed after: shuffle, the balance from 4.98
+  };
   const syncCut = ([b0, shot, form, hit, rip], i) => {
     const take = PICKS[shot]?.take, k = keyed(shot, SYNC_KEY[take] || [[hit, SYNC_PLAN[shot]]]);   // one planned key: real speed, the hit on its beat
     const F = FORM[form].map(place), order = rip?.[2] === 'ring' ? [2, 1, 0, 5, 4, 3] : [0, 1, 2, 3, 4, 5];
