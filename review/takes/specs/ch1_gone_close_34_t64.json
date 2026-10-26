@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ch1_gone_close_34_t64",
+ "notes": "{\"shot\": \"ch1_gone_close_34\", \"s0\": 89.16, \"plate\": \"media/plates/face_v4/ch1_gone_close_34.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. She sings something it took her whole lives to learn: that nothing she has lived can be lost, because every branch of her merges back home. Unhurried and certain, with the depth of someone who has just said something true about impermanence and about living on. She stays in the three-quarter view, her eyes just past the camera; on the long final 'undone' she keeps singing with her mouth open for the whole six-second note, lifts her chin slightly and lets it ring, her eyes shining. Her expression is quietly radiant and hopeful, eyes alive and bright, as if she has just understood something profound about time and about coming home; serene depth, sincere, not performing. At the very end at most a faint, soft, closed-mouth warmth. She never grins, never smiles with teeth, and is never somber or blank. Her lips follow the sung words exactly, syllable by syllable: lips press fully together on every m, b and p, open wide on open vowels, round on o and oo. 'Nothing' starts on n with the lips apart; 'come' closes on the m. On the last word, 'undone', she holds her mouth open on the vowel for the whole length of the note, until the sound ends. After that her mouth closes gently and stays closed: no more words, no extra mouthing. She does not smile broadly, grin or show her teeth. She sings exactly the words of the reference audio, in time with it, and nothing else. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/ch1_gone_close_34_v4_2048.jpg",
+  "duration": 11,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ch1_gone_close_34_v2_89.16_11s.mp3"
+  ]
+ }
+}

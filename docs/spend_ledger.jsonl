@@ -956,3 +956,6 @@
 {"ts": "2026-10-26T01:11:19Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_t64", "job": "mergemain/ch1_gone_close_t64-c2e93c98da", "event": "result", "ok": true, "est_usd": 2.5432, "where": "cloud"}
 {"ts": "2026-10-26T01:12:42Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_34_t61", "job": "mergemain/ch1_gone_close_34_t61-94c23884d8", "event": "submit", "ok": null, "est_usd": 2.5432, "where": "cloud"}
 {"ts": "2026-10-26T01:12:43Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_34_t62", "job": "mergemain/ch1_gone_close_34_t62-10955df015", "event": "submit", "ok": null, "est_usd": 2.5432, "where": "cloud"}
+{"ts": "2026-10-26T01:25:35Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_34_t62", "job": "mergemain/ch1_gone_close_34_t62-10955df015", "event": "result", "ok": true, "est_usd": 2.5432, "where": "cloud"}
+{"ts": "2026-10-26T01:29:15Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_34_t63", "job": "mergemain/ch1_gone_close_34_t63-462b69885c", "event": "submit", "ok": null, "est_usd": 2.5432, "where": "cloud"}
+{"ts": "2026-10-26T01:29:15Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_34_t64", "job": "mergemain/ch1_gone_close_34_t64-de809b5995", "event": "submit", "ok": null, "est_usd": 2.5432, "where": "cloud"}
