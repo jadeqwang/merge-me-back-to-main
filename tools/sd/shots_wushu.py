@@ -245,3 +245,65 @@ SHOTS["dr_dl_ripple"] = dict(SHOTS["dr_dl_ripple"],
 import bakeoff as _bk  # noqa: E402
 SHOTS["dr_dl_kick"] = dict(plate="media/plates/drop/dr_dl_roll.png", dur=6, group=True, v2=True, audio=(I2, 165.34, 6),  # B(96); 97.1 = clip 1.739; the EDL keys contact (1.67) on 97.2
    act=_bk.ACT["kick"].format(t1="1.7 seconds in", t2="3.5 seconds in", t3="4.6 seconds in") + _bk.BODY)
+
+# ---- ?drop=real (B): MOTION REFERENCE (Jade 2026-10-26: "real routine for motion makes sense, but everyone is in competition outfits ... I just
+# wished our minor mistakes could be polished off with a model the way that minor imperfections in singing get polished off by suno"). Each
+# segment of her team's real 2004 group set (engine/show/real_ws.js; docs/wushu_real_routine.md) drives a Seedance 2.5 take as its motion
+# reference (reference_videos, a data: URI of the short cut; no public URL), starting from a still of the same frame repainted in our look: the six
+# as branch copies in their lanes (red uniforms -> white, rose, gold; black -> mint, sky, violet; each half left to right, as tools/prep/lanes.py
+# colours the light plates), hair per lane, the 1420 MHz patch on the LEFT arm, the salt flat at sunrise. The take keeps the clip's clock, so the
+# EDL keys it with the same keys as the light plate (main.js realCut, ?drop=real&real=ref). Jade OK'd sending these short clips (faces aren't
+# identifiable at 320x240); nothing else from the video goes anywhere. No reference audio: the timing is the real set's; keyed() puts it on the beat.
+# Untested on the relay: if Seedance refuses a first frame together with a reference video (an unbilled input error), set ref_mode="ref" (the
+# still becomes a look reference); if it wants duration -1 for a reference video, set dur=-1 (the take then comes out about as long as the clip).
+import os, re as _re  # noqa: E402
+_RWJS = open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "engine/show/real_ws.js")).read()
+REAL_SEGS = {m[1]: (float(m[2]), float(m[3])) for m in _re.finditer(r"^\s*(\w+): \{ in: ([\d.]+), out: ([\d.]+)", _RWJS, _re.M)}
+_REF_HEAD = ("Follow the reference video exactly. It is a real wushu team's barehand group set filmed in 2004 at low resolution; copy its motion "
+             "move for move and frame for frame: the same six performers, the same choreography, the same timing, the same positions, spacing and "
+             "travel, the same facing directions and the same camera framing; nothing added, skipped, reordered or re-timed. Repaint them as the "
+             "six copies of the woman in the first frame, each keeping her own face, hair, outfit and lane colours from the first frame for the "
+             "whole shot, on the wet mirror salt flat at sunrise of the first frame (no gym, carpet, judges or crowd). Polish the execution the way "
+             "a vocal tune polishes a sung note without changing the melody: crisp, fully extended lines, deep and stable stances, sharp stops, "
+             "exact unison where they move together, every move still exactly where and when the reference has it. ")
+_REF_MOVES = {
+ "burst": "In the reference, from attention all six burst out together into a deep bow stance with a straight punch (about 1.0 s in), drop into a very low drop stance with one leg stretched out and the arm sweeping low (about 1.8 s), rise into a bow stance with the rear arm whipped up overhead and hold it (about 2.4 to 3.4 s), then turn and step as the line starts to travel.",
+ "pairs": "In the reference the six work in three pairs, each a warm-coloured copy against a cool-coloured copy: attack and block, a low sweep that the partner leaps or rolls clear of (its peak about 3.6 s in), positions swapping.",
+ "pairs13": "In the reference the six work in three pairs, each a warm-coloured copy against a cool-coloured copy: an attack met by a block (about 0.5 s in), then a takedown to the floor (about 1.5 to 3.0 s), the partners separating again.",
+ "pairs29": "In the reference the six work in three pairs, each a warm-coloured copy against a cool-coloured copy: a low sweep and a roll clear of it, its peak about 3.0 s in, positions swapping.",
+ "fall": "In the reference: knee-raise balances (the first second); the mint, sky and violet copies snap front kicks (about 2.2 s in) and the white, rose and gold copies answer (about 3.0 s); slap kicks along the line (about 4.6 s); then all six dive forward together (about 7.2 s) and land flat on the water at the same instant in a controlled breakfall (about 7.6 s), palms and forearms slapping down, one sheet of spray, and lie completely still to the end.",
+ "rise": "In the reference all six lie flat and still; from about 1.4 s in they push up one after another, crouch, and spring back to standing together by about 3.4 s, in guard. They get up the way the reference shows, hands and feet under them, never floating up.",
+ "end": "In the reference the six move from a bow stance into their final pose (about 2.6 s in) and hold it dead still; about 4.4 s in they rise, bring their feet together and give the wushu salute, right fist pressed into the open left palm in front of the chest, arms rounded (fist meets palm about 5.2 s), and hold it. The main copy in ORANGE, who stands one step behind the middle of the line in the first frame, steps forward into the gap in front of the line's centre as they rise and salutes with them, so seven copies salute.",
+}
+_REF_TAIL = (" Every copy is always one separate person with two arms and two legs; bodies never merge or pass through each other; each copy keeps "
+             "her own colours to the end." + SAFE + MUTE_G)
+for _seg, (_a, _b) in REAL_SEGS.items():
+    SHOTS[f"dr_real_ref_{_seg}"] = dict(plate=f"media/plates/drop/dr_real_ref_{_seg}.png", dur=round(_b - _a), group=True,
+        ref_video=f"media/real_ws/ref/real_ws_{_seg}_480p.mp4", act=_REF_HEAD + _REF_MOVES[_seg] + (
+            " Exactly seven copies, the six and the orange main copy." if _seg == "end" else
+            " Exactly six copies stay in frame for the whole shot (there is no orange copy); nobody leaves, merges, splits or disappears.") + _REF_TAIL)
+# start stills: the segment's first frame (tools/prep/real_ws.mjs --refs: media/plates/real_ws/real_ws_<seg>_f0.png, 1280x720) repainted by one
+# nano-banana-pro edit (3 images: the frame, dr_gs_line6 for the look and lanes, the canon face), then the sleeve-patch edit. CHECK each against
+# the frame: every performer in the same place and pose (the reference motion starts from there), lanes by uniform colour, six (seven at the end).
+_REF_STILL = ("Edit the first image, a blurry low-resolution 2004 video frame of a wushu team of six performers on a competition carpet: redraw it "
+              "as a sharp, clean frame in the world, light and style of the second reference image, keeping the EXACT composition: the same camera "
+              "angle and framing, and every performer in exactly the same place, size, pose, stance, limb angles and facing direction as in the "
+              "first image. Replace each performer with a copy of the woman of the reference images, with the face of the third reference image: "
+              "the performers in RED uniforms become, from left to right, WHITE, ROSE PINK and GOLDEN YELLOW; the performers in BLACK uniforms "
+              "become, from left to right, MINT GREEN, SKY BLUE and VIOLET; each copy's jacket bands, cargo straps and headphones are her colour. "
+              "Every copy wears the costume of the second reference image: a white cropped racer jacket with her colour's bands, a black high-neck "
+              "crop top, navy wide cargo pants with straps, chunky white sneakers, headphones around the neck. Hair is BLACK: WHITE, ROSE PINK, SKY "
+              "BLUE and VIOLET wear two space buns, MINT GREEN and GOLDEN YELLOW a high ponytail. Replace the gym, the carpet, the judges and the "
+              "crowd with the wet mirror salt flat at sunrise of the second reference image, the sun low on the horizon, long reflections under "
+              "every copy. Very dark brown eyes with a natural double-eyelid crease, natural skin, no makeup, fierce focus. No other people.{extra}"
+              " No text, letters or logos anywhere.")
+for _seg in REAL_SEGS:
+    _to = f"media/plates/drop/dr_real_ref_{_seg}.png"
+    STILLS[f"dr_real_ref_{_seg}"] = dict(tool="edit", src=f"media/plates/real_ws/real_ws_{_seg}_f0.png", to=_to,
+        refs=["media/plates/drop/dr_gs_line6.png", _CANON], prompt=_REF_STILL.format(extra=(
+            " Add a seventh copy, the main copy in ORANGE (orange bands, straps and headphones, black hair in a high ponytail), standing one "
+            "step behind the line, centred between the two middle performers, fully visible." if _seg == "end" else "")))
+    STILLS[f"dr_real_ref_{_seg}_patch"] = dict(tool="patch", src=_to,
+        prompt=_PATCH + "Keep every copy's colours exactly as in the first image: WHITE, ROSE PINK, GOLDEN YELLOW, MINT GREEN, SKY BLUE and VIOLET"
+               + (" and the one ORANGE main copy" if _seg == "end" else "") + "; each copy's jacket bands, cargo straps and headphone cups stay her "
+               "own colour, never orange" + (" except the main copy" if _seg == "end" else "") + "." + _KEEP)

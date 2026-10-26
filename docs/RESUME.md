@@ -569,3 +569,28 @@ clipping, the fall get-up "not how humans get up", symmetric kicks; "try a few d
 - 0:28 `v1_split_front` → `v1_split_front_vl_t63_97c644fcfe` (violet's own face + messy bun, main's orange costume, camera locked, lag .2;
   `docs/picks_manual.json`). 1:30 stays `ch1_gone_close_34v_t61`. Main keeps the canon v4 face everywhere else (violet look not adopted
   globally; the `*_vl` tests for 1:11 / 3:50 / 4:11 stay experiments). Box: intake `v1_split_front_vl_t63`, then picks.py.
+
+## 2026-10-26 checkpoint 22 — her REAL group set in the drop, two ways (`docs/wushu_real_routine.md`)
+- Jade: the real routine for motion, but the 2004 footage has no identifiable faces; "polished off with a model the way … suno" polishes
+  singing. Both approaches, together:
+  - (A) `?drop=real`: the footage itself as the drop's plates, every performer a glyph figure in her lane.
+  - (B) `dr_real_ref_<seg>`: Seedance 2.5 `reference_videos` (a data: URI; no public URL) repaints each segment as the Jades.
+- Segment map, keys, lanes, `ME` and look: `engine/show/real_ws.js`.
+  - Cuts: 89 burst (punch on the drop), 91 pairs (`?realpair=13|24|29`, peak 92.3), 93 halves → THE FALL (dive 96.4, impact 97.1, bar 97
+    still), 98 rise, 99 final pose (100.1) + salute on the "ooh" (100.3), fold at 101 unchanged.
+  - No roll over a partner's back is logged in the notes.
+- Gated: plays the default drop until `work/plates/real_ws_<seg>/` exist (checked: identical `--list`).
+- `edl_check --fake=real` and `--fake=realref`: 0 exceptions, 0 held clocks.
+- New tools:
+  - `tools/prep/lanes.py`: per-performer split and lanes;
+  - `tools/prep/real_ws.mjs`: prints the run sheet;
+  - `prep.py` runs on CPU (`--depth=`, `--matte=`, `--matte-size=`);
+  - `batch.py` takes `ref_video` / `ref_mode`.
+- CPU prep measured here: Small + BiRefNet@512 ≈ 9 s/frame, so ≈ 75 min for the five segments (defaults: 5.3 h). The cloud also needs
+  `*.hf.co` for the weights.
+- **Box next:**
+  1. `node tools/prep/real_ws.mjs --src=… --refs`: cut, prep, lanes.
+  2. Check the `_lanes.jpg` sheets and measure the keys into `real_ws.js`.
+  3. `edl_check --q="drop=real"`, then stills and a 150–180 render.
+  4. Ask Jade for `ME` (her spot in the final line).
+  5. Then (B): start stills, `batch.py dr_real_ref_* --res=480p` (≈ $28 for 2 takes each).

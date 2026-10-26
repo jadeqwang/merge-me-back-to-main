@@ -1,7 +1,8 @@
 # Jade's real group set: notes for tools/sd/shots_wushu.py (2026-10-25)
 
 Source: her team's competition video (2004 Wushu Collegiates, group set, 3rd place, 8.54), studied on the box from YouTube at 320×240/15 fps.
-**Analysis only**: no frames are committed, nothing from the video goes to any model, and her teammates are not named or depicted. The
+**Analysis only**: no frames are committed, nothing from the video goes to any model, and her teammates are not named or depicted. *(2026-10-26: Jade OK'd sending the short segment clips of
+`docs/wushu_real_routine.md` (and each one's first frame) to a model, since faces aren't identifiable at this resolution; nothing else.)* The
 low resolution shows structure, formations and move families clearly, but not hand shapes or exact counts, so the counts below are approximate.
 
 ## The facts that change the plan

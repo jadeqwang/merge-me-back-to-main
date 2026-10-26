@@ -8,6 +8,9 @@ For a still image or a video, writes into OUT/:
   meta.json           {w, h, n, fps, depth_lo, depth_hi}
 
 Usage: .venv/bin/python tools/prep/prep.py SRC OUT [--w=1280] [--fps=24] [--no-matte] [--every=1]
+         [--depth=depth-anything/Depth-Anything-V2-Large-hf] [--matte=ZhengPeng7/BiRefNet] [--matte-size=1024]
+Runs on CUDA in fp16 (the box); without a GPU it runs on the CPU in fp32 (a cloud session: see docs/wushu_real_routine.md for the timings, and
+--depth=depth-anything/Depth-Anything-V2-Small-hf / --matte=ZhengPeng7/BiRefNet_lite to make it faster).
 """
 import json
 import os
@@ -19,7 +22,10 @@ import torch
 from PIL import Image
 
 FFMPEG = "/home/jade/Documents/vibesong/.venv/lib/python3.12/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2"
-DEV = "cuda"
+if not os.path.exists(FFMPEG):   # another machine (a cloud session): the system ffmpeg
+    import shutil; FFMPEG = shutil.which("ffmpeg") or FFMPEG
+DEV = "cuda" if torch.cuda.is_available() else "cpu"
+HALF = DEV == "cuda"             # fp16 on the GPU; the CPU runs fp32
 
 
 def arg(name, default):
@@ -42,19 +48,21 @@ def frames_of(src, w, fps, tmp):
 
 def depth_model():
     from transformers import AutoImageProcessor, AutoModelForDepthEstimation
-    name = "depth-anything/Depth-Anything-V2-Large-hf"
-    return AutoImageProcessor.from_pretrained(name), AutoModelForDepthEstimation.from_pretrained(name).to(DEV).half().eval()
+    name = arg("depth", "depth-anything/Depth-Anything-V2-Large-hf")
+    m = AutoModelForDepthEstimation.from_pretrained(name).to(DEV)
+    return AutoImageProcessor.from_pretrained(name), (m.half() if HALF else m.float()).eval()
 
 
 def matte_model():
     from transformers import AutoModelForImageSegmentation
-    m = AutoModelForImageSegmentation.from_pretrained("ZhengPeng7/BiRefNet", trust_remote_code=True)
-    return m.to(DEV).half().eval()
+    m = AutoModelForImageSegmentation.from_pretrained(arg("matte", "ZhengPeng7/BiRefNet"), trust_remote_code=True).to(DEV)
+    return (m.half() if HALF else m.float()).eval()
 
 
 @torch.no_grad()
 def run_depth(proc, model, im):
-    x = proc(images=im, return_tensors="pt")["pixel_values"].to(DEV).half()
+    x = proc(images=im, return_tensors="pt")["pixel_values"].to(DEV)
+    x = x.half() if HALF else x
     d = model(pixel_values=x).predicted_depth[:, None].float()
     d = torch.nn.functional.interpolate(d, size=(im.height, im.width), mode="bicubic", align_corners=False)
     return d[0, 0].cpu().numpy()
@@ -63,8 +71,10 @@ def run_depth(proc, model, im):
 @torch.no_grad()
 def run_matte(model, im):
     import torchvision.transforms as T
-    tf = T.Compose([T.Resize((1024, 1024)), T.ToTensor(), T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-    x = tf(im)[None].to(DEV).half()
+    sz = arg("matte-size", 1024)
+    tf = T.Compose([T.Resize((sz, sz)), T.ToTensor(), T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+    x = tf(im)[None].to(DEV)
+    x = x.half() if HALF else x
     p = model(x)[-1].sigmoid().float()
     p = torch.nn.functional.interpolate(p, size=(im.height, im.width), mode="bilinear", align_corners=False)
     return p[0, 0].cpu().numpy()
