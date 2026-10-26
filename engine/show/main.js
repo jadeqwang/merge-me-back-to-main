@@ -814,11 +814,16 @@ const HOOK20 = { x: 110, y: 420, size: 170, maxW: 860, out: ws(21) - .47 };
     text: (ty, t) => { ty.ledHook(w, t, { x: 110, y: 230, size: 140, maxW: 900, out: t1 - .2 });   // flash after the hook so its scrim doesn't cut the flash
       const f = Math.exp(-(t - t0) * 5); if (f > .01) { ty.g.fillStyle = `rgba(255,250,240,${f})`; ty.g.fillRect(0, 0, 1920, 1080); } } });
 }
-// 3:56: the orchestra comes in just before the bar-137 impact, or on ch2_gone_close's last frame if that take ends first (lag 0.3: 0.2 s early)
-const ORCH_T0 = tail('ch2_gone_close', bb(136, 3.74));
+// 3:56: the orchestra comes in just before the bar-137 impact, or on ch2_gone_close's last frame if that take ends first (lag 0.3: 0.2 s early).
+// While ch2_gone_close_t63 is picked (v5b, RESUME checkpoint 17): that take holds "become" to its end, then keeps its mouth closed through the
+// "Back to" pickup (235.75-236.4), so the shot ends with the line, at we(23) (235.73), and the orchestra's first cut starts there, 0.8 s
+// earlier (a take that starts after the cut eases in from its frame 0, so nothing holds: orch_wide_t52 at ~0.96x, the stand-in at ~0.5x until
+// bar 137 + 2 beats); "Back to main" is captioned over it as before. Any other pick keeps the 236.53 cut.
+const GONE_END = isTake('ch2_gone_close', 'ch2_gone_close_t63_121f180301') ? we(23) : bb(136, 3.74);
+const ORCH_T0 = tail('ch2_gone_close', GONE_END);
 { const w = lines(23), t0 = ws(23) - .12, t1 = ORCH_T0;   // "Every life I've lived, I have become"
   S.push({ t0, t1, kind: 'lattice', ...pk('ch2_gone_close', ws(23) - .27), fid: () => 1, cam: push(.06),
-    text: (ty, t) => { ty.ledHook(w, t, { x: 100, y: 250, size: 112, maxW: 760, out: we(23) + .15 }); } });
+    text: (ty, t) => { ty.ledHook(w, t, { x: 100, y: 250, size: 112, maxW: 760, out: Math.min(we(23) + .15, t1 - .2) }); } });
 }
 // ------------------------------------------------------------------------------------------ OUTRO bars 137–163
 // v2: two "Back to main" (237, 249); drums out bar 149 (arp alone); last hit bar 153, then pads + bass to the fade (song ends SONG_END).
@@ -1051,23 +1056,41 @@ const OUT_MAIN_END = isTake('out_main', 'out_main_t12_d9d33a9749') ? ws(25, 2) +
     [TOUCH + 3, cx(3.544)], [TOUCH + 4.3, 1]]);
   const out = (t) => 1 - ss(P2 - 1.4, P2, t), touchXY = [FR.x, FR.y + FR.h / R[0]];
   // The sender (Jade's v5a note at 4:44.1: "use the clip where she's sending off the light (which we have from this video, when her context is
-  // ending) so she's not just a still image"): v2_release, verse 2's last line (SUNG 19), where her context bar fills and she lets the light go.
-  // Its plate follows PICKS (pk) like every shot. Clip REL_C0..REL_C0 + 4.6 at 1x: the fade-in lands on the light resting over her open palm, it
-  // drifts off it and climbs up-right toward the far glow from ~clip 2.5, her hand drops as she watches it go (~5.0), and the cut comes at 5.2 on her
-  // smile. (It is a sung take: her mouth moves through ~0.8-4.8.) The drawn mote rides the take's own light (REL_ORB: the orb's centre
-  // in v2_release_t12, take px 1284x716, by clip time; measured, refit if another take is picked) and shrinks as it recedes; the window shot's
-  // mote then arrives from outside and touches the glass once (TOUCH = PC_TOUCH: tools/mix.py's chimes unchanged).
-  const REL_C0 = .6, REL_ORB = [[1, 735, 207], [1.5, 742, 206], [2, 748, 206], [2.5, 757, 208], [3, 780, 195], [3.5, 815, 181], [4, 853, 168],
-    [4.5, 889, 160], [5, 921, 159], [5.5, 946, 164]];
-  const relXY = (c, u) => {   // take px -> 1080p screen px: plate 1920 x 1071, lattice overscan 1.06 over the cam's dolly (the sky is at the plate plane)
+  // ending) so she's not just a still image"). v5b: pc_send_v, a silent take made for this (tools/sd/shots_v5b.py; RESUME checkpoints 17-18):
+  // the v2_release action from the v2_release still, with the 1420 MHz patch moved to her LEFT (outstretched) arm. Clip 0-4.6 at 1x: the fade-in
+  // opens on the light resting over her open palm; it lifts off at once and drifts up and to the right, staying in frame (t61: ~(1071, 84) take px
+  // at the cut); her hand lowers (~3.5-4.5) while her gaze follows it; her mouth stays closed. Its plate follows PICKS (pk). Until the box has
+  // done intake for it (has(), as every v5 shot is gated), the v5a sender: v2_release (verse 2's last line, SUNG 19) clip 0.6-5.2, where the
+  // light leaves her palm from ~2.5 and the cut lands on her smile (a sung take: her mouth moves over ~0.8-4.8; the patch is on her right arm).
+  // The drawn mote rides the take's own light. SEND_ORB = the light's centre by clip time in take px, per take: pc_send_v tracked per frame
+  // (brightest blob: luma box-blurred r 6, argmax within 60 px of the previous frame, centroid of its >= peak - 12 core) and keyed every 0.5 s
+  // (linear fit over +-3 frames; within 2.3 px of the per-frame track to the cut; the same tracker reproduces the t12 keys within 2 px). Another
+  // take: track it the same way (a pc_send_v take with no entry rides t61's track). The window shot's mote then arrives from outside and
+  // touches the glass once (TOUCH = PC_TOUCH: tools/mix.py's chimes unchanged).
+  const SEND_ORB = {   // take: [w, h, [[clip, x, y], ...]]
+    pc_send_v_t61_1cc469a978: [1284, 716, [[0, 721, 215], [.5, 743, 199], [1, 772, 183], [1.5, 806, 168], [2, 843, 154], [2.5, 882, 141],
+      [3, 924, 128], [3.5, 969, 114], [4, 1015, 101], [4.5, 1061, 87], [5, 1110, 74], [5.5, 1159, 61], [6, 1212, 49]]],
+    pc_send_v_t63_67ed1e9eb5: [1280, 720, [[0, 706, 198], [.5, 716, 189], [1, 736, 177], [1.5, 761, 166], [2, 788, 156], [2.5, 816, 147],
+      [3, 844, 141], [3.5, 872, 137], [4, 899, 135], [4.5, 924, 134], [5, 949, 134], [5.5, 973, 134], [6, 994, 135]]],
+    v2_release_t12_1bf7fde028: [1284, 716, [[1, 735, 207], [1.5, 742, 206], [2, 748, 206], [2.5, 757, 208], [3, 780, 195], [3.5, 815, 181],
+      [4, 853, 168], [4.5, 889, 160], [5, 921, 159], [5.5, 946, 164]]],   // measured in v5a
+  };
+  // c0: the take's clip time at P0; mt0: the mote lights up this long after P0 (pc_send_v: on the first frame, on her palm's light, fading in
+  // with the picture; v2_release: as the fade-in completes), fully on at P0 + k1; r: its radius from the palm to the cut (t61's light keeps a
+  // ~13 px core to the cut; t12's shrinks from clip ~4)
+  const SEND = has('pc_send_v')
+    ? { shot: 'pc_send_v', c0: 0, mt0: 0, k1: 1, r: [12, 12], orb: SEND_ORB[PICKS.pc_send_v.take] || SEND_ORB.pc_send_v_t61_1cc469a978 }
+    : { shot: 'v2_release', c0: .6, mt0: .6, k1: 1.4, r: [12, 5], orb: SEND_ORB.v2_release_t12_1bf7fde028 };
+  const REL_C0 = SEND.c0, [OW, OH, REL_ORB] = SEND.orb, MT0 = P0 + SEND.mt0;
+  const relXY = (c, u) => {   // take px -> 1080p screen px: the plate fills the frame height (aspect >= 16:9) or width, lattice overscan 1.06 over
+    // the cam's dolly (the sky is at the plate plane)
     let i = 0; while (i < REL_ORB.length - 2 && c > REL_ORB[i + 1][0]) i++;
-    const [ca, xa, ya] = REL_ORB[i], [cb, xb, yb] = REL_ORB[i + 1], f = clamp((c - ca) / (cb - ca)), q = 1920 / 1284, s = 1080 / 1071 * 1.06 / (1 - .03 * u);
-    return [960 + ((xa + (xb - xa) * f) * q - 960) * s, 540 + ((ya + (yb - ya) * f) * q - 535.5) * s]; };
-  const MT0 = P0 + .6;   // the mote lights up on her palm's light as the fade-in completes
-  S.push({ t0: P0, t1: CUT, kind: 'lattice', look: 'paint', ...pk('v2_release', P0), s0: P0 - REL_C0, lane: L.violet, laneAmt: .1, fid: () => 1,
+    const [ca, xa, ya] = REL_ORB[i], [cb, xb, yb] = REL_ORB[i + 1], f = clamp((c - ca) / (cb - ca)), s = 1080 / Math.min(OH, OW * 9 / 16) * 1.06 / (1 - .03 * u);
+    return [960 + (xa + (xb - xa) * f - OW / 2) * s, 540 + (ya + (yb - ya) * f - OH / 2) * s]; };
+  S.push({ t0: P0, t1: CUT, kind: 'lattice', look: 'paint', ...pk(SEND.shot, P0), s0: P0 - REL_C0, lane: L.violet, laneAmt: .1, fid: () => 1,
     cam: (u) => ({ dolly: 1 - .03 * u, over: 1.06 }), fade: (u, t) => ss(P0, P0 + 1.0, t),
     text: (ty, t) => FX.mote(ty.g, t, { path: (q) => { const tt = MT0 + q * (CUT - MT0); return relXY(tt - P0 + REL_C0, (tt - P0) / (CUT - P0)); },
-      t0: MT0, t1: CUT, r: [12, 5], flare: false, k: ss(MT0, P0 + 1.4, t) }) });   // it leaves her palm toward the far glow
+      t0: MT0, t1: CUT, r: SEND.r, flare: false, k: ss(MT0, P0 + SEND.k1, t) }) });   // it leaves her palm toward the far glow
   S.push({ t0: CUT, t1: P2, kind: 'lattice', look: 'paint', ...pk('ch0_window', CUT), clip: (u) => WIN_USED * u, fid: () => 1,
     cam: () => ({ dolly: 1, over: 1.06 }), fade: (u, t) => out(t),   // still camera: the shape is screen-locked
     text: (ty, t) => {

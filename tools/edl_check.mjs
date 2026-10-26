@@ -36,7 +36,7 @@ const measured = (tk) => {
   if (fs.existsSync(mp4)) try { return +execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-count_packets', '-show_entries', 'stream=nb_read_packets', '-of', 'csv=p=0', mp4]).toString().trim().replace(/,$/, ''); } catch { /* no ffprobe */ }
   return null; };
 const NEW = ['ch2_catch', 'ch2_gone_close', 'out_main', 'ch1_main', 'bd_ahh', 'v2_horizon', 'intro_up', 'bd_float', 'orch_wide', 'orch_line', 'orch_keys', 'orch_pencil', 'orch_guitar',
-  'dr_dl_wide', 'dr_dl_close', 'dr_gs_ranks', 'dr_gs_tornado', 'dr_gs_ring', 'dr_gs_salute'];
+  'dr_dl_wide', 'dr_dl_close', 'dr_gs_ranks', 'dr_gs_tornado', 'dr_gs_ring', 'dr_gs_salute', 'pc_send_v'];
 // --fake=allnew: every queued v5 shot picked, s0 = its spec's audio window (lag 0) in the spec's timing, as picks.py would write it
 let fake = opt('fake', ''); if (fake === 'allnew') fake = NEW.join(',');
 for (const f of fake.split(',').filter(Boolean)) {   // pretend intake + picks ran for a new shot: shot[:s0] (no s0: the spec's window)

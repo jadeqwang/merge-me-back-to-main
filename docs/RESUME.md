@@ -434,7 +434,7 @@ hopeful with depth, as if she has just said something profound; no shallow/adver
   left arm's band; a slight softness where the old one was). Same dish as v2_release (not the salt flat), so it cuts like the take it replaces.
   **Pick t61** (light lifts off her palm and drifts up-right, staying in frame; hand lowers; mouth closed, hopeful gaze following it up).
   t63 similar with less gaze lift; t62's light leaves the top of frame by ~2.3 s. Previews: `review/previews/postcredits/`.
-  `docs/picks_manual.json` has `pc_send_v`. **EDL (not edited here):** the post-credits sender in `engine/show/main.js` (~lines 1082–1099,
+  `docs/picks_manual.json` has `pc_send_v`. **EDL (not edited here; done in checkpoint 18):** the post-credits sender in `engine/show/main.js` (~lines 1082–1099,
   now `pk('v2_release')`, clip `REL_C0` 0.6–5.2) should switch to `pk('pc_send_v')` with `REL_C0` ≈ 0 and `REL_ORB` refit on t61 (the light
   starts above her palm at ~(735, 207) take px like t12 and rises up-right more slowly).
 - **Box next:** copy `review/takes/*_t6[1-6]_*.mp4` + `_t5x` into `media/gen/`, specs into `media/gen/specs/`, the stills in
@@ -443,3 +443,36 @@ hopeful with depth, as if she has just said something profound; no shallow/adver
   `picks.py` (docs/picks_manual.json + docs/lags.json are updated), `node tools/edl_check.mjs`, renders 27–48, 68–101, 110–119, 207–237, 248–256.
 - **Relay:** 2047 errors (refunded) and two jobs stuck in `running` with no result (`out_main_t63`, `v1_light_hands_t61`; counted at their
   estimate in the ledger). One extra GPT still request (`drop_ch1_gone_close_34_*`, 00:49 UTC) never returned.
+
+## 2026-10-26 checkpoint 18: v5b picks wired into the EDL (pc_send_v sender, ch2_gone_close t63 cut) — NEEDS INTAKE/RENDER (box)
+Cloud session (session_01TSBays4bH1M779gzn9GT9M; no generation, no spend, nothing rendered). Edits: `engine/show/main.js` (post-credits sender,
+the 3:56 cut; `COMPOSE_TIP` and the orchestra block untouched), `tools/edl_check.mjs` (`--fake=allnew` now includes `pc_send_v`), run sheet §1.4.
+- **Post-credits sender → `pc_send_v`** (pick t61). `SEND = has('pc_send_v') ? pc_send_v : v2_release`, gated like the other v5 shots, so the
+  v5a sender (`v2_release_t12`, clip 0.6–5.2, its hand-measured keys) stays until the box has run intake + `picks.py` for it.
+  - With the pick: clip 0–4.6 at 1x (`REL_C0` = 0), from the light resting over her palm to the cut.
+  - The mote lights up on the first frame on her palm's light and fades in with the picture. It is drawn at a constant size (`r` [12, 12]),
+    because t61's light keeps a ~13 px core to the cut.
+  - Unchanged: the cut (P0 + 4.6), the touch (P0 + 6.4), the window shot, the one pass and `tools/mix.py`'s 1-2-4-8 chimes.
+- **`REL_ORB` refit** (now `SEND_ORB`, keyed by take with the take's size; `relXY` maps any take aspect, within 0.2 px of the old mapping for
+  1284×716).
+  - Tracker: ffmpeg rgb24 frames → numpy luma, box blur r 6, argmax within 60 px of the previous frame, then the centroid of the ≥ peak − 12
+    core.
+  - Keys: every 0.5 s, from a linear fit over ±3 frames.
+  - Checked: the same tracker reproduces the v5a t12 keys within 2 px; the t61 keys are within 2.3 take px of the per-frame track to the cut.
+  - Through the EDL under node, the drawn mote's head sits 0.5 px from the take's light on frame 0 and within 3.6 px (1080p) at every frame
+    to the cut.
+  - t61 path (take px 1284×716): (721, 215) at clip 0 → (843, 154) at 2 → (1015, 101) at 4 → ~(1071, 84) at the cut. It stays in frame.
+  - t63 is measured too (1280×720, a different framing). Any other pc_send_v take falls back to t61's track: re-track it before picking it.
+  - Contact sheet (scratch, not committed): every 0.5 s with the track, keys and keyed position drawn over the raw take; the ring sits on the
+    light in every tile.
+- **3:56 cut, take-aware** (`GONE_END`, like `CATCH_CUT`/`OUT_MAIN_END`): while `ch2_gone_close_t63_121f180301` is picked, the shot ends at
+  `we(23)` (235.73, the end of "become"), because t63 keeps its mouth closed through the "Back to" pickup (235.75–236.4).
+  - `ORCH_T0` follows, so the orchestra's first cut starts 0.8 s earlier. `orch_wide_t52` (s0 235.77) eases in from frame 0 at 0.96x; the
+    stand-in and `orch=v4` (`out_orch`, s0 236.64) ease in at 0.49x until bar 137 + 2 beats.
+  - No gap and no held frame. The hook's fade starts at min(we(23) + .15, cut − .2).
+  - Any other pick keeps 236.53.
+- **Validation:** `node --check` on an .mjs copy. `edl_check` (0–297) with default / `drop=v5` / `bd=full` / `orch=v4`, each × (cloud picks,
+  `--fake=pc_send_v`, `--fake=allnew`), and the same with a scratch picks.json built like `picks.py` from `docs/picks_manual.json` + lags +
+  take lengths (t63 and t61 live): 0 exceptions, 0 bad args, 0 gaps, 0 held clocks.
+- **Box next:** after checkpoint 17's intake + `picks.py` + `node tools/edl_check.mjs`, render 222–266 and 280–297.016 (run sheet §1.4).
+  Eyeball the drawn light on hers (4:42.5–4:47.1) and the 3:55.7 cut.

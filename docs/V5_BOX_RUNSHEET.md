@@ -105,6 +105,18 @@ plates made from the raw takes in `review/cloud/takes` (not committed). `edl_che
 
 The default 124–153 render also shows the 2:19 header. The commands are in §3.
 
+### 1.4 v5b picks wired into the EDL (cloud, 2026-10-26; EDL only, nothing rendered; RESUME checkpoint 18)
+Both changes switch on by themselves once the box has done intake and `picks.py` for the picks in `docs/picks_manual.json`; until then the
+film is unchanged. `edl_check` (0–297 s): 0 exceptions, 0 held clocks, 0 gaps for the default, `drop=v5`, `bd=full` and `orch=v4`, with the
+cloud picks, `--fake=pc_send_v`, `--fake=allnew` (now includes `pc_send_v`) and a scratch picks.json built like `picks.py` from the manual picks.
+
+| time | change | where | eyeball |
+|---|---|---|---|
+| 4:42.5–4:47.1 | The sender is **`pc_send_v_t61`** (silent; the 1420 MHz patch on her **left**, outstretched arm), gated on `has('pc_send_v')` like the other v5 shots. It plays clip 0–4.6 at 1x (`REL_C0` = 0): the light lifts off her palm at once and drifts up and to the right, staying in frame; her hand lowers (~3.5–4.5); her mouth stays closed. `REL_ORB` was refit on the raw take: the brightest blob tracked per frame and keyed every 0.5 s. Through the EDL, the drawn light starts on her palm's light (0.5 px) and stays within 3.6 px (1080p) of the take's light to the cut. It is drawn at a constant size, because t61's light keeps its size. Before intake: the v5a `v2_release_t12` sender, unchanged. The cut (P0 + 4.6), the touch (P0 + 6.4), the one pass and the 1-2-4-8 chimes are unchanged, so `tools/mix.py` is unchanged. `t63` also has a measured track (1280×720). | `main.js` post-credits (`SEND`, `SEND_ORB`, `relXY`) | 280–297.016: does the drawn light sit on hers from the first frame to the cut? The patch on her left arm |
+| 3:55.7 (3:48.8–3:58.4) | While **`ch2_gone_close_t63`** is picked (`isTake`), the shot ends at the end of "become", `we(23)` = 235.73: t63 doesn't mouth the "Back to" pickup. The orchestra's first cut starts there, 0.8 s earlier than before. `orch_wide_t52` eases in from its frame 0 at 0.96x. The stand-in (`out_orch`) and `orch=v4` ease in at 0.49x until bar 137 + 2 beats. Nothing is held. The hook fades from 235.53. "Back to main" is captioned over the orchestra, as before. Any other pick keeps the 236.53 cut. | `main.js` `GONE_END` → `ORCH_T0` | 228–240: "become" held to the cut, a clean cut into the wide on the pickup, no frozen frame |
+
+**Render for these:** 222–266 (`354_outro.mp4`) and 280–297.016 (`postcredits.mp4`), both from §3.
+
 ## 2. Generation queue (in this order; ≈ cost at list prices)
 
 Use `--t0=13` for every v5 take: the box is at t12, so tags never collide. The cloud dry-ran all of these specs in a scratch copy with the
@@ -245,8 +257,8 @@ $PY tools/gen/gen.py wait mergemain/...          # the job ids batch.py printed 
   positions in the ORCH v5 block on stills at each cut's midpoint (below). If a big gesture lands off the beat, shift that cut's s0 by
   whole beats.
 - Post-credits: fit `FR` (the glass region; the stem starts at the touch point) and the window's `FX.mote` path on stills at P0 + 5, 6.4, 8,
-  9.6, 11, 13 (P0 = 282.516). The sender's mote rides `REL_ORB`, measured on `v2_release_t12`. If another `v2_release` take is ever picked,
-  re-measure it and `REL_C0` (§1.3).
+  9.6, 11, 13 (P0 = 282.516). The sender's mote rides `SEND_ORB`, the take's light tracked per frame: `pc_send_v_t61` (the pick) and `t63`,
+  plus `v2_release_t12` (the sender until `pc_send_v` is through intake). If another take is picked, track it the same way (§1.4).
 
 **Mix and renders** (720p review parts ≤ 75 s each go to `review/v5/` with a README line; GitHub's limit is 100 MB per file):
 ```bash
@@ -258,9 +270,9 @@ $R --from 99 --to 119 --mp4 out/review/v5/146_breakdown.mp4      # glyph pane fi
 $R --from 124 --to 153 --mp4 out/review/v5/205_build.mp4         # build panes, each take spanning its pane's life
 $R --from 176 --to 184 --mp4 out/review/v5/257_tree_dish.mp4     # drop forktree (glyph copies), the dish wide insert at 3:00.8, close-up from 3:01.7
 $R --from 206 --to 216 --mp4 out/review/v5/330_catch.mp4         # 3:30 cut + hook over the tree
-$R --from 222 --to 266 --mp4 out/review/v5/354_outro.mp4         # ch2 fold, 3:54, the 3:56 cut, orchestra, home 4:12, living graph, end-card hit
+$R --from 222 --to 266 --mp4 out/review/v5/354_outro.mp4         # ch2 fold, 3:54, the 3:55.7 cut (t63: on "become"'s end), orchestra, home 4:12, living graph, end-card hit
 node engine/render.mjs --q "show=/engine/show/main.js&figlook=led" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 64 --to 80 --mp4 out/review/v5/107_led.mp4   # fork tree A/B
-$R --from 280 --to 297.016 --mp4 out/review/v5/postcredits.mp4   # violet sender (v2_release: the light leaves her palm), window, frost, chimes
+$R --from 280 --to 297.016 --mp4 out/review/v5/postcredits.mp4   # violet sender (pc_send_v_t61: the light lifts off her palm), window, frost, chimes
 node engine/render.mjs --q "show=/engine/show/main.js&bd=full" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 124 --to 153 --mp4 out/review/v5/205_build_bdfull.mp4   # A/B with 205_build.mp4 (§1.3)
 node engine/render.mjs --q "show=/engine/show/main.js&orch=v4" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 234 --to 252 --mp4 out/review/v5/orch_v4.mp4
 node engine/render.mjs --q "show=/engine/show/main.js&drop=v5" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 150 --to 182 --mp4 out/review/v5/drop_v5.mp4   # once picked
@@ -280,8 +292,8 @@ the kids), push, and add a "needs Jade" line in `docs/RESUME.md`.
 - **4:12 → 4:24**: the home shot ends before the grin. Then the living graph: are the 14 lives readable? The log reads one commit per beat,
   violet merges last. `lf_home_mint` (kids from behind) is one pane, as in every life grid.
 - **Post-credits**: the violet branch sends; the window girl in slow motion; the light's path and touch point; the shape growing from the
-  touch; one chime cascade. Since v5a (§1.3) she sends it in motion (`v2_release`): does the drawn light sit on the take's light? Note the
-  patch on her right arm.
+  touch; one chime cascade. Since v5a (§1.3) she sends it in motion; since v5b (§1.4) in the silent `pc_send_v_t61`, the patch on her left
+  arm: does the drawn light sit on the take's light from her palm to the cut?
 - **2:06 build wall, A/B** (`205_build.mp4` vs `205_build_bdfull.mp4`): 16 full-frame cuts on the kicks, then the matrix shrinking into the
   bottom-right corner on bar 77. **2:19**: "› analysis mode" is there from the screen's first frame and pulses on the fourth kick (2:25.3).
 - **Orchestra**: the timing and cuts (stand-ins now); the violet composer once the takes are picked; the score's legibility; `?orch=v4` for A/B.
@@ -300,7 +312,8 @@ the kids), push, and add a "needs Jade" line in `docs/RESUME.md`.
   - 3:54 (.30, interim)
   - every new re-take
 - **Held frames** (Jade OK'd fixing them all, 2026-10-25; §1.1): none left. Look at the slowed panes (the grid's head turn ~0.23x, the build
-  wall 0.25–0.47x), the new 2-beat dish wide at 3:00.8, and the cuts that moved (0:42.1, 1:14.7, 1:51.9, 3:56.3).
+  wall 0.25–0.47x), the new 2-beat dish wide at 3:00.8, and the cuts that moved (0:42.1, 1:14.7, 1:51.9, 3:56.3; 3:55.7 with
+  `ch2_gone_close_t63`, §1.4).
 - **Fork-tree copies as glyphs** (1:07, 1:15, 2:57): is the 1:07 face readable? `?figlook=led` gives the LED copies for A/B.
 
 ## 5. A/B parameters (`--q "show=/engine/show/main.js&..."`)
