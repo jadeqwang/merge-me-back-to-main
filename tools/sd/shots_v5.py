@@ -41,9 +41,13 @@ RETAKES = {
        "the l; 'become' closes on the b and on the m.") + NO_GRIN + SING2),
  # 4:12 the final "Back to main" (line 25; 'main' is held 250.3-255.9). v5a: t12 mouthed an extra word after 'main', then grinned.
  "out_main": dict(plate="ch1_main.jpg", dur=8, audio=(VOC, 262.80, 8),
+   # t64+: t61/t62 closed and reopened the mouth inside the held 'main' (read as extra words), so the held vowel is spelled out
    act="She is home, completely, at sunrise. She sings the last three words softly to the camera, 'Back to main', and holds the long final "
-       "note, at peace and full of quiet hope for everything still ahead. Near the end of the note her eyes close slowly." + HOPE +
-       LIPS("main", " 'Back' starts with the lips pressed together; 'main' starts with the lips pressed together, then opens.") + NO_GRIN + SING2),
+       "note, at peace and full of quiet hope for everything still ahead. 'main' is ONE syllable held for about five seconds: her lips press "
+       "together for the m, then her mouth opens once into a soft, relaxed open vowel and STAYS open in that same shape, without closing, "
+       "re-shaping or forming any other word, even where the note swells and wavers; only as the sound fades at the very end does her mouth "
+       "slowly close. Near the end of the note her eyes close slowly." + HOPE +
+       LIPS("main", " 'Back' starts with the lips pressed together.") + SING2),   # prompt limit 2000 chars: HOPE already rules out the grin
  # 1:11 "Merge me back to main" (line 7): 'Merge' is ONE long held word (69.42-71.79), then "me back to" quickly, then 'main' held to 75.0.
  # v5a: t11 mouthed the whole phrase during 'Merge' and ended in a soft-drink-ad smile.
  "ch1_main": dict(plate="ch1_main.jpg", dur=7, audio=(VOC, 69.75, 7),
