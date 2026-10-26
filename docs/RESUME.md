@@ -328,3 +328,45 @@ Cloud session, no generation, no spend, nothing rendered. Edits are in `engine/s
   to Jade). The clean `v2_horizon` (t51/t52 + still) needs intake and a pick only; 3:07 follows PICKS.
 - `edl_check` 0–297: 0 exceptions, 0 held clocks (default, `bd=full`, `drop=v4/v5`, `figlook=led`).
 - **Box:** render 124–153 with the default and with `bd=full` (the A/B), plus 280–297.016 (run sheet §3).
+
+## 2026-10-26 checkpoint 15: wushu v5.3, the partner roll — NEEDS INTAKE/RENDER (box)
+Cloud session (started from Jade's instruction in session_01TSBays4bH1M779gzn9GT9M: "an actually impressive looking wushu move from the group
+set, like rolling over your sparring partner's back"). It cost ≈ $21.45: 15 Seedance takes at 6 s (≈ $20.81) plus 3 billed stills (one
+nano-banana-pro edit, two GPT Image 2.5 candidates; a third GPT job was refunded). The ledger shows **$463.13 / $600**, which includes other
+sessions' parallel spend. Design and results: `docs/wushu_v5_design.md` §11. Run sheet: the wushu v5.3 row.
+- **Where it lands:** the duilian close, bars 91–92. The roll's inverted peak is on **92.3** (159.25 s). There the bass steps E → F#: the
+  drop's strongest beat-3 onset (flux 228 against 140–197 on every other bar) and the airborne bar of the first rising phrase. The
+  liangxiang freeze lands on the 93.1 cut. Bar 98 (the cross pairs) is mid-phrase C#, with only the regular snare.
+- **Stills** (`review/takes/stills/` → box `media/plates/drop/`):
+  - `dr_dl_roll.png`: dr_dl_close_v5 pulled back with one nano-banana-pro edit, so the roll's arc stays in frame.
+  - `dr_dl_ripple.png`: the three pairs in a diagonal echelon (GPT Image 2.5, candidate a cropped to 16:9; the uncropped candidate is kept).
+  - Then `rm -f media/gen/refs/dr_dl_roll.jpg media/gen/refs/dr_dl_ripple.jpg`.
+- **Takes** (`review/takes/<tag>_<id>.mp4` + `specs/`). Tags t63/t64 are variant b, retagged onto the base shot (`notes.variant`).
+
+| shot | tags | pick | why |
+|---|---|---|---|
+| dr_dl_roll (91) | t65, t61, t62, t63, t64, t66 | **t65** | sweep ~2.0, duck ~3.2, violet rolls over orange's back, inverted peak 4.0, lands on the far side, a NEW liangxiang freeze from 5.05; two bodies throughout, lanes, faces and hair right. Behind the pair: one extra soft-focus figure and a small dark blob. t61/t62 roll cleanly but ~1 s early and spring back into the opening guard. t63 is busy; **t64 merges the bodies**; **t66 recolours violet orange after the landing** |
+| dr_dl_ripple (91, `?roll=wide`) | t69, t65, t61–t64, t66–t68 | **t69** | starts on the still, back → middle → front canon, a new freeze from ~5.0. In the front roll orange goes over violet: an X of four legs for ~0.4 s. t65 has the cleanest canon but loses the orange partner for ~0.3 s. t61/t64: lanes recoloured from frame 0. t62/t63/t68: don't start from the still. t66: merges. t67: front pair first |
+
+- **EDL** (drop block only; `node --check` OK; `tools/edl_check.mjs` with `?drop=v4`, `?drop=v5`, `?roll=close|wide|off`, and fake
+  picks: 0 exceptions, 0 held clocks).
+  - `?roll=close|wide|off`. The default is the picked roll (close first), else the v5.2 dr_dl_close.
+  - Measured keys: `KEY.dr_dl_roll` = [[91, 2], [92.5, 4], [93, 5.25]]; `KEY.dr_dl_ripple` = [[91, 1.739], [91.5, 2.6], [92.5, 4.15]].
+  - A 0.22 flash marks the peak.
+  - The duilian → group set structure, the fall on 97 and the salute → fold are unchanged. The ORCHESTRA block and FX.score were not touched.
+- **Previews for Jade's phone:** `review/previews/wushu_roll/<take>.mp4`, five files of 4.3–4.5 MB each (720p, 152.2–175.0 s). Each is a
+  raw-take rough cut of the whole drop with the candidate in the 91 slot on its keyed clock, plus the full mix. Index entries are in
+  `review/previews/index.json`. Tool: `tools/preview_drop.py`.
+- **Box next:**
+  1. Copy the stills into place, the takes into `media/gen/` and the specs into `media/gen/specs/`.
+  2. Intake `dr_dl_roll_t65_96b71e9d46` and `dr_dl_ripple_t69_e0408ef0fb`, one at a time.
+  3. Add both to `docs/picks_manual.json` (`dr_dl_roll`, `dr_dl_ripple`).
+  4. Run `picks.py`, then `node tools/edl_check.mjs --q=drop=v5`.
+  5. Render 150–176 with `drop=v5` and with `drop=v5&roll=wide`.
+  6. Check that the peak lands on 92.3 (2:39.25) and that the freeze is there on the 93.1 cut.
+
+### Summary (cloud session, wushu roll, 2026-10-26)
+The duilian close now ends with a real back roll over the partner's back, peaking on the drop's one irregular accent (92.3, the bass's F#) and
+freezing in liangxiang into the group set's burst on 93. Close pick **dr_dl_roll_t65** (the default). Wide canon pick **dr_dl_ripple_t69**
+(`?roll=wide`; busier, an alternative). Two rounds: round 1 taught that Seedance runs ~1 s early, snaps back to the first frame's pose, and
+recolours lanes when many colours are named; round 2's prompts fixed all three in the close. Previews are in `review/previews/wushu_roll/`.

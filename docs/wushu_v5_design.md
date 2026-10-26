@@ -551,6 +551,28 @@ cut 93.1 = 5.218):
 - The guards: SAFE, the copy count (six), MUTE_G, plus ANAT (two separate bodies, two arms and two legs each, real contact on the back).
 
 **EDL** (`engine/show/main.js`, drop block): `?roll=close|wide|off`, v5 only. By default it uses the picked version (close first), else the
-v5.2 dr_dl_close. `keyed()` pins the sweep (91.1) and the roll's peak (92.5 in bar positions = 92.3); the ripple also pins its back and middle
-peaks. A small flash (0.22) marks the peak, next to the burst (93) and the fall (97). The duilian → group set structure, the fall on 97 and the
+v5.2 dr_dl_close. `keyed()` pins the measured key frames (bar position 92.5 = 92.3): the close's sweep (91.1), peak (92.3) and freeze (93.1);
+the ripple's back pair (91.3) and front pair (92.3). A small flash (0.22) marks the peak, next to the burst (93) and the fall (97). The duilian → group set structure, the fall on 97 and the
 salute → fold are unchanged.
+
+**Takes (2 rounds, 15 × 6 s, cloud session 2026-10-26).** Picks: **`dr_dl_roll_t65`** (close, the default) and **`dr_dl_ripple_t69`** (wide).
+- Round 1 (t61–t64, 2 prompts each). The close takes all roll, but ~1 s early (sweep ~0.85 s), and every take springs back into the plate's
+  opening guard by ~4.95 s. Variant b (t63, t64) merges the two bodies (four legs, both lanes' straps). In the ripple takes the lanes are
+  recoloured from frame 0 (violet → green, orange → yellow; the prompt named six colours) or the take doesn't start from the still (t62,
+  t63), and no take holds the canon.
+- Round 2 (t65+). Prompt changes: 1.5 s of guard first, then a NEW freeze pose (not the opening guard); in the ripple, only the front pair's
+  colours are named ("every copy keeps her own colours from the first frame"), and the roll passes back to front.
+  - **Close t65:** guard to 1.5 s; the sweep on ~2.0 (violet hops it); punch and duck 3.0–3.3; violet rolls over orange's back 3.5–4.5, the
+    inverted peak at 4.0; she lands on the far side; the liangxiang freeze from 5.05 (violet in a low bow stance with her rear arm up, orange
+    crouched facing her). Two bodies throughout, the lanes right, faces, two buns and the ponytail right. One extra soft-focus figure and a
+    small dark blob behind, at the freeze. Keys: [91, 2], [92.5, 4], [93, 5.25] (x0.77, then x1.44).
+  - Close t66 fails: violet's jacket bands turn orange after the landing.
+  - **Ripple t69:** starts on the still; back pair ~2.6, middle ~3.0, front ~4.15; all freeze in a new pose from ~5.0. In the front pair's
+    roll, orange goes over violet (roles swapped), an X of four legs for ~0.4 s. Keys: [91, 1.739], [91.5, 2.6], [92.5, 4.15].
+  - Ripple t65 has the cleanest canon timing (2.7 / 3.5 / 4.35) but loses the orange partner under violet's handstand for ~0.3 s.
+  - Ripple t66 merges the front pair; t67 rolls front-first; t68 doesn't start from the still (everyone lies down).
+- Previews: `review/previews/wushu_roll/` (index entries in `review/previews/index.json`). Each is a raw-take rough cut of bars 89–101, with
+  the candidate on its keyed clock and the full mix (`tools/preview_drop.py --keys=`).
+- Lessons for Seedance 2.5 acrobatics: it runs a described phrase ~1 s early, and it returns to the first frame's pose at the end unless the
+  last pose is described as different from it. Naming many lane colours in the act can recolour the still's lanes. A roll at wide scale merges
+  bodies more often than in a close two-shot.
