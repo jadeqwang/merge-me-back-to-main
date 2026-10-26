@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_close_t53",
+ "notes": "{\"shot\": \"ws_close\", \"s0\": 168.819, \"plate\": \"media/plates/drop/ws_solo.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. A solo wushu changquan performer shows the second international compulsory long-fist routine, crisp, fast and powerful, then sharp stops. She settles into a cover step, legs crossed, one straight punch held out, still. About 1.7 seconds in she swings a straight leg up to head height and slaps the instep with her hand (dan paijiao, single slap kick). About 2.6 seconds in she lands, brings her feet together and lowers her arms in a wide circle (shoushi, the closing posture). About 3.5 seconds in she stands at attention, feet together, fists at her hips, perfectly still. About 4.3 seconds in she gives the wushu salute: right fist pressed into the open left palm in front of her chest, arms rounded, chin up, a proud small smile at the camera, and holds it perfectly still to the end. Each named move lands exactly on a beat of the reference audio. One performer only, the same woman from start to end: two arms, two legs, one head; no limb appears, vanishes, doubles or detaches; nobody else ever appears. Real weight and momentum: knees bend on every landing, the planted foot never slides, sneakers stay on the water between steps. She stays inside the centre of the frame, travelling at most a step or two. The camera is LOCKED OFF on a tripod: no pan, no zoom, no push, no reframing, the horizon stays level. Her mouth stays closed. Same face and eyes as the first frame; she keeps her high ponytail, her orange bands and the round white '1420 MHz' patch on her LEFT upper arm. One continuous shot at real speed, no slow motion, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/ws_solo_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ws_close_v2_168.82_6s.mp3"
+  ]
+ }
+}

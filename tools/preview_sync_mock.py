@@ -5,7 +5,7 @@ in the engine's formations (the FORM / SYNC_CUTS / place() of engine/show/main.j
 The figure matte is mediapipe selfie segmentation (it keeps her reflection), not the box's prep matte, and nothing is glyph-built: a mock of
 the layout and timing the engine will draw, labelled as such. Needs mediapipe (CLOUD_GEN.md: /opt/gen312/bin/python).
   /opt/gen312/bin/python tools/preview_sync_mock.py OUT.mp4 --bg=WS_BG.mp4|.png ws_open=TAKE.mp4[:hit] ws_lotus=... (all six) [--to=102]
-hit: the take's measured clip time of the phrase's hit (main.js SYNC_KEY), default the planned one."""
+keys: the take's keyed() pairs as main.js SYNC_KEY, "bar@clip,bar@clip" (e.g. 93@1.12,94@3.46); default the planned hit (real speed)."""
 import math, os, subprocess, sys, tempfile
 import cv2, numpy as np, mediapipe as mp
 
@@ -58,8 +58,8 @@ def main():
     out = args[0]
     takes = {}
     for a in args[1:]:
-        shot, v = a.split("=", 1); p, _, hit = v.partition(":")
-        takes[shot] = (p, float(hit) if hit else PLAN[shot])
+        shot, v = a.split("=", 1); p, _, ks = v.partition(":")
+        takes[shot] = (p, [tuple(map(float, k.split("@"))) for k in ks.split(",")] if ks else None)
     bgp = opt("bg")
     bgf = frames(bgp) if bgp.endswith(".mp4") else [cv2.resize(cv2.imread(bgp), (W, H), interpolation=cv2.INTER_AREA)]
     t_from, t_to = B(89), BT(float(opt("to", "101.5")))
@@ -74,19 +74,25 @@ def main():
         if shot not in cache:
             cache.clear(); fr = frames(takes[shot][0]); cache[shot] = (fr, [matte(f) for f in fr])
         fr, mt = cache[shot]
-        s0 = BT(hit) - takes[shot][1]                       # one key: real speed, the hit on its beat
+        K = [(BT(b), c) for b, c in (takes[shot][1] or [(hit, PLAN[shot])])]
+
+        def clip(x):   # keyed() of main.js: real speed outside the keys, linear between
+            j = 0
+            while j < len(K) - 1 and x > K[j + 1][0]: j += 1
+            if j == len(K) - 1 or x < K[0][0]: return K[j][1] + x - K[j][0]
+            return K[j][1] + (x - K[j][0]) * (K[j + 1][1] - K[j][1]) / (K[j + 1][0] - K[j][0])
         bg = bgf[min(len(bgf) - 1, int((t - t_from + .5) / (B(101) - t_from + .5) * (len(bgf) - 1)))].astype(np.float32) / 255
         img = bg.copy()
         order = [2, 1, 0, 5, 4, 3] if rip and rip[2] == "ring" else list(range(6))
         cps = []
         for j, (X, s) in enumerate(FORM[form]):
             dt = -order[j] * rip[1] * BEAT * ss(BT(rip[0]), BT(rip[0]) + BEAT, t) if rip else 0
-            off, sc = place(X, s); cps.append((sc, off, t + dt - s0, LANES[j], .32, 1))
+            off, sc = place(X, s); cps.append((sc, off, clip(t + dt), LANES[j], .32, 1))
         if shot == "ws_close":
             ta, tb = BT(100) - BEAT, BT(100) + .5 * BEAT
             if t >= ta:
                 k = min(1, (t - ta) / (tb - ta)); e = 1 - (1 - k) ** 3; a, z = place(0, .8), place(0, 1.08)
-                cps.append((1 + (z[1] - 1) * e, (0, a[0][1] + (z[0][1] - a[0][1]) * ss(ta, tb, t)), t - s0, None, 0, .5 + .5 * k * k))
+                cps.append((1 + (z[1] - 1) * e, (0, a[0][1] + (z[0][1] - a[0][1]) * ss(ta, tb, t)), clip(t), None, 0, .5 + .5 * k * k))
         for sc, (ox, oy), c, lane, amt, dens in sorted(cps, key=lambda q: q[0]):   # far (small) first, near on top
             fi = min(len(fr) - 1, max(0, round(c * 24)))
             f, m = fr[fi].astype(np.float32) / 255, mt[fi]

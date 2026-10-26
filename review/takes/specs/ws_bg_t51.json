@@ -1,0 +1,13 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_bg_t51",
+ "notes": "{\"shot\": \"ws_bg\", \"s0\": null, \"plate\": \"media/plates/drop/ws_bg.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. The empty wet mirror salt flat at sunrise, exactly as in the first frame: the water barely ripples and shimmers, the reflections breathe, the clouds drift very slowly. Nothing else happens. The camera is LOCKED OFF on a tripod: no pan, no zoom, no push, the horizon stays level and fixed. Nobody appears. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/ws_bg_2048.jpg",
+  "duration": 10,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9"
+ }
+}

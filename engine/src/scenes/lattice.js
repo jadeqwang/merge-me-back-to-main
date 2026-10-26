@@ -146,7 +146,7 @@ export default class LatticeScene {
     else await this.seq.at(t, s0, fit);
     for (const { c, seq } of this.copies) if (seq !== this.seq) {
       if (c.plate) await (clk ? seq.clock(clk, t) : seq.at(t + (c.dt || 0), s0, fit));   // its own plate on the shot's clock
-      else await seq.at(t + (typeof c.dt === 'function' ? c.dt(t) : c.dt), s0); }
+      else { const d = typeof c.dt === 'function' ? c.dt(t) : c.dt; await (clk ? seq.clock(clk, t + d) : seq.at(t + d, s0)); } }   // a keyed clip: the copy on the same map, d behind
     if (shot.bg) await this.bgSeq.at(t, shot.bg.s0, shot.bg.fit);
     for (const { sc, seq } of this.screens) await seq.at(t, sc.s0 ?? s0);
     const cam = shot.cam ? shot.cam(u, t) : {};

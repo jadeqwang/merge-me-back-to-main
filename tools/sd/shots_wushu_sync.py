@@ -111,3 +111,12 @@ SHOTS = {
    act="The empty wet mirror salt flat at sunrise, exactly as in the first frame: the water barely ripples and shimmers, the reflections "
    "breathe, the clouds drift very slowly. Nothing else happens."),
 }
+
+# Round 2 (t56+): no ws_feijiao t51-53 was clean in its window (review: take-off 0.5-1.0 s late, t52 floats ~1.1 s in the air, runs toward the
+# camera and grows in frame). The punch called out on 1.7, two hop-steps in place, a short real jump, the size held.
+SHOTS["ws_feijiao"] = _P(6, _B(94), "She stands on one straight leg with the other knee raised high and both fists chambered, and holds the "
+   "balance perfectly still. About 1.7 seconds in, still balanced on one leg, she throws one sharp horizontal punch out to the side (tixi heng "
+   "quan). About 2.6 seconds in she puts the raised foot down and takes two quick hop-steps IN PLACE (jibu), not running, staying the same size "
+   "in the frame. About 3.5 seconds in she springs off her left foot into a flying front kick (tengkong feijiao): a real jump of about half a "
+   "second, her right foot snaps straight up to head height and her right hand slaps the instep at the top of the jump, about 3.9 seconds in, "
+   "her left knee tucked, her high ponytail visible. About 4.3 seconds in she lands on both feet, knees bent, and holds still to the end.")

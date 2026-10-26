@@ -814,9 +814,10 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     [99, 'ws_close', 'v', 100.5, null]];               // move 14 slap kick, closing posture (100.1), baoquan salute on the "ooh" (100.3); main steps in
   // planned clip time of each phrase's hit (shots_wushu_sync.py second marks; every take has one bar of pre-roll before its cut)
   const SYNC_PLAN = { ws_open: BAR, ws_lotus: BAR + 6 * BEAT, ws_kicks: BAR, ws_feijiao: 2 * BAR, ws_xuanfeng: BAR + 2 * BEAT, ws_close: BAR + 6 * BEAT };
-  const SYNC_KEY = {};   // picked take -> measured clip time of its hit (box/cloud, from the take's frames); planned values until then
+  // picked take -> keyed() pairs measured from its frames (several beats when the model drifted; each stretch 0.6-1.5x); else the planned hit
+  const SYNC_KEY = {};
   const syncCut = ([b0, shot, form, hit, rip], i) => {
-    const take = PICKS[shot]?.take, k = keyed(shot, [[hit, SYNC_KEY[take] ?? SYNC_PLAN[shot]]]);   // one key: real speed, the hit on its beat
+    const take = PICKS[shot]?.take, k = keyed(shot, SYNC_KEY[take] || [[hit, SYNC_PLAN[shot]]]);   // one planned key: real speed, the hit on its beat
     const F = FORM[form].map(place), order = rip?.[2] === 'ring' ? [2, 1, 0, 5, 4, 3] : [0, 1, 2, 3, 4, 5];
     const copies = F.map((p, j) => ({ ...p, lane: SYNC_LANES[j], laneAmt: .32,
       ...(rip ? { dt: (t) => -order[j] * rip[1] * BEAT * ss(BT(rip[0]), BT(rip[0]) + BEAT, t) } : {}) }));

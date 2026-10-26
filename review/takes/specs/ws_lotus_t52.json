@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_lotus_t52",
+ "notes": "{\"shot\": \"ws_lotus\", \"s0\": 154.906, \"plate\": \"media/plates/drop/ws_solo.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. A solo wushu changquan performer shows the second international compulsory long-fist routine, crisp, fast and powerful, then sharp stops. She starts in a half squat, fist pounded into her palm, and holds still. About 1.7 seconds in she rises and steps forward with a big arm swing, then two quick running steps in a small curve. About 4.3 seconds in she jumps straight up off both feet, turning in the air (tengkong waibai lian, jump outside-lotus kick): at the top of the jump, about 4.7 seconds in, her straight right leg sweeps outward across in front of her face and both hands slap the top of the foot. About 5.2 seconds in she lands on both feet, knees bent, straight into a deep bow stance with a horizontal coiling elbow strike (gongbu pan zhou), and holds it. Each named move lands exactly on a beat of the reference audio. One performer only, the same woman from start to end: two arms, two legs, one head; no limb appears, vanishes, doubles or detaches; nobody else ever appears. Real weight and momentum: knees bend on every landing, the planted foot never slides, sneakers stay on the water between steps. She stays inside the centre of the frame, travelling at most a step or two. The camera is LOCKED OFF on a tripod: no pan, no zoom, no push, no reframing, the horizon stays level. Her mouth stays closed. Same face and eyes as the first frame; she keeps her high ponytail, her orange bands and the round white '1420 MHz' patch on her LEFT upper arm. One continuous shot at real speed, no slow motion, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/ws_solo_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ws_lotus_v2_154.91_6s.mp3"
+  ]
+ }
+}
