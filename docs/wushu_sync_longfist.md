@@ -77,3 +77,32 @@ copy further back is smaller and higher). The lanes, left to right: white, mint,
 - **`ws_bg`**: the same frame with her removed (one edit), so the engine's world never shows the solo plate's figure hole. A 10 s locked
   take of it (`ws_bg_t51`) is the drop's world, fitted across 89–101.
 - `ws_solo_34` (a 3/4 view, LEFT arm and patch toward the camera): made, but not used. The takes need one consistent start pose.
+
+## 4. Takes and picks (Seedance 2.5; Vidu Q3 Pro on the two hardest phrases)
+Every take was checked frame by frame: 6 fps sheets of the whole take, 12–24 fps full-res crops of every jump and landing, horizon and sun
+trackers for camera drift, the feet line for size drift, the patch side, and planted-foot sliding. Tags: t51–53 round 1, t54–55 Vidu, t56–58
+feijiao round 2, t59/t60 re-submits of relay failures, t61–65 round 3, t66–68 round 4. Takes and specs: `review/takes/ws_*`.
+
+What the models did (all rounds):
+- **Every take has one body, two arms and two legs, the patch on her LEFT arm, and the ponytail.** Nothing merges or detaches: a solo phrase
+  is far easier for the model than the partner work in the bake-off.
+- **Every jump floats.** Air time was 0.76–1.35 s, against a real 0.4–0.7 s, from both models, until round 3 asked for "about half a second
+  in the air" (feijiao t61: 0.62 s). The EDL undoes the rest: `SYNC_KEY` keys take-off → landing at ×1.7–1.8, so the air reads real.
+- **The timing drifts 0.3–0.9 s** from the second marks. `SYNC_KEY` keys each picked take on its measured beats (stretches ×1.0–1.35, plus
+  the airborne keys above).
+- **The camera:** "LOCKED OFF on a tripod" put a tripod in the empty set (`ws_bg_t51`). Vidu panned or zoomed in 3 of its 4 takes, and Seedance
+  tilted in lotus t51/t52. Round 3 asks for "one continuous wide shot from a fixed position", and every round-3 camera then held (sun ±1 px).
+- **The two hardest skills are not in the model's vocabulary yet.** For the jump outside-lotus kick (腾空外摆莲) it gives a jumping front
+  kick or a front crescent, never the outward sweep with a turn. For the whirlwind kick (旋风脚) it gives a knee jump facing the camera or an
+  aerial flip, and lands in a straddle split, not the front splits (劈叉).
+- **Vidu Q3 Pro** lost to Seedance on both hard phrases: lotus t54 is a tuck jump into a kneel, and t55 and xuanfeng t54/t55 move the camera.
+
+| phrase | pick | keys (bar ← clip s) | notes |
+|---|---|---|---|
+| ws_open | **t51** `edd396ea5b` | 89 ← 1.42 (cross palms), 90 ← 3.50 (pubu slap) | arm circle on the beat; the stamp + fist-into-palm (5.23–5.35) lands on the 91 cut, in a wide horse stance |
+| ws_lotus | **t61** (round 3, interim) `8772e70527` | 92.5 ← 3.60 (take-off), 92.875 ← 4.79 (first foot down) | a jumping front-crescent with a clap at the foot, not the outward lotus, no turn; 1.19 s of air → 0.65 |
+| ws_kicks | **t51** `c42416635a` | 93 ← 1.12 (strike), 94 ← 3.46 (slap kick top) | the strike reads as a forearm punch, not a coiling elbow; a ×1.35 squeeze over her frozen hold; the balance has T-arms |
+| ws_feijiao | **t61** (round 3) `a5d7a031d8` | 95 ← 1.15 (punch), 96 ← 3.98 (take-off) | a real 0.62 s flying kick; the foot reaches head height (4.33–4.46) with no instep slap; lands 4.60/4.85. Alt t58 |
+| ws_xuanfeng | **t51** `f613321301` | 96.71 ← 1.77 (take-off), 97 ← 2.63 (splits), 98.5 ← 5.80 (fist into palm) | a knee jump with no spin, landing in a straddle split; still 3.05–4.55 (bar 97); clean 2.6–5.8; the cover-step punch on the 99 cut |
+| ws_close | **t53** `a2e5719f59` | 99.125 ← 1.68 (slap kick top), 100.5 ← 4.76 (fist meets palm) | RIGHT fist into LEFT palm, correct; the frame goes fully still from 5.08 (her figure is drawn over the moving ws_bg, so it reads as a hold) |
+| ws_bg | **t61** `b590c5c067` | fitted 89 → 101 (×0.46, blended) | the empty set, a fixed camera, nothing in it |
