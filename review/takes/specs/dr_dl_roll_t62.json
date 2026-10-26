@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_dl_roll_t62",
+ "notes": "{\"shot\": \"dr_dl_roll\", \"s0\": 154.906, \"plate\": \"media/plates/drop/dr_dl_roll.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Wushu duilian finale, a rehearsed partner set: the orange copy on the left facing right, the violet copy (two space buns) on the right facing left, in guard. About 1.7 seconds in, exactly on a beat of the reference audio, the orange copy drops low and sweeps her leg along the water; the violet copy hops over it. About 2.6 seconds in the violet copy lunges into a bow stance with a straight punch; the orange copy ducks forward under it, bent at the waist, her back flat and level like a table. About 3.6 seconds in the violet copy sets her shoulders across the orange copy's flat back and rolls sideways over it, legs swinging up and over in a high arc; the peak, her body level above the back and legs high, about 4.3 seconds in, exactly on a beat; about 4.8 seconds in she lands on her feet on the far side in a low bow stance and both snap into a liangxiang pose, the orange copy straightening to face her, fists up, heads snapping to the camera, held dead still to the end. Behind them, small and soft-focus, the same four background figures keep sparring; nobody else appears. Low side-on camera at waist height, holding still, water flying. Every strike is controlled and stops just short; nothing lands and nobody is hurt; they are partners showing a rehearsed set. The two partners are always two separate people with two arms and two legs each; bodies never merge or pass through each other. Exactly six copies stay in frame the whole shot. Their mouths stay closed; nobody sings or speaks. Every copy keeps the same face and outfit as in the first frame, only the band colours differ. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/dr_dl_roll_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/dr_dl_roll_v2_154.91_6s.mp3"
+  ]
+ }
+}

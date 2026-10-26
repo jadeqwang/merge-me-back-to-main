@@ -15,28 +15,60 @@ VOC2 = "analysis_v2/stems/vocals.wav"
 SING = (" She sings the words of the reference audio with precise lip sync, shaping each word clearly and holding the long sustained notes with her "
         "mouth open.")
 NO_GRIN = " She does not smile broadly, grin or show her teeth."
+# v5b (2026-10-26, Jade's v5a notes): one direction for every sung shot. Optimistic and hopeful with depth, as if she has just said something
+# profound; no shallow or advertising smile, no teeth grin, not somber or blank. Mouth shapes follow the sung words exactly; the last word is held
+# open to the end of the note; nothing is mouthed after it. The v5 (t51-t53) prompts are kept in their spec JSONs under review/takes/specs/.
+HOPE = (" Her expression is quietly radiant and hopeful, eyes alive and bright, as if she has just understood something profound about time and "
+        "about coming home; serene depth, sincere, not performing. At the very end at most a faint, soft, closed-mouth warmth. She never grins, "
+        "never smiles with teeth, and is never somber or blank.")
+def LIPS(last, extra=""):
+    return (" Her lips follow the sung words exactly, syllable by syllable: lips press fully together on every m, b and p, open wide on open vowels, "
+            "round on o and oo." + extra + f" On the last word, '{last}', she holds her mouth open on the vowel for the whole length of the note, until "
+            "the sound ends. After that her mouth closes gently and stays closed: no more words, no extra mouthing.")
+SING2 = " She sings exactly the words of the reference audio, in time with it, and nothing else."
 RETAKES = {
  # 3:30 "Merge me back to main" (line 20). 8 s from A2 207.84 covers the whole shot (207.55 -> 214.70 with the lag) and the "Every" at 214.97.
  "ch2_catch": dict(plate="ch2_catch.jpg", dur=8, audio=(VOC, 208.50, 8),
    act="She has just received something precious from very far away and holds it against her chest. She sings with her eyes closed, inward and "
        "contemplative, as if listening to everything it carried home; her face stays calm and serious, lips soft. On the long final note she keeps "
        "her mouth open and sings until the sound fades, then lowers her chin slightly and keeps her eyes closed, still and thoughtful." + NO_GRIN + SING),
- # 3:54 "Every life I've lived, I have become" (line 23); the v4 take finished the word 2 s early and grinned over the held "-come"
+ # 3:54 "Every life I've lived, I have become" (line 23; 'become' is held 232.7-235.7), then the soft "Back to" pickup of line 24 just before the cut
+ # (236.53). v5a: t12 ran a word late and grinned on the held note; t52/t53 grinned.
  "ch2_gone_close": dict(plate="ch1_gone_close.jpg", dur=8, audio=(VOC, 228.30, 8),
-   act="Everything has come home. She sings it straight to the camera, quiet and certain, with a calm, serious, contemplative expression, as if only "
-       "now understanding what it cost. On the long final note she keeps her mouth open and keeps singing until the sound fades, then slowly "
-       "lowers her eyes and closes them, at peace. Her lips stay soft." + NO_GRIN + SING),
- # 4:12 the final "Back to main" (line 25); the v4 take sang the vowel for 0.5 s, puckered, then grinned from 252.25
+   act="Everything she ever sent out has come home, and she sings it straight to the camera, quiet and certain, as if she has just understood "
+       "what it means to have lived every one of those lives. She keeps her eyes on the camera; on the long held 'become' she lifts her chin a "
+       "little and her eyes shine." + HOPE + LIPS("become", " 'Every' starts with the lips together for the v; 'lived' and 'life' show the tongue on "
+       "the l; 'become' closes on the b and on the m.") + NO_GRIN + SING2),
+ # 4:12 the final "Back to main" (line 25; 'main' is held 250.3-255.9). v5a: t12 mouthed an extra word after 'main', then grinned.
  "out_main": dict(plate="ch1_main.jpg", dur=8, audio=(VOC, 262.80, 8),
-   act="She is home, completely. She sings the last words softly to the camera, a little tired and at peace, and holds the long final note with her "
-       "mouth gently open, unhurried, until the sound fades. Then she closes her eyes slowly and stays still in the warm morning light, "
-       "contemplative, lips relaxed." + NO_GRIN + SING),
- # 1:11 "Merge me back to main" (line 7), chorus 1's hook; 7 s so the shot needs no end freeze
+   # t64+: t61/t62 closed and reopened the mouth inside the held 'main' (read as extra words), so the held vowel is spelled out
+   act="She is home, completely, at sunrise. She sings the last three words softly to the camera, 'Back to main', and holds the long final "
+       "note, at peace and full of quiet hope for everything still ahead. 'main' is ONE syllable held for about five seconds: her lips press "
+       "together for the m, then her mouth opens once into a soft, relaxed open vowel and STAYS open in that same shape, without closing, "
+       "re-shaping or forming any other word, even where the note swells and wavers; only as the sound fades at the very end does her mouth "
+       "slowly close. Near the end of the note her eyes close slowly." + HOPE +
+       LIPS("main", " 'Back' starts with the lips pressed together.") + SING2),   # prompt limit 2000 chars: HOPE already rules out the grin
+ # 1:11 "Merge me back to main" (line 7): 'Merge' is ONE long held word (69.42-71.79), then "me back to" quickly, then 'main' held to 75.0.
+ # v5a: t11 mouthed the whole phrase during 'Merge' and ended in a soft-drink-ad smile.
  "ch1_main": dict(plate="ch1_main.jpg", dur=7, audio=(VOC, 69.75, 7),
-   act="She stands on the salt flat at the first sunrise after a very long night; everything she sent out into the world is about to come home. She "
-       "sings to the camera, calm and serious, earnest and a little wistful, like greeting someone she has missed for a long time; only a faint "
-       "warmth in her eyes. She closes her lips fully on the M of 'Merge', 'me' and 'main' and on the b of 'back', and holds the long last note with "
-       "her mouth open until it fades, then slowly closes her eyes. The camera drifts slowly in. Her hair moves in the wind." + NO_GRIN + SING),
+   act="She stands on the salt flat at the first sunrise after a very long night; everything she sent out into the world is about to come home. "
+       "She sings to the camera, earnest and full of hope for the future, eyes alive. 'Merge' is one long held word: her lips press together for "
+       "the M, then her mouth opens and STAYS open on the long 'er' for more than two seconds, without closing; then 'me back to' comes quickly "
+       "(lips together on m, together on b), then 'main' (lips together on the m, then open) held open until the sound fades. The camera drifts "
+       "slowly in. Her hair moves in the wind." + HOPE + LIPS("main") + NO_GRIN + SING2),
+ # 1:30 "Nothing that I lived can come undone" (line 10): 'undone' is held for six seconds (93.6-99.9) and the shot runs to 99.97.
+ # v5a: t12 closed her mouth two seconds before the note ended and finished on a shallow, pleased smile.
+ "ch1_gone_close": dict(plate="ch1_gone_close.jpg", dur=11, audio=(VOC, 89.80, 11),
+   act="She sings straight to the camera something it took her whole lives to learn: that nothing she has lived can be lost, because every "
+       "branch of her merges back home. Unhurried and certain, with the depth of someone who has just said something true about impermanence "
+       "and about living on. On the long final 'undone' she keeps singing with her mouth open for the whole six-second note, lifts her chin "
+       "slightly and lets it ring, eyes on the camera, shining." + HOPE + LIPS("undone", " 'Nothing' starts on n with the lips apart; 'come' closes "
+       "on the m.") + NO_GRIN + SING2),
+ # 0:42 "Each one a light I sent ahead" (line 3); v5a: lips out of sync, and the take smiles with teeth while singing to the light.
+ "v1_light_hands": dict(plate="v1_light_hands.jpg", dur=6, audio=(VOC, 42.40, 6),
+   act="She looks down at the small warm light in her cupped hands and sings to it softly, like a promise to someone setting out on a long "
+       "journey. On 'ahead' she lifts her hands and the light rises out of them and floats up and away; her eyes follow it, hopeful." + HOPE +
+       LIPS("ahead", " 'one' is rounded.") + NO_GRIN + SING2),
  # 1:58 the "Ahh" (line 13), upside-down in frame (the EDL rolls it by pi). Option (a) of the eye diagnosis: the still has closed eyes, so they stay
  # closed (option (b), a canon eyes-open last frame via Seedance last_frame_image, needs a batch.py change; not queued).
  "bd_ahh": dict(plate="bd_float_close.jpg", dur=7, audio=(VOC, 112.20, 7),

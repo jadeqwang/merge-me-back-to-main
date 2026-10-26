@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_dl_ripple_t63",
+ "notes": "{\"shot\": \"dr_dl_ripple\", \"s0\": 154.906, \"plate\": \"media/plates/drop/dr_dl_ripple.png\", \"timing\": \"v2\", \"variant\": \"b\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Wushu duilian performed as a show by three pairs of copies standing in a diagonal line of pairs on the wet mirror salt flat, each pair side-on to the camera: the mint copy against the gold copy furthest back, the rose copy against the sky copy in the middle, the orange copy against the violet copy nearest the camera. The three pairs do the same rehearsed move one after another, like a ripple, from the back pair to the front pair, each half a bar later than the one before: in each pair the second fighter lunges with a straight punch, her partner ducks forward bending flat at the waist, and the puncher rolls sideways across her partner's flat back, legs swinging up and over in a high arc, and lands on her feet on the far side in a low bow stance. The back pair (the gold copy rolling over the mint copy) peaks about 2.6 seconds in, the middle pair (the sky copy rolling over the rose copy) about 3.5 seconds in, and the front pair (the violet copy rolling over the orange copy) about 4.3 seconds in, each peak exactly on a beat of the reference audio. About 4.8 seconds in all three pairs snap into the same liangxiang pose and freeze, held dead still to the end. Wide, low camera, slowly pushing in toward the front pair, water spraying from every landing. Every strike is controlled and stops just short; nothing lands and nobody is hurt; they are partners showing a rehearsed set. In every pair the two partners are always two separate people, each with exactly two arms and two legs; bodies never merge or pass through each other. Exactly six copies, three pairs, stay in frame for the whole shot; nobody leaves, merges, splits or disappears. Their mouths stay closed; nobody sings or speaks. Every copy keeps the same face and outfit as in the first frame, only the band colours differ. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/dr_dl_ripple_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/dr_dl_ripple_b_v2_154.91_6s.mp3"
+  ]
+ }
+}

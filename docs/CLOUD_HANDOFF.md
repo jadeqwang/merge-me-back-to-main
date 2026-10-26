@@ -5,6 +5,7 @@ the phone app's Code tab) or a Remote Control session on the Linux box. Read thi
 commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and `docs/RESUME.md` (checkpoint log).
 
 ## START HERE (2026-10-25 night): Jade is flying, the box is unattended
+**Spend cap raised to $1,000** (Jade, 2026-10-26: "Raise to $1,000"; `MERGEMAIN_CAP` default in `tools/gen/spend.py`). Older "$600" mentions below are historical.
 **v5 queue GENERATED (cloud generation session 2, 2026-10-25 ~14:30 UTC); needs the box for intake/render.** The KV fix worked; images went
 through the relay too (`GEN_IMAGES_VIA_RELAY=1`, see `docs/CLOUD_GEN.md`). 41 takes in `review/takes/` (+ specs), the stills they start from in
 `review/takes/stills/`. Every tag, its shot, the preferred take and the failures: checkpoint 13 at the bottom of `docs/RESUME.md` (stills go into

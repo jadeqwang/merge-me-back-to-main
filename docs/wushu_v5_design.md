@@ -520,3 +520,59 @@ of `engine/show/main.js`.
 - So violet's hair changes at the group set. Flagged for Jade.
 
 Cost: $18.51 (run sheet §2.1).
+
+---
+
+## 11. v5.3 the partner roll (cloud, 2026-10-26)
+
+Jade: "it would be cool if we could incorporate an actually impressive looking wushu move from the group set, like rolling over your sparring
+partner's back". The move is the duilian **back roll** (beigun). The attacker lunges into gongbu with a straight punch (chongquan). The defender
+ducks forward under it and bends flat at the waist, making a "table". The attacker sets her shoulders across that flat back and rolls sideways
+over it, her legs swinging up and over in a high arc. She lands on her feet on the far side in gongbu, and both snap into liangxiang.
+
+**Where it lands: the duilian close, peak on 92.3 (159.253 s).** The candidates were the close (91–92) and the cross pairs (bar 98).
+- Per-16th onset strength in the instrumental stem, bars 89–100: the drop is a flat four-on-the-floor (low band within ±0.1 log units on
+  every beat, no crash anywhere after 89.1). The regular accents are the kick on every beat and the snare on beats 2 and 4.
+- The one irregular accent is **92.3**: the strongest beat-3 onset of the drop (flux 228 against 140–197 on every other bar's beat 3). There
+  the bass steps E → F#, the top of the first rising phrase (section 3: "bar 4 airborne, landing on the next phrase downbeat"). The roll's
+  peak (the body level over the partner's back) goes there. The landing falls on 92.4 and the liangxiang freeze runs into the cut on
+  93.1, the phrase landing where the group set's burst flashes.
+- Bar 98 is C#, mid-phrase, with only the regular snare. And 96.4/97.1 already belong to the group fall.
+
+**Shots** (`tools/sd/shots_wushu.py`, same 6 s window as dr_dl_close: B(90), cut 91.1 = clip 1.739, peak 92.3 = 4.348, land 92.4 = 4.783,
+cut 93.1 = 5.218):
+- `dr_dl_roll` (close two-shot, side-on, orange left and violet right): the sweep under on 91.1 (violet hops it), violet's lunge punch
+  on 91.3, orange ducks into the table, violet rolls over her back, peak 92.3, lands on the left in gongbu on 92.4, liangxiang held. A variant
+  prompt (`dr_dl_roll_b`, generated under the same shot key) trades two strikes instead of the sweep, for a simpler single acrobatic beat.
+  The plate `dr_dl_roll.png` is dr_dl_close_v5 pulled back (one nano-banana-pro edit), so the roll's arc stays in frame.
+- `dr_dl_ripple` (wide canon): the three pairs in a diagonal echelon (new plate `dr_dl_ripple.png`, GPT Image 2.5 from dr_duilian_v5). They
+  roll one after another, half a bar apart: mint/gold (back) peaks on 91.3, rose/sky on 92.1, orange/violet (front) on 92.3. All six freeze on
+  92.4. Variant `_b` slowly pushes in toward the front pair.
+- The guards: SAFE, the copy count (six), MUTE_G, plus ANAT (two separate bodies, two arms and two legs each, real contact on the back).
+
+**EDL** (`engine/show/main.js`, drop block): `?roll=close|wide|off`, v5 only. By default it uses the picked version (close first), else the
+v5.2 dr_dl_close. `keyed()` pins the measured key frames (bar position 92.5 = 92.3): the close's sweep (91.1), peak (92.3) and freeze (93.1);
+the ripple's back pair (91.3) and front pair (92.3). A small flash (0.22) marks the peak, next to the burst (93) and the fall (97). The duilian → group set structure, the fall on 97 and the
+salute → fold are unchanged.
+
+**Takes (2 rounds, 15 × 6 s, cloud session 2026-10-26).** Picks: **`dr_dl_roll_t65`** (close, the default) and **`dr_dl_ripple_t69`** (wide).
+- Round 1 (t61–t64, 2 prompts each). The close takes all roll, but ~1 s early (sweep ~0.85 s), and every take springs back into the plate's
+  opening guard by ~4.95 s. Variant b (t63, t64) merges the two bodies (four legs, both lanes' straps). In the ripple takes the lanes are
+  recoloured from frame 0 (violet → green, orange → yellow; the prompt named six colours) or the take doesn't start from the still (t62,
+  t63), and no take holds the canon.
+- Round 2 (t65+). Prompt changes: 1.5 s of guard first, then a NEW freeze pose (not the opening guard); in the ripple, only the front pair's
+  colours are named ("every copy keeps her own colours from the first frame"), and the roll passes back to front.
+  - **Close t65:** guard to 1.5 s; the sweep on ~2.0 (violet hops it); punch and duck 3.0–3.3; violet rolls over orange's back 3.5–4.5, the
+    inverted peak at 4.0; she lands on the far side; the liangxiang freeze from 5.05 (violet in a low bow stance with her rear arm up, orange
+    crouched facing her). Two bodies throughout, the lanes right, faces, two buns and the ponytail right. One extra soft-focus figure and a
+    small dark blob behind, at the freeze. Keys: [91, 2], [92.5, 4], [93, 5.25] (x0.77, then x1.44).
+  - Close t66 fails: violet's jacket bands turn orange after the landing.
+  - **Ripple t69:** starts on the still; back pair ~2.6, middle ~3.0, front ~4.15; all freeze in a new pose from ~5.0. In the front pair's
+    roll, orange goes over violet (roles swapped), an X of four legs for ~0.4 s. Keys: [91, 1.739], [91.5, 2.6], [92.5, 4.15].
+  - Ripple t65 has the cleanest canon timing (2.7 / 3.5 / 4.35) but loses the orange partner under violet's handstand for ~0.3 s.
+  - Ripple t66 merges the front pair; t67 rolls front-first; t68 doesn't start from the still (everyone lies down).
+- Previews: `review/previews/wushu_roll/` (index entries in `review/previews/index.json`). Each is a raw-take rough cut of bars 89–101, with
+  the candidate on its keyed clock and the full mix (`tools/preview_drop.py --keys=`).
+- Lessons for Seedance 2.5 acrobatics: it runs a described phrase ~1 s early, and it returns to the first frame's pose at the end unless the
+  last pose is described as different from it. Naming many lane colours in the act can recolour the still's lanes. A roll at wide scale merges
+  bodies more often than in a close two-shot.

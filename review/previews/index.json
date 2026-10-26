@@ -1,0 +1,788 @@
+{
+ "made": "2026-10-26",
+ "about": "Raw takes at their song time with the measured lag (clip time = song time - S0 + lag), full mix, shot range +-1 s; orange bar = inside the shot. kind: pick (default in docs/picks_manual.json) | candidate | experiment (never the default).",
+ "previews": [
+  {
+   "shot": "v1_split_front",
+   "film": "0:26.9-0:34.4",
+   "film_s": [
+    26.948,
+    34.444
+   ],
+   "shot_s": [
+    27.948,
+    33.444
+   ],
+   "take": "v1_split_front_t11_be8b364663",
+   "lag": 0.62,
+   "kind": "pick",
+   "note": "current take; mouth peaks land on I / my / self / thou / sand / ways at +0.62 (the old 1.208 was a phrase lock); ends in a soft closed smile",
+   "file": "review/previews/v1_split_front/v1_split_front_t11_be8b364663.mp4"
+  },
+  {
+   "shot": "v1_split_front",
+   "film": "0:26.9-0:34.4",
+   "film_s": [
+    26.948,
+    34.444
+   ],
+   "shot_s": [
+    27.948,
+    33.444
+   ],
+   "take": "v1_split_front_violet_t61_6ec69d6df3",
+   "lag": 0.25,
+   "kind": "experiment",
+   "note": "EXPERIMENT: violet's face (dish close-up) on main; syllables fit at +0.25; the camera pushes in more than t11 (the split copies assume a fixed framing)",
+   "file": "review/previews/v1_split_front/v1_split_front_violet_t61_6ec69d6df3.mp4"
+  },
+  {
+   "shot": "v1_split_front",
+   "film": "0:26.9-0:34.4",
+   "film_s": [
+    26.948,
+    34.444
+   ],
+   "shot_s": [
+    27.948,
+    33.444
+   ],
+   "take": "v1_split_front_violet_t62_1554379c1c",
+   "lag": 0.25,
+   "kind": "experiment",
+   "note": "EXPERIMENT (fail): violet's face, but the camera pushes into a close-up and the mouth stops after 'myself'",
+   "file": "review/previews/v1_split_front/v1_split_front_violet_t62_1554379c1c.mp4"
+  },
+  {
+   "shot": "v1_light_hands",
+   "film": "0:40.4-0:48.3",
+   "film_s": [
+    40.425,
+    48.292
+   ],
+   "shot_s": [
+    41.425,
+    47.292
+   ],
+   "take": "v1_light_hands_t62_9a87334ddb",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "re-take: syllables at lag 0 (closed on 'one', open on light / I / -head); holds 'ahead' open to the end, then looks up at the light, soft closed smile; smiles with some teeth mid-line",
+   "file": "review/previews/v1_light_hands/v1_light_hands_t62_9a87334ddb.mp4"
+  },
+  {
+   "shot": "v1_light_hands",
+   "film": "0:40.4-0:48.3",
+   "film_s": [
+    40.425,
+    48.292
+   ],
+   "shot_s": [
+    41.425,
+    47.292
+   ],
+   "take": "v1_light_hands_t12_7418e105bc",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "v5a take: best fit lag 0 (v5a used -0.15, the box's 0.71 env lock is a phrase lock); 'a-head' lumped late, teeth smile while singing, closes before 'ahead' ends",
+   "file": "review/previews/v1_light_hands/v1_light_hands_t12_7418e105bc.mp4"
+  },
+  {
+   "shot": "v1_light_hands",
+   "film": "0:40.4-0:48.3",
+   "film_s": [
+    40.425,
+    48.292
+   ],
+   "shot_s": [
+    41.425,
+    47.292
+   ],
+   "take": "v1_light_hands_t63_eec21fb750",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "re-take: puckered 'oo' mouths; 'ahead' opens 0.6 s late; lovely hopeful end looking up",
+   "file": "review/previews/v1_light_hands/v1_light_hands_t63_eec21fb750.mp4"
+  },
+  {
+   "shot": "ch1_main",
+   "film": "1:08.3-1:16.1",
+   "film_s": [
+    68.32,
+    76.068
+   ],
+   "shot_s": [
+    69.32,
+    75.068
+   ],
+   "take": "ch1_main_t61_4dd91ce7fd",
+   "lag": 0.167,
+   "kind": "pick",
+   "note": "re-take: M closed, mouth open through the whole held 'Merge', closed on me / b / m, 'main' held then closes as it fades; earnest wide-eyed singing, ends in a faint closed-mouth warmth",
+   "file": "review/previews/ch1_main/ch1_main_t61_4dd91ce7fd.mp4"
+  },
+  {
+   "shot": "ch1_main",
+   "film": "1:08.3-1:16.1",
+   "film_s": [
+    68.32,
+    76.068
+   ],
+   "shot_s": [
+    69.32,
+    75.068
+   ],
+   "take": "ch1_main_t11_647f537e3a",
+   "lag": 0.5,
+   "kind": "candidate",
+   "note": "v5a take (FAIL): closes mid-'Merge' and mouths the phrase inside it (Jade's note); no lag fixes it; soft-drink smile",
+   "file": "review/previews/ch1_main/ch1_main_t11_647f537e3a.mp4"
+  },
+  {
+   "shot": "ch1_main",
+   "film": "1:08.3-1:16.1",
+   "film_s": [
+    68.32,
+    76.068
+   ],
+   "shot_s": [
+    69.32,
+    75.068
+   ],
+   "take": "ch1_main_t63_d76cf2a955",
+   "lag": 0.25,
+   "kind": "candidate",
+   "note": "re-take: good held 'Merge', closures a bit off on 'back to'; open teeth smile on 'main'",
+   "file": "review/previews/ch1_main/ch1_main_t63_d76cf2a955.mp4"
+  },
+  {
+   "shot": "ch1_main",
+   "film": "1:08.3-1:16.1",
+   "film_s": [
+    68.32,
+    76.068
+   ],
+   "shot_s": [
+    69.32,
+    75.068
+   ],
+   "take": "ch1_main_t52_e851b0f9b6",
+   "lag": 0.125,
+   "kind": "candidate",
+   "note": "v5 take: 'Merge' held, but 'me back to main' lumped into two syllables; 'main' half-closed",
+   "file": "review/previews/ch1_main/ch1_main_t52_e851b0f9b6.mp4"
+  },
+  {
+   "shot": "ch1_main",
+   "film": "1:08.3-1:16.1",
+   "film_s": [
+    68.32,
+    76.068
+   ],
+   "shot_s": [
+    69.32,
+    75.068
+   ],
+   "take": "ch1_main_t62_168a176b91",
+   "lag": 0.45,
+   "kind": "candidate",
+   "note": "re-take (fail): closes mid-'Merge'",
+   "file": "review/previews/ch1_main/ch1_main_t62_168a176b91.mp4"
+  },
+  {
+   "shot": "ch1_main",
+   "film": "1:08.3-1:16.1",
+   "film_s": [
+    68.32,
+    76.068
+   ],
+   "shot_s": [
+    69.32,
+    75.068
+   ],
+   "take": "ch1_main_t51_c4f7390010",
+   "lag": 0.2,
+   "kind": "candidate",
+   "note": "v5 take (fail): closes mid-'Merge'",
+   "file": "review/previews/ch1_main/ch1_main_t51_c4f7390010.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_t61_7884cd1726",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "re-take: holds 'undone' open (round) for the whole 5 s note and closes as the sound ends; bright eyes, ends in a faint closed-mouth warmth, no grin",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_t61_7884cd1726.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_t12_872aeaaac5",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "v5a take: closes ~1.5 s before 'undone' ends and finishes on a pleased smile (Jade's note)",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_t12_872aeaaac5.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_t62_f30f1232a6",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "re-take: same sync as t61; ends on a squinting smile",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_t62_f30f1232a6.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_t64_c2e93c98da",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "re-take: closes 0.4 s early, ends smiling",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_t64_c2e93c98da.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_34_t62_10955df015",
+   "lag": 0.0,
+   "kind": "experiment",
+   "note": "EXPERIMENT: three-quarter view, main's canon face",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_34_t62_10955df015.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_34v_t61_edb21b71b5",
+   "lag": 0.0,
+   "kind": "experiment",
+   "note": "EXPERIMENT: three-quarter still with violet's face; she turns toward camera; 'undone' held open to the end, faint closed smile",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_34v_t61_edb21b71b5.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_34v_t62_b97896c87e",
+   "lag": 0.0,
+   "kind": "experiment",
+   "note": "EXPERIMENT: violet's face, keeps the three-quarter view looking past camera; mouth closes ~0.5 s after the note; ends smiling a little",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_34v_t62_b97896c87e.mp4"
+  },
+  {
+   "shot": "bd_ahh",
+   "film": "1:50.8-1:59.4",
+   "film_s": [
+    110.77,
+    119.384
+   ],
+   "shot_s": [
+    111.77,
+    118.384
+   ],
+   "take": "bd_ahh_t52_93f174c127",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "v5 re-take: eyes closed for the whole note (fixes the huge alien eyes), mouth opens exactly as the 'Ahh' starts, camera still, serene",
+   "file": "review/previews/bd_ahh/bd_ahh_t52_93f174c127.mp4"
+  },
+  {
+   "shot": "bd_ahh",
+   "film": "1:50.8-1:59.4",
+   "film_s": [
+    110.77,
+    119.384
+   ],
+   "shot_s": [
+    111.77,
+    118.384
+   ],
+   "take": "bd_ahh_t51_6507ddadb4",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "v5 re-take: eyes closed throughout, but the mouth opens ~0.8 s before the note",
+   "file": "review/previews/bd_ahh/bd_ahh_t51_6507ddadb4.mp4"
+  },
+  {
+   "shot": "bd_ahh",
+   "film": "1:50.8-1:59.4",
+   "film_s": [
+    110.77,
+    119.384
+   ],
+   "shot_s": [
+    111.77,
+    118.384
+   ],
+   "take": "bd_ahh_t12_d2cff0c504",
+   "lag": -0.375,
+   "kind": "candidate",
+   "note": "v5a take: the huge eyes Jade flagged",
+   "file": "review/previews/bd_ahh/bd_ahh_t12_d2cff0c504.mp4"
+  },
+  {
+   "shot": "ch2_catch",
+   "film": "3:27.1-3:35.7",
+   "film_s": [
+    207.1,
+    215.701
+   ],
+   "shot_s": [
+    208.1,
+    214.701
+   ],
+   "take": "ch2_catch_t52_c8400ec516",
+   "lag": 0.333,
+   "kind": "pick",
+   "note": "v5 re-take: eyes closed, 'Merge' held open, closed on me / b / m, 'main' fades; ends contemplative, eyes closed, chin lowered",
+   "file": "review/previews/ch2_catch/ch2_catch_t52_c8400ec516.mp4"
+  },
+  {
+   "shot": "ch2_catch",
+   "film": "3:27.1-3:35.7",
+   "film_s": [
+    207.1,
+    215.701
+   ],
+   "shot_s": [
+    208.1,
+    214.701
+   ],
+   "take": "ch2_catch_t51_214ef0fa4d",
+   "lag": 0.25,
+   "kind": "candidate",
+   "note": "v5 re-take: same shape as t52, smiles a little while singing",
+   "file": "review/previews/ch2_catch/ch2_catch_t51_214ef0fa4d.mp4"
+  },
+  {
+   "shot": "ch2_catch",
+   "film": "3:27.1-3:35.7",
+   "film_s": [
+    207.1,
+    215.701
+   ],
+   "shot_s": [
+    208.1,
+    214.701
+   ],
+   "take": "ch2_catch_b_t51_f04196c0ee",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "v5 variant (fail): mouth closed through 'Merge', no lag fits",
+   "file": "review/previews/ch2_catch/ch2_catch_b_t51_f04196c0ee.mp4"
+  },
+  {
+   "shot": "ch2_catch",
+   "film": "3:27.1-3:35.7",
+   "film_s": [
+    207.1,
+    215.701
+   ],
+   "shot_s": [
+    208.1,
+    214.701
+   ],
+   "take": "ch2_catch_t11_03c5dd87e5",
+   "lag": 0.292,
+   "kind": "candidate",
+   "note": "v5a take: opens her eyes and smiles at the end; runs out at 213.6",
+   "file": "review/previews/ch2_catch/ch2_catch_t11_03c5dd87e5.mp4"
+  },
+  {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_t63_121f180301",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "re-take: closed on the b of 'become', holds 'become' open to its end (~235.7), earnest raised brows, ends in a faint closed-mouth warmth; she does not mouth the 'Back to' pickup (235.75-236.4) before the cut",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_t63_121f180301.mp4"
+  },
+  {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_t12_b30af2db05",
+   "lag": 0.7,
+   "kind": "candidate",
+   "note": "v5a take (FAIL): a word late (v5a used 0.3; the fit is ~0.7), teeth grin on the held note",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_t12_b30af2db05.mp4"
+  },
+  {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_t51_0fae510a2d",
+   "lag": 0.1,
+   "kind": "candidate",
+   "note": "v5 re-take: calm, eyes close; 'become' closes 1 s early and reopens",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_t51_0fae510a2d.mp4"
+  },
+  {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_t62_3b09407225",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "re-take: 'become' closes 0.8 s early, then a teeth smile on 'Back to'",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_t62_3b09407225.mp4"
+  },
+  {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_t64_3f1f803010",
+   "lag": 0.4,
+   "kind": "candidate",
+   "note": "re-take: starts ~0.4 s late, closes early on 'become'",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_t64_3f1f803010.mp4"
+  },
+  {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_t52_d3b34dff91",
+   "lag": 0.7,
+   "kind": "candidate",
+   "note": "v5 re-take (fail): grins with teeth",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_t52_d3b34dff91.mp4"
+  },
+  {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_t53_88792288a9",
+   "lag": -0.375,
+   "kind": "candidate",
+   "note": "v5 re-take (fail): grins with teeth",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_t53_88792288a9.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:15.5",
+   "film_s": [
+    248.363,
+    255.512
+   ],
+   "shot_s": [
+    249.363,
+    254.512
+   ],
+   "take": "out_main_t61_7f8134e8f7",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "re-take: 'Back' and the m of 'main' on time; the held 'main' stays soft with one small dip where the melody steps down, no pucker, no extra word; eyes close, ends relaxed",
+   "file": "review/previews/out_main/out_main_t61_7f8134e8f7.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:15.5",
+   "film_s": [
+    248.363,
+    255.512
+   ],
+   "shot_s": [
+    249.363,
+    254.512
+   ],
+   "take": "out_main_t12_d9d33a9749",
+   "lag": -0.25,
+   "kind": "candidate",
+   "note": "v5a take (FAIL): mouth shuts for 1.3 s inside 'main' then reopens in a grin (the 'extra word' Jade saw)",
+   "file": "review/previews/out_main/out_main_t12_d9d33a9749.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:15.5",
+   "film_s": [
+    248.363,
+    255.512
+   ],
+   "shot_s": [
+    249.363,
+    254.512
+   ],
+   "take": "out_main_t64_a4ed0b0a98",
+   "lag": -0.2,
+   "kind": "candidate",
+   "note": "re-take (fail): puckers 'oo' inside 'main', then a wide teeth smile",
+   "file": "review/previews/out_main/out_main_t64_a4ed0b0a98.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:15.5",
+   "film_s": [
+    248.363,
+    255.512
+   ],
+   "shot_s": [
+    249.363,
+    254.512
+   ],
+   "take": "out_main_t65_632cbceac0",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "re-take (fail): pucker, then a big open teeth smile",
+   "file": "review/previews/out_main/out_main_t65_632cbceac0.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:15.5",
+   "film_s": [
+    248.363,
+    255.512
+   ],
+   "shot_s": [
+    249.363,
+    254.512
+   ],
+   "take": "out_main_t66_ecb072a8a7",
+   "lag": 0.1,
+   "kind": "candidate",
+   "note": "re-take (fail): pucker, then a teeth smile with eyes closed",
+   "file": "review/previews/out_main/out_main_t66_ecb072a8a7.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:15.5",
+   "film_s": [
+    248.363,
+    255.512
+   ],
+   "shot_s": [
+    249.363,
+    254.512
+   ],
+   "take": "out_main_t62_ac8ae7da4c",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "re-take (fail): misses 'Back', several syllables inside 'main'",
+   "file": "review/previews/out_main/out_main_t62_ac8ae7da4c.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:15.5",
+   "film_s": [
+    248.363,
+    255.512
+   ],
+   "shot_s": [
+    249.363,
+    254.512
+   ],
+   "take": "out_main_t51_9cac2b2b8a",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "v5 re-take (fail): closes mid-'main' and reopens",
+   "file": "review/previews/out_main/out_main_t51_9cac2b2b8a.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:15.5",
+   "film_s": [
+    248.363,
+    255.512
+   ],
+   "shot_s": [
+    249.363,
+    254.512
+   ],
+   "take": "out_main_t52_0f61493a51",
+   "lag": 0.25,
+   "kind": "candidate",
+   "note": "v5 re-take (fail): several extra syllables inside 'main'",
+   "file": "review/previews/out_main/out_main_t52_0f61493a51.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t65_96b71e9d46",
+   "keys": "91:2,92.5:4,93:5.25",
+   "kind": "pick",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. the close partner roll (default ?roll=close): sweep on 91.1, violet lunges, orange ducks into the table, violet rolls over her back, inverted peak on 92.3 (the bass's E->F#), lands on the far side, liangxiang freeze on the 93.1 cut. Two bodies throughout, lanes right; one extra soft-focus background figure and a small dark blob behind",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t65_96b71e9d46.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t61_8522fa32e0",
+   "keys": "91:0.85,92.5:4.1",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. close roll, alt: clean roll, but she lands back on her own side and springs into the opening guard (no new freeze)",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t61_8522fa32e0.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t62_dc2a555781",
+   "keys": "91:0.85,92.5:3.95",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. close roll: more of a handstand over the back; lands into the opening guard",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t62_dc2a555781.mp4"
+  },
+  {
+   "shot": "dr_dl_ripple",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_ripple_t69_e0408ef0fb",
+   "keys": "91:1.739,91.5:2.6,92.5:4.15",
+   "kind": "pick",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. the wide canon (?roll=wide): back pair rolls on 91.3, middle ~91.4, front pair on 92.3, then all six freeze in a new pose. The front roll is busy (an X of four legs, orange over violet) for ~0.4 s",
+   "file": "review/previews/wushu_roll/dr_dl_ripple_t69_e0408ef0fb.mp4"
+  },
+  {
+   "shot": "dr_dl_ripple",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_ripple_t65_084f82f977",
+   "keys": "91:1.739,91.5:2.7,92:3.5,92.5:4.35",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. wide canon, cleanest timing (91.3 / 92.1 / 92.3) and a new freeze, but the orange partner disappears under violet's handstand for ~0.3 s",
+   "file": "review/previews/wushu_roll/dr_dl_ripple_t65_084f82f977.mp4"
+  }
+ ]
+}
