@@ -5,6 +5,8 @@
 //         cam?(u,t)->{orbit,dolly,pan,over}, lane?, laneAmt?, copies?: [{dt, off:[x,y], scale, lane, at, dens, plate?, gain?}] (plate: another
 //         plate on the shot's own clock, e.g. one performer's matte of the same footage, tools/prep/lanes.py; gain: x the layers' gain),
 //         figOff?: true = don't draw the main plate's figure (its world only; the copies carry the figures),
+//         bg?: {plate, s0, fit?} = the world (region 0) from another plate (the empty set behind a solo plate, ?drop=sync), so the solo
+//         plate's figure hole never shows; a copy's dt may be a function of song time (a canon ripple that eases in after a unison hit),
 //         scatter?(u,t)->{k, dir:[x,y,z]}, text?(type,t,u), update?(scene,u,t), fade?(u,t), clip?(u,t)->clip time in s (overrides s0 for the
 //         main plate: slow motion / time remap), fit?: true | {from?, to?} (the main plate never runs off its take: from `from` (default t0)
 //         it slows just enough that the last frame lands on `to` (default t1); src/clip.js),
@@ -107,9 +109,10 @@ export default class LatticeScene {
     const mk = (o, region, seq = this.seq, extra = {}) => withGain(new LatticeLayer({ plate: seq, cell: extra.cell ?? o.cell, W: ctx.W, region, atlas,
       opts: { ...o, ...extra, seed: 7 + region + (extra.k || 0) * 31, text: shot.tokens } }));
     this.world = [];
-    if (look.under) this.world.push(mk(look.under, 0));
+    this.bgSeq = shot.bg ? await PlateSeq.open(shot.bg.plate) : this.seq;
+    if (look.under) this.world.push(mk(look.under, 0, this.bgSeq));
     const ws = [].concat(look.world), wScale = shot.cellWorld ? shot.cellWorld / ws[Math.floor(ws.length / 2)].cell : 1;
-    ws.forEach((o, k) => this.world.push(mk(o, 0, this.seq, { cell: o.cell * wScale, k })));
+    ws.forEach((o, k) => this.world.push(mk(o, 0, this.bgSeq, { cell: o.cell * wScale, k })));
     const glyphFig = look.figGlyph && ctx.P.get('figlook') !== 'led' && !shot.ledFig;
     const mkFig = (seq) => (glyphFig ? new FigGroup(look.figGlyph.map((o, k) => withGain(mk(o, 1, seq, { k: 10 + k, cell: o.cell * (shot.cellFig ? shot.cellFig / 3 : 1) }))))
       : mk(look.fig, 1, seq, shot.cellFig ? { cell: shot.cellFig } : {}));
@@ -143,7 +146,8 @@ export default class LatticeScene {
     else await this.seq.at(t, s0, fit);
     for (const { c, seq } of this.copies) if (seq !== this.seq) {
       if (c.plate) await (clk ? seq.clock(clk, t) : seq.at(t + (c.dt || 0), s0, fit));   // its own plate on the shot's clock
-      else await seq.at(t + c.dt, s0); }
+      else await seq.at(t + (typeof c.dt === 'function' ? c.dt(t) : c.dt), s0); }
+    if (shot.bg) await this.bgSeq.at(t, shot.bg.s0, shot.bg.fit);
     for (const { sc, seq } of this.screens) await seq.at(t, sc.s0 ?? s0);
     const cam = shot.cam ? shot.cam(u, t) : {};
     const mvp = this.view.frame(this.seq.aspect, cam);

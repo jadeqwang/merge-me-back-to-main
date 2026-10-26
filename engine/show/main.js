@@ -696,7 +696,13 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
       cuts.push({ b0, seg, plate, meta: m }); }
     return { W, cuts };
   })() : null;
-  const DROP = Q.get('drop') === 'real' && !RW ? 'v4' : Q.get('drop') || 'v4';
+  // ?drop=sync (Jade 2026-10-26: "the entire group does standard long fist, in sync"; "maybe we do the compulsory set?"): ONE solo Jade performs
+  // the 2nd International Compulsory Changquan, moves 1-14 then the closing salute (docs/wushu_sync_longfist.md), one short phrase per take
+  // (tools/sd/shots_wushu_sync.py), and the six branch lanes are drawn as copies of her in the real set's formations, so unison is exact by
+  // construction. It needs every ws_* phrase and the empty set ws_bg picked; until then ?drop=sync plays the default drop unchanged.
+  const SYNC_SHOTS = ['ws_open', 'ws_lotus', 'ws_kicks', 'ws_feijiao', 'ws_xuanfeng', 'ws_close', 'ws_bg'];
+  const SYNC = Q.get('drop') === 'sync' && SYNC_SHOTS.every(has);
+  const DROP = (Q.get('drop') === 'real' && !RW) || (Q.get('drop') === 'sync' && !SYNC) ? 'v4' : Q.get('drop') || 'v4';
   // ?roll=close | wide | off: the partner roll over the back (docs/wushu_v5_design.md section 11; docs/video_model_bakeoff.md). The roll
   // peaks on 92.3, the bass's E -> F# step (the drop's strongest beat-3 onset, the airborne bar of the first rising phrase). Default = the picked
   // version (the close two-shot first). v4 shows the roll only for a take whose clean stretch was checked frame by frame (ROLL_KEY[take].clean):
@@ -723,7 +729,7 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     const g = ty.g;
     FX.streaks(g, t, D0, B(105) - .3, 2);
     if (t < D0 + .9) { const f = Math.exp(-(t - D0) * 5); g.fillStyle = `rgba(255,250,240,${f})`; g.fillRect(0, 0, 1920, 1080); }
-    for (const [hb, k] of [...(DROP === 'v5' ? [[93, .3], [97, .5]] : []), ...(RW ? RW.W.FLASH : rollOn ? [[92.5, .22]] : [])]) {   // v5: the burst, the fall; the roll's peak
+    for (const [hb, k] of [...(DROP === 'v5' ? [[93, .3], [97, .5]] : []), ...(RW ? RW.W.FLASH : SYNC ? [[93, .25], [97, .45]] : rollOn ? [[92.5, .22]] : [])]) {   // v5: the burst, the fall; sync: the lotus landing, the splits; the roll's peak
       const a = t - bb(Math.floor(hb), (hb - Math.floor(hb)) * 4);
       if (a >= 0 && a < .6) { g.fillStyle = `rgba(255,250,240,${k * Math.exp(-a * 7)})`; g.fillRect(0, 0, 1920, 1080); } }
   };
@@ -783,7 +789,46 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
       figOff: copies.length > 0, ...(copies.length ? { copies } : { lane: L.gold, laneAmt: .35 }), update: (sc) => dim(sc),
       cam: (u, t) => ({ zoom: z * (1 + .03 * u) * (1 + .02 * T.pulse(t, .14)), pan, over: 1.04 }) }];
   };
-  const cuts = RW ? [...RW.cuts.map(realCut), FOLDCUT] : DROP === 'v5' ? [  // [bar position, plate, s0(b0) = song time of the clip's frame 0, sun x,y, shot extras?]; each cut runs to the next
+  // ?drop=sync cuts. Every take starts from the same locked solo still (review/takes/stills/ws_solo.png: feet at plate y -.177, head top .29,
+  // centred, horizon -.014), so a copy is placed on the ground plane: scale s about the plate centre puts her feet s * .163 below the horizon
+  // (a figure further back is smaller and stands higher); x is her centre on screen. Lanes left to right as the group set: white mint rose | sky gold violet
+  // (warm and cool alternate); the solo's orange bands take each lane's tint. Formations follow her real set (docs/wushu_groupset_notes.md):
+  // two staggered rows, one line, the wedge with its point empty, the ring, then the fold's V, where main (orange, untinted) steps into the
+  // point on 100.1 for the salute on the "ooh". dt: 0 = unison; canon ripples ease in only after a phrase's unison hit and stay under 1/4 beat.
+  const SYNC_LANES = [L.white, L.mint, L.rose, L.sky, L.gold, L.violet];
+  const HZ = -.014, place = ([x, s]) => ({ off: [x, HZ + .014 * s], scale: s });   // x: screen position of her centre (frame half-width .89)
+  const FORM = {
+    rows: [-.72, -.43, -.14, .14, .43, .72].map((x, i) => [x, i % 2 ? .88 : .6]),   // a staggered line: back, front, alternating
+    line: [-.67, -.4, -.13, .13, .4, .67].map((x) => [x, .78]),
+    wedge: [[-.66, .6], [-.45, .8], [-.2, 1.05], [.2, 1.05], [.45, .8], [.66, .6]],    // the point (main's) left empty, nearest the camera
+    ring: [0, 1, 2, 3, 4, 5].map((k) => { const a = (k - 2.5) * Math.PI / 3 + Math.PI / 12; return [.58 * Math.sin(a), .78 + .22 * Math.cos(a)]; }),
+    v: [[-.68, .6], [-.46, .74], [-.22, .9], [.22, .9], [.46, .74], [.68, .6]] };      // the fold's V without its point
+  // per cut: [bar, shot, formation, the phrase's unison hit (bar position; a picked take's measured clip time of it in SYNC_KEY), ripple]
+  // ripple: [bar position it eases in from, beats between neighbours (1/8 or 1/4), order: 'lr' left to right | 'ring' around the ring]
+  const SYNC_CUTS = [
+    [89, 'ws_open', 'rows', 89, null],                 // moves 1-4: cross palms on the drop's impact, arm circles, pubu slap (90.1), stomp-pound (90.3)
+    [91, 'ws_lotus', 'line', 92.5, null],              // move 5: jump outside-lotus kick, take-off on 92.3 (bass F#), slap 92.4, land on the 93 cut
+    [93, 'ws_kicks', 'wedge', 93, [93.25, 1 / 8, 'lr']], // moves 6-9: coiling elbow on 93.1, snap kick 93.3, slap kick 94.1, knee-raise balance 95.1
+    [95, 'ws_feijiao', 'wedge', 96, null],             // moves 9-10: hop-step flying front kick, slap at the top ~96.2, land 96.3
+    [96.5, 'ws_xuanfeng', 'ring', 97, [98, 1 / 4, 'ring']],   // move 11: whirlwind kick into the splits on 97.1 (THE hit), bar 97 held; 12-13 on the rise
+    [99, 'ws_close', 'v', 100.5, null]];               // move 14 slap kick, closing posture (100.1), baoquan salute on the "ooh" (100.3); main steps in
+  // planned clip time of each phrase's hit (shots_wushu_sync.py second marks; every take has one bar of pre-roll before its cut)
+  const SYNC_PLAN = { ws_open: BAR, ws_lotus: BAR + 6 * BEAT, ws_kicks: BAR, ws_feijiao: 2 * BAR, ws_xuanfeng: BAR + 2 * BEAT, ws_close: BAR + 6 * BEAT };
+  const SYNC_KEY = {};   // picked take -> measured clip time of its hit (box/cloud, from the take's frames); planned values until then
+  const syncCut = ([b0, shot, form, hit, rip], i) => {
+    const take = PICKS[shot]?.take, k = keyed(shot, [[hit, SYNC_KEY[take] ?? SYNC_PLAN[shot]]]);   // one key: real speed, the hit on its beat
+    const F = FORM[form].map(place), order = rip?.[2] === 'ring' ? [2, 1, 0, 5, 4, 3] : [0, 1, 2, 3, 4, 5];
+    const copies = F.map((p, j) => ({ ...p, lane: SYNC_LANES[j], laneAmt: .32,
+      ...(rip ? { dt: (t) => -order[j] * rip[1] * BEAT * ss(BT(rip[0]), BT(rip[0]) + BEAT, t) } : {}) }));
+    if (shot === 'ws_close') {   // main: from just behind the empty point into it on 100.1, at attention, in time for the salute on 100.3
+      const a = place([0, .8]), z = place([0, 1.08]), t0 = BT(100) - BEAT, t1 = BT(100) + .5 * BEAT;
+      copies.push({ scale: z.scale, share: true, at: t0, dur: t1 - t0, laneAmt: 0,
+        off: (t) => { const e = ss(t0, t1, t); return [0, a.off[1] + (z.off[1] - a.off[1]) * e]; } });
+    }
+    const bg = pk('ws_bg', D0);
+    return [b0, k, [1716, 461], { figOff: true, copies, bg: { plate: bg.plate, s0: D0 - .5, fit: { from: D0, to: B(101) } } }];
+  };
+  const cuts = RW ? [...RW.cuts.map(realCut), FOLDCUT] : SYNC ? [...SYNC_CUTS.map(syncCut), FOLDCUT] : DROP === 'v5' ? [  // [bar position, plate, s0(b0) = song time of the clip's frame 0, sun x,y, shot extras?]; each cut runs to the next
     v5(89, 'dr_dl_wide', at('dr_dl_wide', 1), [960, 160], v4at('dr_set', 0, 89), [700, 230]),                         // duilian: three pairs clash on the drop
     rollOn ? [91, keyed(ROLL_SHOT[ROLL], KEY[ROLL_SHOT[ROLL]]), [960, 330]]                                           // the partner roll, peak on 92.3
       : v5(91, 'dr_dl_close', at('dr_dl_close', 1), [960, 330], v4at('dr_set', 2, 91), [700, 230]),                   // the front pair: sweep, leap, flying kick, freeze

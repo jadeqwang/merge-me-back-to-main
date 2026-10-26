@@ -140,9 +140,11 @@ for (const [si, s] of S.entries()) {
         const s0 = s.s0 ?? s.t0, c = s.clip ? s.clip(u, t) : fitc(t - s0, t, s.fit && { from: s.t0, to: s.t1, ...(s.fit === true ? {} : s.fit) }, s.plate); if (!fin(c)) note('clip', c);
         rec(si, 'lattice', s.plate, c, t, ddt, fa);
         for (const [k, cp] of (s.copies || []).entries()) { if (typeof cp.off === 'function') chk('copy.off', cp.off(t, .5));
-          const vis = cp.at === undefined || t >= cp.at; if (cp.dt && !cp.plate && vis) rec(`${si}.c${k}`, `copy dt ${cp.dt}`, s.plate, t + cp.dt - s0, t, ddt, fa);
+          const vis = cp.at === undefined || t >= cp.at; if (cp.dt && !cp.plate && vis) { const d = typeof cp.dt === 'function' ? cp.dt(t) : cp.dt; if (!fin(d)) note('copy.dt', d);
+            rec(`${si}.c${k}`, `copy dt ${typeof cp.dt === 'function' ? 'f' : cp.dt}`, s.plate, t + d - s0, t, ddt, fa); }
           if (cp.plate && vis) rec(`${si}.c${k}`, `copy ${takeOf(cp.plate)}`, cp.plate, s.clip ? c : c + (cp.dt || 0), t, ddt, fa); }   // its own plate on the shot's clock
         for (const [k, sc] of (s.screens || []).entries()) if (sc.at === undefined || t >= sc.at) rec(`${si}.s${k}`, 'screen', sc.plate, t - (sc.s0 ?? s0), t, ddt, fa);
+        if (s.bg) { const c = fitc(t - s.bg.s0, t, s.bg.fit, s.bg.plate); if (!fin(c)) note('bg.clip', c); rec(`${si}.bg`, 'bg', s.bg.plate, c, t, ddt, fa); }
       } else if (s.kind === 'panels') {
         if (s.cam) chk('cam', s.cam(t, u));
         for (const [k, p] of s.panels.entries()) {
