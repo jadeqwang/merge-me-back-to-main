@@ -520,3 +520,37 @@ of `engine/show/main.js`.
 - So violet's hair changes at the group set. Flagged for Jade.
 
 Cost: $18.51 (run sheet §2.1).
+
+---
+
+## 11. v5.3 the partner roll (cloud, 2026-10-26)
+
+Jade: "it would be cool if we could incorporate an actually impressive looking wushu move from the group set, like rolling over your sparring
+partner's back". The move is the duilian **back roll** (beigun). The attacker lunges into gongbu with a straight punch (chongquan). The defender
+ducks forward under it and bends flat at the waist, making a "table". The attacker sets her shoulders across that flat back and rolls sideways
+over it, her legs swinging up and over in a high arc. She lands on her feet on the far side in gongbu, and both snap into liangxiang.
+
+**Where it lands: the duilian close, peak on 92.3 (159.253 s).** The candidates were the close (91–92) and the cross pairs (bar 98).
+- Per-16th onset strength in the instrumental stem, bars 89–100: the drop is a flat four-on-the-floor (low band within ±0.1 log units on
+  every beat, no crash anywhere after 89.1). The regular accents are the kick on every beat and the snare on beats 2 and 4.
+- The one irregular accent is **92.3**: the strongest beat-3 onset of the drop (flux 228 against 140–197 on every other bar's beat 3). There
+  the bass steps E → F#, the top of the first rising phrase (section 3: "bar 4 airborne, landing on the next phrase downbeat"). The roll's
+  peak (the body level over the partner's back) goes there. The landing falls on 92.4 and the liangxiang freeze runs into the cut on
+  93.1, the phrase landing where the group set's burst flashes.
+- Bar 98 is C#, mid-phrase, with only the regular snare. And 96.4/97.1 already belong to the group fall.
+
+**Shots** (`tools/sd/shots_wushu.py`, same 6 s window as dr_dl_close: B(90), cut 91.1 = clip 1.739, peak 92.3 = 4.348, land 92.4 = 4.783,
+cut 93.1 = 5.218):
+- `dr_dl_roll` (close two-shot, side-on, orange left and violet right): the sweep under on 91.1 (violet hops it), violet's lunge punch
+  on 91.3, orange ducks into the table, violet rolls over her back, peak 92.3, lands on the left in gongbu on 92.4, liangxiang held. A variant
+  prompt (`dr_dl_roll_b`, generated under the same shot key) trades two strikes instead of the sweep, for a simpler single acrobatic beat.
+  The plate `dr_dl_roll.png` is dr_dl_close_v5 pulled back (one nano-banana-pro edit), so the roll's arc stays in frame.
+- `dr_dl_ripple` (wide canon): the three pairs in a diagonal echelon (new plate `dr_dl_ripple.png`, GPT Image 2.5 from dr_duilian_v5). They
+  roll one after another, half a bar apart: mint/gold (back) peaks on 91.3, rose/sky on 92.1, orange/violet (front) on 92.3. All six freeze on
+  92.4. Variant `_b` slowly pushes in toward the front pair.
+- The guards: SAFE, the copy count (six), MUTE_G, plus ANAT (two separate bodies, two arms and two legs each, real contact on the back).
+
+**EDL** (`engine/show/main.js`, drop block): `?roll=close|wide|off`, v5 only. By default it uses the picked version (close first), else the
+v5.2 dr_dl_close. `keyed()` pins the sweep (91.1) and the roll's peak (92.5 in bar positions = 92.3); the ripple also pins its back and middle
+peaks. A small flash (0.22) marks the peak, next to the burst (93) and the fall (97). The duilian → group set structure, the fall on 97 and the
+salute → fold are unchanged.
