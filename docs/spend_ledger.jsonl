@@ -982,3 +982,6 @@
 {"ts": "2026-10-26T01:35:45Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t65", "job": "mergemain/dr_dl_roll_t65-96b71e9d46", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-26T01:36:39Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_ripple_t68", "job": "mergemain/dr_dl_ripple_t68-13ee3c723c", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-26T01:40:28Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_ripple_t69", "job": "mergemain/dr_dl_ripple_t69-e0408ef0fb", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T01:25:35Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_34_t62", "job": "mergemain/ch1_gone_close_34_t62-10955df015", "event": "result", "ok": true, "est_usd": 2.5432, "where": "cloud"}
+{"ts": "2026-10-26T01:29:15Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_34_t63", "job": "mergemain/ch1_gone_close_34_t63-462b69885c", "event": "submit", "ok": null, "est_usd": 2.5432, "where": "cloud"}
+{"ts": "2026-10-26T01:29:15Z", "model": "bytedance/seedance-2.5", "tag": "ch1_gone_close_34_t64", "job": "mergemain/ch1_gone_close_34_t64-de809b5995", "event": "submit", "ok": null, "est_usd": 2.5432, "where": "cloud"}
