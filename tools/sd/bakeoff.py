@@ -2,7 +2,7 @@
 """Video-model bake-off for fight choreography (docs/video_model_bakeoff.md). Writes one gen.py spec per (model, test, take) into
 media/gen/specs/, all from the same first frame (review/takes/stills/dr_dl_roll.png) and the same prompt text, adapted only where a model
 needs it (Seedance takes the drop instrumental as a reference audio and is told to hit its beats; the others get second marks).
-  python3 tools/sd/bakeoff.py [--models=seedance,veo,h3,runway,vidu] [--tests=roll,kick] [--t0=71]   # prints the spec paths
+  python3 tools/sd/bakeoff.py [--models=seedance,veo,hailuo,runway,vidu] [--tests=roll,kick] [--t0=71]   # prints the spec paths
 Then: python3 tools/gen/gen.py submit <specs> (est + cap check), python3 tools/gen/gen.py wait <ids>.
 Tags: dr_dl_roll_t<N> (test a) and dr_dl_kick_t<N> (test b); one tag pair per model, so a model owns the same N in both tests."""
 import json, os, subprocess, sys
@@ -44,7 +44,8 @@ MODELS = {   # name: (model id, build(prompt, still path, audio path) -> input)
                  use_virtual_avatar=True, reference_audios=[f"file:{au}"])),
     "veo": ("google/veo-3.1", lambda p, im, au: dict(prompt=p, image_input=f"file:{im}", duration=f"{DUR}s", aspect_ratio="16:9",
             resolution="1080p", generate_audio=False)),
-    "h3": ("minimax/h3", lambda p, im, au: dict(prompt=p, image=f"file:{im}", duration=DUR, resolution="768P", ratio="16:9")),
+    "hailuo": ("minimax/hailuo-2.3", lambda p, im, au: dict(prompt=p, first_frame_image=f"file:{im}", duration=DUR, resolution="768P",
+               prompt_optimizer=False, fast_pretreatment=False)),   # minimax/h3 (same slot) failed 7003 on all four jobs, unbilled
     "runway": ("runwayml/gen-4.5", lambda p, im, au: dict(prompt=p[:1000], image_input=f"file:{im}", ratio="1280:720", duration=DUR)),
     "vidu": ("vidu/q3-pro", lambda p, im, au: dict(prompt=p, start_image=f"file:{im}", duration=DUR, resolution="720p", audio=False)),
 }
