@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ch2_gone_close_vl_t61",
+ "notes": "{\"shot\": \"ch2_gone_close_vl\", \"s0\": 228.61, \"plate\": \"media/plates/face_v4/ch2_gone_close_vl.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Everything she ever sent out has come home, and she sings it straight to the camera, quiet and certain, as if she has just understood what it means to have lived every one of those lives. She keeps her eyes on the camera; on the long held 'become' she lifts her chin a little and her eyes shine. Her expression is quietly radiant and hopeful, eyes alive and bright, as if she has just understood something profound about time and about coming home; serene depth, sincere, not performing. At the very end at most a faint, soft, closed-mouth warmth. She never grins, never smiles with teeth, and is never somber or blank. Her lips follow the sung words exactly, syllable by syllable: lips press fully together on every m, b and p, open wide on open vowels, round on o and oo. 'Every' starts with the lips together for the v; 'lived' and 'life' show the tongue on the l; 'become' closes on the b and on the m. On the last word, 'become', she holds her mouth open on the vowel for the whole length of the note, until the sound ends. After that her mouth closes gently and stays closed: no more words, no extra mouthing. She does not smile broadly, grin or show her teeth. She sings exactly the words of the reference audio, in time with it, and nothing else. Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural lips, no gloss, no makeup. Do not redraw, beautify, slim or restyle her face. Her hands stay relaxed and natural. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/ch2_gone_close_vl_v4_2048.jpg",
+  "duration": 8,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ch2_gone_close_vl_v2_228.61_8s.mp3"
+  ]
+ }
+}

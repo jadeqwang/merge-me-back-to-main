@@ -51,5 +51,17 @@
  "out_main_t66_ecb072a8a7": 0.1,
  "out_main_t62_ac8ae7da4c": 0.0,
  "out_main_t51_9cac2b2b8a": 0.0,
- "out_main_t52_0f61493a51": 0.25
+ "out_main_t52_0f61493a51": 0.25,
+ "v1_split_front_vl_t61_d5cf9cdf87": 0.2,
+ "v1_split_front_vl_t62_788ca89c8d": 0.2,
+ "v1_split_front_vl_t63_97c644fcfe": 0.2,
+ "ch1_gone_close_vl34_t61_f4f06af7df": 0.0,
+ "ch1_gone_close_vl34_t62_faeb6943a3": 0.0,
+ "ch1_gone_close_vl34_t63_f0a7b42135": 0.0,
+ "ch1_main_vl_t61_7f9aad9ea4": 0.0,
+ "ch1_main_vl_t62_10e518910f": 0.1,
+ "ch2_gone_close_vl_t61_41b202d8b7": 0.0,
+ "ch2_gone_close_vl_t62_2d3f8230cf": 0.0,
+ "out_main_vl_t61_05a11c3a38": -0.05,
+ "out_main_vl_t62_a52c4f96c9": 0.0
 }

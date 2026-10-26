@@ -3,6 +3,244 @@
  "about": "Raw takes at their song time with the measured lag (clip time = song time - S0 + lag), full mix, shot range +-1 s; orange bar = inside the shot. kind: pick (default in docs/picks_manual.json) | candidate | experiment (never the default).",
  "previews": [
   {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t65_96b71e9d46",
+   "keys": "91:2,92.5:4,93:5.25",
+   "kind": "pick",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. the close partner roll (default ?roll=close): sweep on 91.1, violet lunges, orange ducks into the table, violet rolls over her back, inverted peak on 92.3 (the bass's E->F#), lands on the far side, liangxiang freeze on the 93.1 cut. Two bodies throughout, lanes right; one extra soft-focus background figure and a small dark blob behind",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t65_96b71e9d46.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t61_8522fa32e0",
+   "keys": "91:0.85,92.5:4.1",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. close roll, alt: clean roll, but she lands back on her own side and springs into the opening guard (no new freeze)",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t61_8522fa32e0.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t62_dc2a555781",
+   "keys": "91:0.85,92.5:3.95",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. close roll: more of a handstand over the back; lands into the opening guard",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t62_dc2a555781.mp4"
+  },
+  {
+   "shot": "dr_dl_ripple",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_ripple_t69_e0408ef0fb",
+   "keys": "91:1.739,91.5:2.6,92.5:4.15",
+   "kind": "pick",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. the wide canon (?roll=wide): back pair rolls on 91.3, middle ~91.4, front pair on 92.3, then all six freeze in a new pose. The front roll is busy (an X of four legs, orange over violet) for ~0.4 s",
+   "file": "review/previews/wushu_roll/dr_dl_ripple_t69_e0408ef0fb.mp4"
+  },
+  {
+   "shot": "dr_dl_ripple",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_ripple_t65_084f82f977",
+   "keys": "91:1.739,91.5:2.7,92:3.5,92.5:4.35",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. wide canon, cleanest timing (91.3 / 92.1 / 92.3) and a new freeze, but the orange partner disappears under violet's handstand for ~0.3 s",
+   "file": "review/previews/wushu_roll/dr_dl_ripple_t65_084f82f977.mp4"
+  },
+  {
+   "shot": "pc_send_v",
+   "film": "4:41.5-4:48.1",
+   "film_s": [
+    281.516,
+    288.116
+   ],
+   "shot_s": [
+    282.516,
+    287.116
+   ],
+   "take": "pc_send_v_t61_1cc469a978",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "silent send for the post-credits sender: light lifts off her palm and drifts up-right, staying in frame; hand lowers; mouth closed, soft hopeful look following it upward; patch on her LEFT arm. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
+   "file": "review/previews/postcredits/pc_send_v_t61_1cc469a978.mp4"
+  },
+  {
+   "shot": "pc_send_v",
+   "film": "4:41.5-4:48.1",
+   "film_s": [
+    281.516,
+    288.116
+   ],
+   "shot_s": [
+    282.516,
+    287.116
+   ],
+   "take": "pc_send_v_t62_7326637fa0",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "same action, but the light rises fast and leaves the top of frame by ~2.3 s. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
+   "file": "review/previews/postcredits/pc_send_v_t62_7326637fa0.mp4"
+  },
+  {
+   "shot": "pc_send_v",
+   "film": "4:41.5-4:48.1",
+   "film_s": [
+    281.516,
+    288.116
+   ],
+   "shot_s": [
+    282.516,
+    287.116
+   ],
+   "take": "pc_send_v_t63_67ed1e9eb5",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "same action as t61, light stays in frame; her gaze lifts less. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
+   "file": "review/previews/postcredits/pc_send_v_t63_67ed1e9eb5.mp4"
+  },
+  {
+   "shot": "orch_compose",
+   "film": "4:00.9-4:04.6",
+   "film_s": [
+    240.86,
+    244.599
+   ],
+   "shot_s": [
+    241.86,
+    243.599
+   ],
+   "take": "orch_compose_t62_3cb8f92059",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "composer cut 1 (clip 0.5-2.24): body still, small writing strokes with the glowing tip, eyes on the pencil; nothing drawn in the air; patch on her left arm. COMPOSE_TIP keyed on this take",
+   "file": "review/previews/orchestra/orch_compose_t62_cut1.mp4"
+  },
+  {
+   "shot": "orch_compose",
+   "film": "4:07.4-4:10.4",
+   "film_s": [
+    247.382,
+    250.363
+   ],
+   "shot_s": [
+    248.382,
+    249.363
+   ],
+   "take": "orch_compose_t62_3cb8f92059",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "composer cut 2 (clip 4.0-4.98), same take",
+   "file": "review/previews/orchestra/orch_compose_t62_cut2.mp4"
+  },
+  {
+   "shot": "orch_compose",
+   "film": "4:00.9-4:04.6",
+   "film_s": [
+    240.86,
+    244.599
+   ],
+   "shot_s": [
+    241.86,
+    243.599
+   ],
+   "take": "orch_compose_t61_b7cbd21ccf",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "(fail) draws musical-note glyphs in the air (the engine draws the notes), turns away",
+   "file": "review/previews/orchestra/orch_compose_t61_cut1.mp4"
+  },
+  {
+   "shot": "orch_compose",
+   "film": "4:00.9-4:04.6",
+   "film_s": [
+    240.86,
+    244.599
+   ],
+   "shot_s": [
+    241.86,
+    243.599
+   ],
+   "take": "orch_compose_t63_41dc0f74cd",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "still and writing like t62; closes her eyes near the end (after the clip the EDL uses)",
+   "file": "review/previews/orchestra/orch_compose_t63_cut1.mp4"
+  },
+  {
+   "shot": "orch_wide_still",
+   "film": "3:55.8-4:08.8",
+   "film_s": [
+    235.774,
+    248.774
+   ],
+   "shot_s": [
+    236.774,
+    247.774
+   ],
+   "take": "orch_wide_still_t61_84e12c8c63",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "wide (not wired in the EDL): the still's raised-arm pose held almost motionless, band plays; still reads a bit like a conductor's pose",
+   "file": "review/previews/orchestra/orch_wide_still_t61.mp4"
+  },
+  {
+   "shot": "orch_wide_still",
+   "film": "3:55.8-4:08.8",
+   "film_s": [
+    235.774,
+    248.774
+   ],
+   "shot_s": [
+    236.774,
+    247.774
+   ],
+   "take": "orch_wide_still_t62_4bb9436957",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "(fail) the camera pushes far in, raised-arm pose",
+   "file": "review/previews/orchestra/orch_wide_still_t62.mp4"
+  },
+  {
    "shot": "v1_split_front",
    "film": "0:26.9-0:34.4",
    "film_s": [
@@ -15,7 +253,7 @@
    ],
    "take": "v1_split_front_t11_be8b364663",
    "lag": 0.62,
-   "kind": "pick",
+   "kind": "candidate",
    "note": "current take; mouth peaks land on I / my / self / thou / sand / ways at +0.62 (the old 1.208 was a phrase lock); ends in a soft closed smile",
    "file": "review/previews/v1_split_front/v1_split_front_t11_be8b364663.mp4"
   },
@@ -48,10 +286,61 @@
     33.444
    ],
    "take": "v1_split_front_violet_t62_1554379c1c",
-   "lag": 0.25,
-   "kind": "experiment",
-   "note": "EXPERIMENT (fail): violet's face, but the camera pushes into a close-up and the mouth stops after 'myself'",
+   "lag": 0.2,
+   "kind": "pick",
+   "note": "JADE'S PICK (review page 2026-10-26): violet's face; the camera pushes in to a close-up (the split copies assume a fixed framing: check the copies at 0:30). Lag .2 measured with per-frame face detection (the tracker lost her as the camera pushed in); she sings the whole line",
    "file": "review/previews/v1_split_front/v1_split_front_violet_t62_1554379c1c.mp4"
+  },
+  {
+   "shot": "v1_split_front",
+   "film": "0:26.9-0:34.4",
+   "film_s": [
+    26.948,
+    34.444
+   ],
+   "shot_s": [
+    27.948,
+    33.444
+   ],
+   "take": "v1_split_front_vl_t63_97c644fcfe",
+   "lag": 0.2,
+   "kind": "candidate",
+   "note": "VIOLET LOOK (violet's own face + messy bun, main's orange costume; no face swap): camera locked as asked, no bang artifacts, rounded w on 'ways', ends soft; recommended of the three",
+   "file": "review/previews/v1_split_front/v1_split_front_vl_t63_97c644fcfe.mp4"
+  },
+  {
+   "shot": "v1_split_front",
+   "film": "0:26.9-0:34.4",
+   "film_s": [
+    26.948,
+    34.444
+   ],
+   "shot_s": [
+    27.948,
+    33.444
+   ],
+   "take": "v1_split_front_vl_t61_d5cf9cdf87",
+   "lag": 0.2,
+   "kind": "candidate",
+   "note": "VIOLET LOOK: camera locked; a blink early on, ends on a warmer smile",
+   "file": "review/previews/v1_split_front/v1_split_front_vl_t61_d5cf9cdf87.mp4"
+  },
+  {
+   "shot": "v1_split_front",
+   "film": "0:26.9-0:34.4",
+   "film_s": [
+    26.948,
+    34.444
+   ],
+   "shot_s": [
+    27.948,
+    33.444
+   ],
+   "take": "v1_split_front_vl_t62_788ca89c8d",
+   "lag": 0.2,
+   "kind": "candidate",
+   "note": "VIOLET LOOK: camera locked; like t63",
+   "file": "review/previews/v1_split_front/v1_split_front_vl_t62_788ca89c8d.mp4"
   },
   {
    "shot": "v1_light_hands",
@@ -66,7 +355,7 @@
    ],
    "take": "v1_light_hands_t62_9a87334ddb",
    "lag": 0.0,
-   "kind": "pick",
+   "kind": "candidate",
    "note": "re-take: syllables at lag 0 (closed on 'one', open on light / I / -head); holds 'ahead' open to the end, then looks up at the light, soft closed smile; smiles with some teeth mid-line",
    "file": "review/previews/v1_light_hands/v1_light_hands_t62_9a87334ddb.mp4"
   },
@@ -82,9 +371,9 @@
     47.292
    ],
    "take": "v1_light_hands_t12_7418e105bc",
-   "lag": 0.0,
-   "kind": "candidate",
-   "note": "v5a take: best fit lag 0 (v5a used -0.15, the box's 0.71 env lock is a phrase lock); 'a-head' lumped late, teeth smile while singing, closes before 'ahead' ends",
+   "lag": 0.05,
+   "kind": "pick",
+   "note": "JADE'S PICK: mouth right on 'each one a light' at .05; 'ahead' opens ~0.3 s late, so from mid-'light' (43.73) the clip runs 3% fast (+0.05 s by 'ahead', the most a gentle map gives); this preview plays that map",
    "file": "review/previews/v1_light_hands/v1_light_hands_t12_7418e105bc.mp4"
   },
   {
@@ -207,6 +496,40 @@
    "file": "review/previews/ch1_main/ch1_main_t51_c4f7390010.mp4"
   },
   {
+   "shot": "ch1_main",
+   "film": "1:08.3-1:16.1",
+   "film_s": [
+    68.32,
+    76.068
+   ],
+   "shot_s": [
+    69.32,
+    75.068
+   ],
+   "take": "ch1_main_vl_t61_7f9aad9ea4",
+   "lag": 0.0,
+   "kind": "experiment: violet look test",
+   "note": "VIOLET LOOK TEST: 'Merge' held open, closed on me / b / m, 'main' held; earnest, ends in a faint closed-mouth warmth",
+   "file": "review/previews/ch1_main/ch1_main_vl_t61_7f9aad9ea4.mp4"
+  },
+  {
+   "shot": "ch1_main",
+   "film": "1:08.3-1:16.1",
+   "film_s": [
+    68.32,
+    76.068
+   ],
+   "shot_s": [
+    69.32,
+    75.068
+   ],
+   "take": "ch1_main_vl_t62_10e518910f",
+   "lag": 0.1,
+   "kind": "experiment: violet look test",
+   "note": "VIOLET LOOK TEST: good sync; a teeth smile on 'main', ends smiling",
+   "file": "review/previews/ch1_main/ch1_main_vl_t62_10e518910f.mp4"
+  },
+  {
    "shot": "ch1_gone_close",
    "film": "1:28.1-1:41.0",
    "film_s": [
@@ -219,7 +542,7 @@
    ],
    "take": "ch1_gone_close_t61_7884cd1726",
    "lag": 0.0,
-   "kind": "pick",
+   "kind": "candidate",
    "note": "re-take: holds 'undone' open (round) for the whole 5 s note and closes as the sound ends; bright eyes, ends in a faint closed-mouth warmth, no grin",
    "file": "review/previews/ch1_gone_close/ch1_gone_close_t61_7884cd1726.mp4"
   },
@@ -355,8 +678,8 @@
    ],
    "take": "ch1_gone_close_34v_t61_edb21b71b5",
    "lag": 0.0,
-   "kind": "experiment",
-   "note": "EXPERIMENT: three-quarter still with violet's face; she turns toward camera; 'undone' held open to the end, faint closed smile",
+   "kind": "pick",
+   "note": "JADE'S PICK (was EXPERIMENT); note a dark strand over one temple (a partial-bang artifact from the face swap), redone in violet's own look as ch1_gone_close_vl34: three-quarter still with violet's face; she turns toward camera; 'undone' held open to the end, faint closed smile",
    "file": "review/previews/ch1_gone_close/ch1_gone_close_34v_t61_edb21b71b5.mp4"
   },
   {
@@ -375,6 +698,57 @@
    "kind": "experiment",
    "note": "EXPERIMENT: violet's face, keeps the three-quarter view looking past camera; mouth closes ~0.5 s after the note; ends smiling a little",
    "file": "review/previews/ch1_gone_close/ch1_gone_close_34v_t62_b97896c87e.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_vl34_t63_f0a7b42135",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "VIOLET LOOK, 3/4 off-centre: keeps the 3/4 view, eyes past camera, holds 'undone' (mouth closes ~0.4 s after the sound), ends calm; violet's own loose side strands, no bang artifacts; recommended",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_vl34_t63_f0a7b42135.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_vl34_t62_faeb6943a3",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "VIOLET LOOK: turns to face the camera (leaves the 3/4 view); clean held 'undone', ends soft",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_vl34_t62_faeb6943a3.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_vl34_t61_f4f06af7df",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "VIOLET LOOK: turns to face the camera; ends with a small smile",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_vl34_t61_f4f06af7df.mp4"
   },
   {
    "shot": "bd_ahh",
@@ -615,32 +989,66 @@
    "file": "review/previews/ch2_gone_close/ch2_gone_close_t53_88792288a9.mp4"
   },
   {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_vl_t61_41b202d8b7",
+   "lag": 0.0,
+   "kind": "experiment: violet look test",
+   "note": "VIOLET LOOK TEST: round 'o' on the held 'become' to its end, ends in a faint closed smile",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_vl_t61_41b202d8b7.mp4"
+  },
+  {
+   "shot": "ch2_gone_close",
+   "film": "3:47.8-3:57.5",
+   "film_s": [
+    227.76,
+    237.53
+   ],
+   "shot_s": [
+    228.76,
+    236.53
+   ],
+   "take": "ch2_gone_close_vl_t62_2d3f8230cf",
+   "lag": 0.0,
+   "kind": "experiment: violet look test",
+   "note": "VIOLET LOOK TEST (fail): her eyes turn glowing orange from ~6 s; it does mouth the 'Back to' pickup",
+   "file": "review/previews/ch2_gone_close/ch2_gone_close_vl_t62_2d3f8230cf.mp4"
+  },
+  {
    "shot": "out_main",
-   "film": "4:08.4-4:15.5",
+   "film": "4:08.4-4:12.0",
    "film_s": [
     248.363,
-    255.512
+    251.991
    ],
    "shot_s": [
     249.363,
-    254.512
+    250.991
    ],
    "take": "out_main_t61_7f8134e8f7",
    "lag": 0.0,
    "kind": "pick",
-   "note": "re-take: 'Back' and the m of 'main' on time; the held 'main' stays soft with one small dip where the melody steps down, no pucker, no extra word; eyes close, ends relaxed",
+   "note": "Jade: 'back to main me mo ohh', so the EDL now cuts it on beat 2 of bar 145 (250.99), before the extra syllables start (251.18); previews for this shot now end at that cut (+1 s).",
    "file": "review/previews/out_main/out_main_t61_7f8134e8f7.mp4"
   },
   {
    "shot": "out_main",
-   "film": "4:08.4-4:15.5",
+   "film": "4:08.4-4:12.0",
    "film_s": [
     248.363,
-    255.512
+    251.991
    ],
    "shot_s": [
     249.363,
-    254.512
+    250.991
    ],
    "take": "out_main_t12_d9d33a9749",
    "lag": -0.25,
@@ -650,14 +1058,14 @@
   },
   {
    "shot": "out_main",
-   "film": "4:08.4-4:15.5",
+   "film": "4:08.4-4:12.0",
    "film_s": [
     248.363,
-    255.512
+    251.991
    ],
    "shot_s": [
     249.363,
-    254.512
+    250.991
    ],
    "take": "out_main_t64_a4ed0b0a98",
    "lag": -0.2,
@@ -667,14 +1075,14 @@
   },
   {
    "shot": "out_main",
-   "film": "4:08.4-4:15.5",
+   "film": "4:08.4-4:12.0",
    "film_s": [
     248.363,
-    255.512
+    251.991
    ],
    "shot_s": [
     249.363,
-    254.512
+    250.991
    ],
    "take": "out_main_t65_632cbceac0",
    "lag": 0.0,
@@ -684,14 +1092,14 @@
   },
   {
    "shot": "out_main",
-   "film": "4:08.4-4:15.5",
+   "film": "4:08.4-4:12.0",
    "film_s": [
     248.363,
-    255.512
+    251.991
    ],
    "shot_s": [
     249.363,
-    254.512
+    250.991
    ],
    "take": "out_main_t66_ecb072a8a7",
    "lag": 0.1,
@@ -701,14 +1109,14 @@
   },
   {
    "shot": "out_main",
-   "film": "4:08.4-4:15.5",
+   "film": "4:08.4-4:12.0",
    "film_s": [
     248.363,
-    255.512
+    251.991
    ],
    "shot_s": [
     249.363,
-    254.512
+    250.991
    ],
    "take": "out_main_t62_ac8ae7da4c",
    "lag": 0.0,
@@ -718,20 +1126,71 @@
   },
   {
    "shot": "out_main",
-   "film": "4:08.4-4:15.5",
+   "film": "4:08.4-4:12.0",
    "film_s": [
     248.363,
-    255.512
+    251.991
    ],
    "shot_s": [
     249.363,
-    254.512
+    250.991
    ],
    "take": "out_main_t51_9cac2b2b8a",
    "lag": 0.0,
    "kind": "candidate",
    "note": "v5 re-take (fail): closes mid-'main' and reopens",
    "file": "review/previews/out_main/out_main_t51_9cac2b2b8a.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:12.0",
+   "film_s": [
+    248.363,
+    251.991
+   ],
+   "shot_s": [
+    249.363,
+    250.991
+   ],
+   "take": "out_main_t52_0f61493a51",
+   "lag": 0.25,
+   "kind": "candidate",
+   "note": "v5 re-take (fail): several extra syllables inside 'main'",
+   "file": "review/previews/out_main/out_main_t52_0f61493a51.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:12.0",
+   "film_s": [
+    248.363,
+    251.991
+   ],
+   "shot_s": [
+    249.363,
+    250.991
+   ],
+   "take": "out_main_vl_t61_05a11c3a38",
+   "lag": -0.05,
+   "kind": "experiment: violet look test",
+   "note": "VIOLET LOOK TEST: 'main' held as ONE open vowel (only a small dip where the melody steps down, no extra syllables), so it could play the full shot; smiles with some teeth on the held note, eyes close at the end",
+   "file": "review/previews/out_main/out_main_vl_t61_05a11c3a38.mp4"
+  },
+  {
+   "shot": "out_main",
+   "film": "4:08.4-4:12.0",
+   "film_s": [
+    248.363,
+    251.991
+   ],
+   "shot_s": [
+    249.363,
+    250.991
+   ],
+   "take": "out_main_vl_t62_a52c4f96c9",
+   "lag": 0.0,
+   "kind": "experiment: violet look test",
+   "note": "VIOLET LOOK TEST: like t61, eyes close earlier",
+   "file": "review/previews/out_main/out_main_vl_t62_a52c4f96c9.mp4"
   },
   {
    "shot": "out_main",
@@ -744,249 +1203,11 @@
     249.363,
     254.512
    ],
-   "take": "out_main_t52_0f61493a51",
-   "lag": 0.25,
-   "kind": "candidate",
-   "note": "v5 re-take (fail): several extra syllables inside 'main'",
-   "file": "review/previews/out_main/out_main_t52_0f61493a51.mp4"
-  },
-  {
-   "shot": "dr_dl_roll",
-   "film": "2:32.2-2:55.0",
-   "film_s": [
-    152.167,
-    175.037
-   ],
-   "shot_s": [
-    156.645,
-    160.124
-   ],
-   "take": "dr_dl_roll_t65_96b71e9d46",
-   "keys": "91:2,92.5:4,93:5.25",
-   "kind": "pick",
-   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. the close partner roll (default ?roll=close): sweep on 91.1, violet lunges, orange ducks into the table, violet rolls over her back, inverted peak on 92.3 (the bass's E->F#), lands on the far side, liangxiang freeze on the 93.1 cut. Two bodies throughout, lanes right; one extra soft-focus background figure and a small dark blob behind",
-   "file": "review/previews/wushu_roll/dr_dl_roll_t65_96b71e9d46.mp4"
-  },
-  {
-   "shot": "dr_dl_roll",
-   "film": "2:32.2-2:55.0",
-   "film_s": [
-    152.167,
-    175.037
-   ],
-   "shot_s": [
-    156.645,
-    160.124
-   ],
-   "take": "dr_dl_roll_t61_8522fa32e0",
-   "keys": "91:0.85,92.5:4.1",
-   "kind": "candidate",
-   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. close roll, alt: clean roll, but she lands back on her own side and springs into the opening guard (no new freeze)",
-   "file": "review/previews/wushu_roll/dr_dl_roll_t61_8522fa32e0.mp4"
-  },
-  {
-   "shot": "dr_dl_roll",
-   "film": "2:32.2-2:55.0",
-   "film_s": [
-    152.167,
-    175.037
-   ],
-   "shot_s": [
-    156.645,
-    160.124
-   ],
-   "take": "dr_dl_roll_t62_dc2a555781",
-   "keys": "91:0.85,92.5:3.95",
-   "kind": "candidate",
-   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. close roll: more of a handstand over the back; lands into the opening guard",
-   "file": "review/previews/wushu_roll/dr_dl_roll_t62_dc2a555781.mp4"
-  },
-  {
-   "shot": "dr_dl_ripple",
-   "film": "2:32.2-2:55.0",
-   "film_s": [
-    152.167,
-    175.037
-   ],
-   "shot_s": [
-    156.645,
-    160.124
-   ],
-   "take": "dr_dl_ripple_t69_e0408ef0fb",
-   "keys": "91:1.739,91.5:2.6,92.5:4.15",
-   "kind": "pick",
-   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. the wide canon (?roll=wide): back pair rolls on 91.3, middle ~91.4, front pair on 92.3, then all six freeze in a new pose. The front roll is busy (an X of four legs, orange over violet) for ~0.4 s",
-   "file": "review/previews/wushu_roll/dr_dl_ripple_t69_e0408ef0fb.mp4"
-  },
-  {
-   "shot": "dr_dl_ripple",
-   "film": "2:32.2-2:55.0",
-   "film_s": [
-    152.167,
-    175.037
-   ],
-   "shot_s": [
-    156.645,
-    160.124
-   ],
-   "take": "dr_dl_ripple_t65_084f82f977",
-   "keys": "91:1.739,91.5:2.7,92:3.5,92.5:4.35",
-   "kind": "candidate",
-   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. wide canon, cleanest timing (91.3 / 92.1 / 92.3) and a new freeze, but the orange partner disappears under violet's handstand for ~0.3 s",
-   "file": "review/previews/wushu_roll/dr_dl_ripple_t65_084f82f977.mp4"
-  },
-  {
-   "shot": "pc_send_v",
-   "film": "4:41.5-4:48.1",
-   "film_s": [
-    281.516,
-    288.116
-   ],
-   "shot_s": [
-    282.516,
-    287.116
-   ],
-   "take": "pc_send_v_t61_1cc469a978",
-   "lag": 0.0,
-   "kind": "pick",
-   "note": "silent send for the post-credits sender: light lifts off her palm and drifts up-right, staying in frame; hand lowers; mouth closed, soft hopeful look following it upward; patch on her LEFT arm. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
-   "file": "review/previews/postcredits/pc_send_v_t61_1cc469a978.mp4"
-  },
-  {
-   "shot": "pc_send_v",
-   "film": "4:41.5-4:48.1",
-   "film_s": [
-    281.516,
-    288.116
-   ],
-   "shot_s": [
-    282.516,
-    287.116
-   ],
-   "take": "pc_send_v_t62_7326637fa0",
-   "lag": 0.0,
-   "kind": "candidate",
-   "note": "same action, but the light rises fast and leaves the top of frame by ~2.3 s. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
-   "file": "review/previews/postcredits/pc_send_v_t62_7326637fa0.mp4"
-  },
-  {
-   "shot": "pc_send_v",
-   "film": "4:41.5-4:48.1",
-   "film_s": [
-    281.516,
-    288.116
-   ],
-   "shot_s": [
-    282.516,
-    287.116
-   ],
-   "take": "pc_send_v_t63_67ed1e9eb5",
-   "lag": 0.0,
-   "kind": "candidate",
-   "note": "same action as t61, light stays in frame; her gaze lifts less. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
-   "file": "review/previews/postcredits/pc_send_v_t63_67ed1e9eb5.mp4"
-  },
-  {
-   "shot": "orch_compose",
-   "film": "4:00.9-4:04.6",
-   "film_s": [
-    240.86,
-    244.599
-   ],
-   "shot_s": [
-    241.86,
-    243.599
-   ],
-   "take": "orch_compose_t62_3cb8f92059",
-   "lag": 0.0,
-   "kind": "pick",
-   "note": "composer cut 1 (clip 0.5-2.24): body still, small writing strokes with the glowing tip, eyes on the pencil; nothing drawn in the air; patch on her left arm. COMPOSE_TIP keyed on this take",
-   "file": "review/previews/orchestra/orch_compose_t62_cut1.mp4"
-  },
-  {
-   "shot": "orch_compose",
-   "film": "4:07.4-4:10.4",
-   "film_s": [
-    247.382,
-    250.363
-   ],
-   "shot_s": [
-    248.382,
-    249.363
-   ],
-   "take": "orch_compose_t62_3cb8f92059",
-   "lag": 0.0,
-   "kind": "pick",
-   "note": "composer cut 2 (clip 4.0-4.98), same take",
-   "file": "review/previews/orchestra/orch_compose_t62_cut2.mp4"
-  },
-  {
-   "shot": "orch_compose",
-   "film": "4:00.9-4:04.6",
-   "film_s": [
-    240.86,
-    244.599
-   ],
-   "shot_s": [
-    241.86,
-    243.599
-   ],
-   "take": "orch_compose_t61_b7cbd21ccf",
-   "lag": 0.0,
-   "kind": "candidate",
-   "note": "(fail) draws musical-note glyphs in the air (the engine draws the notes), turns away",
-   "file": "review/previews/orchestra/orch_compose_t61_cut1.mp4"
-  },
-  {
-   "shot": "orch_compose",
-   "film": "4:00.9-4:04.6",
-   "film_s": [
-    240.86,
-    244.599
-   ],
-   "shot_s": [
-    241.86,
-    243.599
-   ],
-   "take": "orch_compose_t63_41dc0f74cd",
-   "lag": 0.0,
-   "kind": "candidate",
-   "note": "still and writing like t62; closes her eyes near the end (after the clip the EDL uses)",
-   "file": "review/previews/orchestra/orch_compose_t63_cut1.mp4"
-  },
-  {
-   "shot": "orch_wide_still",
-   "film": "3:55.8-4:08.8",
-   "film_s": [
-    235.774,
-    248.774
-   ],
-   "shot_s": [
-    236.774,
-    247.774
-   ],
-   "take": "orch_wide_still_t61_84e12c8c63",
-   "lag": 0.0,
-   "kind": "candidate",
-   "note": "wide (not wired in the EDL): the still's raised-arm pose held almost motionless, band plays; still reads a bit like a conductor's pose",
-   "file": "review/previews/orchestra/orch_wide_still_t61.mp4"
-  },
-  {
-   "shot": "orch_wide_still",
-   "film": "3:55.8-4:08.8",
-   "film_s": [
-    235.774,
-    248.774
-   ],
-   "shot_s": [
-    236.774,
-    247.774
-   ],
-   "take": "orch_wide_still_t62_4bb9436957",
-   "lag": 0.0,
-   "kind": "candidate",
-   "note": "(fail) the camera pushes far in, raised-arm pose",
-   "file": "review/previews/orchestra/orch_wide_still_t62.mp4"
+   "take": "out_main_vl_t61_05a11c3a38",
+   "lag": -0.05,
+   "kind": "experiment: violet look test",
+   "note": "the same take over the full shot (to B(149) - 3), as it would play without the out_main_t61 trim",
+   "file": "review/previews/out_main/out_main_vl_t61_05a11c3a38_full.mp4"
   }
  ]
 }

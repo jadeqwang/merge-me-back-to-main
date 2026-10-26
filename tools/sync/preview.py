@@ -12,6 +12,15 @@ take, S0, LAG, T0, T1, out = a[0], float(a[1]), float(a[2]), float(a[3]), float(
 W0, W1 = max(0.0, T0 - 1), T1 + 1; D = W1 - W0
 MIX = os.path.join(ROOT, "review/cloud/audio/Merge_320k.mp3")
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+# --ramp=TA,K: the EDL's gentle time map (clip = t - S0 + lag + K * max(0, t - TA), e.g. v1_light_hands t12): the take is retimed to rate 1+K after
+# song time TA into a temp file first, so the preview shows exactly what the film plays
+if "ramp" in opt:
+    import tempfile
+    TA, K = [float(x) for x in opt["ramp"].split(",")]; cA = TA - (S0 - LAG); tmp = tempfile.mktemp(suffix=".mp4")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", take, "-filter_complex",
+                    f"[0:v]trim=end={cA:.4f},setpts=PTS-STARTPTS[a];[0:v]trim=start={cA:.4f},setpts=(PTS-STARTPTS)/{1 + K:.4f}[b];[a][b]concat=n=2:v=1[v]",
+                    "-map", "[v]", "-r", "24", "-c:v", "libx264", "-crf", "16", tmp], check=True)
+    take = tmp
 dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", take], capture_output=True, text=True).stdout)
 start = S0 - LAG                       # song time of the take's frame 0
 esc = lambda s: s.replace("\\", "\\\\").replace(":", "\\:").replace("'", "’").replace("%", "\\%").replace(",", "\\,")
