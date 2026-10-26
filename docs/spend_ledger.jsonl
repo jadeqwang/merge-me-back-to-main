@@ -999,3 +999,8 @@
 {"ts": "2026-10-26T04:35:25Z", "model": "bytedance/seedance-2.5", "tag": "pc_send_v_t61", "job": "mergemain/pc_send_v_t61-1cc469a978", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-26T04:37:35Z", "model": "bytedance/seedance-2.5", "tag": "pc_send_v_t62", "job": "mergemain/pc_send_v_t62-7326637fa0", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-26T04:37:35Z", "model": "bytedance/seedance-2.5", "tag": "pc_send_v_t63", "job": "mergemain/pc_send_v_t63-67ed1e9eb5", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T04:39:56Z", "model": "bytedance/seedance-2.5", "tag": "orch_compose_t61", "job": "mergemain/orch_compose_t61-b7cbd21ccf", "event": "submit", "ok": null, "est_usd": 1.8496, "where": "cloud"}
+{"ts": "2026-10-26T04:39:57Z", "model": "bytedance/seedance-2.5", "tag": "orch_compose_t62", "job": "mergemain/orch_compose_t62-3cb8f92059", "event": "submit", "ok": null, "est_usd": 1.8496, "where": "cloud"}
+{"ts": "2026-10-26T04:39:57Z", "model": "bytedance/seedance-2.5", "tag": "orch_compose_t63", "job": "mergemain/orch_compose_t63-41dc0f74cd", "event": "submit", "ok": null, "est_usd": 1.8496, "where": "cloud"}
+{"ts": "2026-10-26T04:40:00Z", "model": "bytedance/seedance-2.5", "tag": "orch_wide_still_t61", "job": "mergemain/orch_wide_still_t61-84e12c8c63", "event": "submit", "ok": null, "est_usd": 3.0056, "where": "cloud"}
+{"ts": "2026-10-26T04:40:01Z", "model": "bytedance/seedance-2.5", "tag": "orch_wide_still_t62", "job": "mergemain/orch_wide_still_t62-4bb9436957", "event": "submit", "ok": null, "est_usd": 3.0056, "where": "cloud"}
