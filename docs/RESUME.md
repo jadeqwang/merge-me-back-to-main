@@ -315,3 +315,23 @@ duilian retakes wide t58/t59 and close t55–t58. No renders, nothing in engine/
 Did Jade's two follow-ups. Violet now has two space buns in both duilian plates (one edit each; the close plate needed a second try because the
 first dyed the background copies' hair) and in the new takes: picks dr_dl_wide_t58 (six fighters throughout) and dr_dl_close_t57 (six at the freeze; a
 couple of extra soft-focus fighters mid-action). The wushu life clip is now Jade alone doing a jian solo at a collegiate competition: plate b, take t53. Spend **$388.47 / $600**.
+
+## 2026-10-26 checkpoint 15: orchestra v5b — the notation is the music, the composer is still (engine/docs only; no spend) — NEEDS INTAKE/RENDER (box)
+Jade's v5a note: the composer "is still not doing anything meaningful with her body … rather her be still, holding a pencil and drawing notes
+that fly into the staff"; the notation must "correctly correspond to the music … read left to right … not arbitrary".
+- **Transcription** of bars 137–144 with provenance and resynthesis checks: `docs/orchestra_transcription.md`, data `engine/show/score_orch.json`
+  (`tools/orch_tx/build_score.py`; reference engraving `to_lilypond.py`; checks `verify.py`). Voice: two sung layers (C#5/C#4, D5/D4, G→A5/A4, E5
+  over A4, F#5/F#4); keys: a dotted-8th synth line A4 (C#5 in 142/144) over Gadd9 → Bm7; bass drive offbeat 8ths G → B (no guitar in the mix:
+  the guitar doubles it); nothing violin-like (the violin doubles the voice). The 16th inner arp is not transcribable under the drop: not notated.
+- **Engraving**: `engine/show/score.js` (FX.score) draws real notation from the JSON (Bravura glyphs, `engine/fonts/bravura_glyphs.json`); a
+  cursor reads left to right, the pencil writes each note 0.55 s ahead, notes fly to their player when they sound. `tools/edl_check.mjs` now
+  serves the two JSONs and rewrites every `/engine/...` import.
+- **Still composer**: `docs/picks_manual.json` now picks orch_wide_t52, orch_line_t51, orch_keys_t51, **orch_pencil_t52** (not t51: t51
+  conducts with a raised arm) and orch_guitar_t53. The EDL uses orch_pencil_t52's still writing stretch (clip 3.0–4.8, 5.2–6.2) and orch_wide_t52
+  clip 3.0–6.1 for the second wide (9.6–12.6 waves the pencil). Without t52 the composer cuts stay on the band (orch_line / orch_wide), and the
+  v4 stand-ins never show the dancing conductor close.
+- **Re-take spec (not generated)**: `tools/sd/shots_outro.py` `orch_compose` (8 s, still composer, only the pencil hand writes small strokes,
+  eyes on the pencil, no trail, no reference audio; ≈ $1.85/take) and optional `orch_wide_still` (13 s, ≈ $3.0/take). Once picked, the EDL uses
+  orch_compose automatically (clip 0.5–2.2 and 4–5); keyframe its pencil tip in `COMPOSE_TIP` (main.js) as PENCIL_TIP was.
+- **Box next**: intake the orch_* takes, `picks.py`, `node tools/edl_check.mjs`, render 234–252 and check the score positions on the real lattice
+  (views WIDE1/WIDE2/LINE/KEYS/PENCIL/GUITAR in the orchestra block; set on take frames at the cut midpoints).

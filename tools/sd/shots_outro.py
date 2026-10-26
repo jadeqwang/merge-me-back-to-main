@@ -93,6 +93,35 @@ SHOTS = {
                          "she chugs short, tight strums in time with the reference audio, her fretting hand low on the neck; then she slides the fretting "
                          "hand up the neck and hits one huge open strum, arm swinging through, hair flying, and drives on with strong, steady strums on "
                          "every half beat, bouncing at the knees, grinning toward someone off to the left. The camera pushes in slowly."),
+
+ # ---- v5b re-takes: a STILL composer (Jade 2026-10-26: "the main one is still not doing anything meaningful with her body. I'd almost rather
+ # her be still, holding a pencil and drawing notes that fly into the staff while the others play than the silly dance"). orch_pencil t51
+ # conducts with a raised arm and t52 is still only from clip 3.0 to 6.7 (and draws a zigzag light trail, right to left); orch_wide t52 waves
+ # the pencil like a baton from 9.5 s on. The EDL uses those still stretches until these replace them (engine/show/main.js, orchestra v5).
+ # The film draws the notes (engine/show/score.js): the take must NOT draw marks, trails or symbols; her pencil tip only glows, writing
+ # small strokes left to right at chest height, so the engine's notes can fly from it into the staff above her. No reference audio: with the
+ # instrumental as reference Seedance moves bodies on the beat (out_orch's conductor, orch_wide's baton). The band behind her is soft focus.
+ "orch_compose": dict(plate="outro/orch_pencil.png", dur=8, group=True, guard=ORCH5_GUARD + " Her body, shoulders and head stay still the whole "
+                      "shot; she does not dance, sway, bob, conduct or raise her arm. The pencil tip leaves no trail or line in the air.",
+                      act="The violet composer stands completely still at sunrise, calm and focused, writing music in the air. Only her right hand "
+                          "moves: holding the yellow pencil at chest height, she makes small, precise writing strokes in the air from left to right, "
+                          "like jotting notes on an invisible staff, lifting the tip slightly between strokes; its tip glows softly. Her eyes follow "
+                          "the pencil tip the whole time, her head tilting very slightly as she writes; her left arm rests at her side. Her body, "
+                          "shoulders and feet stay still; she never sways, dances, conducts or lifts her arm high. Behind her, softly out of focus, "
+                          "the pianist, the violinist and the guitarist play steadily. Near the end she pauses, the pencil tip resting in the air, "
+                          "and gives a small, satisfied smile, eyes still on her writing. The camera holds, drifting very slightly closer."),
+ # the wide, same direction (only if Jade wants the wides re-made too; the EDL's orch_wide windows are the t52 stretches where she holds the
+ # pencil still). Reference audio kept so the band plays on the beat; the act pins the composer still.
+ "orch_wide_still": dict(plate="outro/orch_wide.png", dur=13, group=True, v2=True, audio=(INST2, 235.774, 13), guard=ORCH5_GUARD + " The composer "
+                         "in the centre stays still the whole shot: she never dances, sways, bobs to the beat, conducts or raises her arm above her "
+                         "shoulder. The pencil tip leaves no trail or line in the air.",
+                         act="Every life she has lived plays together at sunrise. The violet composer in the centre stands still, calm and focused, "
+                             "writing the music in the air: her right hand holds the yellow pencil at chest height and makes small, precise writing "
+                             "strokes from left to right, its tip glowing softly, her eyes following the pencil; her body, head and left arm stay "
+                             "still. Around her the band plays the reference audio: the rose pianist's right hand plays short repeated notes high on "
+                             "the keyboard while her left hand holds a chord; the rose guitarist chugs short strums on the off-beats, between the "
+                             "kicks; the white violinist draws long, slow bow strokes, eyes closed, never sawing on the beat. Low camera, very slow "
+                             "push in, golden sun behind them, ripples on the thin water at their feet."),
 }
 
 # First frames for the v5 orchestra (GPT Image 2.5 via tools/plates/gpt_plate.py, 2 candidates each, 1536x1024 -> crop 1536x864, copy the pick to
