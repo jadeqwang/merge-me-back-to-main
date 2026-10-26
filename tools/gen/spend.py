@@ -25,7 +25,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 GENLOG = os.path.join(ROOT, "media", "genlog.jsonl")
 LEDGER = os.path.join(ROOT, "docs", "spend_ledger.jsonl")   # committed compact copy of billing rows (cf.log), from the box AND cloud sessions
 VSPEND = os.path.join(ROOT, "media", "gen", "spend.jsonl")
-CAP_USD = float(os.environ.get("MERGEMAIN_CAP", "600"))
+CAP_USD = float(os.environ.get("MERGEMAIN_CAP", "1000"))   # Jade raised it from $600 on 2026-10-26
 
 
 def _lines(p):
