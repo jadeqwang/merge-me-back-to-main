@@ -563,3 +563,9 @@ clipping, the fall get-up "not how humans get up", symmetric kicks; "try a few d
   4. Eyeball: the 91.1 cut (dr_set kicks → orange bending), the handstand on 92.3 (2:39.25), the 93.1 cut on the legs swinging down, and the
      kick's contact on 97.2 (2:47.5).
   5. Also check the background lumps in t72 (two background figures read as dark blobs from ~2.9 s).
+
+## 2026-10-26 checkpoint 21 — Jade's violet-look decision
+- Jade: "use violet's messy bun at 0:28. the 1:30 looks fine as is, so i'm reticent to risk messing it up."
+- 0:28 `v1_split_front` → `v1_split_front_vl_t63_97c644fcfe` (violet's own face + messy bun, main's orange costume, camera locked, lag .2;
+  `docs/picks_manual.json`). 1:30 stays `ch1_gone_close_34v_t61`. Main keeps the canon v4 face everywhere else (violet look not adopted
+  globally; the `*_vl` tests for 1:11 / 3:50 / 4:11 stay experiments). Box: intake `v1_split_front_vl_t63`, then picks.py.

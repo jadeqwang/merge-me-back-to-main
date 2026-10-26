@@ -287,8 +287,8 @@
    ],
    "take": "v1_split_front_violet_t62_1554379c1c",
    "lag": 0.2,
-   "kind": "pick",
-   "note": "JADE'S PICK (review page 2026-10-26): violet's face; the camera pushes in to a close-up (the split copies assume a fixed framing: check the copies at 0:30). Lag .2 measured with per-frame face detection (the tracker lost her as the camera pushed in); she sings the whole line",
+   "kind": "candidate",
+   "note": "earlier pick, replaced by vl_t63 (no face-swap hair traces): violet's face; the camera pushes in to a close-up (the split copies assume a fixed framing: check the copies at 0:30). Lag .2 measured with per-frame face detection (the tracker lost her as the camera pushed in); she sings the whole line",
    "file": "review/previews/v1_split_front/v1_split_front_violet_t62_1554379c1c.mp4"
   },
   {
@@ -304,8 +304,8 @@
    ],
    "take": "v1_split_front_vl_t63_97c644fcfe",
    "lag": 0.2,
-   "kind": "candidate",
-   "note": "VIOLET LOOK (violet's own face + messy bun, main's orange costume; no face swap): camera locked as asked, no bang artifacts, rounded w on 'ways', ends soft; recommended of the three",
+   "kind": "pick",
+   "note": "JADE'S PICK (2026-10-26: \"use violet's messy bun at 0:28\"): VIOLET LOOK (violet's own face + messy bun, main's orange costume; no face swap): camera locked as asked, no bang artifacts, rounded w on 'ways', ends soft; recommended of the three",
    "file": "review/previews/v1_split_front/v1_split_front_vl_t63_97c644fcfe.mp4"
   },
   {

@@ -108,3 +108,4 @@ These changes are in the EDL only (cloud, 2026-10-26). Nothing was rendered and 
   - Jacket: it's a front view, so there's no back band. The chest band under the small blue dot is canon. **But the 1420 MHz patch is on
     her right arm in this take.** It's also a sung take, so her lips move while she releases the light. A patch fix (one image edit and one
     8 s take, about $2) would correct the arm, if you OK it.
+- 2026-10-26, violet look: 0:28 uses violet's own face + messy bun in main's orange costume (`v1_split_front_vl_t63`); 1:30 stays `ch1_gone_close_34v_t61` as is; main keeps the canon face elsewhere.
