@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_dl_kick_t71",
+ "notes": "{\"shot\": \"dr_dl_kick\", \"s0\": 165.341, \"plate\": \"media/plates/drop/dr_dl_roll.png\", \"timing\": \"v2\", \"bakeoff\": \"seedance\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly, same framing and characters. Rehearsed wushu partner set on a wet salt flat at sunset: orange copy (ponytail) left, violet copy (two buns) right, in guard. About 1.7 seconds in the violet copy alone throws a middle front snap kick at the orange copy's stomach. The orange copy does NOT kick: she lifts her front knee and sweeps her forearm down, parrying the shin aside past her hip. About 3.5 seconds in the orange copy counters with a straight punch in a bow stance, stopping short; the violet copy leans back and blocks with her forearm. About 4.6 seconds in both freeze. One kick only. Real weight and momentum; knees bend on every landing. Always exactly two separate people, two arms and two legs each; no limb appears, vanishes or detaches; bodies never pass through each other. The four small background figures stay in place. Static low side camera. One continuous shot, no slow motion, no text, mouths closed. Each timed move lands exactly on a beat of the reference audio.",
+  "image": "file:media/gen/refs/dr_dl_roll_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "aspect_ratio": "16:9",
+  "use_virtual_avatar": true,
+  "reference_audios": [
+   "file:media/gen/refs/dr_dl_kick_v2_165.34_6s.mp3"
+  ]
+ }
+}

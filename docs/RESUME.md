@@ -515,3 +515,51 @@ Cloud v5b session, from Jade's notes on her review page (relayed by session_01TS
   `tools/sync/preview.py --ramp=TA,K` plays the v1_light_hands time map. All of this session's previews are ≤ 1.5 MB.
 - **Box:** copy the new takes/specs/stills, intake (picks first: v1_split_front_violet_t62, ch1_gone_close_34v_t61, v1_light_hands_t12 is
   already on the box), `picks.py`, `edl_check`, renders 27-48, 88-101, 248-256.
+
+## 2026-10-26 checkpoint 20: fight-choreography model bake-off; v4 drop is the default again, with the roll and a kick-vs-block exchange spliced in — NEEDS INTAKE/RENDER (box)
+Cloud session (started from Jade's instruction in session_01TSBays4bH1M779gzn9GT9M, her notes on `dr_dl_roll_t65`: a disembodied leg, arm
+clipping, the fall get-up "not how humans get up", symmetric kicks; "try a few different models … how well does veo do?").
+**Spend:** $22.90 for 24 takes. The ledger shows $526.35 / $1,000, which includes other sessions.
+- **Bake-off:** `docs/video_model_bakeoff.md`. The same still and one shared prompt (`tools/sd/bakeoff.py`) on Seedance 2.5, Veo 3.1,
+  Hailuo 2.3 (MiniMax H3 failed 7003 on every job, unbilled), Runway Gen-4.5 and Vidu Q3 Pro, 2 takes × 2 tests, plus 4 Seedance roll re-takes.
+  Kling isn't in Cloudflare's catalog.
+  - **Seedance 2.5 wins both tests.** Veo is sharper but ~1 s early, and it adds people or props.
+  - Every roll take, from every model, breaks identity or colour after the landing. Seedance recolours violet from ~4.7 s.
+- **Picks** (added to `docs/picks_manual.json`):
+
+| shot | tags | pick | why |
+|---|---|---|---|
+| dr_dl_roll (v4 91–93) | t71–84 | **t72** `dr_dl_roll_t72_aca95618a0` | orange bridges on her hands, violet handstands over her back (vertical 3.75–4.17), two clean bodies; clip 1.29–4.65 only (orange tabs on violet from ~4.7, hair swap ~5.2). Alt: t84 (straddle roll, same recolour) |
+| dr_dl_kick (v4 97.1–98.3) | t71–80 | **t72** `dr_dl_kick_t72_9f2e8dd66e` | front kick met by a lifted knee + downward forearm (1.67), step-in punch blocked by a forearm (3.42), freeze 3.67; clean throughout |
+
+- **Takes:** `review/takes/dr_dl_{roll,kick}_t71…t84_*.mp4` (24 files, all models, kept as the record) + `review/takes/specs/`. Box: copy the two
+  picks into `media/gen/` and their specs into `media/gen/specs/`. The first frame is the existing `media/plates/drop/dr_dl_roll.png`
+  (`review/takes/stills/dr_dl_roll.png`). Intake ONLY `dr_dl_roll_t72_aca95618a0` and `dr_dl_kick_t72_9f2e8dd66e`, one at a time. The other
+  22 are bake-off evidence. The Veo takes are 1920×1080 and the Hailuo takes 1376×768. `dr_dl_kick` is a new shot in `tools/sd/shots_wushu.py`
+  (audio window B(96) = 165.34).
+- **EDL** (drop block only; `out_main` / `v1_light_hands` untouched):
+  - **default `DROP = 'v4'`**. The v5 group set, with the fall get-up, only plays behind `?drop=v5`.
+  - **The roll in v4:** 91.1–93.1 = `keyed()` t72 [[92.5, 3.9], [93, 4.65]]: real speed into the handstand peak on 92.3, ×0.86 to the
+    93.1 cut, on violet's legs swinging down to land (a cut on action into dr_duilian_mid's group burst).
+    - `ROLL_KEY[take]` holds the keys and the take's checked clean range. v4 shows a roll only for a take that has one (so t65 is never shown in v4).
+    - The 0.22 flash on the peak plays in v4 too. `?roll=off` restores v4's dr_set 91–93.
+  - **The kick in v4:** `?kick=on|off`. On 97.1–98.3 it replaces v4's mirrored palm-to-palm clash (dr_duilian t2 clip 1.7–4.3).
+    - `keyed()` t72 [[97.25, 1.67]] at real speed: clip 1.24 (the chamber) → contact on 97.2 → the punch on 98.2 → the freeze.
+    - Then dr_duilian t2 from 98.3 on v4's own clock (`v4at('dr_duilian', 1, 97)`: orange's run-up into the duck under the high kick).
+- **Validation:** `node --check`, plus `tools/edl_check.mjs` over every combination of:
+  - picks: cloud picks, a scratch picks.json with the t72 picks, one with t65 picked;
+  - fake: none, `--fake=dr_dl_roll,dr_dl_kick`, `--fake=allnew`;
+  - query: default, `drop=v4`, `drop=v5`, `roll=close|wide|off`, `kick=off`, `drop=v5&roll=wide`.
+  - All 72 runs: 0 exceptions, 0 bad args, 0 gaps, 0 held clocks.
+  - `--list` (t72 picks): 156.645–160.123 dr_dl_roll_t72 clip 1.29–4.65; 167.079–169.688 dr_dl_kick_t72 clip 1.23–3.84; dr_duilian t2 4.35 → 8.69.
+- **Previews for Jade's phone:** `review/previews/wushu_bakeoff/` (index.json: 25 new entries, kind pick/candidate).
+  - Every take raw at real speed with the song at its slot (0.3–0.6 MB each).
+  - `v4_drop_roll_t72_kick_t72.mp4` (1.7 MB): the new default drop as a raw rough cut. 93–95 is a black card, because dr_duilian_mid t1 is box-only.
+  - Tool: `tools/preview_bakeoff.py`.
+- **Box next:**
+  1. Copy and intake the two picks (above).
+  2. Run `picks.py`, then `node tools/edl_check.mjs` (expect held-clocks 0).
+  3. Render 150–176 with the default, with `roll=off`, and with `kick=off`, plus `drop=v5` if Jade wants the A/B.
+  4. Eyeball: the 91.1 cut (dr_set kicks → orange bending), the handstand on 92.3 (2:39.25), the 93.1 cut on the legs swinging down, and the
+     kick's contact on 97.2 (2:47.5).
+  5. Also check the background lumps in t72 (two background figures read as dark blobs from ~2.9 s).

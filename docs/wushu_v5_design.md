@@ -576,3 +576,6 @@ salute → fold are unchanged.
 - Lessons for Seedance 2.5 acrobatics: it runs a described phrase ~1 s early, and it returns to the first frame's pose at the end unless the
   last pose is described as different from it. Naming many lane colours in the act can recolour the still's lanes. A roll at wide scale merges
   bodies more often than in a close two-shot.
+
+## 12. Fight-choreography bake-off and the v4 splice (2026-10-26)
+Jade, on roll t65: a disembodied leg, arm clipping, the fall get-up "not how humans get up", symmetric kicks. Five video models on the same still and prompt: Seedance 2.5 wins (docs/video_model_bakeoff.md). The default drop is v4 (v5a) again, with the roll (dr_dl_roll t72, clean frames only) keyed into 91.1-93.1 and a kick met by a knee check (dr_dl_kick t72) on 97.1-98.3; this v5 design (the group set and its fall) plays only behind ?drop=v5. RESUME checkpoint 20.

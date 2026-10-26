@@ -5,6 +5,7 @@ the phone app's Code tab) or a Remote Control session on the Linux box. Read thi
 commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and `docs/RESUME.md` (checkpoint log).
 
 ## START HERE (2026-10-25 night): Jade is flying, the box is unattended
+**Fight-choreography bake-off + v4 splice (cloud, 2026-10-26): NEEDS INTAKE/RENDER (box).** Seedance 2.5 beat Veo 3.1, Hailuo 2.3, Runway Gen-4.5 and Vidu Q3 Pro on a partner roll and a kick-vs-block exchange (`docs/video_model_bakeoff.md`). The default drop is v4 (v5a) again, with `dr_dl_roll_t72` keyed into 91–93 (clean frames only) and `dr_dl_kick_t72` on 97.1–98.3; the v5 group set only behind `?drop=v5`. Checkpoint 20 in `docs/RESUME.md`; previews `review/previews/wushu_bakeoff/`. Spend $526.35 / $1,000.
 **Spend cap raised to $1,000** (Jade, 2026-10-26: "Raise to $1,000"; `MERGEMAIN_CAP` default in `tools/gen/spend.py`). Older "$600" mentions below are historical.
 **v5b singing shots (cloud, 2026-10-26; Jade's v5a lip-sync + expression notes): NEEDS INTAKE/RENDER (box).** New picks for 7 of the 8 sung
 shots (ch1_main t61, ch1_gone_close t61, ch2_gone_close t63, out_main t61, v1_light_hands t62, bd_ahh t52, ch2_catch t52; v1_split_front stays

@@ -7,8 +7,6 @@ Then: python3 tools/gen/gen.py submit <specs> (est + cap check), python3 tools/g
 Tags: dr_dl_roll_t<N> (test a) and dr_dl_kick_t<N> (test b); one tag pair per model, so a model owns the same N in both tests."""
 import json, os, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.join(ROOT, "tools", "gen"))
-import gen  # noqa: E402
 
 STILL = "review/takes/stills/dr_dl_roll.png"
 I2 = "analysis_v2/stems/instrumental.wav"
@@ -57,6 +55,8 @@ def prompt(test):
 
 
 def main():
+    sys.path.insert(0, os.path.join(ROOT, "tools", "gen"))
+    import gen  # noqa: E402  (here, so tools/sd/shots_wushu.py can import the prompt text without the relay setup)
     opt = lambda k, d: next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith(f"--{k}=")), d)
     models, tests, t0 = opt("models", ",".join(ORDER)).split(","), opt("tests", "roll,kick").split(","), int(opt("t0", "71"))
     im = os.path.relpath(gen.ref_image(os.path.join(ROOT, STILL), os.path.join(gen.REFS, "dr_dl_roll_2048.jpg")), ROOT)

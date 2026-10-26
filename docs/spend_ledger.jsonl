@@ -1101,3 +1101,7 @@
 {"ts": "2026-10-26T06:24:42Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t82", "job": "mergemain/dr_dl_roll_t82-991aea84ba", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-26T06:24:43Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t83", "job": "mergemain/dr_dl_roll_t83-78fd66fffb", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
 {"ts": "2026-10-26T06:24:44Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t84", "job": "mergemain/dr_dl_roll_t84-286803e174", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T06:30:19Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t81", "job": "mergemain/dr_dl_roll_t81-1fc3c1b414", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T06:30:20Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t82", "job": "mergemain/dr_dl_roll_t82-991aea84ba", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T06:31:24Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t83", "job": "mergemain/dr_dl_roll_t83-78fd66fffb", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T06:31:25Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t84", "job": "mergemain/dr_dl_roll_t84-286803e174", "event": "result", "ok": true, "est_usd": 1.3872, "where": "cloud"}

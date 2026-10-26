@@ -680,20 +680,37 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
 { const D0 = B(89);
   const OOH = (T.TIMING.lyrics.adlibs || []).find((a) => a.start > D0 && a.end <= B(105) + .5);
   const ooh = (t) => (OOH ? ss(OOH.start - .2, OOH.start + 1.2, t) * (1 - ss(OOH.end - 1.2, OOH.end, t)) : 0);
-  // ?drop=v4 | v5 (see the cut list below): v5 by default only once every new drop shot has a picked take
-  const NEW_DROP = ['dr_dl_wide', 'dr_dl_close', 'dr_gs_ranks', 'dr_gs_tornado', 'dr_gs_ring', 'dr_gs_salute'];
-  const DROP = new URLSearchParams(location.search).get('drop') || (NEW_DROP.every(has) ? 'v5' : 'v4');
-  // ?roll=close | wide | off (v5 only): the partner roll over the back closes the duilian (bars 91-92; docs/wushu_v5_design.md section 11). The roll
-  // peaks on 92.3, the bass's E -> F# step (the drop's strongest beat-3 onset, the airborne bar of the first rising phrase), lands on 92.4, and
-  // the liangxiang freeze runs into the cut on 93.1. Default = the picked version (the close two-shot first), else the v5.2 dr_dl_close.
+  // ?drop=v4 | v5 (see the cut list below). Default v4 (Jade 2026-10-26, after v5a: the v5 group set's fall get-up "is not how humans get up";
+  // keep the v5a fight choreography and splice the roll into it). The v5 group set stays available behind ?drop=v5 only.
+  const Q = new URLSearchParams(location.search);
+  const DROP = Q.get('drop') || 'v4';
+  // ?roll=close | wide | off: the partner roll over the back (docs/wushu_v5_design.md section 11; docs/video_model_bakeoff.md). The roll
+  // peaks on 92.3, the bass's E -> F# step (the drop's strongest beat-3 onset, the airborne bar of the first rising phrase). Default = the picked
+  // version (the close two-shot first). v4 shows the roll only for a take whose clean stretch was checked frame by frame (ROLL_KEY[take].clean):
+  // the cut 91.1 -> 93.1 then plays only those frames (t65's disembodied leg and arm clipping, t72's lane recolour after ~4.7 s never show).
   const ROLL_SHOT = { close: 'dr_dl_roll', wide: 'dr_dl_ripple' };
-  const ROLL = new URLSearchParams(location.search).get('roll') || (has('dr_dl_roll') ? 'close' : has('dr_dl_ripple') ? 'wide' : 'off');
-  const rollOn = DROP === 'v5' && ROLL in ROLL_SHOT && has(ROLL_SHOT[ROLL]);
+  const ROLL = Q.get('roll') || (has('dr_dl_roll') ? 'close' : has('dr_dl_ripple') ? 'wide' : 'off');
+  // per take: keyed() pairs [[bar position, clip time], ...]; clean = [first, last] clip time with no glitch (the keys must keep the cut inside it)
+  const ROLL_KEY = {
+    dr_dl_roll_t72_aca95618a0: { k: [[92.5, 3.9], [93, 4.65]], clean: [1.2, 4.68] },   // Seedance 2.5 (bake-off winner): orange bends to a bridge
+    // on her hands, violet steps in (~2.2) and goes over her back in a handstand, vertical 3.75-4.17 -> the peak on 92.3; the 93.1 cut comes at
+    // 4.65 with violet's legs swinging down to land (from ~4.7 her trouser tabs turn orange). Real speed before the peak (clip 1.29 on 91.1), x0.86 after.
+    dr_dl_roll_t65_96b71e9d46: { k: [[91, 2], [92.5, 4], [93, 5.25]] },                 // v5.3 (Jade: a disembodied leg, arm clipping): ?drop=v5 only
+  };
+  const rollTake = PICKS[ROLL_SHOT[ROLL]]?.take, rollKey = ROLL_KEY[rollTake];
+  const rollOn = ROLL in ROLL_SHOT && has(ROLL_SHOT[ROLL]) && (DROP === 'v5' || !!rollKey?.clean);
+  // ?kick=on | off (v4): a kick met by a block made for kicks, replacing v4's mirrored palm-to-palm clash on 97.1-98.3 (dr_duilian t2 clip 1.7-4.3).
+  // dr_dl_kick t72 (Seedance 2.5), real speed: the cut opens on violet chambering her front kick (clip 1.24), the kick meets orange's lifted knee +
+  // downward forearm on 97.2 (clip 1.67), orange steps in with a bow-stance punch on 98.2 (3.42) that violet's forearm blocks, frozen from 98.2½
+  // (3.67); back to v4's dr_duilian on 98.3 on its own clock (orange's run-up into the duck under violet's high kick).
+  const KICK_KEY = { dr_dl_kick_t72_9f2e8dd66e: [[97.25, 1.67]] };
+  const kickKey = KICK_KEY[PICKS.dr_dl_kick?.take];
+  const kickOn = DROP === 'v4' && Q.get('kick') !== 'off' && has('dr_dl_kick') && !!kickKey;
   const dropText = (ty, t) => {
     const g = ty.g;
     FX.streaks(g, t, D0, B(105) - .3, 2);
     if (t < D0 + .9) { const f = Math.exp(-(t - D0) * 5); g.fillStyle = `rgba(255,250,240,${f})`; g.fillRect(0, 0, 1920, 1080); }
-    if (DROP === 'v5') for (const [hb, k] of [[93, .3], [97, .5], ...(rollOn ? [[92.5, .22]] : [])]) {   // v5: the burst, the fall (+ the roll's peak)
+    for (const [hb, k] of [...(DROP === 'v5' ? [[93, .3], [97, .5]] : []), ...(rollOn ? [[92.5, .22]] : [])]) {   // v5: the burst, the fall; the roll's peak
       const a = t - bb(Math.floor(hb), (hb - Math.floor(hb)) * 4);
       if (a >= 0 && a < .6) { g.fillStyle = `rgba(255,250,240,${k * Math.exp(-a * 7)})`; g.fillRect(0, 0, 1920, 1080); } }
   };
@@ -724,8 +741,8 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     dr_gs_ranks: [[93, BAR]],                                // the burst into bow stance + punch on 93.1
     dr_gs_tornado: [[97, 2 * BAR], [98, 3 * BAR]],           // the six hit the water on 97.1; they start to push up on 98.1 (bar 97 = the held still)
     dr_gs_salute: [[100, BAR], [100.5, BAR + 2 * BEAT]],     // the horse stance on 100.1; fist meets palm on 100.3 (the "ooh")
-    dr_dl_roll: [[91, 2], [92.5, 4], [93, 5.25]],            // t65 (measured): the sweep on 91.1, the roll's peak (inverted over her partner's back) on
-                                                             // 92.3 (x0.77 between), the liangxiang freeze reached on the 93.1 cut (x1.44). t61: [[91, .85], [92.5, 4.1]]
+    dr_dl_roll: rollKey?.k || [[91, 2], [92.5, 4], [93, 5.25]],   // per take (ROLL_KEY); t65 (measured): the sweep on 91.1, the roll's peak (inverted over
+                                                             // her partner's back) on 92.3 (x0.77 between), the liangxiang freeze on the 93.1 cut (x1.44). t61: [[91, .85], [92.5, 4.1]]
     dr_dl_ripple: [[91, BAR], [91.5, 2.6], [92.5, 4.15]] };  // t69 (measured): back pair's peak 91.3, front pair's 92.3 (the middle pair rolls ~91.4)
   const FOLDCUT = [101, { plate: pk(`ch1_fold_${FOLD}`, 0).plate, s0: (b0) => B(b0) - .2 }, [960, 430]];
   const v5 = (b0, shot, cut, sun, v4cut, v4sun) => (has(shot) ? [b0, cut, sun] : [b0, v4cut, v4sun]);
@@ -739,8 +756,12 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     v5(98.5, 'dr_gs_ring', at('dr_gs_ring', 1), [960, 330], v4at('dr_duilian', 1, 97), [960, 160]),                  // halves trade (98.3, 99.1), cross pairs (99.3)
     v5(100, 'dr_gs_salute', keyed('dr_gs_salute', KEY.dr_gs_salute), [960, 430], v4at('dr_duilian', 3, 99), [960, 160]),     // horse stance; main steps in; salute
     FOLDCUT]
-    : [[89, at('dr_set', 0), [700, 230]], [91, at('dr_set', 2), [700, 230]], [93, at('dr_duilian_mid', 2), [960, 160]],
-      [95, at('dr_jian', 0), [1500, 470]], [97, at('dr_duilian', 1), [960, 160]], [99, at('dr_duilian', 3), [960, 160]], FOLDCUT];
+    : [[89, at('dr_set', 0), [700, 230]],                                                                            // v4 (v5a): group set, kicks on 90.3
+      rollOn ? [91, keyed(ROLL_SHOT[ROLL], KEY[ROLL_SHOT[ROLL]]), [960, 330]] : [91, at('dr_set', 2), [700, 230]],   // the partner roll, peak on 92.3
+      [93, at('dr_duilian_mid', 2), [960, 160]], [95, at('dr_jian', 0), [1500, 470]],
+      ...(kickOn ? [[97, keyed('dr_dl_kick', kickKey), [960, 330]], [98.5, v4at('dr_duilian', 1, 97), [960, 160]]]  // kick checked, counter punch blocked
+        : [[97, at('dr_duilian', 1), [960, 160]]]),
+      [99, at('dr_duilian', 3), [960, 160]], FOLDCUT];
   const FOLD_I = cuts.length - 1;
   cuts.forEach(([b0, { plate, s0, clip }, sun], i) => {
     const t0 = BT(b0), t1 = BT(i < FOLD_I ? cuts[i + 1][0] : b0 + 2);

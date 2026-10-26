@@ -1208,6 +1208,407 @@
    "kind": "experiment: violet look test",
    "note": "the same take over the full shot (to B(149) - 3), as it would play without the out_main_t61 trim",
    "file": "review/previews/out_main/out_main_vl_t61_05a11c3a38_full.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t71_185776d379",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Seedance 2.5; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. correct: violet side kick checked by orange's lifted knee, counter punch, forearm block; the kick is held ~1.5 s (static), front legs overlap in the final stance",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t71_185776d379.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t72_9f2e8dd66e",
+   "kind": "pick",
+   "note": "BAKE-OFF (Seedance 2.5; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. PICK. front kick met by orange's lifted knee + downward forearm (contact ~1.67), orange's step-in bow-stance punch (3.42) blocked by violet's forearm, freeze 3.67; two clean bodies throughout",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t72_9f2e8dd66e.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t73_d9567ca551",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Veo 3.1; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. kick + knee check ~0.8 (1 s early), counter punch; then a hallucinated bow/sword appears in orange's hand from 3.0",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t73_d9567ca551.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t74_1104eeb7e7",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Veo 3.1; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. both kick at once ~0.7 (symmetric), background figures change from four to two, mirrored punches",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t74_1104eeb7e7.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t75_2ada3ddcc1",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Hailuo 2.3; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. FAIL: the wrong copy kicks (orange), legs tangle with violet's counter-kick",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t75_2ada3ddcc1.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t76_623fbf10d9",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Hailuo 2.3; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. FAIL: orange kicks, violet doesn't block, no counter",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t76_623fbf10d9.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t77_f4299bf67e",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Runway Gen-4.5; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. violet's roundhouse ~0.8, then both lift knees together (symmetric), background shuffles",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t77_f4299bf67e.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t78_1346f7eade",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Runway Gen-4.5; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. orange kicks back (symmetric exchange), legs overlap 3.0-5.3, both turn to camera at the end",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t78_1346f7eade.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t79_2783bf38c4",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Vidu Q3 Pro; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. low side kick + knee check ~2.0-2.5, but the legs pass through each other ~2.9-3.2",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t79_2783bf38c4.mp4"
+  },
+  {
+   "shot": "dr_dl_kick",
+   "film": "2:45.3-2:51.3",
+   "film_s": [
+    165.341,
+    171.341
+   ],
+   "shot_s": [
+    167.08,
+    169.689
+   ],
+   "take": "dr_dl_kick_t80_fcf1b35c2b",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Vidu Q3 Pro; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. roundhouse checked by a lifted knee ~2.0-2.5, punch + forearm block; a small orange object flickers in the background",
+   "file": "review/previews/wushu_bakeoff/dr_dl_kick_t80_fcf1b35c2b.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t71_9fce1707d9",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Seedance 2.5; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. orange folds forward, violet rolls over slowly (inverted ~1.5 s); 21:9 output; after landing the copies swap places/hair",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t71_9fce1707d9.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t72_aca95618a0",
+   "kind": "pick",
+   "note": "BAKE-OFF (Seedance 2.5; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. PICK. orange bridges on her hands, violet handstands over her back (vertical 3.75-4.17), two clean separate bodies; from ~4.7 violet's trouser tabs turn orange and the hair swaps after landing, so the EDL plays clip 1.29-4.65 only",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t72_aca95618a0.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t73_1a1c595003",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Veo 3.1; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. cartwheel over a crawling partner, peaks ~1.5 s early; a ghost figure behind them 2.8-3.3; ends in a frontal fist-palm salute (reframed)",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t73_1a1c595003.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t74_622564ca27",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Veo 3.1; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. FAIL: a third (duplicate violet) figure appears at 2.8 and the roller turns orange",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t74_622564ca27.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t75_e06aac8976",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Hailuo 2.3; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. FAIL: the partners merge into one; one copy cartwheels alone and walks off, background figures vanish",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t75_e06aac8976.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t76_cb0405e966",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Hailuo 2.3; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. FAIL: bodies tangle, then two headstanding figures (mirror/reflection confusion)",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t76_cb0405e966.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t77_5891634154",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Runway Gen-4.5; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. background figures change from four crouching to a standing line at 1.0; roll ok, landing in a heap, faces drift",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t77_5891634154.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t78_82de927de6",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Runway Gen-4.5; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. legs tangle at 3.3-3.8; violet leaves frame, orange's bands go brown",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t78_82de927de6.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t79_5a1110bea3",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Vidu Q3 Pro; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. best physics of the rest (front walkover across a table back, peak on 4.3) but violet's trousers turn orange mid-flip and green/blue after; orange posts in the background",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t79_5a1110bea3.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t80_7c1dcf8110",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Vidu Q3 Pro; docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. violet's head merges into orange's hair at the peak; after landing orange's ponytail stretches horizontally like a rope",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t80_7c1dcf8110.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t81_1fc3c1b414",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Seedance 2.5 (round 2); docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. clean roll 2.8-5.0, then the copies swap back into the opening guard",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t81_1fc3c1b414.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t82_991aea84ba",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Seedance 2.5 (round 2); docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. clean roll; violet recoloured orange on landing (~5.3)",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t82_991aea84ba.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t83_78fd66fffb",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Seedance 2.5 (round 2); docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. low all-fours base, cartwheel; violet's trousers orange from ~5.0, tangled landing",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t83_78fd66fffb.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t84_286803e174",
+   "kind": "candidate",
+   "note": "BAKE-OFF (Seedance 2.5 (round 2); docs/video_model_bakeoff.md): raw take at real speed, frame 0 on its audio window (one bar before the slot), full mix. alternate: straddle roll, lands on feet ~5.0; orange tabs on violet from ~4.75, hair swap from ~5.2",
+   "file": "review/previews/wushu_bakeoff/dr_dl_roll_t84_286803e174.mp4"
+  },
+  {
+   "shot": "drop_v4",
+   "film": "2:33.2-2:55.0",
+   "film_s": [
+    153.167,
+    175.037
+   ],
+   "shot_s": [
+    153.167,
+    174.037
+   ],
+   "take": "dr_dl_roll_t72_aca95618a0+dr_dl_kick_t72_9f2e8dd66e",
+   "keys": "roll 92.5:3.9,93:4.65; kick 97.25:1.67",
+   "kind": "pick",
+   "note": "THE NEW DEFAULT DROP (v4 / v5a fight choreography): raw-take rough cut of bars 89-101 on the EDL's clocks (tools/preview_bakeoff.py v4). dr_set 89; the roll 91.1-93.1 (peak on 92.3, cut on violet's legs swinging down); 93-95 dr_duilian_mid t1 is box-only (black card here); jian 95; kick vs knee check on 97.2, punch vs forearm block on 98.2; v4 dr_duilian from 98.3; fold 101.",
+   "file": "review/previews/wushu_bakeoff/v4_drop_roll_t72_kick_t72.mp4"
   }
  ]
 }

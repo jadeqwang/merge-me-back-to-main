@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_dl_roll_t84",
+ "notes": "{\"shot\": \"dr_dl_roll\", \"s0\": 154.906, \"plate\": \"media/plates/drop/dr_dl_roll.png\", \"timing\": \"v2\", \"bakeoff\": \"seedance round 2 (winner)\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly, same framing and characters. Rehearsed wushu partner set on a wet salt flat at sunset: orange copy (ponytail) left, violet copy (two buns) right, in guard. About 1.7 seconds in the orange copy bends forward at the waist, back flat like a table, hands on her knees, feet planted. About 2.6 seconds in the violet copy puts her palms and shoulders on that back and rolls over it lengthwise, legs together in one high arc, inverted above the back about 4.3 seconds in. About 4.8 seconds in she lands on both feet on the far left side and both freeze in a liangxiang pose facing the camera. Real weight and momentum; knees bend on every landing. Always exactly two separate people, two arms and two legs each; no limb appears, vanishes or detaches; bodies never pass through each other. The four small background figures stay in place. Static low side camera. One continuous shot, no slow motion, no text, mouths closed. Each copy keeps her own colours to the end: the violet copy's bands and trouser tabs stay violet, the orange copy's stay orange. Each timed move lands exactly on a beat of the reference audio.",
+  "image": "file:media/gen/refs/dr_dl_roll_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "aspect_ratio": "16:9",
+  "use_virtual_avatar": true,
+  "reference_audios": [
+   "file:media/gen/refs/dr_dl_roll_v2_154.91_6s.mp3"
+  ]
+ }
+}
