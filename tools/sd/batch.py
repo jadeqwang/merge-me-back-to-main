@@ -4,7 +4,9 @@
 Writes media/gen/specs/<shot>_tK.json via gen.py spec and submits (unless --dry). Audio windows: (stem, start, dur) in song time;
 S0 (the song time of clip frame 0) = start. Log: media/gen/sd_batch.jsonl
 --timing=v2 (default): sung shots use the revised song (analysis_v2 stems, the windows in A2 below, same offset into each line as v1) and the
-canon-face stills in media/plates/face_v4/<shot>.png; the spec notes record timing so intake/picks/main.js know which song a take sings."""
+canon-face stills in media/plates/face_v4/<shot>.png; the spec notes record timing so intake/picks/main.js know which song a take sings.
+Motion reference (?drop=real, docs/wushu_real_routine.md): a shot with ref_video="media/....mp4" also sends that clip as reference_videos (gen.py
+turns file: into a data: URI, so no public URL is needed); ref_mode="ref" sends the still as reference_images instead of the first frame."""
 import json, os, subprocess, sys, time
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PY = "/home/jade/Documents/1-music-shipped/moongazing/.venv/bin/python"
@@ -120,8 +122,11 @@ def main():
         else: src, ref = (s['plate'] if s['plate'].startswith('media/') else f"media/plates/{s['plate']}"), f"media/gen/refs/{os.path.basename(stem)}.jpg"
         if not os.path.exists(os.path.join(ROOT, ref)):
             subprocess.run([PY, "tools/gen/gen.py", "ref-image", src, ref, "--max=1600"], cwd=ROOT, env=env, check=True)
-        args = ["--image", ref, "--set", f"duration={s['dur']}", "--set", f'resolution="{res}"', "--set", "use_virtual_avatar=true",
-                "--set", 'aspect_ratio="16:9"']
+        args = (["--ref-image", ref] if s.get("ref_mode") == "ref" else ["--image", ref]) + [
+                "--set", f"duration={s['dur']}", "--set", f'resolution="{res}"', "--set", "use_virtual_avatar=true", "--set", 'aspect_ratio="16:9"']
+        if s.get("ref_video"):   # motion reference: the clip whose motion the take follows (a data: URI at submit)
+            if not os.path.exists(os.path.join(ROOT, s["ref_video"])): sys.exit(f"{k}: no reference clip {s['ref_video']} (tools/prep/real_ws.mjs --refs)")
+            args += ["--set", f'reference_videos=["file:{s["ref_video"]}"]']
         if s.get("audio"):
             stem, a, d = s["audio"]
             out = f"media/gen/refs/{k}_{tv}_{a:.2f}_{d}s.mp3"
@@ -133,7 +138,8 @@ def main():
             subprocess.run([PY, "tools/gen/gen.py", "spec", tag, "bytedance/seedance-2.5", "--prompt", prompt] + args, cwd=ROOT, env=env, check=True,
                            stdout=subprocess.DEVNULL)
             p = os.path.join(ROOT, "media/gen/specs", f"{tag}.json")
-            sp = json.load(open(p)); sp["notes"] = json.dumps({"shot": k, "s0": s["audio"][1] if s.get("audio") else None, "plate": src, "timing": tv})
+            sp = json.load(open(p)); sp["notes"] = json.dumps({"shot": k, "s0": s["audio"][1] if s.get("audio") else None, "plate": src, "timing": tv,
+                                                               **({"ref_video": s["ref_video"]} if s.get("ref_video") else {})})
             json.dump(sp, open(p, "w"), indent=1)
             specs.append(p)
     if dry:
