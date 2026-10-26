@@ -55,3 +55,30 @@ SHOTS = {
  "ch1_gone_close_34": dict(plate="ch1_gone_close.jpg", face="ch1_gone_close_34", dur=11, v2=True, audio=(VOC2, 89.16, 11), act=_GC),
  "ch1_gone_close_34v": dict(plate="ch1_gone_close.jpg", face="ch1_gone_close_34v", dur=11, v2=True, audio=(VOC2, 89.16, 11), act=_GC),
 }
+
+# Post-credits sender (Jade's v5a note at 4:44, relayed 2026-10-26: "use the clip where she's sending off the light ... so she's not just a still
+# image"). The EDL now plays v2_release_t12 clip 0.6-5.2 there, but that is a sung take (lips move) with the patch on her RIGHT arm. pc_send_v =
+# the same action, silent, from the v2_release still with the patch moved to her LEFT upper arm (the arm she holds out). Same dish setting as
+# v2_release, so it cuts like the take it replaces. No audio ref. Once picked, engine/show/main.js's post-credits sender (~lines 1082-1099) should
+# switch to it (not edited here).
+# The nano-banana edit below came back unchanged once, then the relay errored (2047) and timed out, so the still that was used is a LOCAL edit
+# (OpenCV, free): the patch ellipse on her right sleeve inpainted away, the same patch pixels placed foreshortened (x.64, y.86, x.94 light) on the
+# violet band of her outstretched left arm at (810, 472) of the 1920x1072 still. Result: review/takes/stills/pc_send_v.png.
+STILLS["pc_send_v"] = dict(tool="edit", src="media/plates/face_v4/v2_release.png", to="media/plates/face_v4/pc_send_v.png",
+   refs=["media/style/r7/turn_gpt_patch.png", "media/style/r7/patch_34.png"],
+   # try 2 (first try returned the image unchanged): image positions spelled out
+   prompt="Edit the first image. There is a round white '1420 MHz' patch on the upper sleeve of the arm that hangs down on the LEFT side of the "
+          "image (about 27% from the left edge, 46% from the top). ERASE that patch completely: that sleeve becomes plain white fabric with only its "
+          "violet band. Then ADD the same patch on the other arm, the one stretched out toward the light on the right: on its upper arm near the "
+          "shoulder (about 45% from the left edge, 42% from the top), facing the camera. Do both changes. Details: remove it from the sleeve on the LEFT of the image (her right arm), leaving a "
+          "plain white sleeve with its violet band, and put it on her LEFT upper arm, the arm she holds out toward the light (on the RIGHT of the image), "
+          "on the upper sleeve just above the violet band, exactly like the patch in the reference images: a round white embroidered patch with a thin "
+          "black ring and the bold black text '1420' above 'MHz', following the curve and the cool night light of the sleeve. Her mouth is gently "
+          "closed. Keep everything else exactly the same: framing, pose, open palm, the glowing violet-white light above it, face, hair bun with the "
+          "pencils, VIOLET headphones, VIOLET jacket bands and pant straps (never orange), the dish, the stars and the gold horizon glow. Do not add "
+          "any other text.")
+SHOTS["pc_send_v"] = dict(plate="v2_release.jpg", face="pc_send_v", dur=6,
+   act="She stands alone at the edge of the great dish under the stars, the small light resting just above her open palm. She lets it go: it "
+       "drifts slowly up and away to the right toward the far horizon, and her hand lowers slowly to her side. Her eyes follow the light the "
+       "whole time, a quiet, hopeful look. Her mouth stays gently closed; she does not sing or speak. The camera stays still."
+       " The round 1420 MHz patch stays on her left upper arm; her bands, straps and headphones stay violet.")

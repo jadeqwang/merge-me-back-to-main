@@ -328,3 +328,47 @@ Cloud session, no generation, no spend, nothing rendered. Edits are in `engine/s
   to Jade). The clean `v2_horizon` (t51/t52 + still) needs intake and a pick only; 3:07 follows PICKS.
 - `edl_check` 0–297: 0 exceptions, 0 held clocks (default, `bd=full`, `drop=v4/v5`, `figlook=led`).
 - **Box:** render 124–153 with the default and with `bd=full` (the A/B), plus 280–297.016 (run sheet §3).
+
+## 2026-10-26 checkpoint 15: v5b singing shots (Jade's v5a lip-sync + expression notes) — NEEDS INTAKE/RENDER (box)
+Cloud session (started from Jade's instruction via session_01TSBays4bH1M779gzn9GT9M). Nothing in engine/. Spend ≈ **$461 / $600** in the merged
+ledger (other sessions spent in parallel; this session ≈ $65: 33 Seedance takes, 6 images). Direction for every sung shot (Jade): optimistic and
+hopeful with depth, as if she has just said something profound; no shallow/advertising smile, no teeth grin, not somber or blank.
+- **Method (cloud, no box needed): `tools/sync/cloudsync.py`** measures each raw take against the v2 vocal stem: per-frame mouth openness / width /
+  smile / eyes / teeth (FaceMesh), envelope + onset + labial-weighted cross-correlation over the shot's EDL range, word strips (`--labials` = crops
+  at each m/b/p onset), a contact sheet and a curve. The correlations lock onto phrase structure on held notes (e.g. v1_split_front 1.208,
+  v1_light_hands 0.71, bd_ahh −0.375 were phrase locks), so every lag below was set by hand: mouth peaks on the vowels and closures on the
+  labials, read from a clip-time plot with the words drawn at lag 0, then checked on the strips. Convention: clip = song − S0 + lag; all takes
+  here are `timing: v2` (spec notes), so `picks.py` applies `s0 − lag` with no resync. **Ear-check every lag** (the previews below).
+- **Previews for Jade (phone):** `review/previews/<shot>/<take>.mp4` (raw take at song time with the lag, full mix, shot range ±1 s, orange bar =
+  inside the shot, sung word under the picture) + `review/previews/index.json` (44 clips: 8 picks, 28 candidates, 8 experiments).
+  Made by `tools/sync/preview.py`.
+- **Prompts:** `tools/sd/shots_v5.py` RETAKES (v5b: `HOPE`, `LIPS(last)`, `SING2`; ch1_main spells out the held "Merge"; out_main t64+ spells
+  out the held "main"). Experiments: `tools/sd/shots_v5b.py` (new keys, never the default).
+
+| shot (film) | candidates (lag) | expression | pick | why |
+|---|---|---|---|---|
+| v1_split_front (0:28) | **t11 (.62)** | soft closed smile at the end | **t11 .62** (unchanged) | mouth peaks on I / my / self / thou / sand / ways at +.62; no note from Jade on its sync |
+| v1_light_hands (0:41) | **t62 (0)**, t12 (0), t63 (0); t61 lost on the relay | t62 smiles with some teeth mid-line, ends looking up at the light, soft | **t62 0** | holds "ahead" open to the end; t12 (v5a, lag −0.15) lumps "a-head" late and closes early; t63 puckers and opens "ahead" 0.6 s late |
+| ch1_main (1:09) | **t61 (.167)**, t63 (.25), t52 (.125), t11 (.5), t62 (.45), t51 (.2) | t61: earnest wide-eyed singing, faint closed warmth at the end | **t61 .167** | M closed, mouth open through the whole held "Merge", closed on me/b/m, "main" held. **t11 (v5a) / t51 / t62 close mid-"Merge"** = Jade's "whole phrase in the space of merge": no lag fixes them |
+| ch1_gone_close (1:29) | **t61 (0)**, t62 (0), t64 (0), t12 (0); t63 errored | t61: bright eyes, faint closed warmth; t62/t64/t12 end smiling | **t61 0** | "undone" held open (round) for its whole 5 s and closed as the sound ends; t12 closed 1.5 s early then smiled |
+| bd_ahh (1:52) | **t52 (0)**, t51 (0), t12 (−.375) | eyes closed the whole note, serene | **t52 0** | fixes the huge eyes; mouth opens exactly on the "Ahh" (t51 opens 0.8 s early) |
+| ch2_catch (3:28) | **t52 (.333)**, t51 (.25), _b_t51 (fail), t11 (.292) | eyes closed, contemplative, chin lowers | **t52 .333** | Merge held, closed on me/b/m, ends contemplative (Jade's 3:30 note). Picking it switches off the 3:30 interim trim (`CATCH_CUT`) |
+| ch2_gone_close (3:48) | **t63 (0)**, t51 (.1), t62 (0), t64 (.4), t12 (.7), t52/t53 (grin) | t63: raised brows, earnest, faint closed warmth | **t63 0** | closed on the b, "become" held to its end. **t12 (v5a) fits at ~0.7, not 0.3** = Jade's "off by a whole word", and it grins. Note: t63 does not mouth the "Back to" pickup (235.75–236.4) before the orchestra cut at 236.53; consider cutting at `we(23)` (235.73) when t63 is picked |
+| out_main (4:09) | **t61 (0)**, t64 (−.2), t65 (0), t66 (.1), t62 (0), t12 (−.25), t51 (0), t52 (.25); t63 lost | t61: calm, eyes close, relaxed; t64–66 pucker then teeth smile | **t61 0** | the vocal steps down a note ~1 s into the held "main" (spectrogram); every take re-articulates there. t61's is a small soft dip, no pucker, no extra word. t12 (v5a) shut for 1.3 s then reopened in a grin = Jade's "extra word after main". Picking t61 switches off the 4:12 interim trim (`OUT_MAIN_END`) |
+
+- **EXPERIMENTS** (never default; to try one, point the real shot at it in `docs/picks_manual.json` and put the lag in `docs/lags.json`):
+  - (a) 0:28 violet's face on main: still `media/plates/face_v4/v1_split_front_violet.png` (canonprop face mode, candidate b; refs = violet's
+    dish close-up `face_v4/v2_dish_close.png`, i.e. `review/cloud/refs/canon_v4__violet_test__violet_ref.jpg` + a tighter crop
+    `review/takes/stills/violet_dish_face.jpg`). **t61 (.25)** works but the camera pushes in more than t11 (the split copies assume a fixed
+    framing); t62 pushes into a close-up (fail).
+  - (b) 1:29 3/4 profile, main's face: still `ch1_gone_close_34.png` (GPT edit, first-round candidate b: a little slimmer than the canon,
+    nearer violet, which Jade said is fine). **t61 (0)** keeps the 3/4 view, eyes past camera, calm and serious; **t63 (0)** keeps it too,
+    soft closed smile at the end; t62 ignored the still (frontal), t64 reframed with the patch on the wrong arm.
+  - (c) 1:29 3/4 profile, violet's face: still `ch1_gone_close_34v.png`. **t61 (0)** turns toward camera, clean held "undone"; **t62 (0)**
+    keeps the 3/4 view looking past camera, mouth closes ~0.5 s late.
+- **Box next:** copy `review/takes/*_t6[1-6]_*.mp4` + `_t5x` into `media/gen/`, specs into `media/gen/specs/`, the stills in
+  `review/takes/stills/` (v1_split_front_violet / ch1_gone_close_34 / ch1_gone_close_34v .png → `media/plates/face_v4/`), intake one at a
+  time (picks first: ch1_main_t61, ch1_gone_close_t61, ch2_gone_close_t63, out_main_t61, v1_light_hands_t62, bd_ahh_t52, ch2_catch_t52), then
+  `picks.py` (docs/picks_manual.json + docs/lags.json are updated), `node tools/edl_check.mjs`, renders 27–48, 68–101, 110–119, 207–237, 248–256.
+- **Relay:** 2047 errors (refunded) and two jobs stuck in `running` with no result (`out_main_t63`, `v1_light_hands_t61`; counted at their
+  estimate in the ledger). One extra GPT still request (`drop_ch1_gone_close_34_*`, 00:49 UTC) never returned.

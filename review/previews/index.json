@@ -285,11 +285,62 @@
     89.11,
     99.965
    ],
+   "take": "ch1_gone_close_34_t61_94c23884d8",
+   "lag": 0.0,
+   "kind": "experiment",
+   "note": "EXPERIMENT: three-quarter view, main's face (the 3/4 still came out a little slimmer, nearer violet); keeps the 3/4 view, eyes just past camera, holds 'undone' open to the end, calm and serious, no smile",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_34_t61_94c23884d8.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
    "take": "ch1_gone_close_34_t62_10955df015",
    "lag": 0.0,
    "kind": "experiment",
-   "note": "EXPERIMENT: three-quarter view, main's canon face",
+   "note": "EXPERIMENT (fail): ignored the 3/4 first frame, sings frontal",
    "file": "review/previews/ch1_gone_close/ch1_gone_close_34_t62_10955df015.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_34_t63_462b69885c",
+   "lag": 0.0,
+   "kind": "experiment",
+   "note": "EXPERIMENT: three-quarter view kept, main's face; holds 'undone' (mouth closes ~0.4 s after the sound), ends on a soft closed-mouth smile",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_34_t63_462b69885c.mp4"
+  },
+  {
+   "shot": "ch1_gone_close",
+   "film": "1:28.1-1:41.0",
+   "film_s": [
+    88.11,
+    100.965
+   ],
+   "shot_s": [
+    89.11,
+    99.965
+   ],
+   "take": "ch1_gone_close_34_t64_de809b5995",
+   "lag": 0.0,
+   "kind": "experiment",
+   "note": "EXPERIMENT (fail): reframed, and the 1420 MHz patch jumps to her right arm",
+   "file": "review/previews/ch1_gone_close/ch1_gone_close_34_t64_de809b5995.mp4"
   },
   {
    "shot": "ch1_gone_close",
