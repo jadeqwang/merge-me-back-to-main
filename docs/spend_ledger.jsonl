@@ -1059,3 +1059,11 @@
 {"ts": "2026-10-26T06:11:37Z", "model": "minimax/hailuo-2.3", "tag": "dr_dl_roll_t76", "job": "mergemain/dr_dl_roll_t76-cb0405e966", "event": "submit", "ok": null, "est_usd": 0.28, "where": "cloud"}
 {"ts": "2026-10-26T06:11:38Z", "model": "minimax/hailuo-2.3", "tag": "dr_dl_kick_t75", "job": "mergemain/dr_dl_kick_t75-2ada3ddcc1", "event": "submit", "ok": null, "est_usd": 0.28, "where": "cloud"}
 {"ts": "2026-10-26T06:11:39Z", "model": "minimax/hailuo-2.3", "tag": "dr_dl_kick_t76", "job": "mergemain/dr_dl_kick_t76-623fbf10d9", "event": "submit", "ok": null, "est_usd": 0.28, "where": "cloud"}
+{"ts": "2026-10-26T06:15:00Z", "model": "minimax/hailuo-2.3", "tag": "dr_dl_roll_t76", "job": "mergemain/dr_dl_roll_t76-cb0405e966", "event": "result", "ok": true, "est_usd": 0.28, "where": "cloud"}
+{"ts": "2026-10-26T06:16:06Z", "model": "minimax/hailuo-2.3", "tag": "dr_dl_roll_t75", "job": "mergemain/dr_dl_roll_t75-e06aac8976", "event": "result", "ok": true, "est_usd": 0.28, "where": "cloud"}
+{"ts": "2026-10-26T06:17:10Z", "model": "minimax/hailuo-2.3", "tag": "dr_dl_kick_t75", "job": "mergemain/dr_dl_kick_t75-2ada3ddcc1", "event": "result", "ok": true, "est_usd": 0.28, "where": "cloud"}
+{"ts": "2026-10-26T06:17:11Z", "model": "minimax/hailuo-2.3", "tag": "dr_dl_kick_t76", "job": "mergemain/dr_dl_kick_t76-623fbf10d9", "event": "result", "ok": true, "est_usd": 0.28, "where": "cloud"}
+{"ts": "2026-10-26T06:24:42Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t81", "job": "mergemain/dr_dl_roll_t81-1fc3c1b414", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T06:24:42Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t82", "job": "mergemain/dr_dl_roll_t82-991aea84ba", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T06:24:43Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t83", "job": "mergemain/dr_dl_roll_t83-78fd66fffb", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
+{"ts": "2026-10-26T06:24:44Z", "model": "bytedance/seedance-2.5", "tag": "dr_dl_roll_t84", "job": "mergemain/dr_dl_roll_t84-286803e174", "event": "submit", "ok": null, "est_usd": 1.3872, "where": "cloud"}
