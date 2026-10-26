@@ -136,3 +136,78 @@ STILLS = {
           "ORANGE in the middle, SKY BLUE, GOLDEN YELLOW, VIOLET; only the middle copy is orange, and every other copy's jacket bands, cargo "
           "straps and headphone cups stay her own colour, never orange." + _KEEP),
 }
+
+# ---- v5.3 THE PARTNER ROLL (Jade 2026-10-26: "an actually impressive looking wushu move from the group set, like rolling over your sparring
+# partner's back"). Lands on the duilian close, bars 91-92 (docs/wushu_v5_design.md section 11): the peak of the roll on 92.3 (bass E -> F#,
+# the strongest beat-3 onset in the drop and the airborne bar of the first rising phrase), the landing on 92.4, the liangxiang freeze into the
+# cut on 93.1. Duilian vocabulary: the attacker lunges into gongbu with a straight punch (chongquan); the defender ducks forward, bent flat at
+# the waist (a "table"); the attacker sets her shoulders across the flat back and rolls sideways over it (the back roll, beigun), legs swinging
+# over in a high arc, lands on her feet on the far side in gongbu; both snap into liangxiang. Same 6 s window as dr_dl_close (B(90); cut 91 =
+# clip 1.739; peak 92.3 = 4.348; land 92.4 = 4.783; cut 93 = 5.218). Two versions:
+#   dr_dl_roll       the close two-shot, orange and violet side-on, from a pulled-back copy of dr_dl_close_v5 (headroom for the roll's arc)
+#   dr_dl_ripple     the three pairs in a diagonal echelon, rolling one after another (canon on half bars): back pair mint/gold peaks 91.3 (2.61),
+#                    middle rose/sky 92.1 (3.48), front orange/violet 92.3 (4.35); all freeze in liangxiang by 92.4.
+# Variant prompts (_b) drop the sweep for a punch exchange, so Seedance gets one readable acrobatic beat (pick by frames).
+ANAT = " The two partners are always two separate people with two arms and two legs each; bodies never merge or pass through each other."
+_ROLL = ("the violet copy sets her shoulders across the orange copy's flat back and rolls sideways over it, legs swinging up and over in a high "
+         "arc; the peak, her body level above the back and legs high, about 4.3 seconds in, exactly on a beat; about 4.8 seconds in she lands on "
+         "her feet on the far side in a low bow stance and both snap into a liangxiang pose, the orange copy straightening to face her, fists up, "
+         "heads snapping to the camera, held dead still to the end.")
+_CLOSE_BG = (" Behind them, small and soft-focus, the same four background figures keep sparring; nobody else appears. Low side-on camera at "
+             "waist height, holding still, water flying." + SAFE + ANAT + " Exactly six copies stay in frame the whole shot." + MUTE_G)
+SHOTS.update({
+ "dr_dl_roll": dict(plate="media/plates/drop/dr_dl_roll.png", dur=6, group=True, v2=True, audio=(I2, 154.906, 6),  # B(90); cut 91 = 1.739; peak 92.3 = 4.348
+   act="Wushu duilian finale, a rehearsed partner set: the orange copy on the left facing right, the violet copy (two space buns) on the right "
+       "facing left, in guard. About 1.7 seconds in, exactly on a beat of the reference audio, the orange copy drops low and sweeps her leg along "
+       "the water; the violet copy hops over it. About 2.6 seconds in the violet copy lunges into a bow stance with a straight punch; the orange "
+       "copy ducks forward under it, bent at the waist, her back flat and level like a table. About 3.6 seconds in "
+       + _ROLL + _CLOSE_BG),
+ "dr_dl_roll_b": dict(plate="media/plates/drop/dr_dl_roll.png", dur=6, group=True, v2=True, audio=(I2, 154.906, 6),
+   act="Wushu duilian finale, a rehearsed partner set: the orange copy on the left facing right, the violet copy (two space buns) on the right "
+       "facing left, coiled in guard. About 1.7 seconds in, exactly on a beat of the reference audio, they trade two fast strikes, a punch met "
+       "by a rising forearm block each way. About 3.4 seconds in the violet copy lunges into a deep bow stance with a straight punch; the orange "
+       "copy ducks forward under it, bent at the waist, her back flat and level like a table, and at once " + _ROLL + _CLOSE_BG),
+ "dr_dl_ripple": dict(plate="media/plates/drop/dr_dl_ripple.png", dur=6, group=True, v2=True, audio=(I2, 154.906, 6),  # peaks 2.61 / 3.48 / 4.35
+   act="Wushu duilian performed as a show by three pairs of copies standing in a diagonal line of pairs on the wet mirror salt flat, each pair "
+       "side-on to the camera: the mint copy against the gold copy furthest back, the rose copy against the sky copy in the middle, the orange "
+       "copy against the violet copy nearest the camera. The three pairs do the same rehearsed move one after another, like a ripple, from the "
+       "back pair to the front pair, each half a bar later than the one before: in each pair the second fighter lunges with a straight punch, her "
+       "partner ducks forward bending flat at the waist, and the puncher rolls sideways across her partner's flat back, legs swinging up and over "
+       "in a high arc, and lands on her feet on the far side in a low bow stance. The back pair (the gold copy rolling over the mint copy) peaks "
+       "about 2.6 seconds in, the middle pair (the sky copy rolling over the rose copy) about 3.5 seconds in, and the front pair (the violet copy "
+       "rolling over the orange copy) about 4.3 seconds in, each peak exactly on a beat of the reference audio. About 4.8 seconds in all three "
+       "pairs snap into the same liangxiang pose and freeze, held dead still to the end. Wide, low camera, holding still, water spraying from "
+       "every landing." + SAFE + " In every pair the two partners are always two separate people, each with exactly two arms and two legs; "
+       "bodies never merge or pass through each other." + SIX_DL + MUTE_G),
+})
+SHOTS["dr_dl_ripple_b"] = dict(SHOTS["dr_dl_ripple"], act=SHOTS["dr_dl_ripple"]["act"].replace(
+    "Wide, low camera, holding still", "Wide, low camera, slowly pushing in toward the front pair"))
+STILLS.update({
+ # the close plate pulled back so the roll's arc (legs over the partner's back) stays in frame; the fighters and four behind unchanged
+ "dr_dl_roll": dict(tool="edit", src="media/plates/drop/dr_dl_close_v5.png", to="media/plates/drop/dr_dl_roll.png", refs=[_CANON, _BUNREF[0]],
+   prompt="Edit the first image: pull the camera back. Show the SAME scene from slightly further away, so the two fighters in front are smaller, "
+          "each about two thirds of the frame height, full-body from their space buns and ponytail to their sneakers, with clear open sky above "
+          "their heads and a strip of wet mirror water below their feet. Keep them exactly the same: the same two women, faces, eyes, expressions, "
+          "poses, hair (ORANGE fighter on the left in a high ponytail; VIOLET fighter on the right in two space buns, like the second reference), "
+          "jackets, sleeve patches and colours; keep the four small soft-focus figures sparring behind them (ROSE PINK, SKY BLUE, MINT GREEN, "
+          "GOLDEN YELLOW), and the sun low between the two fighters. Extend the salt flat, sky and reflections naturally into the new space at the "
+          "edges. Everyone's hair stays BLACK: the lane colours are only on jackets, straps and headphones. Do not add any text or people."),
+ # the three duilian pairs in a diagonal echelon, each side-on, so a canon reads back to front
+ "dr_dl_ripple": dict(tool="gpt", out="media/plates/drop/dr_dl_ripple",
+   refs=["media/plates/drop/dr_duilian_v5.png", _CANON] + _BODY + _BUNREF,
+   prompt=_STYLE + "Full sunrise on the wet mirror salt flat, the same world, light, outfits, hair and six fighters as the first reference image, "
+          "a moment later in the same wushu sparring set, seen wider: the three pairs stand in a DIAGONAL LINE OF PAIRS receding from the right "
+          "foreground to the left background, each pair SIDE-ON to the camera, the two partners about one and a half metres apart, squaring off "
+          "in a low bow-stance guard, lead hand open, rear fist chambered. Nearest the camera, lower right, large: ORANGE (high ponytail) on the "
+          "left facing right against VIOLET (two space buns, as in the last reference image) on the right facing left. In the middle distance, "
+          "centre: ROSE PINK (one high bun) on the left against SKY BLUE (high ponytail) on the right. Furthest back, upper left, small: MINT "
+          "GREEN (high ponytail) on the left against GOLDEN YELLOW (one high bun) on the right. Six copies in all, every one full-body with "
+          "sneakers and reflections visible, nobody overlapping another, with plenty of open sky above every head and space around each pair. "
+          "Everyone's hair is BLACK; the lane colours are only on jackets, straps and headphones. Keep all six inside the middle band of the "
+          "frame, top to bottom, so a 16:9 crop keeps everyone whole. Low wide camera at waist height; the sun a blazing disc low on the horizon "
+          "behind the middle pair, lens flare, long reflections, fine spray at their feet." + _COST + _FACE + _TAIL),
+ "dr_dl_ripple_patch": dict(tool="patch", src="media/plates/drop/dr_dl_ripple.png",
+   prompt=_PATCH + "Keep every copy's colours exactly as in the first image: the front pair ORANGE (left) against VIOLET (right), the middle pair "
+          "ROSE PINK against SKY BLUE, the back pair MINT GREEN against GOLDEN YELLOW; each branch's jacket bands, cargo straps and headphone "
+          "cups stay her own colour, never orange except the front-left fighter." + _KEEP),
+})

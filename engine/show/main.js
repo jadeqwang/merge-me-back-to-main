@@ -741,11 +741,18 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   // ?drop=v4 | v5 (see the cut list below): v5 by default only once every new drop shot has a picked take
   const NEW_DROP = ['dr_dl_wide', 'dr_dl_close', 'dr_gs_ranks', 'dr_gs_tornado', 'dr_gs_ring', 'dr_gs_salute'];
   const DROP = new URLSearchParams(location.search).get('drop') || (NEW_DROP.every(has) ? 'v5' : 'v4');
+  // ?roll=close | wide | off (v5 only): the partner roll over the back closes the duilian (bars 91-92; docs/wushu_v5_design.md section 11). The roll
+  // peaks on 92.3, the bass's E -> F# step (the drop's strongest beat-3 onset, the airborne bar of the first rising phrase), lands on 92.4, and
+  // the liangxiang freeze runs into the cut on 93.1. Default = the picked version (the close two-shot first), else the v5.2 dr_dl_close.
+  const ROLL_SHOT = { close: 'dr_dl_roll', wide: 'dr_dl_ripple' };
+  const ROLL = new URLSearchParams(location.search).get('roll') || (has('dr_dl_roll') ? 'close' : has('dr_dl_ripple') ? 'wide' : 'off');
+  const rollOn = DROP === 'v5' && ROLL in ROLL_SHOT && has(ROLL_SHOT[ROLL]);
   const dropText = (ty, t) => {
     const g = ty.g;
     FX.streaks(g, t, D0, B(105) - .3, 2);
     if (t < D0 + .9) { const f = Math.exp(-(t - D0) * 5); g.fillStyle = `rgba(255,250,240,${f})`; g.fillRect(0, 0, 1920, 1080); }
-    if (DROP === 'v5') for (const [hb, k] of [[93, .3], [97, .5]]) { const a = t - B(hb);   // v5: the group set's unison hits (the burst, the fall)
+    if (DROP === 'v5') for (const [hb, k] of [[93, .3], [97, .5], ...(rollOn ? [[92.5, .22]] : [])]) {   // v5: the burst, the fall (+ the roll's peak)
+      const a = t - bb(Math.floor(hb), (hb - Math.floor(hb)) * 4);
       if (a >= 0 && a < .6) { g.fillStyle = `rgba(255,250,240,${k * Math.exp(-a * 7)})`; g.fillRect(0, 0, 1920, 1080); } }
   };
   // Jade 2026-10-24: wushu, not K-pop. v4: her collegiate team's changquan group set (bar 89), a half-vs-half duilian exchange, her jian solo
@@ -774,12 +781,15 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   const KEY = {
     dr_gs_ranks: [[93, BAR]],                                // the burst into bow stance + punch on 93.1
     dr_gs_tornado: [[97, 2 * BAR], [98, 3 * BAR]],           // the six hit the water on 97.1; they start to push up on 98.1 (bar 97 = the held still)
-    dr_gs_salute: [[100, BAR], [100.5, BAR + 2 * BEAT]] };   // the horse stance on 100.1; fist meets palm on 100.3 (the "ooh")
+    dr_gs_salute: [[100, BAR], [100.5, BAR + 2 * BEAT]],     // the horse stance on 100.1; fist meets palm on 100.3 (the "ooh")
+    dr_dl_roll: [[91, BAR], [92.5, BAR + 6 * BEAT]],         // the sweep on 91.1; the roll's peak (body level over her partner's back) on 92.3
+    dr_dl_ripple: [[91, BAR], [91.5, BAR + 2 * BEAT], [92, 2 * BAR], [92.5, BAR + 6 * BEAT]] };   // back, middle, front pair's peaks 91.3/92.1/92.3
   const FOLDCUT = [101, { plate: pk(`ch1_fold_${FOLD}`, 0).plate, s0: (b0) => B(b0) - .2 }, [960, 430]];
   const v5 = (b0, shot, cut, sun, v4cut, v4sun) => (has(shot) ? [b0, cut, sun] : [b0, v4cut, v4sun]);
   const cuts = DROP === 'v5' ? [  // [bar position, plate, s0(b0) = song time of the clip's frame 0, sun x,y]; each cut runs to the next cut
     v5(89, 'dr_dl_wide', at('dr_dl_wide', 1), [960, 160], v4at('dr_set', 0, 89), [700, 230]),                         // duilian: three pairs clash on the drop
-    v5(91, 'dr_dl_close', at('dr_dl_close', 1), [960, 330], v4at('dr_set', 2, 91), [700, 230]),                       // the front pair: sweep, leap, flying kick, freeze
+    rollOn ? [91, keyed(ROLL_SHOT[ROLL], KEY[ROLL_SHOT[ROLL]]), [960, 330]]                                           // the partner roll, peak on 92.3
+      : v5(91, 'dr_dl_close', at('dr_dl_close', 1), [960, 330], v4at('dr_set', 2, 91), [700, 230]),                   // the front pair: sweep, leap, flying kick, freeze
     v5(93, 'dr_gs_ranks', keyed('dr_gs_ranks', KEY.dr_gs_ranks), [960, 330], v4at('dr_duilian_mid', 2, 93), [960, 160]),     // group set: unison burst, pubu, pose
     [95, at('dr_jian', 0), [1500, 470]],                                                                              // her jian solo, 1 bar
     v5(96, 'dr_gs_tornado', keyed('dr_gs_tornado', KEY.dr_gs_tornado), [960, 330], v4at('dr_jian', 0, 95), [1500, 470]),     // the fall on 97, held, rise on 98.1
