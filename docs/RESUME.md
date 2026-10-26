@@ -485,3 +485,33 @@ the 3:56 cut; `COMPOSE_TIP` and the orchestra block untouched), `tools/edl_check
   take lengths (t63 and t61 live): 0 exceptions, 0 bad args, 0 gaps, 0 held clocks.
 - **Box next:** after checkpoint 17's intake + `picks.py` + `node tools/edl_check.mjs`, render 222–266 and 280–297.016 (run sheet §1.4).
   Eyeball the drawn light on hers (4:42.5–4:47.1) and the 3:55.7 cut.
+
+## 2026-10-26 checkpoint 19: Jade's review-page picks + "main in violet's look" — NEEDS INTAKE/RENDER (box)
+Cloud v5b session, from Jade's notes on her review page (relayed by session_01TSBays4bH1M779gzn9GT9M). Spend **$503 / $1,000** (merged ledger).
+- **Picks (docs/picks_manual.json + lags.json), Jade's choices:** v1_split_front → `v1_split_front_violet_t62` (lag .2, measured with
+  per-frame face detection: the camera pushes in to a close-up and the tracker lost her; the split copies assume a fixed framing, so check
+  0:28-0:33); v1_light_hands → `v1_light_hands_t12` (lag .05); ch1_gone_close → `ch1_gone_close_34v_t61`; out_main → `out_main_t61`; ch1_main
+  t61, bd_ahh t52, ch2_catch t52, ch2_gone_close t63, orch_compose t62, pc_send_v t61 unchanged.
+- **EDL (engine/show/main.js; the drop block untouched):**
+  - v1_light_hands t12: "each one a light" fits at .05, but "ahead" opens ~0.3 s late. One lag can't fit both; within her 3% limit, from
+    mid-"light" (`ws(3,3)+.4` = 43.73) the clip runs 3% fast (`clip(u,t)`), +0.05 s by "ahead". That is all a gentle map can give; the
+    rate is capped so the take never runs past its last frame (with the stale cloud picks the cap is 0). Keyed on the take (`isTake`).
+  - out_main t61 ("back to main me mo ohh"): the "main" vowel is open over clip 1.33-1.67 (250.43-250.77), the mouth shuts by 1.83 and the
+    extra syllables reopen from 2.08 (251.18). `OUT_MAIN_END` = `bb(145, 1)` (250.99, beat 2 of bar 145) while t61 is picked; the living
+    graph starts there (its second fork already waits for bar 147), gapless. Note: the violet-look `out_main_vl_t61` holds "main" as one
+    vowel and could play the full shot.
+  - `edl_check`: 0 exceptions / 0 held clocks with review/cloud/picks/picks.json, and with out_main t61 + v1_light_hands t12 at the new s0.
+- **"Main in violet's look"** (Jade: violet's face is better, but face-swap edits leave partial-bang hair artifacts; give her violet's own hair
+  in the orange jacket). No face swap: GPT Image stills of violet's own face and messy bun (her two pencils kept: "hair intact") in main's
+  costume (orange lanes, patch on the LEFT upper arm), posed and framed like each shot's still. `tools/sd/shots_v5b.py` (`_vl()`, STILLS
+  `*_vl`, SHOTS `*_vl`); stills in `review/takes/stills/` (v1_split_front_vl = cand a, ch1_gone_close_vl34 = b, ch1_main_vl = b, also used by
+  out_main_vl, ch2_gone_close_vl = b).
+  - 0:28 `v1_split_front_vl` t61-63: camera locked in all three (the prompt now says so), no bang artifacts, lag .2. **t63 recommended**.
+  - 1:29 `ch1_gone_close_vl34` t61-63: **t63** keeps the 3/4 off-centre view (mouth closes ~0.4 s after the note); t61/t62 turn to face the
+    camera. `ch1_gone_close_34v_t61` (Jade's pick) has a dark strand over one temple, the partial-bang artifact she described.
+  - TEST (kind "experiment: violet look test"): ch1_main_vl **t61** (good sync, faint closed warmth), ch2_gone_close_vl **t61** (t62 fails:
+    her eyes turn glowing orange), out_main_vl **t61** (one held vowel; some teeth on the held note).
+- **Previews:** `review/previews/<shot>/` (+ `out_main_vl_t61_..._full.mp4` over the untrimmed shot); `review/previews/index.json` 71 entries.
+  `tools/sync/preview.py --ramp=TA,K` plays the v1_light_hands time map. All of this session's previews are ≤ 1.5 MB.
+- **Box:** copy the new takes/specs/stills, intake (picks first: v1_split_front_violet_t62, ch1_gone_close_34v_t61, v1_light_hands_t12 is
+  already on the box), `picks.py`, `edl_check`, renders 27-48, 88-101, 248-256.
