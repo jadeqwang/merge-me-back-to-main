@@ -1623,8 +1623,8 @@
    ],
    "take": "ws_open_t51_edd396ea5b",
    "keys": "89:1.42,90:3.5",
-   "kind": "pick",
-   "note": "?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. moves 1-4 of the 2nd intl compulsory changquan: cross palms (89.1), arm circle, pubu slap (90.1), stamp + fist into palm on the 91 cut. Drawn 6x in two staggered rows, unison.",
+   "kind": "candidate",
+   "note": "SUPERSEDED after Jade's review (2026-10-26): ?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. moves 1-4 of the 2nd intl compulsory changquan: cross palms (89.1), arm circle, pubu slap (90.1), stamp + fist into palm on the 91 cut. Drawn 6x in two staggered rows, unison.",
    "file": "review/previews/wushu_sync/ws_open_t51_edd396ea5b.mp4"
   },
   {
@@ -1691,8 +1691,8 @@
    ],
    "take": "ws_xuanfeng_t51_f613321301",
    "keys": "96.71:1.77,97:2.63,98.5:5.8",
-   "kind": "pick",
-   "note": "?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. moves 11-13: the 'whirlwind kick' is a facing-camera knee jump (no model turned it without flipping in 4 rounds), lands in a straddle split on 97.1 (THE hit), still through bar 97, rises, fist into palm on 98.3, cover-step punch on the 99 cut. Drawn 6x in the ring; a 1/4-beat ripple around it on the rise.",
+   "kind": "candidate",
+   "note": "SUPERSEDED after Jade's review (2026-10-26): ?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. moves 11-13: the 'whirlwind kick' is a facing-camera knee jump (no model turned it without flipping in 4 rounds), lands in a straddle split on 97.1 (THE hit), still through bar 97, rises, fist into palm on 98.3, cover-step punch on the 99 cut. Drawn 6x in the ring; a 1/4-beat ripple around it on the rise.",
    "file": "review/previews/wushu_sync/ws_xuanfeng_t51_f613321301.mp4"
   },
   {
@@ -1723,11 +1723,45 @@
     153.167,
     174.036
    ],
-   "take": "ws_open_t51_edd396ea5b+ws_lotus_t68_26b3c2dd8d+ws_kicks_t51_c42416635a+ws_feijiao_t61_a5d7a031d8+ws_xuanfeng_t51_f613321301+ws_close_t53_a2e5719f59+ws_bg_t61_b590c5c067",
-   "keys": "open 89:1.42,90:3.5; lotus 92.5:3.65,92.94:5; kicks 93:1.12,94:3.46; feijiao 95:1.15,96:3.98; xuanfeng 96.71:1.77,97:2.63,98.5:5.8; close 99.125:1.68,100.5:4.76",
+   "take": "ws_open_t84_e475eb61aa+ws_lotus_t68_26b3c2dd8d+ws_kicks_t51_c42416635a+ws_feijiao_t61_a5d7a031d8+ws_xuanfeng_t72_fc342602d4+ws_close_t53_a2e5719f59+ws_bg_t61_b590c5c067",
+   "keys": "open 90:3.83,90.75:5.21; lotus 92.5:3.65,92.94:5; kicks 93:1.12,94:3.46; feijiao 95:1.15,96:3.98; xuanfeng 96.62:2.18,97:3.35,98.5:6; close 99.125:1.68,100.5:4.76",
    "kind": "candidate",
-   "note": "MOCK, not a render: a rough composite (tools/preview_sync_mock.py: mediapipe matte, no glyph look) of what the engine's ?drop=sync will draw, bars 89-101: each picked solo take 6x in the formations (staggered rows, line, wedge, ring, the fold's V) with the lane tints, the dt ripples and main stepping into the V's point for the salute, over the empty-set take ws_bg_t61; full mix. Default drop once these takes are picked on the box.",
+   "note": "MOCK, not a render (refreshed after Jade's review: open t84, xuanfeng t72): a rough composite (tools/preview_sync_mock.py: mediapipe matte, no glyph look) of what the engine's ?drop=sync will draw, bars 89-101: each picked solo take 6x in the formations (staggered rows, line, wedge, ring, the fold's V) with the lane tints, the dt ripples and main stepping into the V's point for the salute, over the empty-set take ws_bg_t61; full mix. Default drop once these takes are picked on the box.",
    "file": "review/previews/wushu_sync/sync_drop_formation_MOCK.mp4"
+  },
+  {
+   "shot": "ws_open",
+   "film": "2:31.4-2:37.4",
+   "film_s": [
+    151.428,
+    157.428
+   ],
+   "shot_s": [
+    153.167,
+    156.645
+   ],
+   "take": "ws_open_t84_e475eb61aa",
+   "keys": "90:3.83,90.75:5.21",
+   "kind": "pick",
+   "note": "?drop=sync (docs/wushu_sync_longfist.md section 7): the raw solo take at real speed from its audio window, full mix; the engine keys it as listed and draws it six times. Jade's 'wheely arm' fix (round 6): moves 1-4; she turns side-on and wheels both straight arms in vertical circles beside her body (lun bi), one rising as the other falls (1.3-3.6; the cut opens mid-wheel on 89.1), pubu on 90.1 (no palm slap), the right arm back-up-over and fist into palm on 90.4, feet together. Drawn 6x in two staggered rows, unison.",
+   "file": "review/previews/wushu_sync/ws_open_t84_e475eb61aa.mp4"
+  },
+  {
+   "shot": "ws_xuanfeng",
+   "film": "2:44.5-2:51.5",
+   "film_s": [
+    164.471,
+    171.471
+   ],
+   "shot_s": [
+    166.21,
+    170.558
+   ],
+   "take": "ws_xuanfeng_t72_fc342602d4",
+   "keys": "96.62:2.18,97:3.35,98.5:6",
+   "kind": "pick",
+   "note": "?drop=sync (docs/wushu_sync_longfist.md section 7): the raw solo take at real speed from its audio window, full mix; the engine keys it as listed and draws it six times. Jade's 'front-back splits' fix (round 5): moves 11-13; an upright jump turning left ~270 deg (off the left foot, no slap; 1.17 s of air keyed x1.77), lands in FRONT-BACK splits side-on on 97.1 (THE hit), left leg forward, still through bar 97; rises, right arm over, fist into palm on 98.3. Drawn 6x in the ring; a 1/4-beat ripple on the rise.",
+   "file": "review/previews/wushu_sync/ws_xuanfeng_t72_fc342602d4.mp4"
   }
  ]
 }

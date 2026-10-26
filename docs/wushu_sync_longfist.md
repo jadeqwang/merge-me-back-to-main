@@ -100,11 +100,11 @@ What the models did (all rounds):
 
 | phrase | pick | keys (bar ← clip s) | notes |
 |---|---|---|---|
-| ws_open | **t51** `edd396ea5b` | 89 ← 1.42 (cross palms), 90 ← 3.50 (pubu slap) | arm circle on the beat; the stamp + fist-into-palm (5.23–5.35) lands on the 91 cut, in a wide horse stance |
+| ws_open | **t84** (round 6, after Jade's note) `e475eb61aa` | 90 ← 3.83 (pubu), 90.75 ← 5.21 (fist into palm) | side-on, straight arms wheeling in vertical circles beside her body, one rising as the other falls, 1.3–3.6 (the cut opens mid-wheel on 89.1); pubu with the right arm held up (no slap); right arm back-up-over, feet together, pound on 90.4. Was t51 (a jumping-jack fling) |
 | ws_lotus | **t68** (round 4) `26b3c2dd8d` | 92.5 ← 3.65 (take-off), 92.94 ← 5.00 (first foot down) | the real move: off both feet, one full upright turn (back to camera 3.75), the straight right leg sweeps OUTWARD left → across her face (peak 4.55) → right; no clear slap (palms at the chest); 1.35 s of air keyed ×1.76 → 0.77 s; lands on the take-off spot in a deep bow stance, elbow across. Alt: round-3 t61 (front-crescent, no turn) |
 | ws_kicks | **t51** `c42416635a` | 93 ← 1.12 (strike), 94 ← 3.46 (slap kick top) | the strike reads as a forearm punch, not a coiling elbow; a ×1.35 squeeze over her frozen hold; the balance has T-arms |
 | ws_feijiao | **t61** (round 3) `a5d7a031d8` | 95 ← 1.15 (punch), 96 ← 3.98 (take-off) | a real 0.62 s flying kick; the foot reaches head height (4.33–4.46) with no instep slap; lands 4.60/4.85. Alt t58 |
-| ws_xuanfeng | **t51** `f613321301` | 96.71 ← 1.77 (take-off), 97 ← 2.63 (splits), 98.5 ← 5.80 (fist into palm) | a knee jump with no spin, landing in a straddle split; still 3.05–4.55 (bar 97); clean 2.6–5.8; the cover-step punch on the 99 cut |
+| ws_xuanfeng | **t72** (round 5, after Jade's note) `fc342602d4` | 96.62 ← 2.18 (take-off), 97 ← 3.35 (splits), 98.5 ← 6.0 (fist into palm) | an upright jump turning left ~270° (back to camera 3.1–3.25; off the left foot, no slap; 1.17 s of air keyed ×1.77); lands in FRONT-BACK splits side-on, left leg forward, arms out with standing palms, still 3.6–5.2 (bar 97); rises, right arm over, pound ~6.0 (no stamp, feet apart). Was t51 (scissor knee jump into a straddle split) |
 | ws_close | **t53** `a2e5719f59` | 99.125 ← 1.68 (slap kick top), 100.5 ← 4.76 (fist meets palm) | RIGHT fist into LEFT palm, correct; the frame goes fully still from 5.08 (her figure is drawn over the moving ws_bg, so it reads as a hold) |
 | ws_bg | **t61** `b590c5c067` | fitted 89 → 101 (×0.46, blended) | the empty set, a fixed camera, nothing in it |
 
@@ -194,3 +194,16 @@ flips). What steers it is the body path in plain words, which is what round 5 do
   a Youku playlist by ly2003yl has the same). These are third-party footage: use them only if Jade is fine with sending them to a model, and
   never commit them.
 - Not her team's competition video: never send that to a model.
+
+**Round 5 (t71–74) and round 6 (t81–84), checked against the written technique:**
+- **Open:** round 5's wheels were straight and in opposite phase, but crossed in front of her while she faced the camera. Round 6 had her
+  turn side-on first: in all four takes the arms now circle in vertical planes beside her body. **Pick t84**: wheels 1.3–3.6, side-on, and
+  a feet-together finish with the pound at 5.21. Left: her shoulders open a little at the horizontal phase, and no take slaps the palm
+  beside the straight leg in the pubu (she holds the arm up instead).
+- **Whirlwind:** round 5 got the two big points in one take. **t72** has an upright airborne turn (~270° to the left) and FRONT-BACK splits,
+  side-on with the left leg forward. Round 6 split them apart: t81 does the splits with no jump, t83 jumps into a side split, t84 flips. So
+  t72 stays. Left: it takes off from the left foot, the left palm never claps the sole, and the pound has no stamp with the feet together.
+- What would close those gaps is a motion reference (below), not more wording: after six rounds the model follows the body path for
+  big shapes (the plane of the arms, which leg goes forward) but not for small timed contacts (a palm meeting a sole).
+
+Spend after round 6: this work **$80.30** in all (the rounds 5–6 re-takes $24.05; ledger total $609.89 / $1,000).

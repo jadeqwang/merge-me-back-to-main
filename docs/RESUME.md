@@ -656,3 +656,27 @@ lane, so unison is exact. There is no body contact.
      - the ring overlap during the splits (97);
      - main stepping in on 100.1;
      - the match cut into the fold at 101.
+
+## 2026-10-26 checkpoint 24: Jade's sync-drop review — the "wheely arm" and the front-back splits fixed — NEEDS INTAKE/RENDER (box)
+- **Jade (review page):** "this is the one. but: the technique on the wheely arm is incorrect" and "I landed in front-back splits, not side".
+  Her decisions: compulsory set = **2nd**; her final-line position = **3** (`engine/show/real_ws.js` `ME = 3` for `?drop=real`).
+- **Diagnosis** (`docs/wushu_sync_longfist.md` §7):
+  - **ws_xuanfeng t51:** a scissor knee jump facing the camera, arms flailing, landing in a straddle split.
+  - **ws_open t51:** its 抡臂 was a jumping-jack fling, not vertical wheels.
+- **Technique, from text sources** (cited in §7):
+  - 抡臂: straight arms in vertical circles beside the body, past the ear and the hip, in opposite phase.
+  - 旋风脚: off the right foot, turning left; the arms sweep down, then up to the left; the left palm meets the right sole.
+  - 竖叉: front-back splits, left leg forward.
+  - 砸拳: the right arm wheels back, up and over; the back of the fist hits the left palm with the stamp.
+- **Re-takes:** rounds 5 (t71–74) and 6 (t81–84) of `ws_open` and `ws_xuanfeng`, with the body path spelled out. The open's arms turned
+  side-on in round 6.
+- **New picks** (in `docs/picks_manual.json`; `SYNC_KEY` in `main.js`):
+  - `ws_open_t84_e475eb61aa`, keys [[90, 3.83], [90.75, 5.21]]: side-on vertical wheels.
+  - `ws_xuanfeng_t72_fc342602d4`, keys [[96.62, 2.18], [97, 3.35], [98.5, 6]]: an upright left turn, front-back splits landing on 97.1.
+  - The other picks are unchanged: lotus t68, kicks t51, feijiao t61, close t53, bg t61.
+  - Still missing: the palm slap in the pubu, the slap on the sole, and the take-off foot.
+- **Validation:** 15 edl_check runs, 0 exceptions / 0 held clocks / 0 gaps (cloud picks, the new real picks, --fake ws_*, --fake=real).
+- **Previews:** `review/previews/wushu_sync/ws_open_t84_*.mp4`, `ws_xuanfeng_t72_*.mp4`, and a refreshed formation MOCK. The superseded
+  t51 entries are marked in the index.
+- **Spend:** $24.05 for the re-takes; $80.30 for the sync drop in all; the ledger is at $609.89 / $1,000.
+- **Box:** as in checkpoint 23, but intake `ws_open_t84_e475eb61aa` and `ws_xuanfeng_t72_fc342602d4` instead of the two t51 takes.

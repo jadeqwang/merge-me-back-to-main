@@ -823,6 +823,9 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   const SYNC_KEY = {
     ws_open_t51_edd396ea5b: [[89, 1.42], [90, 3.5]],    // cross palms locked 1.42 (0.32 early) on 89.1, the pubu slap 3.50 on 90.1 (x1.2 between);
     // real speed after: up with a small hop 4.6-5.1, the stamp + fist into palm 5.23-5.35 lands on the 91 cut (a wide horse stance, held)
+    ws_open_t84_e475eb61aa: [[90, 3.83], [90.75, 5.21]],   // round 6, the pick (Jade's "wheely arm" fixed): side-on, straight arms wheeling
+    // in vertical circles beside her body, one rising as the other falls, 1.3-3.6 (the cut opens mid-wheel on 89.1); pubu 3.83 on 90.1 (the
+    // right arm held up, no slap); the right arm back-up-over 5.0-5.08, feet together, fist into palm 5.21 on 90.4 (x1.06), held
     ws_open_t72_3f4fad11f6: [[90, 3.42], [90.75, 5]],   // round 5 (Jade: "the technique on the wheely arm is incorrect"): palms crossed,
     // opening 1.92 just after 89.1; straight arms wheeling half a circle apart 2.0-3.3 (still partly across her front); pubu 3.42 on 90.1; up
     // 4.25-4.6, the right arm over the top 4.79-4.92, fist into palm 5.00 + stamp 5.04 on 90.4 (x1.21), held
