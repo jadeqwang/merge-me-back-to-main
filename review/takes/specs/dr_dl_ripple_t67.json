@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "dr_dl_ripple_t67",
+ "notes": "{\"shot\": \"dr_dl_ripple\", \"s0\": 154.906, \"plate\": \"media/plates/drop/dr_dl_ripple.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Wushu duilian performed as a show by the three pairs of the first frame, standing in a diagonal line of pairs on the wet mirror salt flat, each pair side-on to the camera; every copy keeps her own colours exactly as in the first frame (the big pair in front: ORANGE on the left, VIOLET on the right). For the first 1.5 seconds all three pairs hold their guard. Then one move passes from pair to pair like a ripple, from the small pair at the back to the big pair in front, each pair about one second after the pair behind it: one partner lunges with a punch, the other ducks forward bent flat at the waist, and the puncher rolls sideways across her partner's flat back, legs swinging up and over in a high arc, and lands on her feet. The back pair rolls about 2.6 seconds in, the middle pair about 3.5 seconds in, the front pair (the violet copy rolling over the orange copy) about 4.3 seconds in, each exactly on a beat of the reference audio. About 4.8 seconds in all three pairs snap into a NEW pose, not the opening guard: the roller low in a bow stance with her rear arm flung up behind her, her partner crouched facing her; held dead still to the end. Wide, low camera, holding still. Every strike is controlled and stops just short; nothing lands and nobody is hurt; they are partners showing a rehearsed set. In every pair the two partners are always two separate people with two arms and two legs each; bodies never merge. Exactly six copies, three pairs, stay in frame for the whole shot; nobody leaves, merges, splits or disappears. Their mouths stay closed; nobody sings or speaks. Every copy keeps the same face and outfit as in the first frame, only the band colours differ. One continuous shot, no cuts. No captions, no text.",
+  "image": "file:media/gen/refs/dr_dl_ripple_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/dr_dl_ripple_v2_154.91_6s.mp3"
+  ]
+ }
+}

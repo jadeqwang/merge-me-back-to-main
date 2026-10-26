@@ -782,8 +782,9 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     dr_gs_ranks: [[93, BAR]],                                // the burst into bow stance + punch on 93.1
     dr_gs_tornado: [[97, 2 * BAR], [98, 3 * BAR]],           // the six hit the water on 97.1; they start to push up on 98.1 (bar 97 = the held still)
     dr_gs_salute: [[100, BAR], [100.5, BAR + 2 * BEAT]],     // the horse stance on 100.1; fist meets palm on 100.3 (the "ooh")
-    dr_dl_roll: [[91, BAR], [92.5, BAR + 6 * BEAT]],         // the sweep on 91.1; the roll's peak (body level over her partner's back) on 92.3
-    dr_dl_ripple: [[91, BAR], [91.5, BAR + 2 * BEAT], [92, 2 * BAR], [92.5, BAR + 6 * BEAT]] };   // back, middle, front pair's peaks 91.3/92.1/92.3
+    dr_dl_roll: [[91, 2], [92.5, 4], [93, 5.25]],            // t65 (measured): the sweep on 91.1, the roll's peak (inverted over her partner's back) on
+                                                             // 92.3 (x0.77 between), the liangxiang freeze reached on the 93.1 cut (x1.44). t61: [[91, .85], [92.5, 4.1]]
+    dr_dl_ripple: [[91, BAR], [91.5, 2.6], [92.5, 4.15]] };  // t69 (measured): back pair's peak 91.3, front pair's 92.3 (the middle pair rolls ~91.4)
   const FOLDCUT = [101, { plate: pk(`ch1_fold_${FOLD}`, 0).plate, s0: (b0) => B(b0) - .2 }, [960, 430]];
   const v5 = (b0, shot, cut, sun, v4cut, v4sun) => (has(shot) ? [b0, cut, sun] : [b0, v4cut, v4sun]);
   const cuts = DROP === 'v5' ? [  // [bar position, plate, s0(b0) = song time of the clip's frame 0, sun x,y]; each cut runs to the next cut
