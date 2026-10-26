@@ -211,3 +211,30 @@ STILLS.update({
           "ROSE PINK against SKY BLUE, the back pair MINT GREEN against GOLDEN YELLOW; each branch's jacket bands, cargo straps and headphone "
           "cups stay her own colour, never orange except the front-left fighter." + _KEEP),
 })
+# Round 2 (t65+), after t61-64: every close take did the roll ~1 s early (the sweep at ~0.85 s) and sprang back into the plate's guard by ~4.95 s;
+# t64 (variant b) merged the two bodies in the roll. The ripple takes recoloured the lanes from frame 0 (violet -> green, orange -> yellow; the act
+# named six colours) or didn't start from the still (t62, t63), and the canon didn't hold. Revised: 1.5 s of guard first, a NEW freeze pose (not
+# the opening guard), only the front pair's colours named in the ripple ("every copy keeps her own colours from the first frame"), and a
+# simpler back-to-front pass.
+_FREEZE = ("about 4.8 seconds in she lands on her feet beside her partner, and both snap into a liangxiang pose, a NEW pose that is not the "
+           "opening guard: the violet copy low in a bow stance with her rear arm flung up behind her in a hooked hand, the orange copy turned to "
+           "face her in a low crouching guard, heads snapping to the camera, held dead still to the end.")
+SHOTS["dr_dl_roll"] = dict(SHOTS["dr_dl_roll"],
+   act="Wushu duilian finale, a rehearsed partner set: the orange copy on the left facing right, the violet copy (two space buns) on the right "
+       "facing left. For the first 1.5 seconds they only circle slowly in guard. About 1.7 seconds in, exactly on a beat of the reference audio, "
+       "the orange copy drops low and sweeps her leg along the water; the violet copy hops over it. About 2.6 seconds in the violet copy lunges "
+       "into a bow stance with a straight punch; the orange copy ducks forward under it, bent at the waist, her back flat and level like a table. "
+       "About 3.6 seconds in the violet copy sets her shoulders across the orange copy's flat back and rolls sideways over it, legs swinging up "
+       "and over in a high arc; the peak, her body level above the back and legs high, about 4.3 seconds in, exactly on a beat; " + _FREEZE
+       + _CLOSE_BG)
+SHOTS["dr_dl_ripple"] = dict(SHOTS["dr_dl_ripple"],
+   act="Wushu duilian performed as a show by the three pairs of the first frame, standing in a diagonal line of pairs on the wet mirror salt "
+       "flat, each pair side-on to the camera; every copy keeps her own colours exactly as in the first frame (the big pair in front: ORANGE on "
+       "the left, VIOLET on the right). For the first 1.5 seconds all three pairs hold their guard. Then one move passes from pair to pair like a "
+       "ripple, from the small pair at the back to the big pair in front, each pair about one second after the pair behind it: one partner "
+       "lunges with a punch, the other ducks forward bent flat at the waist, and the puncher rolls sideways across her partner's flat back, legs "
+       "swinging up and over in a high arc, and lands on her feet. The back pair rolls about 2.6 seconds in, the middle pair about 3.5 seconds "
+       "in, the front pair (the violet copy rolling over the orange copy) about 4.3 seconds in, each exactly on a beat of the reference audio. "
+       "About 4.8 seconds in all three pairs snap into a NEW pose, not the opening guard: the roller low in a bow stance with her rear arm flung "
+       "up behind her, her partner crouched facing her; held dead still to the end. Wide, low camera, holding still." + SAFE
+       + " In every pair the two partners are always two separate people with two arms and two legs each; bodies never merge." + SIX_DL + MUTE_G)
