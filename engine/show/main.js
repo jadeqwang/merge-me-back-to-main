@@ -822,6 +822,12 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     ws_kicks_t51_c42416635a: [[93, 1.12], [94, 3.46]],  // the strike 1.12 (a forearm punch, not quite a coiling elbow) on 93.1; x1.35 squeezes her
     // frozen hold 1.16-2.30; snap kick 2.55 (~93.4), the slap kick's top 3.42-3.50 on 94.1; real speed after: shuffle, the balance from 4.98
     // Every model floats its jumps (0.8-1.35 s in the air; real ~0.5): keyed x1.7-1.8 from take-off to landing, so the air reads real.
+    ws_feijiao_t61_a5d7a031d8: [[95, 1.15], [96, 3.98]],   // round 3, a real 0.62 s jump: the punch shoots out 1.15 on 95.1 (then held),
+    // steps down 2.55, knee chambers 3.7-3.95 (x1.63 over the near-still bar), take-off 3.98 on 96.1, right foot head-high 4.33-4.46 (no
+    // instep slap), left foot down 4.60, both 4.85 = the 96.3 cut. Alt: t58 (below)
+    ws_lotus_t61_8772e70527: [[92.5, 3.6], [92.875, 4.79]],   // round 3 (interim: a jumping front-crescent with a clap at the foot 4.55-4.60,
+    // not the outward lotus sweep, no turn): take-off off both feet 3.60 on 92.3 (bass F#), first foot down 4.79 (1.19 s of air keyed to
+    // 0.65), the wide bow stance from 5.0 on the 93 cut
     ws_feijiao_t58_705f4e5138: [[96, 3.64], [96.37, 4.8]],   // punch held 0.45-2.0 (the cut opens on it), hop-steps in place 2.3-3.4,
     // take-off 3.64 on 96.1, foot up + slap 3.9-4.4, both feet down 4.80 (1.16 s of air -> 0.64), knees bent, held to the 96.3 cut
     ws_xuanfeng_t51_f613321301: [[96.71, 1.77], [97, 2.63], [98.5, 5.8]],   // take-off 1.77 (no spin: a facing-camera knee jump, 0.86 s ->

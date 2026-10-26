@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_lotus_t67",
+ "notes": "{\"shot\": \"ws_lotus\", \"s0\": 154.906, \"plate\": \"media/plates/drop/ws_solo.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. A solo wushu performer, the compulsory changquan routine: crisp, powerful, sharp stops. She starts in a half squat, right fist pounded into her open left palm, and holds still. About 1.7 seconds in she rises, swings both arms in a big circle and shifts her weight, staying on the same spot. About 4.2 seconds in she jumps off BOTH feet, a small upright jump, and spins one full turn in the air like a top, head always up: as she turns, her straight right leg swings from her LEFT side up across in front of her face and out to her RIGHT side, like a fan opening outward, and both palms slap the top of the right foot as it passes her face. About 4.8 seconds in she lands facing the camera on both feet, on the spot where she took off, into a deep bow stance with a horizontal elbow strike, and holds it. She never travels toward the camera; no flip, no somersault. Each named move lands exactly on a beat of the reference audio. The camera never moves: one continuous wide shot from a fixed position at waist height, no pan, tilt, zoom, push, reframing or cut; the horizon stays level. She stays in place in the centre and the same size in the frame. Every jump is explosive and short: about half a second in the air, landing at once, knees bending; no slow motion, no hanging. One performer only, the same woman from start to end: two arms, two legs, one head; no limb appears, vanishes, doubles or detaches; nothing else appears. The planted foot never slides. Her mouth stays closed. Same face and eyes as the first frame; she keeps her high ponytail, her orange bands and the round white '1420 MHz' patch on her LEFT upper arm. Real speed. No captions, no text.",
+  "image": "file:media/gen/refs/ws_solo_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ws_lotus_v2_154.91_6s.mp3"
+  ]
+ }
+}

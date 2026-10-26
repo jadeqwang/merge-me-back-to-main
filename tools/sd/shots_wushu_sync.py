@@ -151,3 +151,19 @@ SHOTS["ws_bg"] = dict(SHOTS["ws_bg"], guard=(" The camera never moves: one conti
    "horizon level. The salt flat is completely empty: no people, no camera, no equipment, no objects of any kind. No captions, no text."),
    act="The empty wet mirror salt flat at sunrise, exactly as in the first frame: a thin sheet of water with gentle ripples moving across "
    "it, the reflections shimmering, the clouds drifting slowly. Nothing else happens.")
+
+# Round 4 (t66+): round 3 fixed the camera and the float (feijiao t61: 0.62 s in the air), but no lotus take swept OUTWARD or turned (a jumping
+# front-crescent, travelling toward the camera), and the whirlwind takes became an aerial flip into a straddle split.
+SHOTS["ws_lotus"] = _P3(6, _B(90), "She starts in a half squat, right fist pounded into her open left palm, and holds still. About 1.7 seconds "
+   "in she rises, swings both arms in a big circle and shifts her weight, staying on the same spot. About 4.2 seconds in she jumps off BOTH "
+   "feet, a small upright jump, and spins one full turn in the air like a top, head always up: as she turns, her straight right leg swings "
+   "from her LEFT side up across in front of her face and out to her RIGHT side, like a fan opening outward, and both palms slap the top of "
+   "the right foot as it passes her face. About 4.8 seconds in she lands facing the camera on both feet, on the spot where she took off, into a "
+   "deep bow stance with a horizontal elbow strike, and holds it. She never travels toward the camera; no flip, no somersault.")
+SHOTS["ws_xuanfeng"] = _P3(7, _B(95) + 2 * 60 / 138, "She takes two quick steps in a small curve, arms swinging. About 2.2 seconds in she "
+   "takes off in a low turning jump and spins one full turn like a top, body upright and head always up (no flip, no cartwheel, no somersault): "
+   "halfway round her back is to the camera; her straight right leg sweeps inward and her left hand slaps the sole. About 2.6 seconds in she "
+   "lands and drops straight into full FRONT splits, her body side-on to the camera: one leg straight ahead of her, the other straight behind "
+   "her (not a side split), arms flung out, and holds completely still until about 4.3 seconds in. Then she rises, and about 5.2 seconds in "
+   "stamps one foot and pounds her right fist into her left palm. About 6.1 seconds in she makes a small jump into a cross-legged cover step "
+   "with a straight punch, and holds it.")

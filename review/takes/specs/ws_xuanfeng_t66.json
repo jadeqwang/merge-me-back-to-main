@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_xuanfeng_t66",
+ "notes": "{\"shot\": \"ws_xuanfeng\", \"s0\": 164.471, \"plate\": \"media/plates/drop/ws_solo.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. A solo wushu performer, the compulsory changquan routine: crisp, powerful, sharp stops. She takes two quick steps in a small curve, arms swinging. About 2.2 seconds in she takes off in a low turning jump and spins one full turn like a top, body upright and head always up (no flip, no cartwheel, no somersault): halfway round her back is to the camera; her straight right leg sweeps inward and her left hand slaps the sole. About 2.6 seconds in she lands and drops straight into full FRONT splits, her body side-on to the camera: one leg straight ahead of her, the other straight behind her (not a side split), arms flung out, and holds completely still until about 4.3 seconds in. Then she rises, and about 5.2 seconds in stamps one foot and pounds her right fist into her left palm. About 6.1 seconds in she makes a small jump into a cross-legged cover step with a straight punch, and holds it. Each named move lands exactly on a beat of the reference audio. The camera never moves: one continuous wide shot from a fixed position at waist height, no pan, tilt, zoom, push, reframing or cut; the horizon stays level. She stays in place in the centre and the same size in the frame. Every jump is explosive and short: about half a second in the air, landing at once, knees bending; no slow motion, no hanging. One performer only, the same woman from start to end: two arms, two legs, one head; no limb appears, vanishes, doubles or detaches; nothing else appears. The planted foot never slides. Her mouth stays closed. Same face and eyes as the first frame; she keeps her high ponytail, her orange bands and the round white '1420 MHz' patch on her LEFT upper arm. Real speed. No captions, no text.",
+  "image": "file:media/gen/refs/ws_solo_2048.jpg",
+  "duration": 7,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ws_xuanfeng_v2_164.47_7s.mp3"
+  ]
+ }
+}

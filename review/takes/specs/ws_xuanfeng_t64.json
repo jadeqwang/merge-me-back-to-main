@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_xuanfeng_t64",
+ "notes": "{\"shot\": \"ws_xuanfeng\", \"s0\": 164.471, \"plate\": \"media/plates/drop/ws_solo.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. A solo wushu performer, the compulsory changquan routine: crisp, powerful, sharp stops. She takes two quick running steps in a small curve, arms swinging. About 2.2 seconds in she takes off and spins a FULL 360-degree turn in the air (xuanfeng jiao, whirlwind kick): halfway round her back is to the camera, the big RARE EARTH lettering and pale-blue circle on her jacket's back visible; her straight right leg sweeps inward across and her left hand slaps the sole at the top of the spin. About 2.6 seconds in she lands and drops straight into full FRONT splits on the water (pi cha), her body turned side-on to the camera, one leg straight ahead of her and the other straight behind her, arms flung out to the sides, and holds the splits completely still until about 4.3 seconds in. Then she rises to her feet, and about 5.2 seconds in she stamps one foot and pounds her right fist into her left palm. About 6.1 seconds in she makes a small jump and lands with her legs crossed in a cover step, throwing a straight punch, and holds it. Each named move lands exactly on a beat of the reference audio. The camera never moves: one continuous wide shot from a fixed position at waist height, no pan, tilt, zoom, push, reframing or cut; the horizon stays level. She stays in place in the centre and the same size in the frame. Every jump is explosive and short: about half a second in the air, landing at once, knees bending; no slow motion, no hanging. One performer only, the same woman from start to end: two arms, two legs, one head; no limb appears, vanishes, doubles or detaches; nothing else appears. The planted foot never slides. Her mouth stays closed. Same face and eyes as the first frame; she keeps her high ponytail, her orange bands and the round white '1420 MHz' patch on her LEFT upper arm. Real speed. No captions, no text.",
+  "image": "file:media/gen/refs/ws_solo_2048.jpg",
+  "duration": 7,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ws_xuanfeng_v2_164.47_7s.mp3"
+  ]
+ }
+}
