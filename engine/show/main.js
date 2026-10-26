@@ -862,7 +862,9 @@ if (ORCH === 'v4') { // full drums again: the orchestra of Jades (Jade 2026-10-2
     const [a, b] = [K[i], K[i + 1]], u = clamp((c - a[0]) / (b[0] - a[0])); return [a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u]; };
   const PENCIL_TIP = [[3.0, 1285, 624], [3.9, 1181, 653], [4.8, 1062, 666], [5.2, 980, 685], [5.65, 912, 707], [6.2, 835, 712]];   // orch_pencil_t52
   const LINE_TIP = [[0, 1030, 220], [.6, 1060, 220], [1.2, 1060, 290], [1.74, 1060, 320]];                                         // orch_line_t51
-  const COMPOSE_TIP = {};   // orch_compose re-take (tools/sd/shots_outro.py): { take: [[clip, x, y], ...] }, keyframed by eye like PENCIL_TIP
+  // orch_compose re-take (tools/sd/shots_outro.py): { take: [[clip, x, y], ...] } in 1920-space. t62: the glowing tip tracked as the brightest
+  // blob near her hand on every 3rd frame of the raw take (1280x720 x 1.5), checked on frames 12/30/48/100/115 (v5b session, 2026-10-26)
+  const COMPOSE_TIP = { orch_compose_t62_3cb8f92059: [[0.25, 410, 110], [0.5, 381, 112], [0.75, 364, 156], [1, 402, 170], [1.25, 402, 123], [1.5, 370, 102], [1.75, 338, 111], [2, 322, 154], [2.25, 351, 212], [2.5, 393, 196], [2.75, 384, 159], [3, 351, 130], [3.25, 316, 129], [3.5, 298, 170], [3.75, 332, 225], [4, 378, 218], [4.25, 362, 166], [4.5, 314, 135], [4.75, 278, 122], [5, 279, 120], [5.25, 321, 140], [5.5, 362, 190], [5.75, 357, 218], [6, 308, 180]] };
   // views (1920-space, set on frames of the picked takes at each cut: orch_wide t52 1.7 / 11.1 s, orch_line t51 0.9, orch_keys t51 1.7,
   // orch_pencil t52 3.9 / 5.7, orch_guitar t53 1.7): the score stays in open sky, clear of faces; `to` = the instrument of the player
   const sys3 = (gap) => [{ part: 'voice', y: 26 }, { part: 'keys', y: 26 + 8.4 * gap }, { part: 'guitar', y: 26 + 16.8 * gap }];
