@@ -885,6 +885,108 @@
    "kind": "candidate",
    "note": "same action as t61, light stays in frame; her gaze lifts less. Placed with clip 0 on the song end (P0); the EDL's sender shot is P0..P0+4.6 (no audio ref, so no lag).",
    "file": "review/previews/postcredits/pc_send_v_t63_67ed1e9eb5.mp4"
+  },
+  {
+   "shot": "orch_compose",
+   "film": "4:00.9-4:04.6",
+   "film_s": [
+    240.86,
+    244.599
+   ],
+   "shot_s": [
+    241.86,
+    243.599
+   ],
+   "take": "orch_compose_t62_3cb8f92059",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "composer cut 1 (clip 0.5-2.24): body still, small writing strokes with the glowing tip, eyes on the pencil; nothing drawn in the air; patch on her left arm. COMPOSE_TIP keyed on this take",
+   "file": "review/previews/orchestra/orch_compose_t62_cut1.mp4"
+  },
+  {
+   "shot": "orch_compose",
+   "film": "4:07.4-4:10.4",
+   "film_s": [
+    247.382,
+    250.363
+   ],
+   "shot_s": [
+    248.382,
+    249.363
+   ],
+   "take": "orch_compose_t62_3cb8f92059",
+   "lag": 0.0,
+   "kind": "pick",
+   "note": "composer cut 2 (clip 4.0-4.98), same take",
+   "file": "review/previews/orchestra/orch_compose_t62_cut2.mp4"
+  },
+  {
+   "shot": "orch_compose",
+   "film": "4:00.9-4:04.6",
+   "film_s": [
+    240.86,
+    244.599
+   ],
+   "shot_s": [
+    241.86,
+    243.599
+   ],
+   "take": "orch_compose_t61_b7cbd21ccf",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "(fail) draws musical-note glyphs in the air (the engine draws the notes), turns away",
+   "file": "review/previews/orchestra/orch_compose_t61_cut1.mp4"
+  },
+  {
+   "shot": "orch_compose",
+   "film": "4:00.9-4:04.6",
+   "film_s": [
+    240.86,
+    244.599
+   ],
+   "shot_s": [
+    241.86,
+    243.599
+   ],
+   "take": "orch_compose_t63_41dc0f74cd",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "still and writing like t62; closes her eyes near the end (after the clip the EDL uses)",
+   "file": "review/previews/orchestra/orch_compose_t63_cut1.mp4"
+  },
+  {
+   "shot": "orch_wide_still",
+   "film": "3:55.8-4:08.8",
+   "film_s": [
+    235.774,
+    248.774
+   ],
+   "shot_s": [
+    236.774,
+    247.774
+   ],
+   "take": "orch_wide_still_t61_84e12c8c63",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "wide (not wired in the EDL): the still's raised-arm pose held almost motionless, band plays; still reads a bit like a conductor's pose",
+   "file": "review/previews/orchestra/orch_wide_still_t61.mp4"
+  },
+  {
+   "shot": "orch_wide_still",
+   "film": "3:55.8-4:08.8",
+   "film_s": [
+    235.774,
+    248.774
+   ],
+   "shot_s": [
+    236.774,
+    247.774
+   ],
+   "take": "orch_wide_still_t62_4bb9436957",
+   "lag": 0.0,
+   "kind": "candidate",
+   "note": "(fail) the camera pushes far in, raised-arm pose",
+   "file": "review/previews/orchestra/orch_wide_still_t62.mp4"
   }
  ]
 }

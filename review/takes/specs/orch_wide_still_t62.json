@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "orch_wide_still_t62",
+ "notes": "{\"shot\": \"orch_wide_still\", \"s0\": 235.774, \"plate\": \"media/plates/outro/orch_wide.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. Every life she has lived plays together at sunrise. The violet composer in the centre stands still, calm and focused, writing the music in the air: her right hand holds the yellow pencil at chest height and makes small, precise writing strokes from left to right, its tip glowing softly, her eyes following the pencil; her body, head and left arm stay still. Around her the band plays the reference audio: the rose pianist's right hand plays short repeated notes high on the keyboard while her left hand holds a chord; the rose guitarist chugs short strums on the off-beats, between the kicks; the white violinist draws long, slow bow strokes, eyes closed, never sawing on the beat. Low camera, very slow push in, golden sun behind them, ripples on the thin water at their feet. Every copy keeps her face, hair and outfit from the first frame; only the band colours differ (the composer VIOLET, never orange, hair up in a bun with two pencils; the pianist and guitarist ROSE; the violinist WHITE). Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural hands with five fingers: the composer's pencil stays in her right hand, the pianist's fingers on the keys, the bow on the strings, the guitarist's hands on the neck and strings. The pencil leaves no marks or trails; only its tip glows. Nobody sings. One continuous shot, no cuts. No captions, no text, no symbols in the air. The composer in the centre stays still the whole shot: she never dances, sways, bobs to the beat, conducts or raises her arm above her shoulder. The pencil tip leaves no trail or line in the air.",
+  "image": "file:media/gen/refs/orch_wide_2048.jpg",
+  "duration": 13,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/orch_wide_still_v2_235.77_13s.mp3"
+  ]
+ }
+}

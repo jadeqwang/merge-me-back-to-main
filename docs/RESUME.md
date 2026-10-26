@@ -443,6 +443,15 @@ hopeful with depth, as if she has just said something profound; no shallow/adver
   `picks.py` (docs/picks_manual.json + docs/lags.json are updated), `node tools/edl_check.mjs`, renders 27–48, 68–101, 110–119, 207–237, 248–256.
 - **Relay:** 2047 errors (refunded) and two jobs stuck in `running` with no result (`out_main_t63`, `v1_light_hands_t61`; counted at their
   estimate in the ledger). One extra GPT still request (`drop_ch1_gone_close_34_*`, 00:49 UTC) never returned.
+- **Orchestra composer (Jade's 3:57 note, relayed by the parent session; same v5b session):** `orch_compose` t61-63 and `orch_wide_still` t61-62
+  (specs in `tools/sd/shots_outro.py`, stills `review/takes/stills/orch_pencil.png` / `orch_wide.png`). **Pick orch_compose t62**: body still,
+  small writing strokes with the glowing tip, eyes on the pencil, no glyphs drawn, patch on her left arm. t61 draws note glyphs in the air
+  (fail); t63 like t62 but closes her eyes late. `orch_wide_still`: t61 holds the still's raised-arm pose almost motionless (recorded in
+  picks_manual, but the EDL doesn't read that key); t62 pushes in far. **`COMPOSE_TIP`** in `engine/show/main.js` (the only engine edit) now
+  keys t62's tip: the brightest blob near her hand on every 3rd frame, x1.5 to 1920-space, clip 0.25-6.0 (the EDL uses clip 0.5-2.24 and
+  4.0-4.98). `edl_check`: 0 exceptions / 0 held clocks with the cloud picks, and with orch_compose t62 added as picked. Previews:
+  `review/previews/orchestra/`. Box: intake orch_compose_t62 (picks_manual has it) and look at the tip on the 4:01.9 and 4:08.4 cuts.
+  Also fixed `tools/sync/preview.py` (the trim branch for takes that start before the window).
 
 ## 2026-10-26 checkpoint 18: v5b picks wired into the EDL (pc_send_v sender, ch2_gone_close t63 cut) — NEEDS INTAKE/RENDER (box)
 Cloud session (session_01TSBays4bH1M779gzn9GT9M; no generation, no spend, nothing rendered). Edits: `engine/show/main.js` (post-credits sender,

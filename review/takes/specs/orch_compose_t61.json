@@ -1,0 +1,13 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "orch_compose_t61",
+ "notes": "{\"shot\": \"orch_compose\", \"s0\": null, \"plate\": \"media/plates/outro/orch_pencil.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. The violet composer stands completely still at sunrise, calm and focused, writing music in the air. Only her right hand moves: holding the yellow pencil at chest height, she makes small, precise writing strokes in the air from left to right, like jotting notes on an invisible staff, lifting the tip slightly between strokes; its tip glows softly. Her eyes follow the pencil tip the whole time, her head tilting very slightly as she writes; her left arm rests at her side. Her body, shoulders and feet stay still; she never sways, dances, conducts or lifts her arm high. Behind her, softly out of focus, the pianist, the violinist and the guitarist play steadily. Near the end she pauses, the pencil tip resting in the air, and gives a small, satisfied smile, eyes still on her writing. The camera holds, drifting very slightly closer. Every copy keeps her face, hair and outfit from the first frame; only the band colours differ (the composer VIOLET, never orange, hair up in a bun with two pencils; the pianist and guitarist ROSE; the violinist WHITE). Same face and eyes as the first frame: keep the exact eye size, eye shape and very dark brown irises; natural double-eyelid crease; white of the eye visible on both sides of the iris; do not enlarge, round or widen the eyes, no eyeliner, no tears. Natural hands with five fingers: the composer's pencil stays in her right hand, the pianist's fingers on the keys, the bow on the strings, the guitarist's hands on the neck and strings. The pencil leaves no marks or trails; only its tip glows. Nobody sings. One continuous shot, no cuts. No captions, no text, no symbols in the air. Her body, shoulders and head stay still the whole shot; she does not dance, sway, bob, conduct or raise her arm. The pencil tip leaves no trail or line in the air.",
+  "image": "file:media/gen/refs/orch_pencil_2048.jpg",
+  "duration": 8,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9"
+ }
+}

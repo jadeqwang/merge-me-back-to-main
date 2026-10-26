@@ -22,7 +22,7 @@ fx = []
 # take placement: pad the start with black when the take begins after W0, trim it when it begins before
 off = start - W0
 src = f"[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=24"
-if off < 0: src = f"[1:v]trim=start={-off:.4f},setpts=PTS-STARTPTS," + src[6:]
+if off < 0: src = f"[1:v]trim=start={-off:.4f},setpts=PTS-STARTPTS," + src[5:]
 fx.append(src + (f",tpad=start_duration={off:.4f}:color=black" if off > 0 else "") + "[tk]")
 fx.append("[0:v][tk]overlay=0:0:eof_action=pass:shortest=0[v0]")
 v = "v0"
