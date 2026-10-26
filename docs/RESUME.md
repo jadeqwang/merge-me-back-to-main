@@ -315,3 +315,16 @@ duilian retakes wide t58/t59 and close t55–t58. No renders, nothing in engine/
 Did Jade's two follow-ups. Violet now has two space buns in both duilian plates (one edit each; the close plate needed a second try because the
 first dyed the background copies' hair) and in the new takes: picks dr_dl_wide_t58 (six fighters throughout) and dr_dl_close_t57 (six at the freeze; a
 couple of extra soft-focus fighters mid-action). The wushu life clip is now Jade alone doing a jian solo at a collegiate competition: plate b, take t53. Spend **$388.47 / $600**.
+
+## 2026-10-26: Jade's v5a notes, EDL only — NEEDS RENDER (box)
+Cloud session, no generation, no spend, nothing rendered. Edits are in `engine/show/main.js` only: the build block, `FX.mote`, the post-credits.
+`FX.score` and the ORCHESTRA block are untouched (another worktree is rewriting them). Details: run sheet §1.3; for Jade: REVIEW_FOR_JADE.md
+"Jade's v5a notes".
+- 2:20.3: "› analysis mode" is in the header from the screen's first frame; the fourth kick (AN) pulses it instead of typing it.
+- 2:06.3: `?bd=full` variant. Bars 73–76: 16 full-frame cuts on the kicks. Bar 77: the matrix appears, then shrinks into the bottom-right corner
+  by bar 78. The git log starts at bar 77 beat 4. The default is unchanged.
+- 4:44.1: the post-credits sender is `v2_release` (`pk`, clip 0.6–5.2 at 1x, light leaving her palm). The drawn mote rides the take's light
+  (`REL_ORB`, measured on t12). The cut, the touch at P0 + 6.4 and `mix.py` are unchanged. t12's 1420 MHz patch is on her right arm (flagged
+  to Jade). The clean `v2_horizon` (t51/t52 + still) needs intake and a pick only; 3:07 follows PICKS.
+- `edl_check` 0–297: 0 exceptions, 0 held clocks (default, `bd=full`, `drop=v4/v5`, `figlook=led`).
+- **Box:** render 124–153 with the default and with `bd=full` (the A/B), plus 280–297.016 (run sheet §3).

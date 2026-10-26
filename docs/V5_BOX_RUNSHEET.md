@@ -23,7 +23,7 @@ Ground rules (HANDOFF.md, CLOUD_HANDOFF.md):
 | 3:54, 4:12 too smiley | 4:12 **interim**, while `out_main_t12` is picked: the shot ends at 252.25, before the grin. Re-takes are queued for 3:54, 4:12 and 1:11. | `main.js` `OUT_MAIN_END`; `shots_v5.py` | |
 | 3:07/3:09 violet band across the jacket back | Image edit prompt (remove the band; patch on the left sleeve only), then re-animate. | `shots_v5.py` STILLS `v2_horizon_v5`; `tools/plates/fix_patch.py --prompt=` | |
 | 4:17 boring | The living graph replaces the git-log card and the bookend. Lives fork out of main in doublings as live panes, the log is read one commit per beat, everything merges home on the riser, and violet is cherry-picked last. It starts where the home shot ends; the end card keeps its bar-153 hit. No new takes. | `main.js` (4:15–4:24); `panels.js` `clip(t)` | |
-| post-credits: no touching, play once | The **violet branch** (`v2_horizon_t5`, Jade's pick) sends a drawn light toward the horizon. Cut to the intro's window: `ch0_window_t2` clip 0–4.57, slowed to fill the shot (no frozen frame, no replayed palm lift). The light touches the glass once at song end + 6.4 s, and the bifurcation grows from there, one fork per chime group. `mix.py` drops the lone chime, so the 1-2-4-8 cascade starts on the touch. No new takes; `pc_kneel`/`pc_beam` are unused. | `main.js` post-credits, `FX.frost`/`FX.mote`; `scenes/lattice.js` `clip(u,t)`; `tools/mix.py` `PC_TOUCH` | |
+| post-credits: no touching, play once | (v5a; the sender is now `v2_release`, §1.3) The **violet branch** (`v2_horizon_t5`, Jade's pick) sends a drawn light toward the horizon. Cut to the intro's window: `ch0_window_t2` clip 0–4.57, slowed to fill the shot (no frozen frame, no replayed palm lift). The light touches the glass once at song end + 6.4 s, and the bifurcation grows from there, one fork per chime group. `mix.py` drops the lone chime, so the 1-2-4-8 cascade starts on the touch. No new takes; `pc_kneel`/`pc_beam` are unused. | `main.js` post-credits, `FX.frost`/`FX.mote`; `scenes/lattice.js` `clip(u,t)`; `tools/mix.py` `PC_TOUCH` | |
 | orchestra: playing should match the music; conductor boring | Seven cuts on the music (impact 137, violin 138, keys 139, composer 140, guitar 141, wide, composer). The **composer is the violet branch** (Jade's pick): bun with two pencils, violet bands, writing each part in violet light (`FX.score`), which lands on its player on the beat and finally folds into one orange line. Lyric captions are unchanged. Each cut uses a reframed v4 take until its new take is picked. | `main.js` ORCH v5; `tools/sd/shots_outro.py` `orch_*` + STILLS | `?orch=v4` |
 | held frames (Jade's OK, 2026-10-25: fix every take that runs out before its shot ends; never loop or ping-pong) + fork-tree dots | 50 held plate clocks in 12 places (0:30–3:56, 0.1–22 s each), all fixed: non-sung takes and panes slow just enough (`fit`), lip-synced takes are only trimmed (their cut moves to the take's first/last frame, the neighbour fills in). Fork-tree copies are glyph-built. Details and what to eyeball: §1.1. | `engine/src/clip.js`, `plateseq.js` `at(t, s0, fit)`, `main.js`, `scenes/forktree.js`; `tools/edl_check.mjs`; `picks.py` writes `len` | `?figlook=led` (fork tree) |
 | wushu: duilian first, then a medal-grade group set | v5.1, rebuilt from her real routine (box analysis: `docs/wushu_v5_design.md` §9, `docs/wushu_groupset_notes.md`; final map §10). Duilian 89–92 (three pairs). Group set 93–100 by six branch copies in one line, warm and cool alternating: unison burst on 93; jian solo on 95; **the group fall** lands flat on 97.1, bar 97 held still, rise as one on 98.1; the halves trade a phrase (98.3), then cross pairs (99.3); arms-out horse stance on 100.1; main steps into the V's point for the salute on the "ooh". Match cut into the fold at 101. Key frames are pinned to bars (`KEY`, `keyed()`). **Default = the v4 drop until all six new shots are picked.** | `main.js` drop block; `tools/sd/shots_wushu.py` (SHOTS + STILLS); `stills.py` `patch` tool | `?drop=v4` / `?drop=v5` |
@@ -88,6 +88,21 @@ plates made from the raw takes in `review/cloud/takes` (not committed). `edl_che
 | 0:00 | poem low-contrast on the frost | the hooks' radial scrim (.8/.55), fitted to the block, and a denser shadow | 0:00–0:03 |
 
 **Review render ranges**: 0–4, 53–70 (and 64–70 with `figlook=led`), 99–113, 124–152, 178–184, 235–253, 255–266 and 285–297.
+
+### 1.3 Jade's v5a notes (cloud, 2026-10-26; EDL only, nothing rendered, no new takes, no spend)
+`edl_check` (0–297 s): 0 exceptions, 0 held clocks for the default, `bd=full`, `drop=v4`, `drop=v5` and `figlook=led`.
+
+| v5a time | her note | change | where | A/B |
+|---|---|---|---|---|
+| 2:20.3 (2:19.3–2:27.9, bars 81–85) | "analysis mode" is announced at the end; it should be there when the screen loads | The engine header reads "› analysis mode" (with its cursor) from the poster/graph's first frame, fading in with it. The fourth kick (bar 84 beat 3, 2:25.3) now pulses it (glow, brighter underline, an 8% swell) instead of typing it. The depth counter, the evals, the candidate lines and the three moves are unchanged. | `main.js` build block, `stanza()` | |
+| 2:06.3 (2:05.3–2:12.3, bars 73–77) | the build wall: "each one fullscreen on the beat, then the matrix of selves shrinks into the corner" | **A variant, `?bd=full`; the default is unchanged.** Bars 73–76 make 16 full-frame cuts, one per kick, in the wall's order. Each is a lattice shot like the life montage (written figure, lane tint, branch chyron, kick punch) on its pane's own clock: 1x through its beat, then slowed, so the matrix continues it. The bar-73 slam flash is on the first cut. On the bar-77 downbeat (the 4-bar line) the full 4×4 matrix appears at frame size. It holds 2 beats, then shrinks over beats 3–4 into the **bottom-right corner** (28% size, 38 px in; x 1368–1882, y 751–1042 at 1080p), in place by bar 78. Nothing else uses that corner: the git log types from the top left (from bar 77 beat 4 here), and the sun, the graph, the header and the stanza's right-hand words sit above it. As in the default, the panes dim through bars 81–85 and collapse from there into the point on bar 86. (Jade's note says "breakdown", but at 2:06.3 the film is in the Build Up's wall, bar 73. The 1:40 breakdown is a ring of 8 panes, not a matrix.) | `main.js` build block (`FULL`, `MAT0`, `SHR`, `K`, `LOG0`) | `?bd=full` |
+| 4:44.1 (4:42.5–4:47.1) | the sender has the violet band under the blue dot; where did the clean image go; use the clip where she sends the light off | The sender is now **`v2_release`**, verse 2's last line (where her context fills and she lets the light go). It plays clip 0.6–5.2 at 1x (`v2_release_t12`): the fade-in lands on the light over her open palm, the light drifts off and climbs up-right toward the far glow from about clip 2.5, and her hand drops as she watches it go. The cut is at 5.2, on her smile. Its plate follows PICKS (`pk`). The drawn light rides the take's own light (`REL_ORB`, measured on t12; overlay-checked at clip 1.6, 3.0, 4.5 and 5.2), then arrives at the window from outside and touches the glass once at P0 + 6.4. The cut, the touch and the 1-2-4-8 chimes are unchanged, so `tools/mix.py` is unchanged. **Jacket:** it's a front view, so the back band can't show; the chest band under the small blue dot matches the canon front (`r7/turn_gpt`). **But the 1420 MHz patch is on her RIGHT arm** (the near, hanging arm, readable throughout). It's a sung take, so her mouth moves over clip ~0.8–4.8. The clean `v2_horizon` (still `v2_horizon_v5.jpg`, takes t51/t52 in `review/takes/`) only needs intake + a pick: 3:07 uses `pk('v2_horizon')`, and the only hard-coded t5 is the pick in `docs/picks_manual.json`. | `main.js` post-credits (`REL_C0`, `REL_ORB`, `relXY`), `FX.mote({ path })` | |
+
+**Render for these** (720p, with `out/mix_v5.wav`):
+- the A/B for 2:06: 124–153 with the default and with `bd=full`;
+- 280–297.016 for the post-credits.
+
+The default 124–153 render also shows the 2:19 header. The commands are in §3.
 
 ## 2. Generation queue (in this order; ≈ cost at list prices)
 
@@ -228,8 +243,9 @@ $PY tools/gen/gen.py wait mergemain/...          # the job ids batch.py printed 
 - Orchestra: each cut switches from its stand-in to the new take as soon as that take is picked. Then tune the `WIDE`/`CLOSE`/`to`/`tip`
   positions in the ORCH v5 block on stills at each cut's midpoint (below). If a big gesture lands off the beat, shift that cut's s0 by
   whole beats.
-- Post-credits: fit `FR` (the glass region; the stem starts at the touch point) and the two `FX.mote` paths on stills at P0 + 2, 4, 5, 6.4, 8,
-  9.6, 11, 13 (P0 = 282.516).
+- Post-credits: fit `FR` (the glass region; the stem starts at the touch point) and the window's `FX.mote` path on stills at P0 + 5, 6.4, 8,
+  9.6, 11, 13 (P0 = 282.516). The sender's mote rides `REL_ORB`, measured on `v2_release_t12`. If another `v2_release` take is ever picked,
+  re-measure it and `REL_C0` (§1.3).
 
 **Mix and renders** (720p review parts ≤ 75 s each go to `review/v5/` with a README line; GitHub's limit is 100 MB per file):
 ```bash
@@ -243,7 +259,8 @@ $R --from 176 --to 184 --mp4 out/review/v5/257_tree_dish.mp4     # drop forktree
 $R --from 206 --to 216 --mp4 out/review/v5/330_catch.mp4         # 3:30 cut + hook over the tree
 $R --from 222 --to 266 --mp4 out/review/v5/354_outro.mp4         # ch2 fold, 3:54, the 3:56 cut, orchestra, home 4:12, living graph, end-card hit
 node engine/render.mjs --q "show=/engine/show/main.js&figlook=led" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 64 --to 80 --mp4 out/review/v5/107_led.mp4   # fork tree A/B
-$R --from 280 --to 297.016 --mp4 out/review/v5/postcredits.mp4   # violet sender, window, frost, chimes
+$R --from 280 --to 297.016 --mp4 out/review/v5/postcredits.mp4   # violet sender (v2_release: the light leaves her palm), window, frost, chimes
+node engine/render.mjs --q "show=/engine/show/main.js&bd=full" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 124 --to 153 --mp4 out/review/v5/205_build_bdfull.mp4   # A/B with 205_build.mp4 (§1.3)
 node engine/render.mjs --q "show=/engine/show/main.js&orch=v4" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 234 --to 252 --mp4 out/review/v5/orch_v4.mp4
 node engine/render.mjs --q "show=/engine/show/main.js&drop=v5" --res 1280x720 --audio --audiofile out/mix_v5.wav --from 150 --to 182 --mp4 out/review/v5/drop_v5.mp4   # once picked
 node engine/render.mjs --q show=/engine/show/main.js --stills 237.5:out/test/o1.png,239.3:out/test/o2.png,241:out/test/o3.png,242.7:out/test/o4.png,244.5:out/test/o5.png,246.9:out/test/o6.png,248.9:out/test/o7.png --res 1920x1080
@@ -262,7 +279,10 @@ the kids), push, and add a "needs Jade" line in `docs/RESUME.md`.
 - **4:12 → 4:24**: the home shot ends before the grin. Then the living graph: are the 14 lives readable? The log reads one commit per beat,
   violet merges last. `lf_home_mint` (kids from behind) is one pane, as in every life grid.
 - **Post-credits**: the violet branch sends; the window girl in slow motion; the light's path and touch point; the shape growing from the
-  touch; one chime cascade.
+  touch; one chime cascade. Since v5a (§1.3) she sends it in motion (`v2_release`): does the drawn light sit on the take's light? Note the
+  patch on her right arm.
+- **2:06 build wall, A/B** (`205_build.mp4` vs `205_build_bdfull.mp4`): 16 full-frame cuts on the kicks, then the matrix shrinking into the
+  bottom-right corner on bar 77. **2:19**: "› analysis mode" is there from the screen's first frame and pulses on the fourth kick (2:25.3).
 - **Orchestra**: the timing and cuts (stand-ins now); the violet composer once the takes are picked; the score's legibility; `?orch=v4` for A/B.
 - **Drop (2:33–3:00)**, once all six wushu takes are picked (`?drop=v4` for A/B). Check:
   - the duilian pairs;
@@ -289,4 +309,6 @@ the kids), push, and add a "needs Jade" line in `docs/RESUME.md`.
 - `fold=palms` (default reach).
 - `pv=flash` | `pv=off` (default screens).
 - `figlook=led`: LED figures in lattice shots, panes and the fork tree's copies.
+- `bd=full`: the 2:06 build wall as 16 full-frame cuts on the kicks, then the matrix shrinking into the bottom-right corner (Jade's v5a note,
+  §1.3). Default: the wall pops in pane by pane, as before.
 - `timing=v1`: the frozen v1 film.
