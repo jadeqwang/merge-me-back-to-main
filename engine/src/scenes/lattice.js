@@ -2,7 +2,9 @@
 // world = tokens over dim underpaint ('dawn') or luminous painted splats ('paint'); figure = LED emitters, or (looks with figGlyph,
 // the default since Jade's 2026-10-24 call) the figure is BUILT from fine overlapping glyphs too; ?figlook=led restores the emitters.
 // shot: { plate, s0, look?, cellFig?, cellWorld?, fid?(u,t)->density 1/64..1 for the figure, worldFid?(u,t),
-//         cam?(u,t)->{orbit,dolly,pan,over}, lane?, laneAmt?, copies?: [{dt, off:[x,y], scale, lane, at, dens}],
+//         cam?(u,t)->{orbit,dolly,pan,over}, lane?, laneAmt?, copies?: [{dt, off:[x,y], scale, lane, at, dens, plate?, gain?}] (plate: another
+//         plate on the shot's own clock, e.g. one performer's matte of the same footage, tools/prep/lanes.py; gain: x the layers' gain),
+//         figOff?: true = don't draw the main plate's figure (its world only; the copies carry the figures),
 //         scatter?(u,t)->{k, dir:[x,y,z]}, text?(type,t,u), update?(scene,u,t), fade?(u,t), clip?(u,t)->clip time in s (overrides s0 for the
 //         main plate: slow motion / time remap), fit?: true | {from?, to?} (the main plate never runs off its take: from `from` (default t0)
 //         it slows just enough that the last frame lands on `to` (default t1); src/clip.js),
@@ -126,18 +128,22 @@ export default class LatticeScene {
     // fork copies: each its own plate clock (dt) so they move independently
     this.copies = [];
     for (const c of shot.copies || []) {
-      const seq = c.dt ? await PlateSeq.open(shot.plate) : this.seq;
+      const seq = c.plate ? await PlateSeq.open(c.plate) : c.dt ? await PlateSeq.open(shot.plate) : this.seq;
       const L = mkFig(seq);
       if (c.lane) { L.set('uTint', c.lane); L.set('uTintAmt', c.laneAmt ?? .22); }
+      if (c.gain) L.set('uGain', L instanceof FigGroup ? c.gain : L.g0 * c.gain);
       this.copies.push({ c, seq, L });
     }
   }
   async render(t, u) {
     const { ctx, shot } = this;
     const s0 = shot.s0 ?? shot.t0;
-    if (shot.clip) await this.seq.clock((x) => shot.clip((x - shot.t0) / (shot.t1 - shot.t0), x), t);   // (u, t) as main.js passes them; slowed: frame blend
-    else await this.seq.at(t, s0, shot.fit && { from: shot.t0, to: shot.t1, ...(shot.fit === true ? {} : shot.fit) });
-    for (const { c, seq } of this.copies) if (seq !== this.seq) await seq.at(t + c.dt, s0);
+    const clk = shot.clip && ((x) => shot.clip((x - shot.t0) / (shot.t1 - shot.t0), x)), fit = shot.fit && { from: shot.t0, to: shot.t1, ...(shot.fit === true ? {} : shot.fit) };
+    if (clk) await this.seq.clock(clk, t);   // (u, t) as main.js passes them; slowed: frame blend
+    else await this.seq.at(t, s0, fit);
+    for (const { c, seq } of this.copies) if (seq !== this.seq) {
+      if (c.plate) await (clk ? seq.clock(clk, t) : seq.at(t + (c.dt || 0), s0, fit));   // its own plate on the shot's clock
+      else await seq.at(t + c.dt, s0); }
     for (const { sc, seq } of this.screens) await seq.at(t, sc.s0 ?? s0);
     const cam = shot.cam ? shot.cam(u, t) : {};
     const mvp = this.view.frame(this.seq.aspect, cam);
@@ -150,7 +156,7 @@ export default class LatticeScene {
       for (const f of this.figTexts) f.set('uGain', f.g0 * (1 - led));
       if (led > .001) layers.push(...flat(this.fig));
       if (led < .999) layers.push(...this.figTexts);
-    } else { this.fig.set('uDensity', fid); layers.push(...flat(this.fig)); }
+    } else { this.fig.set('uDensity', fid); if (!shot.figOff) layers.push(...flat(this.fig)); }
     if (shot.worldFid) for (const w of this.world) w.set('uDensity', shot.worldFid(u, t));
     for (const { c, L } of this.copies) {
       const k = c.at === undefined ? 1 : Math.max(0, Math.min(1, (t - c.at) / (c.dur ?? .6)));

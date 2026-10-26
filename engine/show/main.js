@@ -683,7 +683,20 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   // ?drop=v4 | v5 (see the cut list below). Default v4 (Jade 2026-10-26, after v5a: the v5 group set's fall get-up "is not how humans get up";
   // keep the v5a fight choreography and splice the roll into it). The v5 group set stays available behind ?drop=v5 only.
   const Q = new URLSearchParams(location.search);
-  const DROP = Q.get('drop') || 'v4';
+  // ?drop=real: Jade's REAL 2004 group set, the competition footage itself as the drop's plates, drawn in light (docs/wushu_real_routine.md;
+  // segments, key frames and look in engine/show/real_ws.js). It needs every cut's plate, work/plates/real_ws_<seg>/ (or, with &real=ref, a
+  // picked motion-reference take dr_real_ref_<seg>); until the box has prepped them, ?drop=real plays the default drop unchanged.
+  const RW = Q.get('drop') === 'real' ? await (async () => {
+    const W = await import('/engine/show/real_ws.js'), ref = Q.get('real') === 'ref', pair = W.PAIRS[Q.get('realpair')] || 'pairs';
+    const meta = async (p) => { try { const r = await fetch(`${p}/meta.json`); return r.ok ? await r.json() : null; } catch { return null; } };
+    const cuts = [];
+    for (const [b0, s] of W.CUTS) { const seg = s === 'pairs' ? pair : s, shot = `dr_real_ref_${seg}`, plate = `/work/plates/real_ws_${seg}`;
+      if (ref && has(shot)) { cuts.push({ b0, seg, shot }); continue; }
+      const m = await meta(plate); if (!m) return null;
+      cuts.push({ b0, seg, plate, meta: m }); }
+    return { W, cuts };
+  })() : null;
+  const DROP = Q.get('drop') === 'real' && !RW ? 'v4' : Q.get('drop') || 'v4';
   // ?roll=close | wide | off: the partner roll over the back (docs/wushu_v5_design.md section 11; docs/video_model_bakeoff.md). The roll
   // peaks on 92.3, the bass's E -> F# step (the drop's strongest beat-3 onset, the airborne bar of the first rising phrase). Default = the picked
   // version (the close two-shot first). v4 shows the roll only for a take whose clean stretch was checked frame by frame (ROLL_KEY[take].clean):
@@ -710,7 +723,7 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     const g = ty.g;
     FX.streaks(g, t, D0, B(105) - .3, 2);
     if (t < D0 + .9) { const f = Math.exp(-(t - D0) * 5); g.fillStyle = `rgba(255,250,240,${f})`; g.fillRect(0, 0, 1920, 1080); }
-    for (const [hb, k] of [...(DROP === 'v5' ? [[93, .3], [97, .5]] : []), ...(rollOn ? [[92.5, .22]] : [])]) {   // v5: the burst, the fall; the roll's peak
+    for (const [hb, k] of [...(DROP === 'v5' ? [[93, .3], [97, .5]] : []), ...(RW ? RW.W.FLASH : rollOn ? [[92.5, .22]] : [])]) {   // v5: the burst, the fall; the roll's peak
       const a = t - bb(Math.floor(hb), (hb - Math.floor(hb)) * 4);
       if (a >= 0 && a < .6) { g.fillStyle = `rgba(255,250,240,${k * Math.exp(-a * 7)})`; g.fillRect(0, 0, 1920, 1080); } }
   };
@@ -730,8 +743,8 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   const at = (shot, bars) => ({ plate: pk(shot, 0).plate, s0: (b0) => BT(b0) - bars * BAR });
   // keyed(shot, [[bar position, clip time], ...]): the take's key frames land on those bar positions. The clip runs at real speed before the
   // first key and after the last, and linearly between keys, so a short or long held pose still fills its bar (keep each stretch 0.6-1.5x).
-  const keyed = (shot, K) => { const k = K.map(([b, c]) => [BT(b), c]);
-    return { plate: pk(shot, 0).plate, s0: () => k[0][0] - k[0][1], clip: (u, t) => {
+  const keyed = (shot, K, plate = pk(shot, 0).plate) => { const k = K.map(([b, c]) => [BT(b), c]);
+    return { plate, s0: () => k[0][0] - k[0][1], clip: (u, t) => {
       let j = 0; while (j < k.length - 1 && t > k[j + 1][0]) j++;
       if (j === k.length - 1 || t < k[0][0]) return k[j][1] + t - k[j][0];
       return k[j][1] + (t - k[j][0]) * (k[j + 1][1] - k[j][1]) / (k[j + 1][0] - k[j][0]); } }; };
@@ -746,7 +759,31 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     dr_dl_ripple: [[91, BAR], [91.5, 2.6], [92.5, 4.15]] };  // t69 (measured): back pair's peak 91.3, front pair's 92.3 (the middle pair rolls ~91.4)
   const FOLDCUT = [101, { plate: pk(`ch1_fold_${FOLD}`, 0).plate, s0: (b0) => B(b0) - .2 }, [960, 430]];
   const v5 = (b0, shot, cut, sun, v4cut, v4sun) => (has(shot) ? [b0, cut, sun] : [b0, v4cut, v4sun]);
-  const cuts = DROP === 'v5' ? [  // [bar position, plate, s0(b0) = song time of the clip's frame 0, sun x,y]; each cut runs to the next cut
+  // ?drop=real cuts (RW above). A light plate: the footage's own world dimmed to a faint floor; every performer her own plate (tools/prep/lanes.py:
+  // the same frames, her own matte), a glyph-built figure in her branch lane; at the salute a second, ORANGE copy of Jade's own performer (ME)
+  // steps forward into the centre of the line: main joins, the V of seven the fold match-cuts on. Without lanes.py's split, the union figure in
+  // one colour. A motion-reference take (&real=ref) plays like any drop take, on the segment's keys.
+  const realCut = ({ b0, seg, shot, plate, meta }) => {
+    const W = RW.W, S = W.SEGS[seg], LK = W.LOOK, num = (k, d) => (Q.get(k) != null && Q.get(k) !== '' && Number.isFinite(+Q.get(k)) ? +Q.get(k) : d);
+    if (shot) return [b0, keyed(shot, W.REF_KEY[PICKS[shot]?.take] || S.keys), [960, 330]];
+    const P = meta.performers || [], fps = meta.fps || W.SRC.fps, A = meta.w / meta.h, wk = num('realworld', LK.world), z = S.z ?? LK.z, pan = S.pan ?? LK.pan;
+    const copies = P.map((p) => ({ plate: `${plate}_p${p.k}`, lane: L[p.lane] || L.white, laneAmt: LK.laneAmt, gain: LK.gain }));
+    const me = num('realme', W.ME ?? -1);
+    if (seg === 'end' && P.length && me !== 0) {   // main: out of Jade's own spot (or the one nearest the centre) on the rise, in the point by the salute
+      const kh = S.keys.find(([b]) => b === 100.125) || S.keys[0], ks = S.keys.find(([b]) => b === 100.5) || S.keys[S.keys.length - 1];
+      const i = (p, a) => (p[a] ? p[a][Math.max(0, Math.min(p[a].length - 1, Math.round(ks[1] * fps)))] : null);
+      const xs = P.map((p) => i(p, 'cx') ?? .5), xc = xs.reduce((a, b) => a + b, 0) / xs.length, order = P.map((p, j) => [xs[j], p]).sort((a, b) => a[0] - b[0]);
+      const pick = me >= 1 && me <= P.length ? order[me - 1] : order.reduce((a, b) => (Math.abs(b[0] - xc) < Math.abs(a[0] - xc) ? b : a));
+      const [x, p] = pick, y = i(p, 'cy') ?? .6, s = 1.12;   // plate units: x in [-A/2, A/2], y up in [-.5, .5]; scaled about the plate centre
+      copies.push({ plate: `${plate}_p${p.k}`, lane: L.orange, laneAmt: .75, gain: LK.gain * 1.1, scale: s, at: BT(kh[0]), dur: BT(ks[0]) - BT(kh[0]),
+        off: [(xc - .5) * A - (x - .5) * A * s, -.07 - (.5 - y) * (s - 1)] });
+    }
+    const dim = (sc) => { for (const w of sc.world || []) w.set('uGain', w.g0 * wk); };
+    return [b0, keyed(null, S.keys, plate), S.sun || [960, 170], { cellFig: num('realcell', LK.cellFig), cellWorld: LK.cellWorld, bloom: LK.bloom,
+      figOff: copies.length > 0, ...(copies.length ? { copies } : { lane: L.gold, laneAmt: .35 }), update: (sc) => dim(sc),
+      cam: (u, t) => ({ zoom: z * (1 + .03 * u) * (1 + .02 * T.pulse(t, .14)), pan, over: 1.04 }) }];
+  };
+  const cuts = RW ? [...RW.cuts.map(realCut), FOLDCUT] : DROP === 'v5' ? [  // [bar position, plate, s0(b0) = song time of the clip's frame 0, sun x,y, shot extras?]; each cut runs to the next
     v5(89, 'dr_dl_wide', at('dr_dl_wide', 1), [960, 160], v4at('dr_set', 0, 89), [700, 230]),                         // duilian: three pairs clash on the drop
     rollOn ? [91, keyed(ROLL_SHOT[ROLL], KEY[ROLL_SHOT[ROLL]]), [960, 330]]                                           // the partner roll, peak on 92.3
       : v5(91, 'dr_dl_close', at('dr_dl_close', 1), [960, 330], v4at('dr_set', 2, 91), [700, 230]),                   // the front pair: sweep, leap, flying kick, freeze
@@ -763,10 +800,10 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
         : [[97, at('dr_duilian', 1), [960, 160]]]),
       [99, at('dr_duilian', 3), [960, 160]], FOLDCUT];
   const FOLD_I = cuts.length - 1;
-  cuts.forEach(([b0, { plate, s0, clip }, sun], i) => {
+  cuts.forEach(([b0, { plate, s0, clip }, sun, x], i) => {
     const t0 = BT(b0), t1 = BT(i < FOLD_I ? cuts[i + 1][0] : b0 + 2);
     S.push({ t0, t1, kind: 'lattice', look: 'paint', plate, s0: s0(b0), ...(clip ? { clip } : {}), fid: () => 1,
-      cam: (u, t) => ({ dolly: punch(t, 1 - .05 * u, .035), orbit: (i % 2 ? -1 : 1) * .03 * (u - .5), over: 1.07 }),
+      cam: (u, t) => ({ dolly: punch(t, 1 - .05 * u, .035), orbit: (i % 2 ? -1 : 1) * .03 * (u - .5), over: 1.07 }), ...x,
       text: (ty, t) => { FX.sun(ty.g, t, { x: sun[0], y: sun[1], r: 150 + 40 * ooh(t), k: .42 + .3 * ooh(t) }); dropText(ty, t);
         if (i === 0 && t < D0 + 1.2) ty.ledHook([{ w: 'MAIN', start: D0 }], t, { x: 960, y: 690, size: 520, maxW: 2000, align: 'center', out: D0 + .5, lane: 1, scrim: false });
         if (i === FOLD_I) ty.ledHook([{ w: 'ALL', start: B(101) }, { w: 'BRANCHES', start: B(101) + T.beatLen(101) }, { w: 'MERGED', start: B(102) }], t, { x: 960, y: 980, size: 110, maxW: 1800, align: 'center', out: B(103) - .4, lane: 1 }); } });
