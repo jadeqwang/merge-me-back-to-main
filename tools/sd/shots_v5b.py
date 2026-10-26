@@ -30,8 +30,11 @@ STILLS = {
           "the camera, the calm closed-mouth expression with a faint warmth, the cool violet night light on her face, and " + _KEEP[5:]),
  "ch1_gone_close_34": dict(tool="gpt", out="media/plates/face_v4/cand/ch1_gone_close_34", to="media/plates/face_v4/ch1_gone_close_34.png",
    refs=["media/plates/face_v4/ch1_gone_close.png"] + _CANON + ["media/style/r7/turn_gpt_patch.png"],
-   prompt="Edit the first image. " + _34 + "Same woman with exactly the face of the reference images 2 and 3 (keep the exact eye size and shape, "
-          "very dark brown irises, natural double-eyelid crease, tall forehead uncovered, no bangs), natural skin, no makeup. " + _KEEP +
+   # v2 wording (2026-10-26): candidates a/b slimmed her face toward violet's; the canon is rounder and fuller with larger, rounder eyes
+   prompt="Edit the first image. " + _34 + "Same woman with exactly the face of the first image and of reference images 2 and 3, only turned: "
+          "keep her round, full, soft face shape with wide cheeks and a rounded chin (do NOT slim the face, narrow the jaw or sharpen the chin), "
+          "her large, round, friendly eyes at the exact size of the references with very dark brown irises and a natural double-eyelid crease, "
+          "her full nose and lips; tall forehead uncovered, no bangs; natural skin, no makeup. " + _KEEP +
           " Same pink sunrise sky and salt flat. Photorealistic 3D animated film still, the same render style as the first image."),
  "ch1_gone_close_34v": dict(tool="gpt", out="media/plates/face_v4/cand/ch1_gone_close_34v", to="media/plates/face_v4/ch1_gone_close_34v.png",
    refs=["media/plates/face_v4/ch1_gone_close.png"] + _VIOLET + ["media/style/r7/turn_gpt_patch.png"],
