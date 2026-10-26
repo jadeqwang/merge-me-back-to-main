@@ -749,6 +749,91 @@
    "kind": "candidate",
    "note": "v5 re-take (fail): several extra syllables inside 'main'",
    "file": "review/previews/out_main/out_main_t52_0f61493a51.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t65_96b71e9d46",
+   "keys": "91:2,92.5:4,93:5.25",
+   "kind": "pick",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. the close partner roll (default ?roll=close): sweep on 91.1, violet lunges, orange ducks into the table, violet rolls over her back, inverted peak on 92.3 (the bass's E->F#), lands on the far side, liangxiang freeze on the 93.1 cut. Two bodies throughout, lanes right; one extra soft-focus background figure and a small dark blob behind",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t65_96b71e9d46.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t61_8522fa32e0",
+   "keys": "91:0.85,92.5:4.1",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. close roll, alt: clean roll, but she lands back on her own side and springs into the opening guard (no new freeze)",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t61_8522fa32e0.mp4"
+  },
+  {
+   "shot": "dr_dl_roll",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_roll_t62_dc2a555781",
+   "keys": "91:0.85,92.5:3.95",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. close roll: more of a handstand over the back; lands into the opening guard",
+   "file": "review/previews/wushu_roll/dr_dl_roll_t62_dc2a555781.mp4"
+  },
+  {
+   "shot": "dr_dl_ripple",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_ripple_t69_e0408ef0fb",
+   "keys": "91:1.739,91.5:2.6,92.5:4.15",
+   "kind": "pick",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. the wide canon (?roll=wide): back pair rolls on 91.3, middle ~91.4, front pair on 92.3, then all six freeze in a new pose. The front roll is busy (an X of four legs, orange over violet) for ~0.4 s",
+   "file": "review/previews/wushu_roll/dr_dl_ripple_t69_e0408ef0fb.mp4"
+  },
+  {
+   "shot": "dr_dl_ripple",
+   "film": "2:32.2-2:55.0",
+   "film_s": [
+    152.167,
+    175.037
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "dr_dl_ripple_t65_084f82f977",
+   "keys": "91:1.739,91.5:2.7,92:3.5,92.5:4.35",
+   "kind": "candidate",
+   "note": "Raw-take rough cut of the whole v5 drop (bars 89-101, current takes elsewhere) with this take in the 91-93 slot on the EDL's keyed() clock (tools/preview_drop.py); full mix. wide canon, cleanest timing (91.3 / 92.1 / 92.3) and a new freeze, but the orange partner disappears under violet's handstand for ~0.3 s",
+   "file": "review/previews/wushu_roll/dr_dl_ripple_t65_084f82f977.mp4"
   }
  ]
 }

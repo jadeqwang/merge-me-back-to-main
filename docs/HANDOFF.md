@@ -11,7 +11,7 @@ Status 2026-10-24 ~13:00: **v2 delivered**, Jade is reviewing. She called it "a 
   Still don't post frames or videos publicly yourself (Artifacts, uploads); Seedance `reference_videos` needs a public URL, so ask her first.
 - **Never deploy, modify or delete Cloudflare Workers or KV.** We only *use* the relay Worker `rare-earth-v3-relay` through tools/gen.
 - Git: github.com/jadeqwang/merge-me-back-to-main (**public**, her choice). She asked for commits + pushes at natural checkpoints; code and docs only (see .gitignore). Never print or commit `work/cf_account_id.txt` or `work/gen_kv_ns.txt`.
-- Budget: hard cap `MERGEMAIN_CAP` (default $600), enforced by tools/gen. Spent ≈ **$146** (list-price estimate; `tools/gen/spend.py`).
+- Budget: hard cap `MERGEMAIN_CAP` (default $1,000 since 2026-10-26; was $600), enforced by tools/gen. Spent ≈ **$146** (list-price estimate; `tools/gen/spend.py`).
   She has explicitly asked us to *spend more on improvements*, economically. Seedance 720p costs about $0.23/s (≈$1.85 per 8 s take); a nano-banana-pro still ≈ $0.13.
 - Her tone brief: epic techno-optimist, SF tech Twitter, AAA 3D sci-fi, light Tron, K-pop formation energy. **No fear angle, no
   downstream-harm-to-humans framing.** No "GPT slop". Lyrics on screen at varied scale, composed with the figure.

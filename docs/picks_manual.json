@@ -38,5 +38,10 @@
  "out_orch": "out_orch_t2_a06a77a8ce",
  "out_orch_close": "out_orch_close_t1_88bac16b5e",
  "pc_kneel": "pc_kneel_t1_5ddeaba121",
- "pc_beam": "pc_beam_t1_0a8e53006b"
+ "pc_beam": "pc_beam_t1_0a8e53006b",
+ "orch_wide": "orch_wide_t52_b4a325427b",
+ "orch_line": "orch_line_t51_a138ac508e",
+ "orch_keys": "orch_keys_t51_187ec8a1da",
+ "orch_pencil": "orch_pencil_t52_f2ca5088fd",
+ "orch_guitar": "orch_guitar_t53_20a5d1e87c"
 }

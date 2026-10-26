@@ -3,6 +3,9 @@
 // ?timing=v1 renders the frozen v1 EDL (engine/show/main_v1.js, the pre-port show for "Merge Me Back to Main.wav") instead.
 const T = await import('/engine/src/time.js'); await T.loadTiming();
 const PICKS = await (await fetch('/work/picks.json')).json().catch(() => ({}));
+// the outro orchestra's score: a transcription of bars 137-144 (tools/orch_tx/build_score.py) + the notation renderer and its glyphs (Bravura)
+const NOTATION = await import('/engine/show/score.js');
+const SC = NOTATION.prep(await (await fetch('/engine/show/score_orch.json')).json(), await (await fetch('/engine/fonts/bravura_glyphs.json')).json());
 const B = T.bar, W = T.words, bb = T.bb;
 const ws = (id, k = 0) => W(id)[k < 0 ? W(id).length + k : k].start, we = (id, k = -1) => W(id)[k < 0 ? W(id).length + k : k].end;   // word start / end
 const SONG_END = T.songEnd();
@@ -175,78 +178,11 @@ const FX = {
       gr.addColorStop(0, `rgba(255,248,235,${.8 * f * k})`); gr.addColorStop(1, 'rgba(255,200,140,0)'); g.fillStyle = gr; g.fillRect(px - R, py - R, 2 * R, 2 * R); }
     g.restore();
   },
-  // outro orchestra v5 (Jade 2026-10-25): the composer's score. A five-line staff of light hangs at her pencil. Each glyph appears at the
-  // write head (v.head) when she writes it (e.wt) and drifts away at v.pps px/s (negative = to the right), so the score is a live timeline,
-  // like the git log. A glyph with `fly` leaves the staff and lands on its player (v.to[part]: [x,y] or (e) => [x,y]) on the beat the part
-  // sounds (e.at), where a ring bursts; env[part](t) makes the player glow in her lane colour while the part plays. v.parts: parts shown here.
-  // e = { kind: 'note'|'chord'|'slash'|'bar', wt, at?, end? (held: its light streams on), notes: [midi], c, part?, targets?, fly?, flight?, beam?, small?, key? }
-  score(g, t, v, E, env = {}) {
-    const k = v.k ?? 1, gap = v.gap ?? 22, y0 = v.y, mg = v.merge ? v.merge(t) : 0, open = clamp((t - (v.open ?? -1e9)) / .45);
-    const dia = (m) => Math.floor(m / 12) * 7 + [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6][m % 12];   // staff step, sharps spelling (D major)
-    const Y = (m) => y0 + 4 * gap - (dia(m) - dia(64)) * gap / 2, yMid = y0 + 2 * gap;              // treble staff: bottom line E4
-    const X = (e, at = t) => v.head - (at - e.wt) * v.pps, dir = v.pps < 0 ? 1 : -1;
-    const fade = (x) => clamp((x - v.x0) / 80) * clamp((v.x1 - x) / 80);
-    const vis = (e) => e.wt <= t && (e.key || !e.part || e.part === 'all' || !v.parts || v.parts.includes(e.part));   // key: shown in every framing
-    const PC = { piano: L.rose, violin: L.white, guitar: L.rose }, rgba = (h, a) => `rgba(${[1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)).join(',')},${a})`;
-    const tgt = (p, e) => { const q = v.to?.[p]; return typeof q === 'function' ? q(e) : q; };
-    const kick = T.pulse(t, .12);
-    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineJoin = 'round';
-    // the staff unrolls from the head on her first stroke (v.open); on merge the five lines fold into one orange line (main) across the frame
-    const a0 = v.head - open * (v.head - v.x0) - mg * 2400, a1 = v.head + open * (v.x1 - v.head) + mg * 2400;
-    for (let i = 0; i < 5; i++) {
-      const y = y0 + i * gap + (yMid - y0 - i * gap) * ss(0, .7, mg), c = mg > .35 ? L.orange : '#FFF1DC';
-      g.globalAlpha = k * (i === 2 ? 1 : 1 - mg) * (.3 + .25 * kick + .6 * mg); g.strokeStyle = c; g.shadowColor = c; g.shadowBlur = 12; g.lineWidth = 2 + 5 * mg;
-      g.beginPath(); g.moveTo(a0, y); g.lineTo(a1, y); g.stroke();
-    }
-    const nh = (x, y, c, s, a) => { g.globalAlpha = a; g.fillStyle = c; g.shadowColor = c; g.shadowBlur = 16; g.beginPath(); g.ellipse(x, y, gap * .62 * s, gap * .43 * s, -.38, 0, 7); g.fill(); };
-    const ledgers = (x, y, a) => { g.globalAlpha = a * .7; g.strokeStyle = '#FFF1DC'; g.lineWidth = 2;
-      for (let yy = y0 - gap; yy >= y - 1; yy -= gap) { g.beginPath(); g.moveTo(x - gap, yy); g.lineTo(x + gap, yy); g.stroke(); }
-      for (let yy = y0 + 5 * gap; yy <= y + 1; yy += gap) { g.beginPath(); g.moveTo(x - gap, yy); g.lineTo(x + gap, yy); g.stroke(); } };
-    const beams = {}, cur = {}; let lastW = -1e9;
-    for (const e of E) {
-      if (!vis(e)) continue; lastW = Math.max(lastW, e.wt); if (e.part && e.at <= t) cur[e.part] = e;
-      const x = X(e), a = k * (1 - mg) * fade(x) * clamp((t - e.wt) / .08); if (a <= 0) continue;
-      const c = e.c || '#FFF1DC', s = e.small ? .8 : 1, flash = 1 + 1.5 * Math.exp(-(t - e.wt) / .15);
-      g.strokeStyle = c; g.shadowColor = c; g.shadowBlur = 14;
-      if (e.kind === 'bar') { const ext = e.big ? 2 * gap : 0; g.globalAlpha = Math.min(1, a * flash); g.lineWidth = e.big ? 5 : 3;
-        g.beginPath(); g.moveTo(x, y0 - ext); g.lineTo(x, y0 + 4 * gap + ext); g.stroke();
-        if (e.double) { g.lineWidth = 9; g.beginPath(); g.moveTo(x + 14 * dir, y0); g.lineTo(x + 14 * dir, y0 + 4 * gap); g.stroke(); }
-        continue; }
-      if (e.kind === 'slash') { g.globalAlpha = a; g.lineWidth = 6; g.beginPath(); g.moveTo(x - 7, yMid + gap * .7); g.lineTo(x + 7, yMid - gap * .7); g.stroke(); continue; }
-      const ys = e.notes.map(Y), lo = Math.max(...ys), hi = Math.min(...ys), up = !!e.beam || dia(e.notes[0]) < dia(71), rx = gap * .55 * s;
-      for (const y of ys) { ledgers(x, y, a); nh(x, y, c, s, Math.min(1, a * flash)); }
-      const sx = up ? x + rx : x - rx, sEnd = e.beam ? y0 - 2 * gap : up ? hi - 3.3 * gap : lo + 3.3 * gap;   // stem; runs share a beam per beat
-      g.globalAlpha = a; g.strokeStyle = c; g.lineWidth = 2.5; g.beginPath(); g.moveTo(sx, up ? lo : hi); g.lineTo(sx, sEnd); g.stroke();
-      if (e.beam) { const p = beams[e.beam]; if (p !== undefined) { g.lineWidth = 6; g.beginPath(); g.moveTo(p, sEnd); g.lineTo(sx, sEnd); g.stroke(); } beams[e.beam] = sx; }
-      if (e.end && t > e.at) { const xr = v.head - (t - Math.min(t, e.end)) * v.pps;   // a held note: its light streams on while it sounds
-        g.globalAlpha = a * (.55 + .2 * Math.sin(t * 34)); g.lineWidth = 5; g.beginPath(); g.moveTo(x + Math.sign(xr - x) * rx * 1.3, ys[0]); g.lineTo(xr, ys[0]); g.stroke(); }
-    }
-    // flights: a phrase leaves the staff and lands on its player on the beat it sounds; a ring bursts there
-    for (const e of E) {
-      if (!e.fly || !vis(e) || t > e.at + .6 || mg > .5) continue;
-      const dep = Math.max(e.wt + .06, e.at - (e.flight ?? .42)), xs = X(e, dep), ys = e.notes ? Y(e.notes[0]) : yMid;
-      for (const p of e.targets || (e.part === 'all' ? Object.keys(v.to || {}) : [e.part])) {
-        const q = tgt(p, e); if (!q) continue; const col = e.part === 'all' ? PC[p] : e.c;
-        g.fillStyle = col; g.strokeStyle = col; g.shadowColor = col; g.shadowBlur = 18;
-        if (t >= dep && t < e.at) { const u = ss(dep, e.at, t), mx = (xs + q[0]) / 2, my = Math.min(ys, q[1]) - 180;
-          for (let j = 0; j < 9; j++) { const w = Math.max(0, u - j * .035), r = 1 - w;
-            g.globalAlpha = k * (1 - j / 9); g.beginPath(); g.arc(r * r * xs + 2 * r * w * mx + w * w * q[0], r * r * ys + 2 * r * w * my + w * w * q[1], (j ? 5 : 9) * (1 - j / 14), 0, 7); g.fill(); } }
-        if (t >= e.at) { const w = (t - e.at) / .6; g.globalAlpha = k * (1 - w) * .9; g.lineWidth = 6 * (1 - w) + 1; g.beginPath(); g.arc(q[0], q[1], 20 + 150 * Math.sqrt(w), 0, 7); g.stroke(); }
-      }
-    }
-    // the players glow in their lane colours while their parts play
-    for (const [p, f] of Object.entries(env)) {
-      if (v.parts && !v.parts.includes(p)) continue; const q = tgt(p, cur[p] || { notes: [67] }); if (!q) continue;
-      const amp = f(t) * k * (1 - mg), R = v.glowR ?? 170; if (amp <= .01) continue;
-      const gr = g.createRadialGradient(q[0], q[1], 0, q[0], q[1], R); gr.addColorStop(0, rgba(PC[p], .42 * Math.min(1.5, amp))); gr.addColorStop(1, rgba(PC[p], 0));
-      g.globalAlpha = 1; g.fillStyle = gr; g.fillRect(q[0] - R, q[1] - R, 2 * R, 2 * R);
-    }
-    // her pencil tip: violet ink (the 1420 MHz branch's colour; her commit comes home in the git log next), a thread to the head as she writes
-    if (v.tip) { const q = typeof v.tip === 'function' ? v.tip(t) : v.tip, w = Math.exp(-Math.max(0, t - lastW) / .2) * (1 - mg);
-      g.globalAlpha = k * (.35 + .65 * w); g.fillStyle = '#E9DDFF'; g.shadowColor = L.violet; g.shadowBlur = 24; g.beginPath(); g.arc(q[0], q[1], 4 + 5 * w, 0, 7); g.fill();
-      if (w > .05) { g.globalAlpha = k * .5 * w; g.strokeStyle = L.violet; g.lineWidth = 2; g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(v.head, yMid); g.stroke(); } }
-    g.restore();
-  },
+  // outro orchestra (bars 137-144): the composer's score, engraved from the transcription of what actually plays (engine/show/score_orch.json,
+  // docs/orchestra_transcription.md) and drawn in light by engine/show/score.js: staves with clef, key, 4/4 and bar lines, notes on their
+  // lines and spaces, read left to right under a moving cursor; she writes each note just before it sounds, and as it sounds it flies to
+  // the player whose part it is. v: the view (staves, position, scale, pencil tip, players); see score.js draw().
+  score(g, t, v, env) { NOTATION.draw(g, t, v, SC, env); },
 };
 const punch = (t, base = 1, amt = .025) => base - amt * T.pulse(t, .14);
 
@@ -782,8 +718,9 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     dr_gs_ranks: [[93, BAR]],                                // the burst into bow stance + punch on 93.1
     dr_gs_tornado: [[97, 2 * BAR], [98, 3 * BAR]],           // the six hit the water on 97.1; they start to push up on 98.1 (bar 97 = the held still)
     dr_gs_salute: [[100, BAR], [100.5, BAR + 2 * BEAT]],     // the horse stance on 100.1; fist meets palm on 100.3 (the "ooh")
-    dr_dl_roll: [[91, BAR], [92.5, BAR + 6 * BEAT]],         // the sweep on 91.1; the roll's peak (body level over her partner's back) on 92.3
-    dr_dl_ripple: [[91, BAR], [91.5, BAR + 2 * BEAT], [92, 2 * BAR], [92.5, BAR + 6 * BEAT]] };   // back, middle, front pair's peaks 91.3/92.1/92.3
+    dr_dl_roll: [[91, 2], [92.5, 4], [93, 5.25]],            // t65 (measured): the sweep on 91.1, the roll's peak (inverted over her partner's back) on
+                                                             // 92.3 (x0.77 between), the liangxiang freeze reached on the 93.1 cut (x1.44). t61: [[91, .85], [92.5, 4.1]]
+    dr_dl_ripple: [[91, BAR], [91.5, 2.6], [92.5, 4.15]] };  // t69 (measured): back pair's peak 91.3, front pair's 92.3 (the middle pair rolls ~91.4)
   const FOLDCUT = [101, { plate: pk(`ch1_fold_${FOLD}`, 0).plate, s0: (b0) => B(b0) - .2 }, [960, 430]];
   const v5 = (b0, shot, cut, sun, v4cut, v4sun) => (has(shot) ? [b0, cut, sun] : [b0, v4cut, v4sun]);
   const cuts = DROP === 'v5' ? [  // [bar position, plate, s0(b0) = song time of the clip's frame 0, sun x,y]; each cut runs to the next cut
@@ -896,64 +833,88 @@ if (ORCH === 'v4') { // full drums again: the orchestra of Jades (Jade 2026-10-2
   // The composer is the violet branch herself (Jade's pick, 2026-10-25): the 1420 MHz Jade, bun with two pencils, violet bands, writing in violet
   // light, while the main-world band (rose piano, white violin, rose guitar) plays what she writes. The branch that went off on her own writes the
   // music the others play; seconds later the living graph cherry-picks her commit into main (as the post-credits, she is the one who sends).
-  // What plays (measured on the v2 mix + vocal stem): bar 137 impact, G: four-on-the-floor, offbeat hats, rolling sidechained bass, wide pads,
-  // the intro's 16th arp at full tilt; "main" held to 238.65. 138: the wordless vocal line enters (~238.6, D, long) = the violin's part.
-  // 139: nothing new = the arp = the piano's bar. 140: the line leaps (A 241.92, E 242.75, F# 243.42). 141: chord change G -> Bm (bass to B)
-  // = the guitar's hit; the F# holds (voice to 248.2, then a high synth F# from 247.1). 142-143: Bm, everyone. 144: breath, "Back to main" 249.44 -> home.
-  // Each cut features the player whose part enters, on that bar; she writes each part just before it sounds (FX.score) and it lands on the beat.
+  // v5b (Jade 2026-10-26: "make sure the musical notation correctly corresponds to the music ... read left to right ... It should not be
+  // arbitrary"; "I'd almost rather her be still, holding a pencil and drawing notes that fly into the staff while the others play").
+  // What plays, transcribed and verified by resynthesis (docs/orchestra_transcription.md -> engine/show/score_orch.json), 4/4, B minor/D major:
+  // - Voice: "main" held (E4-D4-B3 melisma, B3 from beat 2 of 137), then the wordless line in two layers an octave apart: C#5/C#4 (138),
+  //   D5/D4 (139), a scoop G->A on the downbeat of 140 to A5/A4, the upper layer E5 on beat 3 over the held A4, then F#5/F#4 from the "and" of
+  //   4 into 141, held to beat 2 (F#4) / the "and" of 3 (F#5) of 143; "Back to main" #2 from the "and" of 2 of 144. The violin doubles it.
+  // - Synth keys: a dotted-8th line (16ths 0,3,6,9,12 of each bar) on A4 (137-141, 143) and C#5 (142, 144) over the pad (Gadd9 -> Bm7 at 141).
+  //   The 16th inner arpeggiation of the chord is audible but its note order can't be recovered under the drop, so it is not notated.
+  // - Bass synth: G (137-140) -> B (141-144), gated off on every beat: offbeat 8ths. There is no guitar in the mix; the guitar doubles it.
+  // Each cut features the player whose part is the event of that bar (wide 137 | voice 138 | keys 139 | composer + voice 140 | guitar 141 |
+  // wide 142-143 | composer 143.75-144); the staff on screen is that player's part, read left to right under a moving cursor; the composer's
+  // pencil writes each note 0.55 s before it sounds and, as it sounds, it flies to its player.
+  // The composer is STILL (Jade 2026-10-26): her close-ups use orch_pencil_t52's quiet writing stretch (clip 3.0-4.8 and 5.2-6.2: body still,
+  // pencil hand drawing at chest height, eyes on the pencil), shifted by whole beats; the second wide uses orch_wide_t52 clip 3.0-6.1 (she
+  // holds the pencil up and writes small strokes, body still) instead of 9.6-12.6, where she waves it like a baton. Any other orch_pencil pick (t51 conducts with a raised arm)
+  // and the v4 stand-ins (the dancing conductor) get no composer close-up: those two cuts stay on the band. Re-take spec: tools/sd/shots_outro.py
+  // orch_compose (+ orch_wide_still).
   // Takes: tools/sd/shots_outro.py orch_* (v2 instrumental windows from a beat, so whole-beat s0 shifts keep the playing on the beat). Until a
   // take is picked, its cut renders a reframe of the v4 takes (stand-in) so the timing can be reviewed now.
   const t0 = ORCH_T0, t1 = ws(25) - .08, BT = T.beatLen(137);
-  // the violin's part = the sung line (vocal-stem pitch track); its F# is carried on by a high synth line from bar 143 (247.1) through the breath
-  const VLINE = [[238.60, 241.64, 62], [241.92, 242.62, 69], [242.75, 243.36, 76], [243.42, 250.40, 78]];   // [on, off, midi]
-  const since = (t, div) => { const b = T.barAt(t), f = (b - Math.floor(b)) * 4 * div; return (f - Math.floor(f)) * T.beatLen(Math.floor(b)) / div; };
-  const on = (a, e, t, att = .06, rel = .25) => ss(a - att, a + att, t) * (1 - ss(e - rel * .3, e + rel, t)), hit = (x, t, d = .35) => (t >= x ? Math.exp(-(t - x) / d) : 0);
-  const ENV = {   // how each player's light follows her part
-    piano: (t) => on(B(137), B(145), t) * (.25 + .75 * Math.exp(-since(t, 4) / .05)),                                   // the arp: every 16th
-    guitar: (t) => on(B(137), B(145), t) * (.2 + .45 * Math.exp(-since(t, 2) / .07)) + hit(B(137), t) + hit(B(141), t),   // the drive: 8ths; the two hits
-    violin: (t) => VLINE.reduce((s, [a, e]) => s + on(a, e, t, .08, .35), 0) * (.85 + .15 * Math.sin(t * 34)),           // the long line, with vibrato
-  };
-  const E = [{ kind: 'bar', wt: B(137) - .04, big: 1 }, { kind: 'chord', wt: B(137), at: B(137) + .12, notes: [62, 67, 71, 74], c: L.orange, part: 'all', targets: ['piano', 'guitar'], fly: 1, key: 1 }];
-  const ARP = { G: [67, 71, 74, 69], Bm: [71, 74, 78, 73] };   // the arp's notes as measured: G4 B4 D5 A4 / B4 D5 F#5 C#5
-  for (let n = 137; n <= 144; n++) for (let j = 0; j < 16; j++) { const at = bb(n, j / 4); if (at < bb(137, 1)) continue;   // beat 1 of 137 is the slam
-    E.push({ kind: 'note', small: 1, wt: at - BT, at, notes: [ARP[n < 141 ? 'G' : 'Bm'][j % 4]], c: L.rose, part: 'piano', beam: `${n}.${j >> 2}`, fly: j % 4 === 0 }); }
-  for (let n = 137; n <= 144; n++) for (let j = 0; j < 8; j++) { const at = bb(n, j / 2), ch = n === 141 && j === 0; if (at < bb(137, .5)) continue;
-    E.push(ch ? { kind: 'chord', wt: at - .2, at, notes: [59, 62, 66, 71], c: L.rose, part: 'guitar', fly: 1, flight: .14, key: 1 }          // the change: she taps B-D-F#, flicks it over
-      : { kind: 'slash', wt: at - BT, at, c: L.rose, part: 'guitar', fly: j % 2 === 0 }); }
-  VLINE.forEach(([a, e, m], i) => E.push({ kind: 'note', wt: a - (i ? .06 : .3), at: a, end: e, notes: [m], c: L.white, part: 'violin', fly: 1, flight: i ? .05 : .26 }));
-  E.push({ kind: 'bar', wt: bb(143, 3.4), double: 1, c: L.orange });   // her final double bar, as the line breathes
-  E.sort((a, b) => a.wt - b.wt);
-  // framings (1920-space; tune on the picked takes with a still at each cut's midpoint). Wide: the score hangs in the sky over the band.
-  const WIDE = { y: 66, gap: 26, x0: 140, x1: 1780, head: 960, pps: 230, tip: [930, 160], open: B(137) - .06,
-    to: { piano: [272, 572], violin: [1462, 330], guitar: [1705, 572] } };
-  const CLOSE = { y: 150, gap: 26, x0: 1000, x1: 1880, head: 1180, pps: -150, tip: [1150, 380], to: { piano: [300, 720], violin: [1475, 500], guitar: [1750, 735] } };
-  const KEY = (e) => [560 + ((e.notes?.[0] ?? 67) - 64) * 46, 640];
-  // a stand-in close-up of the v4 wide: a 2D crop (LatticeView zoom: no parallax, kept inside the plate) with a +-1% push around the cut's
-  // midpoint, so the midpoint framing is the one the score positions were set on. v5a reframed with dolly .42-.52: the camera went deep into
-  // the depth lattice and the players tore (beige/black smears, QA 3:58-4:05). keys: the piano sits at the plate's left edge, so its pan is
-  // clamped (-.537, 63 px right of the old framing; its key targets moved with it).
+  const LANE = { voice: L.white, keys: L.rose, guitar: L.rose };
+  const FLY = { voice: B(138) - .02 };   // the violin doubles the voice from bar 138 (bar 137 is the lead's "main")
+  const ENV = { voice: (t) => NOTATION.env(SC, 'voice', t), keys: (t) => NOTATION.env(SC, 'keys', t), guitar: (t) => NOTATION.env(SC, 'guitar', t) };
+  const STILL_PENCIL = 'orch_pencil_t52_f2ca5088fd', still = isTake('orch_pencil', STILL_PENCIL);
+  // the pencil tip in a take, keyframed by eye on 1920x1080 frames: [clip s, x, y] -> (t) => [x, y] for a cut whose clip time is t - s0
+  const tipK = (K, s0) => (t) => { const c = t - s0; let i = 0; while (i < K.length - 2 && c > K[i + 1][0]) i++;
+    const [a, b] = [K[i], K[i + 1]], u = clamp((c - a[0]) / (b[0] - a[0])); return [a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u]; };
+  const PENCIL_TIP = [[3.0, 1285, 624], [3.9, 1181, 653], [4.8, 1062, 666], [5.2, 980, 685], [5.65, 912, 707], [6.2, 835, 712]];   // orch_pencil_t52
+  const LINE_TIP = [[0, 1030, 220], [.6, 1060, 220], [1.2, 1060, 290], [1.74, 1060, 320]];                                         // orch_line_t51
+  const COMPOSE_TIP = {};   // orch_compose re-take (tools/sd/shots_outro.py): { take: [[clip, x, y], ...] }, keyframed by eye like PENCIL_TIP
+  // views (1920-space, set on frames of the picked takes at each cut: orch_wide t52 1.7 / 11.1 s, orch_line t51 0.9, orch_keys t51 1.7,
+  // orch_pencil t52 3.9 / 5.7, orch_guitar t53 1.7): the score stays in open sky, clear of faces; `to` = the instrument of the player
+  const sys3 = (gap) => [{ part: 'voice', y: 26 }, { part: 'keys', y: 26 + 8.4 * gap }, { part: 'guitar', y: 26 + 16.8 * gap }];
+  const base = { lead: .55, colors: LANE, fly: FLY };
+  const WIDE1 = { ...base, staves: sys3(9), x0: 1110, x1: 1895, gap: 9, px16: 17, from: -2, to: { voice: [1390, 395], keys: [300, 600], guitar: [1650, 585] } };
+  const WIDE2 = { ...WIDE1, from: 78, to: { voice: [1470, 410], keys: [260, 600], guitar: [1690, 600] } };   // set on orch_wide_t52 at clip 4.5
+  const LINE = { ...base, staves: [{ part: 'voice', y: 40 }], x0: 720, x1: 1890, gap: 19, px16: 30, from: 14, to: { voice: [1525, 350] }, feature: 'voice' };
+  const KEYS = { ...base, staves: [{ part: 'keys', y: 64 }], x0: 430, x1: 1580, gap: 22, px16: 34, from: 30, to: { keys: [990, 515] }, glowR: 120, feature: 'keys' };
+  const PENCIL = { ...base, staves: [{ part: 'voice', y: 124 }], x0: 1300, x1: 1900, gap: 16, px16: 24, from: 46, to: { voice: [1445, 480] }, labelPos: 'above' };
+  const GUITAR = { ...base, staves: [{ part: 'guitar', y: 140 }], x0: 150, x1: 890, gap: 20, px16: 26, from: 62, to: { guitar: [1020, 565] }, feature: 'guitar', labelPos: 'above' };
+  const MERGE = (t) => ss(t1 - .45, t1 - .03, t);
+  // stand-ins: 2D crops of the v4 wide (LatticeView zoom: no parallax, kept inside the plate) with a +-1% push around the cut's midpoint, so the
+  // midpoint framing is the one the score positions were set on (v5a: dolly .42-.52 tore the players). The v4 conductor dances, so no stand-in
+  // shows her close: the composer cuts stay on the band. keys: the piano sits at the plate's left edge, so its pan is clamped.
   const crop = (zoom, pan) => (u) => ({ zoom: zoom * (1 + .02 * (u - .5)), pan, over: 1.06 });
-  const CUTS = [ // [t0, t1, v5 shot, view, v5 cam, stand-in [v4 shot, s0, cam, view overrides]]
-    [t0, B(138), 'orch_wide', WIDE, push(.03), ['out_orch', B(137), push(.04), { tip: [1190, 240] }]],
-    [B(138), B(139), 'orch_line', { y: 170, gap: 24, x0: 80, x1: 1240, head: 760, pps: 200, tip: [720, 300], parts: ['violin'], to: { violin: [1350, 430] } },
-      (u) => ({ dolly: 1 - .03 * u, pan: [.02 * u, 0], over: 1.06 }), ['out_orch', B(137), crop(1 / .52, [.36, .1]), { tip: [606, 170], head: 640, x1: 680, to: { violin: [1090, 335] } }]],   // staff ends left of her head (QA 3:58.5)
-    [B(139), B(140), 'orch_keys', { y: 90, gap: 22, x0: 60, x1: 1860, head: 1960, pps: 300, parts: ['piano'], to: { piano: KEY }, glowR: 120 },
-      (u) => ({ dolly: 1 - .03 * u, pan: [.03 * u, 0], over: 1.06 }), ['out_orch', B(137), crop(1 / .42, [-.56, .025]), { to: { piano: (e) => [697 + ((e.notes?.[0] ?? 67) - 64) * 36, 560] } }]],
-    [B(140), B(141), 'orch_pencil', { ...CLOSE, parts: ['violin'] }, push(.04), ['out_orch_close', B(139), push(.05), { tip: [1560, 520] }]],
-    [B(141), B(142), 'orch_guitar', { y: 100, gap: 22, x0: 0, x1: 1300, head: -60, pps: -260, parts: ['guitar', 'violin'], to: { guitar: [1250, 640] } },
-      push(.04), ['out_orch', B(137), crop(2, [.47, .04]), { to: { guitar: [1380, 690] } }]],
-    [B(142), bb(143, 3), 'orch_wide', WIDE, (u) => ({ dolly: .96 + .08 * u, over: 1.06 }), ['out_orch', B(139), (u) => ({ dolly: 1.02 - .06 * u, over: 1.06 }), { tip: [1190, 240] }]],
-    [bb(143, 3), t1, 'orch_pencil', { ...CLOSE, parts: [], merge: (t) => ss(B(144) - .1, t1 - .05, t) }, push(.04), ['out_orch_close', B(141), push(.05), { tip: [1560, 520] }]],
+  const SI = {
+    wide: { ...WIDE1, to: { voice: [1462, 330], keys: [272, 572], guitar: [1705, 572] } },
+    violin: { ...LINE, x0: 170, x1: 690, staves: [{ part: 'voice', y: 50 }], gap: 13, px16: 22, to: { voice: [1090, 335] } },   // staff left of her head (QA 3:58.5)
+    keys: { ...KEYS, x0: 430, x1: 1500, staves: [{ part: 'keys', y: 40 }], gap: 15, px16: 26, to: { keys: [800, 560] } },
+    guitar: { ...GUITAR, x0: 200, x1: 900, staves: [{ part: 'guitar', y: 120 }], gap: 16, px16: 28, to: { guitar: [1380, 690] } },
+  };
+  const violinCrop = crop(1 / .52, [.36, .1]);
+  const CUTS = [ // [t0, t1, v5 shot, view, v5 cam, clip shift (whole beats later into the take; {take: beats} for one take), stand-in [v4 shot, s0, cam, view]]
+    [t0, B(138), 'orch_wide', WIDE1, push(.03), 0, ['out_orch', B(137), push(.04), SI.wide]],
+    [B(138), B(139), 'orch_line', { ...LINE, tip: tipK(LINE_TIP, B(138)) }, (u) => ({ dolly: 1 - .03 * u, pan: [.02 * u, 0], over: 1.06 }), 0,
+      ['out_orch', B(137), violinCrop, SI.violin]],
+    [B(139), B(140), 'orch_keys', KEYS, (u) => ({ dolly: 1 - .03 * u, pan: [.03 * u, 0], over: 1.06 }), 0, ['out_orch', B(137), crop(1 / .42, [-.537, .025]), SI.keys]],
+    [B(140), B(141), 'orch_pencil', PENCIL, push(.02), 6, ['out_orch', B(137), violinCrop, { ...SI.violin, from: 46 }]],   // the leap: on the violin
+    [B(141), B(142), 'orch_guitar', GUITAR, push(.04), 0, ['out_orch', B(137), crop(2, [.47, .04]), SI.guitar]],
+    [B(142), bb(143, 3), 'orch_wide', WIDE2, (u) => ({ dolly: .96 + .08 * u, over: 1.06 }), { orch_wide_t52_b4a325427b: -15 }, ['out_orch', B(139), (u) => ({ dolly: 1.02 - .06 * u, over: 1.06 }), { ...SI.wide, from: 78 }]],
+    [bb(143, 3), t1, 'orch_pencil', { ...PENCIL, from: 100, merge: MERGE, mergeL: 1240 }, push(.02), -4, ['out_orch', B(139), (u) => ({ dolly: .96 - .02 * u, over: 1.06 }), { ...SI.wide, from: 100, merge: MERGE }]],
   ];
-  CUTS.forEach(([a, b, shot, view, cam, [alt, altS0, altCam, altView]]) => {
-    // each cut switches to its new take once one is picked (has(): a real take, not picks.py's still_ placeholder); until then the stand-in
-    const v5 = has(shot), v = v5 ? view : { ...view, ...altView }, composer = shot === 'orch_pencil';
-    const lead = !composer && v.parts?.[0], tint = lead && { piano: L.rose, violin: L.white, guitar: L.rose }[lead];
-    const p = v5 ? pk(shot, a) : { plate: pk(alt, 0).plate, s0: altS0 };   // a cut before its take's frame 0 (the stand-in at 3:56) eases in
+  // the composer's two cuts without the still take: stay on the band (the leap on the violin from behind her, still; the fold on the wide)
+  const NOCOMPOSER = { [B(140)]: ['orch_line', (p) => ({ ...p, s0: B(139) }), { ...LINE, from: 46 }],                        // orch_line clip 1.74-3.48
+    [bb(143, 3)]: ['orch_wide', (p) => ({ ...p, s0: p.s0 + 15 * BT }), { ...WIDE2, from: 100, merge: MERGE }] };   // clip 6.1-7.1
+  CUTS.forEach(([a, b, shot0, view0, cam, shift, [alt, altS0, altCam, altView]]) => {
+    // each cut switches to its new take once one is picked (has(): a real take, not picks.py's still_ placeholder); until then the stand-in.
+    // The composer's close-ups only with the still take (see above); her pencil tip is keyframed on that take.
+    let shot = shot0, view = view0, fix = null;
+    if (shot0 === 'orch_pencil' && has('orch_compose')) [shot, fix] = ['orch_compose', (p) => ({ ...p, s0: a - (a === B(140) ? .5 : 4) })];   // the re-take: clip .5-2.2 / 4-5
+    else if (shot0 === 'orch_pencil' && !still && NOCOMPOSER[a] && has(NOCOMPOSER[a][0])) [shot, fix, view] = NOCOMPOSER[a];
+    const composer = shot === 'orch_pencil' || shot === 'orch_compose', v5 = has(shot) && (shot !== 'orch_pencil' || still);
+    let p = v5 ? pk(shot, a) : { plate: pk(alt, 0).plate, s0: altS0 };
+    const sh = typeof shift === 'object' ? shift[PICKS[shot]?.take] || 0 : shift;   // a shift can be for one take only
+    if (v5 && fix) p = fix(p); else if (v5 && sh) p.s0 -= sh * BT;                // whole beats: the reference-audio playing stays on the beat
+    const tipKeys = shot === 'orch_compose' ? COMPOSE_TIP[PICKS.orch_compose?.take] : PENCIL_TIP;   // a re-take needs its tip keyframed (else no tip)
+    const v = v5 ? (composer && tipKeys ? { ...view, tip: tipK(tipKeys, p.s0) } : view) : altView;
+    const tint = v.feature && LANE[v.feature];
     S.push({ t0: a, t1: b, kind: 'lattice', look: 'paint', ...p, ...(p.s0 > a ? { clip: easeIn(a, p.s0, 2 * BT) } : {}), fid: () => 1, cam: v5 ? cam : altCam,
-      ...(composer ? { lane: L.violet, laneAmt: .1 } : {}),   // her close-ups carry the violet lane, like every 1420 MHz shot
-      update: tint ? (sc, u, t) => { sc.fig.set('uTint', tint); sc.fig.set('uTintAmt', .04 + .18 * Math.min(1, ENV[lead](t))); } : undefined,   // the featured player lights up
-      text: (ty, t) => { FX.score(ty.g, t, v, E, ENV); if (t < B(139)) ty.line(lines(24), t, { y: 980, size: 64, out: we(24) + .25 }); } });
+      ...(composer && v5 ? { lane: L.violet, laneAmt: .1 } : {}),   // her close-ups carry the violet lane, like every 1420 MHz shot
+      update: tint ? (sc, u, t) => { sc.fig.set('uTint', tint); sc.fig.set('uTintAmt', .04 + .18 * Math.min(1, ENV[v.feature](t))); } : undefined,   // the featured player lights up
+      text: (ty, t) => { FX.score(ty.g, t, v, ENV); if (t < B(139)) ty.line(lines(24), t, { y: 980, size: 64, out: we(24) + .25 }); } });
   });
 }
 // 4:12 home (Jade 2026-10-25: too smiley at the end). Interim, while out_main_t12 is picked: it grins with teeth from 252.25 to the cut, so the
