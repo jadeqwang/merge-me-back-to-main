@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedance-2.5",
+ "tag": "ws_feijiao_t62",
+ "notes": "{\"shot\": \"ws_feijiao\", \"s0\": 161.863, \"plate\": \"media/plates/drop/ws_solo.png\", \"timing\": \"v2\"}",
+ "input": {
+  "prompt": "Animate the first frame exactly: same framing, composition, lighting, setting and character. A solo wushu performer, the compulsory changquan routine: crisp, powerful, sharp stops. A solo wushu performer, the compulsory changquan routine: crisp, powerful, sharp stops. She stands on one straight leg with the other knee raised high and both fists chambered, and holds the balance perfectly still. About 1.7 seconds in, still balanced on one leg, she throws one sharp horizontal punch out to the side (tixi heng quan). About 2.6 seconds in she puts the raised foot down and takes two quick hop-steps IN PLACE (jibu), not running, staying the same size in the frame. About 3.5 seconds in she springs off her left foot into a flying front kick (tengkong feijiao): a short jump, her right foot snaps straight up to head height and her right hand slaps the instep at the top of the jump, about 3.9 seconds in, her left knee tucked, her high ponytail visible. About 4.3 seconds in she lands on both feet, knees bent, and holds still to the end. Each named move lands exactly on a beat of the reference audio. Each named move lands exactly on a beat of the reference audio. The camera never moves: one continuous wide shot from a fixed position at waist height, no pan, tilt, zoom, push, reframing or cut; the horizon stays level. She stays in place in the centre and the same size in the frame. Every jump is explosive and short: about half a second in the air, landing at once, knees bending; no slow motion, no hanging. One performer only, the same woman from start to end: two arms, two legs, one head; no limb appears, vanishes, doubles or detaches; nothing else appears. The planted foot never slides. Her mouth stays closed. Same face and eyes as the first frame; she keeps her high ponytail, her orange bands and the round white '1420 MHz' patch on her LEFT upper arm. Real speed. No captions, no text.",
+  "image": "file:media/gen/refs/ws_solo_2048.jpg",
+  "duration": 6,
+  "resolution": "720p",
+  "use_virtual_avatar": true,
+  "aspect_ratio": "16:9",
+  "reference_audios": [
+   "file:media/gen/refs/ws_feijiao_v2_161.86_6s.mp3"
+  ]
+ }
+}

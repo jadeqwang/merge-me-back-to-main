@@ -26,8 +26,8 @@ FORM = {
     "ring": [(.58 * math.sin(a), .78 + .22 * math.cos(a)) for a in [(k - 2.5) * math.pi / 3 + math.pi / 12 for k in range(6)]],
     "v": [(-.68, .6), (-.46, .74), (-.22, .9), (.22, .9), (.46, .74), (.68, .6)],
 }
-CUTS = [(89, "ws_open", "rows", 89, None), (91, "ws_lotus", "line", 92.5, None), (93, "ws_kicks", "wedge", 93, (93.25, 1 / 8, "lr")),
-        (95, "ws_feijiao", "wedge", 96, None), (96.5, "ws_xuanfeng", "ring", 97, (98, 1 / 4, "ring")), (99, "ws_close", "v", 100.5, None)]
+CUTS = [(89, "ws_open", "rows", 89, None), (91, "ws_lotus", "line", 92.5, None), (93, "ws_kicks", "wedge", 93, (93.25, 1 / 8, "lr", 2)),
+        (95, "ws_feijiao", "wedge", 96, None), (96.5, "ws_xuanfeng", "ring", 97, (97.25, 1 / 4, "ring", 3)), (99, "ws_close", "v", 100.5, None)]
 PLAN = {"ws_open": BAR, "ws_lotus": BAR + 6 * BEAT, "ws_kicks": BAR, "ws_feijiao": 2 * BAR, "ws_xuanfeng": BAR + 2 * BEAT, "ws_close": BAR + 6 * BEAT}
 ss = lambda a, b, x: (lambda u: u * u * (3 - 2 * u))(min(1, max(0, (x - a) / (b - a))))
 hexrgb = lambda h: np.array([int(h[i:i + 2], 16) for i in (5, 3, 1)], np.float32) / 255   # BGR
@@ -86,7 +86,7 @@ def main():
         order = [2, 1, 0, 5, 4, 3] if rip and rip[2] == "ring" else list(range(6))
         cps = []
         for j, (X, s) in enumerate(FORM[form]):
-            dt = -order[j] * rip[1] * BEAT * ss(BT(rip[0]), BT(rip[0]) + BEAT, t) if rip else 0
+            dt = -order[j] * rip[1] * BEAT * ss(BT(rip[0]), BT(rip[0]) + rip[3] * BEAT, t) if rip else 0
             off, sc = place(X, s); cps.append((sc, off, clip(t + dt), LANES[j], .32, 1))
         if shot == "ws_close":
             ta, tb = BT(100) - BEAT, BT(100) + .5 * BEAT

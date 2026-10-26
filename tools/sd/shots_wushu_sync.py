@@ -120,3 +120,34 @@ SHOTS["ws_feijiao"] = _P(6, _B(94), "She stands on one straight leg with the oth
    "in the frame. About 3.5 seconds in she springs off her left foot into a flying front kick (tengkong feijiao): a real jump of about half a "
    "second, her right foot snaps straight up to head height and her right hand slaps the instep at the top of the jump, about 3.9 seconds in, "
    "her left knee tucked, her high ponytail visible. About 4.3 seconds in she lands on both feet, knees bent, and holds still to the end.")
+
+# Round 3 (t61+), after the frame reviews of t51-t60 (docs/wushu_sync_longfist.md section 4): "LOCKED OFF on a tripod" put a tripod in the empty
+# set (ws_bg_t51) and some takes still panned/tilted (Vidu, lotus t51/t52); EVERY jump floated (0.76-1.35 s in the air, both models; real is
+# 0.4-0.7); no lotus take did the outside sweep; no whirlwind take turned in the air (a straddle split instead of the front splits).
+_CAM3 = (" The camera never moves: one continuous wide shot from a fixed position at waist height, no pan, tilt, zoom, push, reframing or cut; "
+         "the horizon stays level. She stays in place in the centre and the same size in the frame.")
+_AIR3 = (" Every jump is explosive and short: about half a second in the air, landing at once, knees bending; no slow motion, no hanging.")
+_SOLO3 = (_CAM3 + _AIR3 + " One performer only, the same woman from start to end: two arms, two legs, one head; no limb appears, vanishes, "
+          "doubles or detaches; nothing else appears. The planted foot never slides. Her mouth stays closed. Same face and eyes as "
+          "the first frame; she keeps her high ponytail, her orange bands and the round white '1420 MHz' patch on her LEFT upper arm. Real speed. "
+          "No captions, no text.")
+_HEAD3 = "A solo wushu performer, the compulsory changquan routine: crisp, powerful, sharp stops. "   # shorter (the 2000-character prompt cap)
+_P3 = lambda dur, a0, act: (lambda d: dict(d, guard=_SOLO3, act=d["act"].replace(_HEAD, _HEAD3)))(_P(dur, a0, act))
+SHOTS["ws_lotus"] = _P3(6, _B(90), "She starts in a half squat, right fist pounded into her open left palm, and holds still. About 1.7 seconds "
+   "in she rises, swings both arms in a big circle and takes two quick steps in place. About 4.3 seconds in she jumps off BOTH feet together "
+   "and turns in the air (tengkong waibai lian, jump outside-lotus kick): at the top, about 4.6 seconds in, her straight right leg sweeps "
+   "OUTWARD in a wide arc from left to right across in front of her face, and both hands slap the top of the foot as it passes. About 5.0 "
+   "seconds in she lands on both feet, knees bent, straight into a deep bow stance with a horizontal elbow strike (gongbu pan zhou), and holds it.")
+SHOTS["ws_feijiao"] = _P3(6, _B(94), SHOTS["ws_feijiao"]["act"].replace("a real jump of about half a second", "a short jump"))
+SHOTS["ws_xuanfeng"] = _P3(7, _B(95) + 2 * 60 / 138, "She takes two quick running steps in a small curve, arms swinging. About 2.2 seconds in "
+   "she takes off and spins a FULL 360-degree turn in the air (xuanfeng jiao, whirlwind kick): halfway round her back is to the camera, the "
+   "big RARE EARTH lettering and pale-blue circle on her jacket's back visible; her straight right leg sweeps inward across and her left hand "
+   "slaps the sole at the top of the spin. About 2.6 seconds in she lands and drops straight into full FRONT splits on the water (pi cha), her "
+   "body turned side-on to the camera, one leg straight ahead of her and the other straight behind her, arms flung out to the sides, and holds "
+   "the splits completely still until about 4.3 seconds in. Then she rises to her feet, and about 5.2 seconds in she stamps one foot and "
+   "pounds her right fist into her left palm. About 6.1 seconds in she makes a small jump and lands with her legs crossed in a cover step, "
+   "throwing a straight punch, and holds it.")
+SHOTS["ws_bg"] = dict(SHOTS["ws_bg"], guard=(" The camera never moves: one continuous wide shot from a fixed position, no pan, tilt, zoom or cut, the "
+   "horizon level. The salt flat is completely empty: no people, no camera, no equipment, no objects of any kind. No captions, no text."),
+   act="The empty wet mirror salt flat at sunrise, exactly as in the first frame: a thin sheet of water with gentle ripples moving across "
+   "it, the reflections shimmering, the clouds drifting slowly. Nothing else happens.")

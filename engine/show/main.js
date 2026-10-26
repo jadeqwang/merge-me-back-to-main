@@ -804,13 +804,14 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     ring: [0, 1, 2, 3, 4, 5].map((k) => { const a = (k - 2.5) * Math.PI / 3 + Math.PI / 12; return [.58 * Math.sin(a), .78 + .22 * Math.cos(a)]; }),
     v: [[-.68, .6], [-.46, .74], [-.22, .9], [.22, .9], [.46, .74], [.68, .6]] };      // the fold's V without its point
   // per cut: [bar, shot, formation, the phrase's unison hit (bar position; a picked take's measured clip time of it in SYNC_KEY), ripple]
-  // ripple: [bar position it eases in from, beats between neighbours (1/8 or 1/4), order: 'lr' left to right | 'ring' around the ring]
+  // ripple: [bar position it eases in from, beats between neighbours (1/8 or 1/4), order: 'lr' left to right | 'ring' around the ring, beats it
+  // takes to ease in (slow enough that no copy runs backwards; the ring's eases in while bar 97's splits hold still, so the rise ripples)]
   const SYNC_CUTS = [
     [89, 'ws_open', 'rows', 89, null],                 // moves 1-4: cross palms on the drop's impact, arm circles, pubu slap (90.1), stomp-pound (90.3)
     [91, 'ws_lotus', 'line', 92.5, null],              // move 5: jump outside-lotus kick, take-off on 92.3 (bass F#), slap 92.4, land on the 93 cut
-    [93, 'ws_kicks', 'wedge', 93, [93.25, 1 / 8, 'lr']], // moves 6-9: coiling elbow on 93.1, snap kick 93.3, slap kick 94.1, knee-raise balance 95.1
+    [93, 'ws_kicks', 'wedge', 93, [93.25, 1 / 8, 'lr', 2]], // moves 6-9: coiling elbow on 93.1, snap kick 93.3, slap kick 94.1, knee-raise balance 95.1
     [95, 'ws_feijiao', 'wedge', 96, null],             // moves 9-10: hop-step flying front kick, slap at the top ~96.2, land 96.3
-    [96.5, 'ws_xuanfeng', 'ring', 97, [98, 1 / 4, 'ring']],   // move 11: whirlwind kick into the splits on 97.1 (THE hit), bar 97 held; 12-13 on the rise
+    [96.5, 'ws_xuanfeng', 'ring', 97, [97.25, 1 / 4, 'ring', 3]],   // move 11: whirlwind kick into the splits on 97.1 (THE hit), bar 97 held; 12-13 on the rise, rippling
     [99, 'ws_close', 'v', 100.5, null]];               // move 14 slap kick, closing posture (100.1), baoquan salute on the "ooh" (100.3); main steps in
   // planned clip time of each phrase's hit (shots_wushu_sync.py second marks; every take has one bar of pre-roll before its cut)
   const SYNC_PLAN = { ws_open: BAR, ws_lotus: BAR + 6 * BEAT, ws_kicks: BAR, ws_feijiao: 2 * BAR, ws_xuanfeng: BAR + 2 * BEAT, ws_close: BAR + 6 * BEAT };
@@ -820,12 +821,20 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     // real speed after: up with a small hop 4.6-5.1, the stamp + fist into palm 5.23-5.35 lands on the 91 cut (a wide horse stance, held)
     ws_kicks_t51_c42416635a: [[93, 1.12], [94, 3.46]],  // the strike 1.12 (a forearm punch, not quite a coiling elbow) on 93.1; x1.35 squeezes her
     // frozen hold 1.16-2.30; snap kick 2.55 (~93.4), the slap kick's top 3.42-3.50 on 94.1; real speed after: shuffle, the balance from 4.98
+    // Every model floats its jumps (0.8-1.35 s in the air; real ~0.5): keyed x1.7-1.8 from take-off to landing, so the air reads real.
+    ws_feijiao_t58_705f4e5138: [[96, 3.64], [96.37, 4.8]],   // punch held 0.45-2.0 (the cut opens on it), hop-steps in place 2.3-3.4,
+    // take-off 3.64 on 96.1, foot up + slap 3.9-4.4, both feet down 4.80 (1.16 s of air -> 0.64), knees bent, held to the 96.3 cut
+    ws_xuanfeng_t51_f613321301: [[96.71, 1.77], [97, 2.63], [98.5, 5.8]],   // take-off 1.77 (no spin: a facing-camera knee jump, 0.86 s ->
+    // 0.5 s), lands 2.63 into a straddle split on 97.1 (THE hit), still 3.05-4.55, up 4.6-5.65, fist into palm 5.80 on 98.3 (x1.21),
+    // the hop into the cover-step punch 6.45-6.66 on the 99 cut
+    ws_close_t53_a2e5719f59: [[99.125, 1.68], [100.5, 4.76]],   // the slap kick's top 1.68 just after the 99 cut, closing circle 2.5-3.0,
+    // attention 3.2-4.3, RIGHT fist into LEFT palm 4.76 on the "ooh" (100.3; x1.29 between); held (frame still from 5.08)
   };
   const syncCut = ([b0, shot, form, hit, rip], i) => {
     const take = PICKS[shot]?.take, k = keyed(shot, SYNC_KEY[take] || [[hit, SYNC_PLAN[shot]]]);   // one planned key: real speed, the hit on its beat
     const F = FORM[form].map(place), order = rip?.[2] === 'ring' ? [2, 1, 0, 5, 4, 3] : [0, 1, 2, 3, 4, 5];
     const copies = F.map((p, j) => ({ ...p, lane: SYNC_LANES[j], laneAmt: .32,
-      ...(rip ? { dt: (t) => -order[j] * rip[1] * BEAT * ss(BT(rip[0]), BT(rip[0]) + BEAT, t) } : {}) }));
+      ...(rip ? { dt: (t) => -order[j] * rip[1] * BEAT * ss(BT(rip[0]), BT(rip[0]) + rip[3] * BEAT, t) } : {}) }));
     if (shot === 'ws_close') {   // main: from just behind the empty point into it on 100.1, at attention, in time for the salute on 100.3
       const a = place([0, .8]), z = place([0, 1.08]), t0 = BT(100) - BEAT, t1 = BT(100) + .5 * BEAT;
       copies.push({ scale: z.scale, share: true, at: t0, dur: t1 - t0, laneAmt: 0,
