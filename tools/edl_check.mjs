@@ -6,6 +6,9 @@
 // ((n - 1) / 24) holds that frame (a freeze, which Jade does not want); one below 0 holds the first.
 //   node tools/edl_check.mjs [--q="drop=v5&orch=v4"] [--picks=work/picks.json] [--fake=allnew | --fake=shot[:s0],...] [--len] [--list] [--rates]
 //        [--from=0] [--to=297] [--quiet] [--logs]
+// ?drop=real (engine/show/real_ws.js): --fake=real pretends the box prepped every real_ws_<seg> plate (15 fps, the segment's length, six performers
+// split by tools/prep/lanes.py, evenly spaced); --fake=realref pretends a motion-reference take dr_real_ref_<seg> is picked for every segment.
+// Without them ?drop=real must fall back to the default drop (no plates here).
 // Take lengths: work/plates/<take>/meta.json (the box), else picks `len`, else review/cloud/takes/<take>.mp4 (ffprobe), else the billed seconds
 // in docs/spend_ledger.jsonl, else the shot's spec duration (tools/sd SHOTS). --fake=allnew pretends every queued v5 shot is picked (its spec's
 // audio window, lag 0, its spec length); --len adds picks.py's `len` to every pick. Run it after picks.py: expect "held-clocks 0".
@@ -39,7 +42,17 @@ const NEW = ['ch2_catch', 'ch2_gone_close', 'out_main', 'ch1_main', 'bd_ahh', 'v
   'dr_dl_wide', 'dr_dl_close', 'dr_gs_ranks', 'dr_gs_tornado', 'dr_gs_ring', 'dr_gs_salute', 'pc_send_v'];
 // --fake=allnew: every queued v5 shot picked, s0 = its spec's audio window (lag 0) in the spec's timing, as picks.py would write it
 let fake = opt('fake', ''); if (fake === 'allnew') fake = NEW.join(',');
-for (const f of fake.split(',').filter(Boolean)) {   // pretend intake + picks ran for a new shot: shot[:s0] (no s0: the spec's window)
+const RWS = await import(url.pathToFileURL(path.join(REPO, 'engine/show/real_ws.js')).href);
+const REALFAKE = {};   // --fake=real: '/work/plates/real_ws_<seg>[_p<k>]/meta.json' -> a meta as prep.py + lanes.py write it
+if (fake.split(',').includes('real')) for (const [seg, S] of Object.entries(RWS.SEGS)) {
+  const fps = RWS.SRC.fps, n = Math.round((S.out - S.in) * fps), base = `real_ws_${seg}`, order = ['white', 'mint', 'rose', 'sky', 'gold', 'violet'];
+  const performers = order.map((lane, j) => ({ k: j + 1, lane, group: j % 2 ? 'cool' : 'warm', cx: Array(n).fill(+(.15 + .14 * j).toFixed(3)), cy: Array(n).fill(.62) }));
+  REALFAKE[`/work/plates/${base}/meta.json`] = { w: 960, h: 540, n, fps, performers };
+  for (const p of performers) REALFAKE[`/work/plates/${base}_p${p.k}/meta.json`] = { w: 960, h: 540, n, fps, performer: p.k, lane: p.lane };
+  for (const b of [base, ...performers.map((p) => `${base}_p${p.k}`)]) DUR.take[b] = Math.round((n - 1) / fps * 24) + 1;   // as 24 fps frames
+}
+if (fake.split(',').includes('realref')) fake = fake.split(',').filter((f) => f !== 'realref').concat(Object.keys(RWS.SEGS).map((g) => `dr_real_ref_${g}`)).join(',');
+for (const f of fake.split(',').filter((x) => x && x !== 'real')) {   // pretend intake + picks ran for a new shot: shot[:s0] (no s0: the spec's window)
   const [shot, s0] = f.split(':'), sp = DUR.spec[shot] || {};
   picks[shot] = { plate: `/work/plates/${shot}_t99_fake`, s0: s0 ? +s0 : sp.a0 ?? null, take: `${shot}_t99_fake`, timing: s0 ? 'v2' : sp.timing || 'v2', lag: 0,
     ...(DUR.shot[shot] ? { len: (DUR.shot[shot] - 1) / 24 } : {}) };
@@ -53,6 +66,7 @@ globalThis.location = { search: query ? '?' + query : '' };
 const J = (p) => JSON.parse(fs.readFileSync(path.join(REPO, p), 'utf8'));
 const FILES = { '/work/picks.json': () => picks, '/analysis_v2/timing.json': () => J('analysis_v2/timing.json'), '/analysis/timing.json': () => J('analysis/timing.json'),
   '/engine/show/score_orch.json': () => J('engine/show/score_orch.json'), '/engine/fonts/bravura_glyphs.json': () => J('engine/fonts/bravura_glyphs.json') };
+for (const [p, v] of Object.entries(REALFAKE)) FILES[p] = () => v;
 globalThis.fetch = async (p) => { const f = FILES[p]; if (!f) throw new Error('fetch ' + p); const v = f(); return { ok: true, json: async () => v }; };
 const logs = []; const clog = console.log; console.log = (...a) => logs.push(a.join(' '));
 const src = fs.readFileSync(edl, 'utf8').replace(/import\('\/engine\/([^']+)'\)/g, (m, f) => `import('${url.pathToFileURL(path.join(REPO, 'engine', f)).href}')`);   // the EDL's engine modules (time.js, show/score.js)
@@ -126,7 +140,8 @@ for (const [si, s] of S.entries()) {
         const s0 = s.s0 ?? s.t0, c = s.clip ? s.clip(u, t) : fitc(t - s0, t, s.fit && { from: s.t0, to: s.t1, ...(s.fit === true ? {} : s.fit) }, s.plate); if (!fin(c)) note('clip', c);
         rec(si, 'lattice', s.plate, c, t, ddt, fa);
         for (const [k, cp] of (s.copies || []).entries()) { if (typeof cp.off === 'function') chk('copy.off', cp.off(t, .5));
-          const vis = cp.at === undefined || t >= cp.at; if (cp.dt && vis) rec(`${si}.c${k}`, `copy dt ${cp.dt}`, s.plate, t + cp.dt - s0, t, ddt, fa); }
+          const vis = cp.at === undefined || t >= cp.at; if (cp.dt && !cp.plate && vis) rec(`${si}.c${k}`, `copy dt ${cp.dt}`, s.plate, t + cp.dt - s0, t, ddt, fa);
+          if (cp.plate && vis) rec(`${si}.c${k}`, `copy ${takeOf(cp.plate)}`, cp.plate, s.clip ? c : c + (cp.dt || 0), t, ddt, fa); }   // its own plate on the shot's clock
         for (const [k, sc] of (s.screens || []).entries()) if (sc.at === undefined || t >= sc.at) rec(`${si}.s${k}`, 'screen', sc.plate, t - (sc.s0 ?? s0), t, ddt, fa);
       } else if (s.kind === 'panels') {
         if (s.cam) chk('cam', s.cam(t, u));

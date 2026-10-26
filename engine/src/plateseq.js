@@ -67,8 +67,9 @@ export class PlateSeq {
     // prefetch ahead
     for (let k = 1; k <= 4; k++) { const g = String(Math.min(n - 1, i0 + k)).padStart(6, '0'); bitmap(`${this.base}/rgb/${g}.jpg`); bitmap(`${this.base}/depth/${g}.png`); bitmap(`${this.base}/matte/${g}.png`); }
   }
-  // a clock c(t) (clip s at song time t): show its frame, blended when it runs slower than BLEND_RATE
-  async clock(c, t) { const x = c(t); await this.seek(x * this.meta.fps, this.blend && (c(t + H) - x) / H < BLEND_RATE); }
+  // a clock c(t) (clip s at song time t): show its frame, blended when it runs slower than BLEND_RATE, and always for a source under 20 fps
+  // (the 15 fps 2004 footage of ?drop=real: blended it glides at 24 fps instead of judder-stepping; every other plate is 24 fps)
+  async clock(c, t) { const x = c(t); await this.seek(x * this.meta.fps, this.blend && ((c(t + H) - x) / H < BLEND_RATE || this.meta.fps < 20)); }
   get last() { return last(this.meta); }   // clip time of the take's last frame (s)
   // song time -> plate frame, with S0 = song time of the clip's frame 0; f = { from, to }: never run off the take before `to` (clip.js fit)
   async at(tSong, s0, f) { await this.clock((t) => fit(t - s0, t, f, this.last), tSong); }
