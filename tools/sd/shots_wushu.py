@@ -242,6 +242,8 @@ SHOTS["dr_dl_ripple"] = dict(SHOTS["dr_dl_ripple"],
 # specs, review/takes/specs/dr_dl_{roll,kick}_t71-84.json) on Seedance 2.5, Veo 3.1, Hailuo 2.3, Runway Gen-4.5 and Vidu Q3 Pro. Seedance won
 # both tests. Picks: dr_dl_roll_t72 (keyed into v4's 91-93, clip 1.29-4.65 only) and dr_dl_kick_t72 (v4's 97.1-98.3). The kick shot:
 # a kick met by a block made for kicks (orange's lifted knee + downward forearm), then her counter punch met by violet's forearm block.
+import os as _os, sys as _sys  # noqa: E402
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 import bakeoff as _bk  # noqa: E402
 SHOTS["dr_dl_kick"] = dict(plate="media/plates/drop/dr_dl_roll.png", dur=6, group=True, v2=True, audio=(I2, 165.34, 6),  # B(96); 97.1 = clip 1.739; the EDL keys contact (1.67) on 97.2
    act=_bk.ACT["kick"].format(t1="1.7 seconds in", t2="3.5 seconds in", t3="4.6 seconds in") + _bk.BODY)
