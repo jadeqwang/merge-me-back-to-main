@@ -45,8 +45,8 @@ export const FLASH = [[92.5, .22], [97, .5]];                          // the pa
 export const LANES = { warm: ['white', 'rose', 'gold'], cool: ['mint', 'sky', 'violet'] };
 // Jade's own spot in the line at the salute, 1-6 from the left as the camera sees it (ask her; she knows where she stood). Main is drawn from
 // that performer: a second, orange copy of her steps forward into the line's centre for the salute. null = the performer nearest the centre.
-// ?realme=1..6 overrides; ?realme=0 leaves main out.
-export const ME = null;
+// ?realme=1..6 overrides; ?realme=0 leaves main out. Jade 2026-10-26 (review page): her final-line position is 3 from the left.
+export const ME = 3;
 // the look at 320x240: the source is 6 output px per source px across a 1920 frame, so the finest glyph tier is ~1.4 source px (cellFig 5 ->
 // tiers 5 / 8.3 / 12.5 / 18 px); finer cells only resample blur. bloom .45 (the drop's .6 merges limbs on figures ~200 px tall); world = the gym's
 // gain (a faint floor under the light figures, the judges and crowd sunk into the dark); laneAmt/gain: the lane tint over black and red

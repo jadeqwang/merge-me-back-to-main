@@ -20,7 +20,7 @@ search-result extracts.
 | 3rd set (第三套) | 2011–2013 (the IWUF's current Changquan.pdf). **Not** ~2003 | no |
 | 初级长拳第三路 (elementary changquan no. 3) | a beginner/club routine | possible for club training, not competition |
 
-**Pick: the 2nd International Compulsory Changquan, confidence medium (~60–65%).** That rests on the 2004 international usage. No source
+**Pick: the 2nd International Compulsory Changquan. Confirmed by Jade (2026-10-26, review page: "2nd").** That rests on the 2004 international usage. No source
 says what the 2004 Collegiates (8th CWT, Feb 21 2004, hosted by Stanford) required of group sets. **Flag for Jade: which compulsory did
 you learn, the 1st or the 2nd set?** If it was the 1st set, the phrases need new move names; the engine plan stays the same.
 
@@ -131,8 +131,7 @@ Spend on this: **$56.25** at list prices (44 billed items: 3 GPT Image stills, 2
   on the box.
 
 ## 6. Open, for Jade
-1. **Which compulsory did you learn**, the 1st or the 2nd international set? This uses the 2nd (~60–65% likely for 2004). If it was the 1st,
-   the phrase prompts need the 1st set's move names; nothing else changes.
+1. ~~Which compulsory set?~~ **The 2nd** (Jade, 2026-10-26).
 2. Three moves are close, not exact. The whirlwind kick is a knee jump into a straddle split, not a 360° into the front splits (every
    prompt that asked for the turn got an aerial flip). The lotus and the flying kick have no hand-to-foot slap. A re-take round can go after
    them ("small hop, pivot one full turn on the spot, feet below the hips the whole time"), or the sync drop can live with them, since six
@@ -140,3 +139,58 @@ Spend on this: **$56.25** at list prices (44 billed items: 3 GPT Image stills, 2
 3. Every copy wears the solo's high ponytail. The group set's space buns aren't reproduced: one take makes all six.
 4. The lane tint is .32 over orange bands. On the box, check that the branch lanes read as their own colours (raise `laneAmt` if they still
    look orange).
+
+## 7. Jade's review (2026-10-26) and round 5
+Verdict, verbatim: **"this is the one. but: the technique on the wheely arm is incorrect. can that be corrected? (is the model building off of
+memory or from searched references?)"** (paused at film t=168), and **"I landed in front-back splits, not side."** (t=171.5). Decisions
+recorded on her page: compulsory set = **2nd**; her final-line position = **3 from the left** (`engine/show/real_ws.js` `ME = 3`, so in
+`?drop=real` main is drawn from performer 3).
+
+**Where the notes point.** By `SYNC_KEY`, t=168 is clip 3.75 of `ws_xuanfeng_t51`, the held splits, so she paused just after the
+whirlwind take-off (96.3–97). Both notes are about that phrase. The opening's 抡臂 (move 3) is wrong too, so both phrases are re-taken.
+
+**What the picks did wrong (from their frames):**
+- `ws_xuanfeng_t51`: no whirlwind kick at all. Facing the camera, she jumps straight up with one knee and then the other (a scissor jump, clip
+  1.6–2.4). Her arms flail at shoulder height instead of sweeping down and around to drive a turn. There is no turn and no slap. She lands
+  2.63 in a **side (straddle) split**, facing the camera, arms out in a T with the palms up. Rising (4.8–5.8), the arms fling out and cross:
+  no vertical wheel of the right arm before the 砸拳.
+- `ws_open_t51` (moves 2–4): feet together, she crosses her arms, throws one arm up, then flings both out to the sides, like a jumping jack
+  (clip 2.6–3.3). That is not a wheel: no vertical circle beside the body, no opposite-phase arms, no body turn into the pubu.
+
+**The correct technique** (text sources only: no reachable page gave the 2nd set's own 动作说明, so these are the standard changquan
+descriptions from textbooks and teaching articles):
+- **抡臂 (lūn bì):** each STRAIGHT arm draws a vertical circle (立圆) beside the body, in the plane of the side of the body. The arm passes
+  close to the ear going up and close to the hip going down (两臂贴着耳侧和胯侧绕动). The two arms move one after the other, half a circle
+  apart, with the torso turning. The two textbook errors are circles that aren't vertical and no body turn. Sources:
+  wushupeixunban.com/p_66778.html, blog.sina.com.cn/s/blog_9c3f62aa01011hlg.html, blog.sina.com.cn/s/blog_4e73293201014wb2.html.
+  In 抡臂仆步拍掌, the last arm comes over the top and the palm slaps down beside the straight leg of the drop stance.
+- **旋风脚 (xuànfēng jiǎo):**
+  - Run-up: the left foot steps left, the left palm pushes forward and the right arm swings back. The right foot steps in, toes turned in.
+  - Take-off: off the RIGHT foot, turning to the LEFT. The left leg swings up and back to the left. "两臂向下、向左后上方抡摆": both arms
+    sweep down, then up and back to the left. That arm sweep drives the turn.
+  - Slap: the LEFT palm meets the right sole in front of the face at about 270° of turn ("左手在面前迎击右脚掌"), and the 360° is completed
+    before landing. The body stays upright.
+  - Sources: blog.sina.com.cn/s/blog_bfbc24ed0101khwu.html, m.fx361.com/news/2009/0716/4152139.html, wushupeixunban.com/p_129468.html,
+    tyxk.scnu.edu.cn (a PDF), flashmavi.com/learn/wushu-whirlwind-kick.
+- **劈叉 / 竖叉 (front-back splits):** "两腿一齐前后分开落地，成竖叉". The LEFT leg is in front, back of the leg down, toes up; the RIGHT leg
+  is behind. The torso is upright over the front leg, and both palms are out to the sides as standing palms (the 三路长拳 description; the
+  arm position for the 2nd set is unconfirmed). Sources: zh.wikipedia 劈叉, baike 三路长拳, baike 竖叉.
+- **震脚砸拳:** "右手向右后、向上抡起下砸，以拳背砸击左掌心作响，同时右腿屈膝提起，下跺震脚成并步半蹲". The right arm wheels back, up and
+  over. The back of the fist hits the left palm (palm up in front of the belly) on the same instant as the right foot's stamp, ending feet
+  together in a half squat. Sources: blog.sina.com.cn/s/blog_9ba571900101g1cx.html, sohu.com/a/130234986_540391.
+
+**Round 5 prompts** (`tools/sd/shots_wushu_sync.py`, t71–74 of `ws_open` and `ws_xuanfeng`) write each of those as a body path with second
+marks: which foot, which direction, where each arm goes, which hand meets which foot, and which leg ends forward. A shorter guard keeps
+them under the 2000-character cap. The drop's hits stay: the splits land on 97.1 and the salute on 100.3.
+
+**Jade's question: memory or searched references?** Memory. The video model works only from its training data plus our text prompt and the
+first frame; it looks nothing up. Move names like 抡臂 or 旋风脚 steer it only loosely (four rounds of "whirlwind kick" gave knee jumps and
+flips). What steers it is the body path in plain words, which is what round 5 does, or a **motion reference**: Seedance 2.5 takes
+`reference_videos` (up to 3, as data URIs; the relay accepts `file:` refs), and the `?drop=real` work already writes such specs
+(`dr_real_ref_<seg>`). A clip of the correct technique would help most for the whirlwind kick. Possible sources:
+- **Best: Jade herself.** A few seconds of her own 抡臂 or whirlwind kick, filmed on a phone, front-on. She may send real footage of herself
+  to models.
+- The 2nd set's official teaching film (Bilibili BV1gk4y167R9, "第二套国际武术竞赛套路教学片", with full-routine and detailed-teaching parts;
+  a Youku playlist by ly2003yl has the same). These are third-party footage: use them only if Jade is fine with sending them to a model, and
+  never commit them.
+- Not her team's competition video: never send that to a model.

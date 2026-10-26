@@ -167,3 +167,32 @@ SHOTS["ws_xuanfeng"] = _P3(7, _B(95) + 2 * 60 / 138, "She takes two quick steps 
    "her (not a side split), arms flung out, and holds completely still until about 4.3 seconds in. Then she rises, and about 5.2 seconds in "
    "stamps one foot and pounds her right fist into her left palm. About 6.1 seconds in she makes a small jump into a cross-legged cover step "
    "with a straight punch, and holds it.")
+
+# Round 5 (t71+; Jade 2026-10-26 on the sync drop: "this is the one. but: the technique on the wheely arm is incorrect" and "I landed in
+# front-back splits, not side"). The arm technique spelled out as a body path (docs/wushu_sync_longfist.md section 7): lun bi = each straight
+# arm draws a VERTICAL circle beside the body, past the ear going up and the hip going down, the two arms half a circle apart; the whirlwind
+# kick = off the RIGHT foot, turning LEFT, both arms sweeping down then up and back to the left to drive the turn, the LEFT palm meets the
+# right sole in front of the face; the landing = FRONT-BACK splits (shu cha), left leg forward, right leg back; za quan = the right arm wheels
+# back, up and over and the back of the fist pounds the left palm on the same instant as the stamp.
+_SOLO5 = (" One fixed wide camera, no pan, tilt, zoom or cut; the horizon level; she stays in place and the same size. Jumps are quick and real, "
+          "no slow motion. One woman only, two arms and two legs; nothing appears or detaches; planted feet never slide. Mouth closed, same "
+          "face, high ponytail, orange bands, the round white '1420 MHz' patch on her LEFT upper arm. No text.")
+_P5 = lambda dur, a0, act: (lambda d: dict(d, guard=_SOLO5, act=d["act"].replace(_HEAD, "Solo compulsory changquan, crisp and powerful. ")))(_P(dur, a0, act))
+SHOTS["ws_open"] = _P5(6, _B(88), "She stands at attention, feet together, fists at her hips, completely still. About 1.7 seconds in, on the big "
+   "hit, she snaps both open palms across in front of her chest (cross palms). About 2.2 seconds in she turns her body a quarter to her left "
+   "and wheels both STRAIGHT arms in big VERTICAL circles beside her body, like the spokes of a wheel seen from the side: each arm swings "
+   "forward and up past her ear, over the top, back and down past her hip, the two arms half a circle apart, one rising while the other "
+   "falls. About 3.5 seconds in she drops into a drop stance (pubu): right leg fully squatting, left leg straight along the water to her "
+   "left, both feet flat, and her right arm comes over the top of its circle and her palm slaps down on the water beside the straight leg. "
+   "About 4.3 seconds in she rises: her right arm wheels back, up over her head and down, and the back of her right fist pounds into her open "
+   "left palm in front of her belly at the same instant her right foot stamps beside her left, feet together in a half squat. She holds it.")
+SHOTS["ws_xuanfeng"] = _P5(7, _B(95) + 2 * 60 / 138, "She steps her left foot out to the left, left palm pushing forward, right arm "
+   "swinging back. About 1.7 seconds in her right foot steps across in front, toes turned in. About 2.0 seconds in she pushes off her RIGHT "
+   "foot and both straight arms sweep down and then up and around to her left, carrying her into one full turn to her LEFT in the air, "
+   "upright like a spinning top, head always above her hips (no flip, no cartwheel): her back is to the camera halfway; near the end her "
+   "straight right leg sweeps inward across in front of her face and her LEFT palm slaps its sole. About 2.6 seconds in she lands straight "
+   "into FRONT-BACK splits on the water (not a side split): her LEFT leg straight out in front of her, heel down, toes up, her RIGHT leg "
+   "straight out behind her, her body side-on to the camera, torso upright over the front leg, both arms straight out to the sides, palms "
+   "standing. She holds the splits dead still until about 4.3 seconds in, then draws the back leg in and rises. As she rises her right arm "
+   "wheels back, up and over in a vertical circle, and about 5.2 seconds in the back of her right fist pounds into her open left palm at "
+   "the same instant her right foot stamps, feet together in a half squat. She holds it.")
