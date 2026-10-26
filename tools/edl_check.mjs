@@ -51,10 +51,11 @@ for (const p of Object.values(picks)) {   // a length per picked take (picks.py'
 }
 globalThis.location = { search: query ? '?' + query : '' };
 const J = (p) => JSON.parse(fs.readFileSync(path.join(REPO, p), 'utf8'));
-const FILES = { '/work/picks.json': () => picks, '/analysis_v2/timing.json': () => J('analysis_v2/timing.json'), '/analysis/timing.json': () => J('analysis/timing.json') };
+const FILES = { '/work/picks.json': () => picks, '/analysis_v2/timing.json': () => J('analysis_v2/timing.json'), '/analysis/timing.json': () => J('analysis/timing.json'),
+  '/engine/show/score_orch.json': () => J('engine/show/score_orch.json'), '/engine/fonts/bravura_glyphs.json': () => J('engine/fonts/bravura_glyphs.json') };
 globalThis.fetch = async (p) => { const f = FILES[p]; if (!f) throw new Error('fetch ' + p); const v = f(); return { ok: true, json: async () => v }; };
 const logs = []; const clog = console.log; console.log = (...a) => logs.push(a.join(' '));
-const src = fs.readFileSync(edl, 'utf8').replace("import('/engine/src/time.js')", `import('${url.pathToFileURL(path.join(REPO, 'engine/src/time.js')).href}')`);
+const src = fs.readFileSync(edl, 'utf8').replace(/import\('\/engine\/([^']+)'\)/g, (m, f) => `import('${url.pathToFileURL(path.join(REPO, 'engine', f)).href}')`);   // the EDL's engine modules (time.js, show/score.js)
 const tmp = path.join(os.tmpdir(), `edl_check_${process.pid}.mjs`); fs.writeFileSync(tmp, src);
 let mod; try { mod = await import(url.pathToFileURL(tmp).href); } finally { fs.unlinkSync(tmp); }
 console.log = clog;
