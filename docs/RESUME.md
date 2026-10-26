@@ -594,3 +594,65 @@ clipping, the fall get-up "not how humans get up", symmetric kicks; "try a few d
   3. `edl_check --q="drop=real"`, then stills and a 150–180 render.
   4. Ask Jade for `ME` (her spot in the final line).
   5. Then (B): start stills, `batch.py dr_real_ref_* --res=480p` (≈ $28 for 2 takes each).
+
+## 2026-10-26 checkpoint 23: ?drop=sync, the compulsory long fist in unison — NEEDS INTAKE/RENDER (box)
+Cloud session (from Jade's ideas, relayed by the parent session: "the entire group does standard long fist, in sync" and "maybe we do the
+compulsory set?"). Everything is in `docs/wushu_sync_longfist.md`: the research, the move map, the takes and picks, the engine and validation,
+and the open questions for Jade.
+
+**The idea.** One clean solo Jade performs short phrases. The engine draws her six times in the real set's formations, recoloured per
+lane, so unison is exact. There is no body contact.
+
+**Spend.** This work cost $56.25 at list price. The ledger total is $585.84 of $1,000, which includes other sessions.
+
+- **Routine:** the 2nd International Compulsory Changquan, moves 1–14, then the closing posture and salute (moves 15–28 skipped).
+  Confidence ~60–65% that this is the set used in 2004. **Ask Jade whether she learned the 1st or the 2nd set.**
+- **Stills** (`review/takes/stills/`):
+  - `ws_solo.png`: canon face, high ponytail, orange lane, patch on her LEFT arm, about 45% of the frame height, horizon level. It is the
+    first frame of every take.
+  - `ws_bg.png`: the same frame, empty.
+  - Also kept: `ws_solo_front.png` (the pick before the pull-back) and `ws_solo_34.png` (the 3/4 view, unused).
+- **Takes:** `review/takes/ws_*` plus specs, 4 rounds, Seedance 2.5, with a Vidu Q3 Pro comparison on lotus and xuanfeng (Vidu lost: its
+  camera moves, and the moves are missing).
+- **Picks** (in `docs/picks_manual.json`; keys in `SYNC_KEY` in `main.js`):
+
+| shot | pick |
+|---|---|
+| ws_open | t51 `ws_open_t51_edd396ea5b` |
+| ws_lotus | t68 `ws_lotus_t68_26b3c2dd8d` |
+| ws_kicks | t51 `ws_kicks_t51_c42416635a` |
+| ws_feijiao | t61 `ws_feijiao_t61_a5d7a031d8` |
+| ws_xuanfeng | t51 `ws_xuanfeng_t51_f613321301` |
+| ws_close | t53 `ws_close_t53_a2e5719f59` |
+| ws_bg | t61 `ws_bg_t61_b590c5c067` |
+
+  Every jump in every take floats (0.8–1.35 s of air). The keys speed up the airborne stretch ×1.7–1.8.
+- **EDL** (`engine/show/main.js`, drop block):
+  - The **sync drop is the DEFAULT once all seven `ws_*` takes are picked.** Until then the default stays v4. `?drop=v4 | v5 | real` keep the
+    other drops.
+  - **Formations:**
+
+    | bars | formation | timing |
+    |---|---|---|
+    | 89–90 | staggered rows | unison |
+    | 91–92 | one line | unison |
+    | 93–96.3 | the wedge, point empty | a 1/8-beat ripple from 93.25 |
+    | 96.3–98 | the ring | the splits land on 97.1, unison; a 1/4-beat ripple on the rise |
+    | 99–100 | the fold's V | main (orange, untinted) steps into the point on 100.1; the salute on the "ooh"; the fold match-cuts on 101 |
+
+  - **Lattice:** `bg` (the empty set as the world) and a time-varying copy `dt`. `dt` copies follow a keyed clip.
+  - **edl_check** counts both.
+  - **Validation:** 18 runs, 0 exceptions / 0 held clocks / 0 gaps (§5 of the doc).
+- **Previews** (`review/previews/wushu_sync/`, 7 index entries): the six picks raw with the song, and `sync_drop_formation_MOCK.mp4`, a
+  labelled ffmpeg/cv2 composite of the formations, not the glyph render.
+- **Box next:**
+  1. Copy the seven picked takes (`review/takes/<take>.mp4` → `media/gen/`, specs → `media/gen/specs/`) and intake them one at a time. The
+     other ws_* takes are the record; don't intake them.
+  2. Run `picks.py`, then `node tools/edl_check.mjs` (expect 0 held clocks).
+  3. Render 150–176: the default (now sync), and `?drop=v4` for the A/B.
+  4. Eyeball:
+     - the lane colours over the orange bands (`laneAmt` .32);
+     - the copies' feet on the water line in each formation;
+     - the ring overlap during the splits (97);
+     - main stepping in on 100.1;
+     - the match cut into the fold at 101.

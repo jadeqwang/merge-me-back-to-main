@@ -92,17 +92,51 @@ What the models did (all rounds):
   the airborne keys above).
 - **The camera:** "LOCKED OFF on a tripod" put a tripod in the empty set (`ws_bg_t51`). Vidu panned or zoomed in 3 of its 4 takes, and Seedance
   tilted in lotus t51/t52. Round 3 asks for "one continuous wide shot from a fixed position", and every round-3 camera then held (sun ±1 px).
-- **The two hardest skills are not in the model's vocabulary yet.** For the jump outside-lotus kick (腾空外摆莲) it gives a jumping front
-  kick or a front crescent, never the outward sweep with a turn. For the whirlwind kick (旋风脚) it gives a knee jump facing the camera or an
+- **The two hardest skills barely exist in the model's vocabulary.** For the jump outside-lotus kick (腾空外摆莲) it gave jumping front kicks
+  and front crescents for three rounds; round 4 ("an upright jump, spins one full turn like a top … the leg swings from her LEFT … out to her
+  RIGHT, like a fan opening outward") got it once (t68). For the whirlwind kick (旋风脚) it gives a knee jump facing the camera or an
   aerial flip, and lands in a straddle split, not the front splits (劈叉).
 - **Vidu Q3 Pro** lost to Seedance on both hard phrases: lotus t54 is a tuck jump into a kneel, and t55 and xuanfeng t54/t55 move the camera.
 
 | phrase | pick | keys (bar ← clip s) | notes |
 |---|---|---|---|
 | ws_open | **t51** `edd396ea5b` | 89 ← 1.42 (cross palms), 90 ← 3.50 (pubu slap) | arm circle on the beat; the stamp + fist-into-palm (5.23–5.35) lands on the 91 cut, in a wide horse stance |
-| ws_lotus | **t61** (round 3, interim) `8772e70527` | 92.5 ← 3.60 (take-off), 92.875 ← 4.79 (first foot down) | a jumping front-crescent with a clap at the foot, not the outward lotus, no turn; 1.19 s of air → 0.65 |
+| ws_lotus | **t68** (round 4) `26b3c2dd8d` | 92.5 ← 3.65 (take-off), 92.94 ← 5.00 (first foot down) | the real move: off both feet, one full upright turn (back to camera 3.75), the straight right leg sweeps OUTWARD left → across her face (peak 4.55) → right; no clear slap (palms at the chest); 1.35 s of air keyed ×1.76 → 0.77 s; lands on the take-off spot in a deep bow stance, elbow across. Alt: round-3 t61 (front-crescent, no turn) |
 | ws_kicks | **t51** `c42416635a` | 93 ← 1.12 (strike), 94 ← 3.46 (slap kick top) | the strike reads as a forearm punch, not a coiling elbow; a ×1.35 squeeze over her frozen hold; the balance has T-arms |
 | ws_feijiao | **t61** (round 3) `a5d7a031d8` | 95 ← 1.15 (punch), 96 ← 3.98 (take-off) | a real 0.62 s flying kick; the foot reaches head height (4.33–4.46) with no instep slap; lands 4.60/4.85. Alt t58 |
 | ws_xuanfeng | **t51** `f613321301` | 96.71 ← 1.77 (take-off), 97 ← 2.63 (splits), 98.5 ← 5.80 (fist into palm) | a knee jump with no spin, landing in a straddle split; still 3.05–4.55 (bar 97); clean 2.6–5.8; the cover-step punch on the 99 cut |
 | ws_close | **t53** `a2e5719f59` | 99.125 ← 1.68 (slap kick top), 100.5 ← 4.76 (fist meets palm) | RIGHT fist into LEFT palm, correct; the frame goes fully still from 5.08 (her figure is drawn over the moving ws_bg, so it reads as a hold) |
 | ws_bg | **t61** `b590c5c067` | fitted 89 → 101 (×0.46, blended) | the empty set, a fixed camera, nothing in it |
+
+Spend on this: **$56.25** at list prices (44 billed items: 3 GPT Image stills, 2 nano-banana edits, 39 video takes; 8 relay failures unbilled).
+
+## 5. Engine, validation, default
+- `engine/show/main.js` drop block: `SYNC_SHOTS`, `FORM`, `SYNC_CUTS`, `SYNC_PLAN`, `SYNC_KEY`, `syncCut()`. Each cut is a lattice shot with
+  `figOff` (the plate's own figure is not drawn), six `copies` (`place([x, s])`, a lane tint of .32, and `dt` ripple functions), `bg` (the
+  world from `ws_bg_t61`, fitted 89 → 101), and the take on `keyed()` with its `SYNC_KEY`. `engine/src/scenes/lattice.js` adds `bg` and a
+  time-varying copy `dt`; a `dt` copy now follows the shot's keyed clip. `tools/edl_check.mjs` counts the bg clock and the `dt` copies on
+  the keyed clip.
+- **Default:** the sync drop is the DEFAULT once all seven `ws_*` takes are picked (`docs/picks_manual.json` lists them; the box's
+  `picks.py` writes them after intake). Until then the default stays v4. `?drop=v4 | v5 | real` keep the other drops, and `?drop=real` without
+  its plates plays the default.
+- **Validation** (`node --check`, then `node tools/edl_check.mjs`): with the cloud picks for default, `drop=sync`, `drop=real`, `drop=v4`
+  and `drop=v5`; with a scratch picks.json holding the seven real picks (real lengths) for the same five queries; with `--fake=ws_*` for
+  default, `drop=sync` and `drop=real`; and with `--fake=real` alone and with the sync picks. All 18 runs: 0 exceptions, 0 bad args, 0 gaps,
+  0 held clocks. With the sync picks the default plays the six sync cuts (89, 91, 93, 95, 96.3, 99) and `drop=v4` plays none. With the
+  cloud picks the default is unchanged. `--rates`: the slowest ripple copy runs at 0.46× only while bar 97's splits hold still, so no copy
+  runs backwards.
+- **Previews** (`review/previews/wushu_sync/`, 7 index entries): each picked take raw at real speed from its audio window, with the full mix
+  (0.2–0.4 MB each), and `sync_drop_formation_MOCK.mp4` (1.9 MB): **a mock, not a render**. `tools/preview_sync_mock.py` composites the picks
+  six times with a mediapipe matte, the lane tints, the keys, the ripples and main stepping in, over the empty-set take. The glyph look is only
+  on the box.
+
+## 6. Open, for Jade
+1. **Which compulsory did you learn**, the 1st or the 2nd international set? This uses the 2nd (~60–65% likely for 2004). If it was the 1st,
+   the phrase prompts need the 1st set's move names; nothing else changes.
+2. Three moves are close, not exact. The whirlwind kick is a knee jump into a straddle split, not a 360° into the front splits (every
+   prompt that asked for the turn got an aerial flip). The lotus and the flying kick have no hand-to-foot slap. A re-take round can go after
+   them ("small hop, pivot one full turn on the spot, feet below the hips the whole time"), or the sync drop can live with them, since six
+   copies in unison sell it.
+3. Every copy wears the solo's high ponytail. The group set's space buns aren't reproduced: one take makes all six.
+4. The lane tint is .32 over orange bands. On the box, check that the branch lanes read as their own colours (raise `laneAmt` if they still
+   look orange).

@@ -680,8 +680,9 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
 { const D0 = B(89);
   const OOH = (T.TIMING.lyrics.adlibs || []).find((a) => a.start > D0 && a.end <= B(105) + .5);
   const ooh = (t) => (OOH ? ss(OOH.start - .2, OOH.start + 1.2, t) * (1 - ss(OOH.end - 1.2, OOH.end, t)) : 0);
-  // ?drop=v4 | v5 (see the cut list below). Default v4 (Jade 2026-10-26, after v5a: the v5 group set's fall get-up "is not how humans get up";
-  // keep the v5a fight choreography and splice the roll into it). The v5 group set stays available behind ?drop=v5 only.
+  // ?drop=sync | v4 | v5 | real (see the cut lists below). Default: sync once its takes are picked (below), else v4 (Jade 2026-10-26, after
+  // v5a: the v5 group set's fall get-up "is not how humans get up"; keep the v5a fight choreography and splice the roll into it). The v5 group
+  // set stays available behind ?drop=v5 only.
   const Q = new URLSearchParams(location.search);
   // ?drop=real: Jade's REAL 2004 group set, the competition footage itself as the drop's plates, drawn in light (docs/wushu_real_routine.md;
   // segments, key frames and look in engine/show/real_ws.js). It needs every cut's plate, work/plates/real_ws_<seg>/ (or, with &real=ref, a
@@ -701,8 +702,11 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
   // (tools/sd/shots_wushu_sync.py), and the six branch lanes are drawn as copies of her in the real set's formations, so unison is exact by
   // construction. It needs every ws_* phrase and the empty set ws_bg picked; until then ?drop=sync plays the default drop unchanged.
   const SYNC_SHOTS = ['ws_open', 'ws_lotus', 'ws_kicks', 'ws_feijiao', 'ws_xuanfeng', 'ws_close', 'ws_bg'];
-  const SYNC = Q.get('drop') === 'sync' && SYNC_SHOTS.every(has);
-  const DROP = (Q.get('drop') === 'real' && !RW) || (Q.get('drop') === 'sync' && !SYNC) ? 'v4' : Q.get('drop') || 'v4';
+  // DEFAULT once every ws_* take is picked (it validates clean: docs/wushu_sync_longfist.md section 5); until then the default stays v4.
+  // ?drop=v4 | v5 | real keep the other drops.
+  const WANT = Q.get('drop') === 'real' && !RW ? null : Q.get('drop');   // ?drop=real without its plates plays the default
+  const SYNC = (WANT || 'sync') === 'sync' && SYNC_SHOTS.every(has);
+  const DROP = SYNC ? 'sync' : WANT === 'sync' ? 'v4' : WANT || 'v4';
   // ?roll=close | wide | off: the partner roll over the back (docs/wushu_v5_design.md section 11; docs/video_model_bakeoff.md). The roll
   // peaks on 92.3, the bass's E -> F# step (the drop's strongest beat-3 onset, the airborne bar of the first rising phrase). Default = the picked
   // version (the close two-shot first). v4 shows the roll only for a take whose clean stretch was checked frame by frame (ROLL_KEY[take].clean):
@@ -825,7 +829,10 @@ const AHH_T0 = head('bd_ahh', ws(13) - .1);
     ws_feijiao_t61_a5d7a031d8: [[95, 1.15], [96, 3.98]],   // round 3, a real 0.62 s jump: the punch shoots out 1.15 on 95.1 (then held),
     // steps down 2.55, knee chambers 3.7-3.95 (x1.63 over the near-still bar), take-off 3.98 on 96.1, right foot head-high 4.33-4.46 (no
     // instep slap), left foot down 4.60, both 4.85 = the 96.3 cut. Alt: t58 (below)
-    ws_lotus_t61_8772e70527: [[92.5, 3.6], [92.875, 4.79]],   // round 3 (interim: a jumping front-crescent with a clap at the foot 4.55-4.60,
+    ws_lotus_t68_26b3c2dd8d: [[92.5, 3.65], [92.94, 5]],   // round 4, the real move: off both feet 3.65 on 92.3 (bass F#), one full upright
+    // turn 3.67-4.08 (back to camera 3.75), the straight right leg sweeps OUTWARD left -> across her face (peak 4.55) -> right (no clear slap:
+    // the palms stay at her chest), first foot down 5.00 (1.35 s of air keyed x1.76 -> 0.77), the deep bow stance with the elbow across from 5.3
+    ws_lotus_t61_8772e70527: [[92.5, 3.6], [92.875, 4.79]],   // round 3 alt (a jumping front-crescent with a clap at the foot 4.55-4.60,
     // not the outward lotus sweep, no turn): take-off off both feet 3.60 on 92.3 (bass F#), first foot down 4.79 (1.19 s of air keyed to
     // 0.65), the wide bow stance from 5.0 on the 93 cut
     ws_feijiao_t58_705f4e5138: [[96, 3.64], [96.37, 4.8]],   // punch held 0.45-2.0 (the cut opens on it), hop-steps in place 2.3-3.4,

@@ -1609,6 +1609,125 @@
    "kind": "pick",
    "note": "THE NEW DEFAULT DROP (v4 / v5a fight choreography): raw-take rough cut of bars 89-101 on the EDL's clocks (tools/preview_bakeoff.py v4). dr_set 89; the roll 91.1-93.1 (peak on 92.3, cut on violet's legs swinging down); 93-95 dr_duilian_mid t1 is box-only (black card here); jian 95; kick vs knee check on 97.2, punch vs forearm block on 98.2; v4 dr_duilian from 98.3; fold 101.",
    "file": "review/previews/wushu_bakeoff/v4_drop_roll_t72_kick_t72.mp4"
+  },
+  {
+   "shot": "ws_open",
+   "film": "2:31.4-2:37.4",
+   "film_s": [
+    151.428,
+    157.428
+   ],
+   "shot_s": [
+    153.167,
+    156.645
+   ],
+   "take": "ws_open_t51_edd396ea5b",
+   "keys": "89:1.42,90:3.5",
+   "kind": "pick",
+   "note": "?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. moves 1-4 of the 2nd intl compulsory changquan: cross palms (89.1), arm circle, pubu slap (90.1), stamp + fist into palm on the 91 cut. Drawn 6x in two staggered rows, unison.",
+   "file": "review/previews/wushu_sync/ws_open_t51_edd396ea5b.mp4"
+  },
+  {
+   "shot": "ws_lotus",
+   "film": "2:34.9-2:40.9",
+   "film_s": [
+    154.906,
+    160.906
+   ],
+   "shot_s": [
+    156.645,
+    160.124
+   ],
+   "take": "ws_lotus_t68_26b3c2dd8d",
+   "keys": "92.5:3.65,92.94:5.0",
+   "kind": "pick",
+   "note": "?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. move 5, the jump outside-lotus kick (round 4): off both feet on 92.3, a full upright turn, the right leg sweeps outward across her face; no clear slap; 1.35 s of air keyed x1.76; lands into the bow stance. Drawn 6x in one line, unison.",
+   "file": "review/previews/wushu_sync/ws_lotus_t68_26b3c2dd8d.mp4"
+  },
+  {
+   "shot": "ws_kicks",
+   "film": "2:38.4-2:44.4",
+   "film_s": [
+    158.384,
+    164.384
+   ],
+   "shot_s": [
+    160.124,
+    163.602
+   ],
+   "take": "ws_kicks_t51_c42416635a",
+   "keys": "93:1.12,94:3.46",
+   "kind": "pick",
+   "note": "?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. moves 6-9: strike (reads as a forearm punch) on 93.1, snap kick, slap kick on 94.1, knee-raise balance. Drawn 6x in the wedge; a 1/8-beat ripple left to right from 93.25.",
+   "file": "review/previews/wushu_sync/ws_kicks_t51_c42416635a.mp4"
+  },
+  {
+   "shot": "ws_feijiao",
+   "film": "2:41.9-2:47.9",
+   "film_s": [
+    161.862,
+    167.862
+   ],
+   "shot_s": [
+    163.602,
+    166.21
+   ],
+   "take": "ws_feijiao_t61_a5d7a031d8",
+   "keys": "95:1.15,96:3.98",
+   "kind": "pick",
+   "note": "?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. moves 9-10 (round 3): punch on 95.1, hop-step, a real 0.62 s flying front kick taking off on 96.1 (foot head-high, no instep slap), lands on the 96.3 cut. Drawn 6x in the wedge, unison.",
+   "file": "review/previews/wushu_sync/ws_feijiao_t61_a5d7a031d8.mp4"
+  },
+  {
+   "shot": "ws_xuanfeng",
+   "film": "2:44.5-2:51.5",
+   "film_s": [
+    164.471,
+    171.471
+   ],
+   "shot_s": [
+    166.21,
+    170.558
+   ],
+   "take": "ws_xuanfeng_t51_f613321301",
+   "keys": "96.71:1.77,97:2.63,98.5:5.8",
+   "kind": "pick",
+   "note": "?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. moves 11-13: the 'whirlwind kick' is a facing-camera knee jump (no model turned it without flipping in 4 rounds), lands in a straddle split on 97.1 (THE hit), still through bar 97, rises, fist into palm on 98.3, cover-step punch on the 99 cut. Drawn 6x in the ring; a 1/4-beat ripple around it on the rise.",
+   "file": "review/previews/wushu_sync/ws_xuanfeng_t51_f613321301.mp4"
+  },
+  {
+   "shot": "ws_close",
+   "film": "2:48.8-2:54.8",
+   "film_s": [
+    168.819,
+    174.819
+   ],
+   "shot_s": [
+    170.558,
+    174.037
+   ],
+   "take": "ws_close_t53_a2e5719f59",
+   "keys": "99.125:1.68,100.5:4.76",
+   "kind": "pick",
+   "note": "?drop=sync (docs/wushu_sync_longfist.md): the raw solo take at real speed from its audio window (one bar before its cut), full mix; the engine keys it as listed and draws it six times. move 14 slap kick on 99.1, the closing posture, attention on 100.1, RIGHT fist into LEFT palm on the 'ooh' (100.3). Drawn 6x in the fold's V; main (orange) steps into the point on 100.1.",
+   "file": "review/previews/wushu_sync/ws_close_t53_a2e5719f59.mp4"
+  },
+  {
+   "shot": "drop_sync",
+   "film": "2:33.2-2:54.0",
+   "film_s": [
+    153.167,
+    174.036
+   ],
+   "shot_s": [
+    153.167,
+    174.036
+   ],
+   "take": "ws_open_t51_edd396ea5b+ws_lotus_t68_26b3c2dd8d+ws_kicks_t51_c42416635a+ws_feijiao_t61_a5d7a031d8+ws_xuanfeng_t51_f613321301+ws_close_t53_a2e5719f59+ws_bg_t61_b590c5c067",
+   "keys": "open 89:1.42,90:3.5; lotus 92.5:3.65,92.94:5; kicks 93:1.12,94:3.46; feijiao 95:1.15,96:3.98; xuanfeng 96.71:1.77,97:2.63,98.5:5.8; close 99.125:1.68,100.5:4.76",
+   "kind": "candidate",
+   "note": "MOCK, not a render: a rough composite (tools/preview_sync_mock.py: mediapipe matte, no glyph look) of what the engine's ?drop=sync will draw, bars 89-101: each picked solo take 6x in the formations (staggered rows, line, wedge, ring, the fold's V) with the lane tints, the dt ripples and main stepping into the V's point for the salute, over the empty-set take ws_bg_t61; full mix. Default drop once these takes are picked on the box.",
+   "file": "review/previews/wushu_sync/sync_drop_formation_MOCK.mp4"
   }
  ]
 }
