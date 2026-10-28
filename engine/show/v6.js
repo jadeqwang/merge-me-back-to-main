@@ -171,9 +171,11 @@ shot(B(73), B(89), buildLog(T));
 // samples it with no colour transform). Held through both "Back to main"s; from 255.9 the text re-forms from the edges in, her face last.
 // The same function applies to Jade's H1 unchanged (it only reads the slot's frame).
 {
-  const SW = B(137) - 2 * BEAT, IN = B(137), OUT0 = 255.9, OUT1 = B(149), FACE = [.5, .42];
-  const dist = (c, r, g) => Math.hypot((c + .5) / g.cols - FACE[0], ((r + .5) / g.rows - FACE[1]) * g.H / g.W);
-  const MAXD = Math.hypot(.5, .58 * 9 / 16) + .02;
+  const SW = B(137) - 2 * BEAT, IN = B(137), OUT0 = 255.9, OUT1 = B(149);
+  // where her face is in the frame (the switch opens from it): engine/show/v6_slots.json H1.face for her footage, H1.standin.face for the stand-in
+  let h1 = null; const FACE = () => (h1?.source.src?.kind === 'standin' ? SLOTS.H1.standin.face : SLOTS.H1.face) || [.5, .42];
+  const dist = (c, r, g) => { const f = FACE(); return Math.hypot((c + .5) / g.cols - f[0], ((r + .5) / g.rows - f[1]) * g.H / g.W); };
+  const MAXD = Math.hypot(.85, .85 * 9 / 16);   // far enough that the front clears every corner from any face point
   // per cell: raw or text, never a blend (a ragged front of whole cells, jittered per cell, so it fuses cell by cell)
   const raw = (t, c, r, g) => {
     const d = dist(c, r, g) / MAXD + .07 * hash(c, r, 137);
@@ -181,8 +183,9 @@ shot(B(73), B(89), buildLog(T));
     if (t < OUT0) return 1;
     return d < (1 - ss(OUT0, OUT1 - .1, t)) * 1.08 ? 1 : 0;            // text returns from the edges in, the face last
   };
-  shot(SW, OUT1, F('H1', SW, OUT1, { density: (t) => (t < IN ? lerp(.97, 1, ss(SW, IN, t)) : lerp(1, .6, ss(OUT0, OUT1, t))), hold: 1, raw, gain: 1.25, key: 'luma',
-    short: 'THE SWITCH: H1 shown unprocessed (the only raw image). Until Jade films H1 the stand-in is a GENERATED take, raw here only to show the transition', fade: () => 1 }));
+  const h1L = F('H1', SW, OUT1, { density: (t) => (t < IN ? lerp(.97, 1, ss(SW, IN, t)) : lerp(1, .6, ss(OUT0, OUT1, t))), hold: 1, raw, gain: 1.25, key: 'luma',
+    short: 'THE SWITCH: H1 shown unprocessed (the only raw image). Until Jade films H1 the stand-in is a GENERATED take, raw here only to show the transition', fade: () => 1 });
+  h1 = h1L[0]; shot(SW, OUT1, h1L);
 }
 
 // ---- Outro B 257.51-264.47 (bars 149-152): git log --graph of every life, merged; violet cherry-picked last ------------------------------

@@ -703,3 +703,27 @@ lane, so unison is exact. There is no body contact.
 - Footage intake: `tools/footage/sync.py` (per-band onset-envelope cross-correlation + GCC-PHAT refine; tested on synthetic room-mic clips
   with a clap and a "voice": 4/4 offsets exact to 0.1 ms, an 8 s drop clip included; a silent clip is flagged), `tools/footage/prep.py`
   (24 fps frames, H1/H2 at 1920 px best quality, HDR tone-map when ffmpeg has zscale, pick per shot ID), `tools/footage/standins.py`.
+
+## 2026-10-28 checkpoint 27 — v6 previews + footage intake tested end to end (cloud)
+- **Previews** in `review/v6/` (720p, with the song, each < 20 MB; `README.md` says what to look at): graphics-only sections — intro frost
+  0–28, build git log 125–154, Chorus 2 bloom 214–229, the switch 233–258, outro graph + end card 257–282 — and the whole animatic in four
+  parts. Rendered here: ~12 fps at 720p with 3 workers (the 282 s film ≈ 16 min).
+- **Stand-ins:** generated takes have lit backgrounds, so stand-ins are keyed by difference from each row's background (`key: 'diff'`);
+  her footage (dark backdrop) is keyed on luminance (`key: 'luma'`, the default for footage). Crowd copies of full-body stand-ins are cropped
+  to the figure (`crop`). The switch opens from her face point: `v6_slots.json` `H1.face` (footage; set it once H1 exists) and
+  `H1.standin.face`.
+- **Footage path tested end to end:** a fake phone clip (a take's picture + the song through a "room", a clap, a 2 s lead-in) →
+  `sync.py` (s0 226.6099 vs 226.61 true, corr .73, ratio 6.1) → `prep.py` → the engine shows slot A1 as `FOOTAGE A1_t9` in place of the
+  stand-in. Test files removed (`work/footage/` deleted).
+- **Footage intake run sheet (box or cloud, once Jade uploads to the Drive "footage" folder):**
+  1. Put the originals (`A1_t2.mov` …) in `/footage/` at the repo root (ignored) or anywhere outside the repo; never commit them.
+  2. `python3 tools/footage/sync.py footage/` → check the table: every sung take `ok`; silent ones (A4, H2, silent B8) need `s0` by hand
+     in `work/footage/sync.json` (the clap time is printed as a check).
+  3. `python3 tools/footage/prep.py` → frames + `work/footage/index.json` (pick per ID: best sync, or `docs/footage_picks.json`).
+  4. Set `H1.face` in `engine/show/v6_slots.json` from a frame of the H1 pick; render `?show=/engine/show/v6.js`, or `?labels=0` for the
+     clean cut. A take whose gesture must land on a beat (B3 head turn on bar 37, B9 step-in on 173.08) lands there automatically if she
+     did it on that cue in the song; otherwise give the slot a `clip(t)` in `v6.js`.
+  5. Box only: matte/depth (`tools/prep/prep.py`) for takes without a dark backdrop; the window takes (`W`, `W2`: `standins.py` finds
+     `ch0_window_t2`/`ch0_blow_t2` in `media/gen/`); the 2004 set via `?drop=real`'s pipeline (the drop slots R1–R4 are stand-ins).
+- **Open for Jade:** credits wording (`CREDITS` in `engine/src/v6/gitlog.js`), the `jade/rare-earth` commit message and hash, and main's
+  first commit "first frost on the window" (`gitGraph`); teammates' heads-up before the drop goes public; the H1 location.

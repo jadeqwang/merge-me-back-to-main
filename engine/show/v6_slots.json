@@ -26,7 +26,7 @@
   "C7": { "desc": "wushu: a held stance and one clean move", "lane": "gold", "standin": { "take": "lf_wushu_gold_t53_035fa485a9" } },
   "C8": { "desc": "lab / PhD / NASA: a pipette, headphones or a model plane", "lane": "mint" },
   "C9": { "desc": "mic (jade/rare-earth): sing one chorus into the mic, 3/4 angle", "lane": "orange", "standin": { "take": "ch1_main_t62_168a176b91", "s0": 69.12 } },
-  "H1": { "desc": "the hero shot, unprocessed: flat horizon at sunrise, sing 235.7-256", "standin": { "take": "out_main_t61_7f8134e8f7", "s0": 249.1 } },
+  "H1": { "desc": "the hero shot, unprocessed: flat horizon at sunrise, sing 235.7-256", "face": [0.5, 0.42], "standin": { "take": "out_main_t61_7f8134e8f7", "s0": 249.1, "face": [0.67, 0.22] } },
   "H2": { "desc": "wide from behind at the water's edge, still, 30 s", "standin": { "take": "v2_horizon_t52_3844298279" } },
   "R1": { "desc": "the 2004 group set, traced (box: ?drop=real); stand-in = the solo long fist, copied", "standin": { "take": "ws_open_t84_e475eb61aa" } },
   "R2": { "desc": "the 2004 group set, traced (box: ?drop=real); stand-in = the solo long fist, copied", "standin": { "take": "ws_lotus_t68_26b3c2dd8d" } },

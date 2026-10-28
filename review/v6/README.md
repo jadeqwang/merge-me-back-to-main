@@ -16,3 +16,7 @@ Each file is under 100 MB.
 `stand-in <take>` = an existing generated take standing in for Jade's footage (keyed by difference from its background, since generated
 takes don't have her dark backdrop); `no footage yet` = a card with the shot ID and the action. The drop's figures are stand-ins for
 the traced 2004 set (`?drop=real` on the box).
+
+Note: the section files are newer than animatic parts 2 and 3 for the build (the log now fills the page on the 125.34 slam) and the
+Chorus 2 comet (brighter, with a character halo); part 4 and `v6_switch_233-258.mp4` have the current switch (it opens from the
+stand-in's face point).
