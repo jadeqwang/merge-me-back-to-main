@@ -680,3 +680,9 @@ lane, so unison is exact. There is no body contact.
   t51 entries are marked in the index.
 - **Spend:** $24.05 for the re-takes; $80.30 for the sync drop in all; the ledger is at $609.89 / $1,000.
 - **Box:** as in checkpoint 23, but intake `ws_open_t84_e475eb61aa` and `ws_xuanfeng_t72_fc342602d4` instead of the two t51 takes.
+
+## 2026-10-28 checkpoint 25 — handoff
+- `docs/CLOUD_HANDOFF.md` START HERE rewritten as one current summary: the box's consolidated v5b list (intake the 24 cloud picks +
+  intro_up t51, bd_float t52, v2_horizon t51, lf_wushu_gold t53, dr_dl_wide t58, dr_dl_close t57; picks.py; edl_check; mix; render + A/B
+  clips), Jade's decisions since v4, open items, and how the cloud actually works now. Jade's review page + its db collections are listed there.
+- Spend $609.89 / $1,000. Nothing rendered since v5a.

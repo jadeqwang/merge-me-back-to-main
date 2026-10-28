@@ -1,67 +1,71 @@
-# Handoff: continuing "Merge" from Claude Code on the web / phone (2026-10-24, updated 2026-10-25)
+# Handoff: continuing "Merge" from Claude Code on the web / phone (2026-10-24, updated 2026-10-28)
 
 Jade is travelling from 2026-10-25. This note is for whichever Claude picks the project up next: a cloud session (claude.ai/code,
 the phone app's Code tab) or a Remote Control session on the Linux box. Read this first, then `docs/HANDOFF.md` (ground rules, map,
 commands), `docs/REVIEW_FOR_JADE.md` (her decisions, newest at the bottom), and `docs/RESUME.md` (checkpoint log).
 
-## START HERE (2026-10-25 night): Jade is flying, the box is unattended
-**Her REAL group set in the drop (cloud, 2026-10-26): NEEDS THE BOX (cut + prep + lanes; the video is only there).** `?drop=real` draws the 2004 footage itself as six lane-coloured light figures (gated: default drop until the plates exist); `dr_real_ref_<seg>` repaints each segment as the Jades with Seedance 2.5 `reference_videos`. Map, run sheet, model table, CPU-prep timings, hygiene: `docs/wushu_real_routine.md`; checkpoint 22 in `docs/RESUME.md`.
-**The compulsory long fist in unison, `?drop=sync` (cloud, 2026-10-26): NEEDS INTAKE/RENDER (box).** One solo Jade does the 2nd International Compulsory Changquan (moves 1–14 + the salute) in six short Seedance phrases, and the engine draws her six times in the real set's formations. It becomes the DEFAULT drop once its seven `ws_*` takes are picked (listed in `docs/picks_manual.json`); until then the default stays v4. Checkpoints 23-24 in `docs/RESUME.md` (24: Jade's review, the wheely-arm and front-back-splits re-takes, open t84 + xuanfeng t72); `docs/wushu_sync_longfist.md`; previews `review/previews/wushu_sync/` (incl. a formation MOCK). The 2nd compulsory set is confirmed.
-**Fight-choreography bake-off + v4 splice (cloud, 2026-10-26): NEEDS INTAKE/RENDER (box).** Seedance 2.5 beat Veo 3.1, Hailuo 2.3, Runway Gen-4.5 and Vidu Q3 Pro on a partner roll and a kick-vs-block exchange (`docs/video_model_bakeoff.md`). The default drop is v4 (v5a) again, with `dr_dl_roll_t72` keyed into 91–93 (clean frames only) and `dr_dl_kick_t72` on 97.1–98.3; the v5 group set only behind `?drop=v5`. Checkpoint 20 in `docs/RESUME.md`; previews `review/previews/wushu_bakeoff/`. Spend $526.35 / $1,000.
-**Spend cap raised to $1,000** (Jade, 2026-10-26: "Raise to $1,000"; `MERGEMAIN_CAP` default in `tools/gen/spend.py`). Older "$600" mentions below are historical.
-**v5b singing shots (cloud, 2026-10-26; Jade's v5a lip-sync + expression notes): NEEDS INTAKE/RENDER (box).** New picks for 7 of the 8 sung
-shots (ch1_main t61, ch1_gone_close t61, ch2_gone_close t63, out_main t61, v1_light_hands t62, bd_ahh t52, ch2_catch t52; v1_split_front stays
-t11 at .62), all lags re-measured by hand from the raw takes vs the vocal stem (`tools/sync/cloudsync.py`), written to `docs/picks_manual.json` +
-`docs/lags.json`. Experiments (violet face at 0:28, 3/4 profile at 1:29 with main's / violet's face) are separate keys, never default. Jade's
-phone previews of every candidate: `review/previews/<shot>/` + `review/previews/index.json`. Post-credits silent send `pc_send_v` (patch on her
-left arm) for the EDL's sender. Everything, shot by shot: **checkpoint 17** in `docs/RESUME.md`.
-**v5 queue GENERATED (cloud generation session 2, 2026-10-25 ~14:30 UTC); needs the box for intake/render.** The KV fix worked; images went
-through the relay too (`GEN_IMAGES_VIA_RELAY=1`, see `docs/CLOUD_GEN.md`). 41 takes in `review/takes/` (+ specs), the stills they start from in
-`review/takes/stills/`. Every tag, its shot, the preferred take and the failures: checkpoint 13 at the bottom of `docs/RESUME.md` (stills go into
-place before intake). Final spend: **$368.84 / $600**.
-**Then (cloud session 3, same night):** Jade's two follow-ups are generated: violet's two space buns in the duilian (new plates + takes) and
-`lf_wushu_gold` as her jian solo. Picks, stills and the box steps are in checkpoint 14 of `docs/RESUME.md`. Spend now **$388.47 / $600**.
+## START HERE (updated 2026-10-28)
+**State.** v5b is fully prepared in the cloud and waits on the box. Nothing has been rendered since v5a (`review/v5a/`). Spend is
+**$609.89 / $1,000** (Jade raised the cap on 2026-10-26 and said "credits aren't a concern"). `main` == `claude/wonderful-mccarthy-f90kll`. The
+older start-here stanzas (2026-10-25/26) live in git history; every step is also a checkpoint (13–24) at the bottom of `docs/RESUME.md`.
 
-Last cloud session (2026-10-25) turned Jade's v4 review notes into **v5 in code** on `claude/wonderful-mccarthy-f90kll` (nothing generated,
-rendered or spent; spend still **$284.32 / $600**). Details: "Where things stand" below, `docs/V5_BOX_RUNSHEET.md` (what the box runs),
-`docs/REVIEW_FOR_JADE.md` → "Jade's notes, 2026-10-25" (each note → done / queued), `docs/RESUME.md` (checkpoint log).
+**Jade's private review page:** https://claude.ai/artifact/8BK9cLbgDLR2zDqQuBHN7B (v5a film as HLS + a Takes tab with phone previews of
+every candidate). Her feedback lives in its database. Read it with the ArtifactData tool, collections `notes` (`t`, `text`, optional
+`shot`/`take`), `take_prefs` (one per shot) and `decisions` (`compulsory_set` = 2nd, `final_line_position` = 3; `violet_look` unset; she
+answered in chat: 0:28 only). The page is about 9.5 MiB below its 256 MiB version limit, so put the next batch of previews on a new page linked
+from it. Its builder script lived in a session scratchpad and is gone; the previews come from `review/previews/index.json` (built with
+`tools/sync/preview.py`).
 
-**What's in flight, and what to do first**
-1. **v5a review render (box, unattended).** Before leaving, Jade told the box session to: wait (≤ 2 h) for the frozen-frame + fork-tree fix
-   commit on this branch (look for "frozen" in `git log`), pull, rerun `tools/sd/picks.py` (lags changed) and `tools/mix.py`, render the whole
-   film with default params, and put it on **Google Drive** as one 1080p file (`merge_v5a_1080p.mp4`) if the box can upload there, else as
-   720p parts < 100 MB in `review/v5a/`; either way a `review/v5a/README.md` says where it is and what to eyeball. **No generation** until
-   Jade has watched v5a. First check whether `review/v5a/` exists on this branch; if not, the render may still be running or failed (you
-   can't see the box from the cloud; ask Jade).
-   **Done (box, 2026-10-25 05:46 CDT):** `review/v5a/` has the film as 4 × 720p parts + README (the box has no Drive upload route).
-2. **Jade's go-ahead on the generation queue** (≈ $70.5, run sheet §2: singing re-takes 3:30 first, eyes 1:58/3:33, jacket 3:09, canon faces
-   1:07/1:46, orchestra, wushu §2.1). **Jade OK'd the spend (2026-10-25, from the airport).** Generation
-   runs from a NEW cloud session (it sees `GEN_KV_NS`), per `docs/CLOUD_GEN.md`; takes go to `review/takes/` + a RESUME "needs intake/render"
-   entry, and the box does intake/picks/renders when Jade is back.
-3. **Open questions for Jade:** violet's hair differs between the duilian (one bun, existing v4 plate) and the group set (two space buns); a new
-   duilian wide plate (~$0.25) would match them. `lf_wushu_gold` shows a sword group set with teammates, which contradicts her decision 4 (group
-   set barehand, jian solo): re-caption or regenerate. The post-credits glass region / light path were estimated without seeing that part of
-   the window take: fit on box stills.
+### Next: the box renders v5b
+1. Pull. Copy `review/takes/*.mp4` → `media/gen/`, `review/takes/specs/*.json` → `media/gen/specs/`, and put the stills from
+   `review/takes/stills/` in place as RESUME checkpoints 13, 14 and 19 say (stills before intake).
+2. `tools/sd/intake.py`, **one run at a time**, for every pick that is a cloud take. That's the 24 entries of `docs/picks_manual.json` found in
+   `review/takes/`: the singing shots, orchestra, `pc_send_v`, the roll/kick and the seven `ws_*`. Also intake these preferred cloud takes,
+   which aren't in picks_manual yet, then add them: `intro_up_t51` (1:07 canon face), `bd_float_t52` (1:46),
+   `v2_horizon_t51` (3:07–3:09 clean jacket back), `lf_wushu_gold_t53` (jian solo life clip), `dr_dl_wide_t58` and `dr_dl_close_t57` (duilian,
+   violet in two buns; used by `?drop=v4|v5`).
+3. `tools/sd/picks.py`, then `node tools/edl_check.mjs` (0 exceptions, 0 held clocks, 0 gaps), then `tools/mix.py`.
+4. Render v5b with default params. The default drop becomes the compulsory long fist in sync once all seven `ws_*` are picked. Also render
+   A/B clips: `?bd=full` (2:06 build wall, fullscreen lives), `?drop=v4` (v5a fight + roll + kick), `?roll=wide`, `?orch=v4`. Put the film on
+   Drive (Jade likes one file for timestamped notes) or as < 100 MB parts in `review/v5b/` with a README. The run sheet's §1.x sections in
+   `docs/V5_BOX_RUNSHEET.md` list the ranges to eyeball.
+5. Optional, needs her competition video (box only): `?drop=real` (her real 2004 group set drawn in light; she stood 3rd from the left) and the
+   `dr_real_ref_*` motion-reference takes. Both are in `docs/wushu_real_routine.md`.
 
-**How this cloud setup actually behaves (tested 2026-10-25; supersedes the "Generate" row in the table below)**
-- This container has the repo + `review/` only. **No renders**: every shot is drawn from prepped plate sequences (`work/plates/*`, depth +
-  matte from GPU models, ~14 GB on the box) and render.mjs launches a GPU Chrome. Show Jade video via the box (Drive or `review/vN/`).
-- **Source pack** for cloud analysis: `review/cloud/` on main (manifest.md timestamp → shot/take/S0/lag/face, `edl_v4.json`, picks, sync
-  jsons, first-frame stills, refs incl. face_v4, the 22 picked raw takes, the song + vocal + instrumental stems as mp3, drop plates).
-  The box rebuilds it with `tools/cloud_pack.py`. Lip-sync was measured from these (mouth openness in the raw take vs the vocal stem;
-  the render adds no A/V offset), which the film itself can't support: the glyph texture hides the mouth.
-- **Generation from the cloud is untested.** Jade added `GEN_KV_NS` to the cloud environment on 2026-10-25 (only new sessions see it).
-  Also needed: `CF_AUTH_VIA_PROXY=1`, and `CF_ACCOUNT_ID` (the env has `CLOUDFLARE_ACCOUNT_ID`, which `tools/gen/cfauth.py` does not read:
-  `export CF_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID"`). A KV GET through the proxy returned **401** on 2026-10-25, so the proxied token may lack
-  Workers KV read; check before any paid call, printing only the status code:
-  `curl -sS -o /dev/null -w '%{http_code}\n' "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/storage/kv/namespaces/$GEN_KV_NS/keys?limit=1"`.
-  Sung shots need PyAV (`pip install av`; without it a billed take is logged as failed). `faceedit.py`/`canonprop.py`/`hairswap.py` need a
-  Python 3.12 venv with mediapipe 0.10.21 + numpy<2. Generated takes still need the box for intake, so prefer letting the box generate.
-- No Drive connector in cloud sessions, so a cloud session can't fetch videos Jade puts on Drive; ask her for short clips in `review/` if
-  you need to look at frames. YouTube is blocked by the network policy here.
-- Never write Jade's competition-video URL into the repo (public; it shows her teammates). Its analysis is in `docs/wushu_groupset_notes.md`.
-- Working style Jade asked for: delegate generously to subagents and keep the main conversation lean; scratch reports live in the session
-  scratchpad and are gone with the container, so anything worth keeping goes into docs/ (as above).
+### Jade's decisions since v4 (each one's detail is in `docs/REVIEW_FOR_JADE.md` and RESUME)
+- **Opening:** the poem shows whole from frame 0, and the title is MERGE alone. **Defaults:** `?fold=reach`, `?pv=screens`. jade/home reads "taught kids the Copernican model at 10:30pm".
+- **2:17:** her poem "Privilege Escalation" as annotated chess moves on three different branches; the "analysis mode" header is present from the screen's start.
+- **Sung shots:** hopeful and profound, never an ad smile; 3:30 ends contemplative with eyes closed. Lags are hand-measured from raw takes vs the vocal stem.
+  Her picks: 0:28 violet's own face + messy bun in main's orange (`v1_split_front_vl_t63`); 0:44 the old `t12` (time-ramped; "ahead" is still
+  ~0.25 s late); 1:30 3/4 profile with violet's face (`34v_t61`), "looks fine as is, don't risk it"; main keeps the canon face everywhere else.
+- **Orchestra:** the violet branch composes, standing still, with the pencil (`orch_compose_t62`). The notation is the real music, transcribed and
+  verified by resynthesis (`docs/orchestra_transcription.md`); the bar is the Orbital Sunrise equations.
+- **4:15:** the living git graph replaces the log card. **Post-credits:** the violet branch silently sends the light (`pc_send_v_t61`), the girl alone
+  sees it; it plays once, with one chime cascade.
+- **Drop:** her verdict on the sync long fist is "this is the one". It's the 2nd International Compulsory Changquan, moves 1–14 + salute
+  (`docs/wushu_sync_longfist.md`); the wheel-arm and front-back splits were corrected. Every generative partner/contact attempt failed her bar
+  (`docs/video_model_bakeoff.md`), so no partner acrobatics.
+
+### Open items
+- **Long fist small contacts** the model can't do from text: the palm slap in the pubu, the whirlwind's take-off foot and palm-to-sole slap, and the
+  stamp on the pound. Fix: a motion-reference clip of Jade herself (phone video; her own footage may go to models). The set's teaching film is
+  third-party: only with her OK, and never committed.
+- **After the v5b render:** check the 0:28 split copies with the violet-look take (camera locked; verify) and the 0:44 "ahead" timing, and get
+  her call on `?bd=full`.
+
+### How the cloud works now (tested; replaces the older notes)
+- **Generation works from NEW cloud sessions** (env `GEN_KV_NS`, `CF_AUTH_VIA_PROXY=1`; the token has Workers AI + KV Storage Edit since
+  2026-10-25). Images go through the relay (`GEN_IMAGES_VIA_RELAY=1`). Setup and rules: `docs/CLOUD_GEN.md`. The generation session commits
+  takes + specs to `review/takes/`, and the box does intake, picks and renders.
+- **No renders in the cloud** (no GPU, no prepped plates). Validate EDL changes with `node tools/edl_check.mjs
+  --picks=review/cloud/picks/picks.json [--q=...] [--fake=...]`. Show Jade candidates as raw takes muxed with the song at their slot
+  (`tools/sync/preview.py`), on the review page.
+- **Network:** YouTube and Hugging Face are blocked, so cloud prep of her video needs `www.youtube.com`, `*.googlevideo.com`, `huggingface.co`
+  and `*.hf.co` allowed. Drive is reachable as a connector, but it can't carry big uploads.
+- **Working style Jade asked for:** delegate generously to subagents and cloud sessions, and keep the main thread lean. Relay her decisions to
+  other sessions quoted verbatim (they want her direct words before spending). Anything worth keeping goes into docs/, because scratchpads die
+  with the container.
+- **Never** print or commit Cloudflare values; never commit her competition video, its frames or its URL; never anything showing her kids.
 
 ## Jade's plan (2026-10-24): Claude Code cloud + GitHub + open-artifacts
 The Linux box stays on. Jade will mostly work through **cloud sessions on this GitHub repo**, plus an "open-artifacts" setup she's building
@@ -110,6 +114,8 @@ starts a cloud session from the pushed branch. Keep git clean and pushed before 
 her kids' anything.
 
 ## Where things stand (2026-10-25, after the v5 cloud integration)
+_(Historical, 2026-10-25; superseded by **START HERE** at the top.)_
+
 
 Spend: $284.32 of the $600 cap in the committed ledger (`tools/gen/spend.py`; the box said ≈ $300). Code, docs and the ledger are committed;
 media stays local. **v4** is the last rendered film (`review/v4/`). **v5** is integrated in code on `claude/wonderful-mccarthy-f90kll`, with
