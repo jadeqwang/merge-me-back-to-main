@@ -36,7 +36,8 @@ export function buildLog(T, o = {}) {
   const LOG = []; for (let k = 0; k < 40; k++) for (const lf of [...LIFE].reverse()) for (const r of rowsForLife(lf)) LOG.push({ spans: r, lane: lf[2], life: lf });
   const perBeat = (bar) => (bar < 77 ? 2 : bar < 81 ? 4 : bar < 85 ? 8 : bar < 86 ? 16 : 32);
   const beatsUpTo = (t) => { const out = []; for (let b = 73; b <= 88; b++) for (let j = 0; j < 4; j++) { const x = T.bb(b, j); if (x <= t) out.push([b, j, x]); } return out; };
-  const head = (t) => beatsUpTo(t).reduce((a, [b]) => a + perBeat(b), 0) + (t >= tR ? Math.floor((t - tR) / (T.beatLen(86) / 4)) * 8 : 0);
+  // `git log` fills the page at once on the slam (60 rows), then races
+  const head = (t) => (t >= t0 ? 60 : 0) + beatsUpTo(t).reduce((a, [b]) => a + perBeat(b), 0) + (t >= tR ? Math.floor((t - tR) / (T.beatLen(86) / 4)) * 8 : 0);
   // zoom (cells shrink, content tiles outward) from the riser; collapse into the centre in the last beat
   const zoom = (t) => 1 - .82 * Math.pow(ss(tR, tD - .05, t), 1.6);
   const collapse = (t) => 1 - ss(T.bb(88, 2.5), tD - .02, t);

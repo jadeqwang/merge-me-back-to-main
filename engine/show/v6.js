@@ -181,7 +181,7 @@ shot(B(73), B(89), buildLog(T));
     if (t < OUT0) return 1;
     return d < (1 - ss(OUT0, OUT1 - .1, t)) * 1.08 ? 1 : 0;            // text returns from the edges in, the face last
   };
-  shot(SW, OUT1, F('H1', SW, OUT1, { density: (t) => (t < IN ? lerp(.97, 1, ss(SW, IN, t)) : lerp(1, .6, ss(OUT0, OUT1, t))), hold: 1, raw, gain: 1.4,
+  shot(SW, OUT1, F('H1', SW, OUT1, { density: (t) => (t < IN ? lerp(.97, 1, ss(SW, IN, t)) : lerp(1, .6, ss(OUT0, OUT1, t))), hold: 1, raw, gain: 1.25, key: 'luma',
     short: 'THE SWITCH: H1 shown unprocessed (the only raw image). Until Jade films H1 the stand-in is a GENERATED take, raw here only to show the transition', fade: () => 1 }));
 }
 

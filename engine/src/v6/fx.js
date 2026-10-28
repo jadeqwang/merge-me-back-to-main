@@ -106,10 +106,14 @@ export function comet(o) {
       const at = (f) => { const x = from[0] + (to[0] - from[0]) * f, y = from[1] + (to[1] - from[1]) * f + bend * Math.sin(f * Math.PI); return [x * g.cols, y * g.rows]; };
       const head = clamp((t - t0) / (t1 - t0)); if (t < t0) return;
       const e = 1 - Math.pow(1 - head, 2);
-      for (let i = 0; i < 60; i++) {
-        const f = e - i * .006; if (f < 0) break; const [x, y] = at(f), b = Math.exp(-i / 14) * (t > t1 ? Math.exp(-(t - t1) / .3) : 1);
-        g.put(Math.round(x + (hash(i, k.df, 1) - .5) * i * .08), Math.round(y), i === 0 ? '✦' : i < 4 ? '*' : i < 14 ? '+' : '·', o.lane ?? 'violet', b, { max: true });
+      const fade = t > t1 ? Math.exp(-(t - t1) / .3) : 1;
+      for (let i = 0; i < 90; i++) {
+        const f = e - i * .005; if (f < 0) break; const [x, y] = at(f), b = Math.exp(-i / 22) * fade, sp = 1 + Math.floor(i / 12);
+        g.put(Math.round(x + (hash(i, k.df, 1) - .5) * i * .12), Math.round(y), i === 0 ? '✦' : i < 4 ? '*' : i < 14 ? '+' : '·', o.lane ?? 'violet', b, { max: true });
+        if (i < 30) for (let j = 1; j <= sp; j++) g.put(Math.round(x + (hash(i, j, k.df) - .5) * 2 * sp), Math.round(y + (hash(j, i, k.df) - .5) * sp), '·', o.lane ?? 'violet', b * .6, { max: true });
       }
+      // the head's halo: a ring of marks around it (characters, no glow)
+      if (head < 1 || t < t1 + .4) { const [x, y] = at(e); for (const [dx, dy, ch] of [[-1, 0, '-'], [1, 0, '-'], [0, -1, '|'], [0, 1, '|'], [-2, 0, '·'], [2, 0, '·']]) g.put(Math.round(x) + dx, Math.round(y) + dy, ch, 'white', .8 * fade, { max: true }); }
     },
   };
 }
