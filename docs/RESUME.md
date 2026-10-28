@@ -686,3 +686,20 @@ lane, so unison is exact. There is no body contact.
   intro_up t51, bd_float t52, v2_horizon t51, lf_wushu_gold t53, dr_dl_wide t58, dr_dl_close t57; picks.py; edl_check; mix; render + A/B
   clips), Jade's decisions since v4, open items, and how the cloud actually works now. Jade's review page + its db collections are listed there.
 - Spend $609.89 / $1,000. Nothing rendered since v5a.
+
+## 2026-10-28 checkpoint 26 — v6 rebuild starts: "written in text" (branch `claude/v6-text`, cloud session)
+- Jade's new direction (Google Doc "Merge: new treatment and shot list (v6)") is in **`docs/treatment_v6.md`**: the film is characters on
+  black in the branch palette, density tells the story, glyph refresh carries emotion, and the one raw image is her real phone footage at the
+  switch (236.64). Her performance comes from footage she films (shot IDs A1-A6, B1-B9, C1-C9, H1-H2); crowds are one take copied by the engine.
+- `.gitignore`: `*.mov`, `*.MOV`, `*.m4v`, `*.M4V`, `/footage/` (her phone footage is never committed, not even under review/).
+- **Headless render in the cloud works now.** `engine/render.mjs` falls back to the pre-installed Chromium + SwiftShader and the system ffmpeg
+  when the box's Chrome/ffmpeg aren't there (`CHROME=`, `FFMPEG=`, `SOFTGL=1` override). `engine/src/main.js` skips a shot whose setup fails
+  (a plate that lives only on the box) with one log line instead of hanging, so graphics-only shots render anywhere. Measured here (4 vCPU):
+  ~4.3 fps per worker at 720p for the v6 show, ~12 fps with `--workers 3` (the whole film ≈ 12 min). The v5 show (`main.js`) also renders its
+  graphics shots (drone tree, cards) here; its plate shots come out black.
+- v6 engine (code map in the treatment): `engine/src/textlook.js` (palette + charset by construction, TextGrid cells, TextPass glyph shader,
+  raw cells for the switch), scene kind `text`, `engine/src/v6/{layers,seq,frost,gitlog,fx}.js`, show `engine/show/v6.js` (whole song, every
+  footage slot labelled by shot ID), `engine/show/v6_slots.json`, `engine/show/life_v6.js`.
+- Footage intake: `tools/footage/sync.py` (per-band onset-envelope cross-correlation + GCC-PHAT refine; tested on synthetic room-mic clips
+  with a clap and a "voice": 4/4 offsets exact to 0.1 ms, an 8 s drop clip included; a silent clip is flagged), `tools/footage/prep.py`
+  (24 fps frames, H1/H2 at 1920 px best quality, HDR tone-map when ffmpeg has zscale, pick per shot ID), `tools/footage/standins.py`.

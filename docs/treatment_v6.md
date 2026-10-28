@@ -19,14 +19,16 @@ git-graph ending, the real-routine pipeline (`?drop=real`, `docs/wushu_real_rout
 **Dropped:** the 3D idol face, all generated group choreography, the orchestra, chess "analysis mode", the intro poem, most of the drone tree.
 
 ## The rules of the look (engine: `engine/src/textlook.js`)
-1. **Characters on black.** A fixed character set (`CHARSET` in textlook.js): the brightness ramp ` .:-=+*#%@` plus the lyric letters.
-   Nothing is drawn but glyphs in cells. No gradients, no bloom halos, no photographic pixels — except the switch.
+1. **Characters on black.** A fixed character set (`CHARSET` in textlook.js: printable ASCII, box-drawing and block marks, a few dots and
+   arrows); the brightness ramp is `.:-=+*#%@`, and hooks/titles are built from their own letters. Nothing is drawn but glyphs in cells:
+   no gradients, no bloom halos, no grain, no photographic pixels — except the switch.
 2. **Colour only from the branch palette.** main `#FF7A1A` orange; rose `#FF5FA2`, sky `#6FB6FF`, mint `#4FE3B0`, gold `#FFD23F`,
    violet `#A57BFF`, white `#F4F4F8`. A cell's colour is its lane colour scaled by brightness; there is no other hue.
 3. **No generated pixel is ever shown unprocessed.** Every source (generated takes, phone footage, the 2004 video) goes through the same
    text pass; only H1 is shown raw, and only in the switch window.
 4. **Density is the one story variable.** `density` 0..1 = cell size (large, sparse, readable → small, dense, near-solid) and the
-   fraction of cells lit. A branch alone is sparse; merging makes it denser. The curve over the song is `DENSITY` in `engine/show/v6.js`.
+   fraction of cells lit. A branch alone is sparse; merging makes it denser. Each shot in `engine/show/v6.js` sets its own density
+   (verse 1 ≈ .3, the grid .5, chorus 1 .45 → .86, breakdown .5 → .9, drop .8, verse 2 ≈ .3, chorus 2 .5 → 1 into the switch).
 5. **Glyph refresh rate carries emotion** (drawing on ones/twos/threes): `hold` = how many frames (at 24 fps "drawing" time) a glyph
    keeps its character before re-picking. Stillness on threes/fours, verses on twos, the drop and the build on ones.
 6. **Big type only on the hooks.** Lyrics otherwise sit small and in the grid.
@@ -59,7 +61,8 @@ Setup for every indoor shot: phone on a tripod, landscape, 4K 30 fps (60 fps whe
 background ≥ 1.5 m behind; one soft side key ~45°, optional warm rim; the jacket from the selfie, patch on the LEFT arm; hair down for main,
 bun with two pencils for violet (B6–B8). **The song plays out loud from a speaker, she sings full voice, and claps once on camera at the
 start of each take** (the clap + singing is what `tools/footage/sync.py` locks onto). Leave lyric space on one side; shoot a little wide.
-5 s clean plate at the end of each setup.
+5 s clean plate at the end of each setup. **Turn HDR Video off** (iPhone: Settings › Camera › Record Video) so the colours of the
+unprocessed H1 survive as filmed; `prep.py` tone-maps HDR only if its ffmpeg has zscale.
 
 | ID | framing | action | takes | used at |
 |---|---|---|---|---|
@@ -83,7 +86,7 @@ start of each take** (the clap + singing is what `tools/footage/sync.py` locks o
 | H2 | same place | wide from behind at the water's edge / rail, still, 30 s | 2 | spare |
 
 Delivery: original files (not through a messaging app) to the "footage" Drive subfolder, named `<ID>_t<N>.mov` (e.g. `A1_t2.mov`).
-**Never committed** (`.gitignore` blocks `*.mov`, `*.MOV`, `*.m4v`, `footage/`).
+**Never committed** (`.gitignore` blocks `*.mov`, `*.MOV`, `*.m4v`, `/footage/`).
 
 ## What gets generated
 Only the girl at the frost window (existing takes, reused), the radio-dish set for verse 2, and lives she can't film (one figure, one simple
@@ -93,12 +96,18 @@ action, drawn sparse). No group choreography, no orchestra, no singing faces. Sp
 | piece | file |
 |---|---|
 | animatic show (whole song, every footage slot labelled) | `engine/show/v6.js` — `node engine/render.mjs --q "show=/engine/show/v6.js" …` |
-| text look (strict palette + charset, density, refresh) and the switch | `engine/src/textlook.js`, scene `engine/src/scenes/textplate.js` |
-| frost (intro 0–27.95, bloom at 222.73) | `engine/src/scenes/frost.js` |
-| build git log (125.34–153.17) | `engine/src/scenes/gitlog.js` |
-| end card (264.47) and outro git graph (257.51) | `engine/src/scenes/endcard.js`, `engine/src/scenes/gitgraph.js` |
-| footage intake: auto-sync each phone clip to the song | `tools/footage/sync.py` |
-| footage map: shot ID → clip + offset (written by the intake tool, read by v6.js) | `work/footage/footage.json` (box only, ignored) |
+| footage slots: shot ID → action + stand-in take | `engine/show/v6_slots.json` |
+| her lives as branches (v6 LIFE, + jade/rare-earth, the violet commit) | `engine/show/life_v6.js` |
+| text look: palette, charset, glyph atlas, TextGrid (cells), TextPass (glyph shader + the raw switch) | `engine/src/textlook.js` |
+| the scene that draws a shot's layers | `engine/src/scenes/text.js` (kind `text`) |
+| footage slots, labels, small lyrics, hooks, stars | `engine/src/v6/layers.js`; frame sequences `engine/src/v6/seq.js` |
+| frost (intro 0–27.95, bloom at 222.73) | `engine/src/v6/frost.js` |
+| build git log (125.34–153.17), outro git graph (257.51), end card (264.47) | `engine/src/v6/gitlog.js` (`buildLog`, `gitGraph`, `endCard`) |
+| counter, commit messages → frost branch, dish, context meter, comet, air writing | `engine/src/v6/fx.js` |
+| the switch (236.64) | `engine/show/v6.js` Outro A block (`raw(t, c, r)`) + `TextPass` raw cells |
+| footage intake 1: auto-sync each phone clip to the song | `tools/footage/sync.py` → `work/footage/sync.json` |
+| footage intake 2: frames for the engine + one pick per shot ID | `tools/footage/prep.py` → `work/footage/<take>/`, `work/footage/index.json` (override: `docs/footage_picks.json`) |
+| stand-ins (existing takes) for the animatic | `tools/footage/standins.py` → `work/standin/` |
 
 ## Open questions (Jade's)
 - A heads-up to her 2004 teammates (or the 2011 uploader) before the drop goes public? Their names stay out of the film and the repo.

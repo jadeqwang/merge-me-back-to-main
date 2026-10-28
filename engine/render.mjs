@@ -15,7 +15,13 @@ import puppeteer from 'puppeteer-core';
 
 const ENGINE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(ENGINE, '..');
-const FF = process.env.FFMPEG || '/home/jade/Documents/1-music-shipped/moongazing/.venv/lib/python3.12/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2';
+// box defaults (GPU Chrome + the moongazing ffmpeg); anywhere else (a cloud container) falls back to the pre-installed Chromium with
+// SwiftShader (software WebGL2, ~10x slower) and the system ffmpeg. Override with CHROME=… / FFMPEG=….
+const BOX_FF = '/home/jade/Documents/1-music-shipped/moongazing/.venv/lib/python3.12/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2';
+const FF = process.env.FFMPEG || (fs.existsSync(BOX_FF) ? BOX_FF : 'ffmpeg');
+const CHROME = process.env.CHROME || ['/usr/bin/google-chrome', '/opt/pw-browsers/chromium-1243/chrome-linux64/chrome'].find((f) => fs.existsSync(f));
+const GPU = process.env.SOFTGL ? false : CHROME === '/usr/bin/google-chrome';
+const GL_ARGS = GPU ? ['--use-angle=vulkan', '--ignore-gpu-blocklist', '--enable-gpu'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'];
 // default soundtrack follows the page's timing (engine/src/time.js: v2 = revised song unless --q has timing=v1); --audiofile overrides
 const SONG = args_audiofile() || path.join(ROOT, 'inputs', /(^|&)timing=v1(&|$)/.test(process.argv[process.argv.indexOf('--q') + 1] || '') ? 'Merge Me Back to Main.wav' : 'Merge.wav');
 function args_audiofile() { const i = process.argv.indexOf('--audiofile'); return i > 0 ? path.resolve(process.argv[i + 1]) : null; }
@@ -44,9 +50,8 @@ function serve() {
 
 async function browserPage(port) {
   const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/google-chrome', headless: 'new',
-    args: ['--no-sandbox', '--disable-gpu-watchdog', '--font-render-hinting=none', '--use-angle=vulkan',
-      '--ignore-gpu-blocklist', '--enable-gpu'],
+    executablePath: CHROME, headless: 'new', protocolTimeout: 600000,
+    args: ['--no-sandbox', '--disable-gpu-watchdog', '--font-render-hinting=none', ...GL_ARGS],
   });
   const page = await browser.newPage();
   await page.setViewport({ width: W, height: H, deviceScaleFactor: 1 });

@@ -21,11 +21,22 @@ const T = await import('./time.js');
 await T.loadTiming();
 ctx.T = T;
 const SCENES = {};
+// A shot whose setup fails (a plate that isn't on this machine: media/ and work/ live only on Jade's box) is skipped with one log line, so
+// graphics-only shots still render anywhere (a cloud container, CI). The box never hits this: its plates exist.
+const MISSING = new Set();
 async function sceneFor(shot) {
+  if (shot._missing) return null;
   if (!shot._inst) {
-    if (!SCENES[shot.kind]) SCENES[shot.kind] = (await import(`/engine/src/scenes/${shot.kind}.js`)).default;
-    shot._inst = new SCENES[shot.kind](ctx, shot);
-    await shot._inst.setup?.();
+    try {
+      if (!SCENES[shot.kind]) SCENES[shot.kind] = (await import(`/engine/src/scenes/${shot.kind}.js`)).default;
+      const inst = new SCENES[shot.kind](ctx, shot);
+      await inst.setup?.();
+      shot._inst = inst;
+    } catch (e) {
+      shot._missing = true; const k = `${shot.kind} ${shot.plate || ''}`;
+      if (!MISSING.has(k)) { MISSING.add(k); console.log(`[engine] skipped shot ${shot.t0.toFixed(2)}-${shot.t1.toFixed(2)} ${k}: ${e.message}`); }
+      return null;
+    }
   }
   return shot._inst;
 }
@@ -35,7 +46,9 @@ async function render(t) {
   const shots = show.shots.filter((s) => t >= s.t0 && t < s.t1);
   if (!shots.length) { renderer.setRenderTarget(null); renderer.setClearColor(0, 1); renderer.clear(); return; }
   // shots render in order; a shot's scene draws the whole frame (later shots may composite over via their own logic)
-  for (const s of shots) { ctx.post.resolve.uniforms.uFade.value = 1; ctx.post.bloom.strength = s.bloom ?? .6; const inst = await sceneFor(s); await inst.render(t, (t - s.t0) / (s.t1 - s.t0)); }
+  let drawn = 0;
+  for (const s of shots) { ctx.post.resolve.uniforms.uFade.value = 1; ctx.post.bloom.strength = s.bloom ?? .6; const inst = await sceneFor(s); if (!inst) continue; await inst.render(t, (t - s.t0) / (s.t1 - s.t0)); drawn++; }
+  if (!drawn) { renderer.setRenderTarget(null); renderer.setClearColor(0, 1); renderer.clear(); }
   // dispose scenes that are well behind us
   for (const s of show.shots) if (s._inst && t > s.t1 + 2) { s._inst.dispose?.(); s._inst = null; }
 }
@@ -52,5 +65,5 @@ window.ENGINE = {
     return btoa(s);
   },
 };
-await window.ENGINE.render(+(P.get('t') || 0));
+await window.ENGINE.render(+(P.get('t') || 0)).catch((e) => { console.log('[engine] first render failed: ' + e.message); busy = Promise.resolve(); });
 window.ENGINE.ready = true;
