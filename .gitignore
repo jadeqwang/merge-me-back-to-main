@@ -22,3 +22,9 @@ work/gen_kv_ns.txt
 # review videos Jade asked to share through this (public) repo, each <100 MB (GitHub's per-file limit)
 !review/
 !review/**
+# Jade's phone footage (v6): never committed, even under review/ (this block must stay after the !review/ re-include)
+*.mov
+*.MOV
+*.m4v
+*.M4V
+footage/
