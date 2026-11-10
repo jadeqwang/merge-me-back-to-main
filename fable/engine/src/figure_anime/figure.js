@@ -444,7 +444,7 @@ export class Figure {
       if (opaque) {
         this._uniforms(this.meshProg, ctx, camPos); const U = this.meshProg.u, M = this.meshes[lvl <= 1 ? 0 : lvl <= 3 ? 1 : 2];
         gl.uniform1i(U.u_points, 0); gl.uniform1f(U.u_hull, 0); gl.bindVertexArray(M.vao); gl.drawElementsInstanced(gl.TRIANGLES, M.n, gl.UNSIGNED_INT, 0, n);
-        if (L.ink > 0.02 && lvl <= 3) {       // the ink line: the same mesh pushed out along its normals, front faces culled (an inverted hull)
+        if (L.ink > 0.02 && lvl <= (n > 48 ? 1 : 3)) {       // the ink line: the same mesh pushed out along its normals, front faces culled (an inverted hull). A crowd bucket (more than 48 bodies) only gets it close up: at 172.5 the hull pass on rows of mid-distance bodies cost 20 % of the frame for a line under a pixel
           gl.enable(gl.CULL_FACE); gl.cullFace(gl.FRONT); gl.frontFace(ctx.reflect ? gl.CW : gl.CCW); gl.uniform1f(U.u_hull, 0.0042 * L.ink);
           gl.drawElementsInstanced(gl.TRIANGLES, M.n, gl.UNSIGNED_INT, 0, n); gl.disable(gl.CULL_FACE); gl.frontFace(gl.CCW); gl.uniform1f(U.u_hull, 0);
         }
