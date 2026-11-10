@@ -133,7 +133,7 @@ export function buildBody(opts = {}) {
       { nu: 44, nv: 28, vParam: true, region: side > 0 ? 3 : 4, fibres: 0.0040, part: (u, v, P, N) => (pocket(P, N) ? PART.POCKET : PART.TROUSER), push: (part, P, N) => { const k = pocket(P, N); return k === 1 ? 0.020 : k === 2 ? 0.016 : 0; },
         skin: (u, v, P, N, g) => ({ la: [P[0] - g.c[0], v / (LEG.NODES - 1), P[2] - g.c[2]], lb: [0, 0, 0], w: 0, n: N, a: th, b: th, chain: c, lagW: 0, frame: (d) => d }) });
     legs.push({
-      nodes: LEGR.map((r, k) => ({ bone: k <= 3 ? th : sn, local: toLocal(k <= 3 ? th : sn, [side * r[1], r[0], 0.006]), axis: toLocal(k <= 3 ? th : sn, [side * 0.085, r[0], 0]), lim: (r[2] + r[3]) / 2 - 0.06 })),
+      nodes: LEGR.map((r, k) => ({ bone: k <= 3 ? th : sn, local: toLocal(k <= 3 ? th : sn, [side * r[1], r[0], 0.006]), axis: toLocal(k <= 3 ? th : sn, [side * 0.085, r[0], 0]), lim: (r[2] + r[3]) / 2 * (1 - 0.3 * (k / 7) * (k / 7)) - 0.055 })),
       seg: LEGR.slice(1).map((r, k) => Math.hypot(r[0] - LEGR[k][0], r[1] - LEGR[k][1])), hipLocal: toLocal(J.hips, [side * LEGR[0][1], LEGR[0][0], 0.006]),
     });
     const an = REST_POS[ft];
@@ -155,9 +155,18 @@ export function buildBody(opts = {}) {
   // the violet branch: a bun and two crossed pencils (variant 2)
   const BUN = [0, 1.690, -0.050];
   loft(new Loft([R3(BUN[1] - 0.050, 0.004, 0.004, BUN[2]), R3(BUN[1] - 0.040, 0.034, 0.034, BUN[2]), R3(BUN[1] - 0.012, 0.054, 0.054, BUN[2]), R3(BUN[1] + 0.014, 0.053, 0.053, BUN[2]), R3(BUN[1] + 0.038, 0.034, 0.034, BUN[2]), R3(BUN[1] + 0.046, 0.004, 0.004, BUN[2])]), { nu: 16, nv: 10, region: 12, variant: 2, partConst: PART.BUN, bones: one(J.head) });
+  const pencilPart = (u, v) => (v < 2 ? PART.ERASER : v < 4 ? PART.PENCIL : v < 5 ? PART.SKIN : PART.LEAD);
   for (const side of [1, -1]) {
     const ax = norm([side * 0.80, 0.52, -0.30]), t1 = norm(cross(ax, [0, 0, 1])), t2 = cross(ax, t1), c0 = add(BUN, mul(ax, -0.105)), C = (h, r) => ({ c: add(c0, mul(ax, h)), rx: r, rz: r });
-    loft(new Loft([C(0, 0.001), C(0.002, 0.0052), C(0.02, 0.0052), C(0.10, 0.0052), C(0.188, 0.0052), C(0.204, 0.0022), C(0.212, 0.0004)], t1, t2), { nu: 6, nv: 12, vParam: true, region: 13, variant: 2, part: (u, v) => (v < 2 ? PART.ERASER : v < 4 ? PART.PENCIL : v < 5 ? PART.SKIN : PART.LEAD), bones: one(J.head) });
+    // variant codes: 2 = bun + the pencil that stays; 3 = the pencil she draws (her right side; hidden once drawn); 4 = that pencil in her right hand
+    loft(new Loft([C(0, 0.001), C(0.002, 0.0052), C(0.02, 0.0052), C(0.10, 0.0052), C(0.188, 0.0052), C(0.204, 0.0022), C(0.212, 0.0004)], t1, t2), { nu: 6, nv: 12, vParam: true, region: 13, variant: side > 0 ? 2 : 3, part: pencilPart, bones: one(J.head) });
+  }
+  let pencilTip;
+  { // the drawn pencil, held in the right hand like a pen: through the mitten, the lead beyond the fingertips
+    const up = J.upArmR, fo = J.foreArmR, ha = J.handR, sh = REST_POS[up], dir = norm(sub(REST_POS[fo], sh)), hp = REST_POS[ha], bodyward = [1, 0, 0], palm = norm(sub(bodyward, mul(dir, dot(bodyward, dir))));
+    const ax = norm(add(mul(dir, 0.88), add([0, 0, 0.36], mul(palm, 0.20)))), t1 = norm(cross(ax, palm)), t2 = cross(ax, t1), c0 = add(hp, add(mul(dir, 0.085), add([0, 0, 0.012], mul(palm, 0.022)))), C = (h, r) => ({ c: add(c0, mul(ax, h - 0.085)), rx: r, rz: r });
+    loft(new Loft([C(0, 0.001), C(0.002, 0.0058), C(0.02, 0.0058), C(0.10, 0.0058), C(0.188, 0.0058), C(0.204, 0.0024), C(0.212, 0.0004)], t1, t2), { nu: 6, nv: 12, vParam: true, region: 13, variant: 4, part: pencilPart, bones: one(ha) });
+    pencilTip = toLocal(ha, add(c0, mul(ax, 0.212 - 0.085)));
   }
 
   // ================= atlas + meshes + fibres =================
@@ -277,6 +286,6 @@ export function buildBody(opts = {}) {
   return {
     meshes: meshes.map((m) => ({ v: new Float32Array(m.v), i: new Uint32Array(m.i) })), atlas: { data: atlas, size: ASIZE },
     fibres: { v: new Float32Array(fib.v), i: fib.i, count: fib.n, per: fib.per }, points: new Float32Array(points.flat()), nPoints: points.length,
-    guides, strands, straps, legs,
+    guides, strands, straps, legs, pencilTip,   // pencilTip: the lead of the held pencil in the handR joint's local frame (the line of light starts here)
   };
 }

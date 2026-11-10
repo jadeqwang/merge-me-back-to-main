@@ -436,7 +436,7 @@ def rise():
                 weight=M.ramp(m.times, 1.6, 2.6, 6.8, 7.9))
     m = M.breathe(m, period=3.0, depth=1.2, sway=0.0)
     m = M.ground_clamp(m, floor=0.0)
-    return finish(m, S0, [(acc, "accent"), (7.75, "touch"), (8.45, "landed")], water=True)
+    return finish(m, S0, [(acc, "accent"), (7.75, "touch"), (8.45, "landed")], water=[0.45, 1.3])   # P1: the hair starts in float's fan on the surface and the water lets go as she is drawn up
 
 
 # ----------------------------------------------------------------------------- release / catch
@@ -921,7 +921,7 @@ def life_nasa():
     m = M.drift(m, ["upArmL", "foreArmL"], deg=5.0, period=1.1, seed=22, weight=a)
     m = M.drift(m, ["upArmR"], deg=2.0, period=1.5, seed=23, weight=a)
     m = M.drift(m, ["head"], deg=2.0, period=1.7, seed=24, weight=a)
-    return _life(m, twist=20.0, wind="from +Z, strong (give the hair/trouser sim a wind of about -Z 9 m/s)")
+    return _life(m, twist=20.0, wind="from +Z, strong", sim={"wind": [0.5, 1.0, -26.0], "gust": 0.55})   # P1: the figure's sim reads meta.sim (hair, straps and hems stream downwind)
 
 
 @recipe("life_band")

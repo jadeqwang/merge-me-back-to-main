@@ -58,8 +58,9 @@ def stand(arms="waist", look=(0, 0, 1), y=M.HIPS_H - 0.004, feet=0.085, spine=(0
         kw = dict(armL={"dir": (0.42, 1.0, 0.05), "elbow": (1, 0, -0.3)},
                   armR={"dir": (-0.42, 1.0, 0.05), "elbow": (-1, 0, -0.3)})
     elif arms == "salute":   # bao quan li: right fist into the left palm at chest height, elbows out and level
-        kw = dict(armL={"rel": (-0.035, 0.085, 0.30), "elbow": (1, 0.05, 0.05), "hand": (-0.25, 1.0, 0.0), "palm": (-1, 0, 0)},
-                  armR={"rel": (-0.115, 0.085, 0.30), "elbow": (-1, 0.05, 0.05), "hand": (1, 0.0, 0.0)},
+        # P1: wrists at the chest joint's height (were +0.085: on the real figure the open hand covered her chin from the front)
+        kw = dict(armL={"rel": (-0.035, 0.0, 0.30), "elbow": (1, 0.05, 0.05), "hand": (-0.25, 1.0, 0.0), "palm": (-1, 0, 0)},
+                  armR={"rel": (-0.115, 0.0, 0.30), "elbow": (-1, 0.05, 0.05), "hand": (1, 0.0, 0.0)},
                   shrug=(3.0, 3.0))
     return make_pose(hips=(0, y, 0), footL=(feet, 0.0, 6.0), footR=(-feet, 0.0, -6.0), look=look, spine=spine, **kw)
 
@@ -555,7 +556,16 @@ def drop():
     m = tl.result()
     m.meta.update({"center": [round(D[0], 3), round(D[1], 3)], "start_pose": "coil (= build's last pose)",
                    "handoff": "identical to `build` on 151.67-152.70 s"})
+    m.meta.update(BEST_YAW)
     return m
+
+
+# P1 (judged on the real figure against the sun, fable/notes/P1_qa.md): the yaw that makes the butterfly the best silhouette.
+# Degrees, added to the yaw at which her track +Z faces the camera: fig.yaw = yaw_facing_camera + best_yaw * pi / 180
+# (camera looking east at the sun: fig.yaw = -pi/2 + best_yaw). At 165 she performs TOWARD the sun, her back to the lens:
+# the legs open as a V before the apex (153.02-153.10), the apex is a clean horizontal body inside the sun disc.
+BEST_YAW = {"best_yaw": 165.0, "best_yaw_alt": 0.0,
+            "best_yaw_note": "deg from facing the camera; 165 = performs toward the sun (camera behind her); alt 0 = facing the lens (wider V at 153.05, weaker apex frame)"}
 
 
 # ----------------------------------------------------------------------------- short reusable tracks
@@ -597,4 +607,5 @@ def butterfly_only():
     m.meta.pop("song_t0", None)
     m.meta.pop("accents", None)
     m.meta["center"] = [round(D[0], 3), round(D[1], 3)]
+    m.meta.update(BEST_YAW)
     return m

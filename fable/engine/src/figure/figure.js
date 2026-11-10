@@ -6,6 +6,8 @@
 //   fig.begin();                                  // every frame
 //   fig.add({ pos:[x,0,z], yaw, scale, track:id|name, time, lane:[r,g,b], density, solid, cel, variant:'bun', story,
 //             alpha, gain, seed, flow, eyes, lodBias, trail:{len, gain, mask, color, width} });
+//   variant: 'bun' (two pencils in the bun) | 'bun_write' (one of them drawn, held in her right hand) | 'bun_one' (one left in the bun).
+//   The lead of the held pencil is at fig.body.pencilTip in the handR joint's local frame (start the line of light there).
 //   engine calls fig.draw(ctx) once per pass ('opaque' | 'add', reflect or not).
 //
 // Modes: light (solid 0): a near-black body that only occludes, clothes drawn as luminous fibres, skin a soft lantern;
@@ -67,6 +69,9 @@ vec3 crT(vec3 a, vec3 b, vec3 c, vec3 d, float t){ return 0.5 * ((-a + c) + 2.0 
 const SKIN = `
 layout(location=0) in vec4 a_la; layout(location=1) in vec4 a_lb; layout(location=2) in vec4 a_n; layout(location=3) in vec4 a_bn; layout(location=4) in vec4 a_uv;
 vec3 legNode(TI ti, int c, int n){ return simNode(ti, LEGS + c * 8 + clamp(n, 0, 7)); }
+const float FLARE = 0.5, DRAPE = 0.45;
+vec3 segPt(vec3 p, vec3 a, vec3 b){ vec3 ab = b - a; return a + ab * clamp(dot(p - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0); }
+vec3 legAxis(vec3 p, vec3 hip, vec3 knee, vec3 ankle){ vec3 a = segPt(p, hip, knee), b = segPt(p, knee, ankle); return distance(p, a) < distance(p, b) ? a : b; }
 void skin(TI ti, vec3 nloc, vec3 bloc, out vec3 P, out vec3 N, out vec3 B){
   int ba = int(a_bn.x + 0.5);
   if (a_bn.z > -0.5) {                      // trouser leg: a ring round the simulated chain
@@ -75,8 +80,16 @@ void skin(TI ti, vec3 nloc, vec3 bloc, out vec3 P, out vec3 N, out vec3 B){
     vec3 C = cr(p0, p1, p2, p3, f) + jpos(ti, 0), T = normalize(crT(p0, p1, p2, p3, f));
     vec3 Xr = normalize(mix(qrot(jquat(ti, ba), vec3(-1.0, 0.0, 0.0)), qrot(jquat(ti, ba + 1), vec3(-1.0, 0.0, 0.0)), smoothstep(0.35, 0.65, a_la.y)));
     vec3 Z = normalize(cross(T, Xr)), X = cross(Z, T);
-    float fl = simNode(ti, LAG + c).x, k = a_la.y * a_la.y * (1.0 - fl);          // at rest the hems draw in: two legs, not a gown
-    P = C + X * (a_la.x * (1.0 - 0.27 * k)) + Z * (a_la.z * (1.0 - 0.40 * k)); N = X * nloc.x - T * nloc.y + Z * nloc.z; B = X * bloc.x - T * bloc.y + Z * bloc.z;
+    float fl = simNode(ti, LAG + c).x, k = a_la.y * a_la.y * (1.0 - FLARE * fl);  // at rest the hems draw in: two legs, not a gown; in motion they open a little (a sail, not a megaphone)
+    vec2 o = vec2(a_la.x * (1.0 - 0.27 * k), a_la.z * (1.0 - 0.40 * k));
+    // drape: where the cloth hangs or trails away from the leg it collapses into a flat fold (narrow across, a little longer along)
+    vec3 d = C - legAxis(C, jpos(ti, ba), jpos(ti, ba + 1), jpos(ti, ba + 2)); d -= T * dot(d, T); float dl = length(d);
+    if (dl > 1e-4) { vec2 dh = vec2(dot(d, X), dot(d, Z)) / dl; float e = smoothstep(0.025, 0.09, dl) * smoothstep(0.25, 0.75, a_la.y), al = dot(o, dh); o = dh * (al * (1.0 + 0.10 * e)) + (o - dh * al) * (1.0 - DRAPE * e); }
+    vec3 off = X * o.x + Z * o.y;
+    // the floor: a leg lying on the ground is a flattened tube, not a pipe half under the mirror
+    float lying = smoothstep(0.35, 0.8, 1.0 - abs(T.y)), sq = mix(1.0, clamp((C.y - 0.012) / (length(o) + 1e-4), 0.3, 1.0), lying);
+    off.y *= sq; off.xz *= 1.0 + 0.4 * (1.0 - sq);
+    P = C + off; P.y = max(P.y, 0.006); N = X * nloc.x - T * nloc.y + Z * nloc.z; B = X * bloc.x - T * bloc.y + Z * bloc.z;
   } else {
     int bb = int(a_bn.y + 0.5); vec4 qa = jquat(ti, ba); vec3 la = a_la.xyz; la.y *= bscale(i_misc.x, ba);
     P = jpos(ti, ba) + qrot(qa, la);
@@ -114,7 +127,11 @@ flat out vec4 v_inst; flat out vec4 v_lane; flat out float v_eyes;
 void cull(){ gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; }
 void main(){
   v_inst = vec4(i_par.w, celAmt(), i_par.z, i_fx.x); v_lane = i_col; v_eyes = i_fx.w;
-  if (i_fx.x <= 0.0 || (u_points == 0 && a_uv.z > 1.5 && i_misc.y < 0.5)) { cull(); return; }
+  if (i_fx.x <= 0.0) { cull(); return; }
+  if (u_points == 0 && a_uv.z > 1.5) {       // variant geometry: 2 bun + one pencil | 3 the second pencil in the bun | 4 that pencil in her right hand
+    float vz = a_uv.z, m = i_misc.y; bool show = m > 0.5 && (vz < 2.5 || (vz < 3.5 && m < 1.5) || (vz > 3.5 && m > 1.5 && m < 2.5));
+    if (!show) { cull(); return; }
+  }
   TI ti = trackInfo(i_misc.x, i_par.y); vec3 P, N, B; skin(ti, a_n.xyz, vec3(1.0, 0.0, 0.0), P, N, B);
   vec3 W = place(P); v_n = yaw(N); v_la = a_la.xyz; v_uv = a_uv.xy;
   v_flags = vec4(a_uv.w, a_bn.z > -0.5 ? smoothstep(0.5, 1.0, a_la.y) : 0.0, -1.0, 0.0);
@@ -255,7 +272,7 @@ void main(){
     vec3 cx = qrot(jquat(ti, ${J.chest}), vec3(1.0, 0.0, 0.0));
     // the mass parts down the middle of the back, so the disc and RARE EARTH stay readable between two curtains
     float part = (a_r3.x + 0.02 * (hash(seed * 31.0) - 0.5) >= 0.0 ? 1.0 : -1.0) * 0.105 + a_r3.x * 0.028;
-    P += jpos(ti, 0) + rnd * a_r3.y * (0.3 + 1.2 * sl) * smoothstep(0.0, 0.15, sl) + cx * (part * smoothstep(0.16, 0.50, sl));
+    P += jpos(ti, 0) + rnd * a_r3.y * (0.3 + 1.2 * sl) * smoothstep(0.0, 0.15, sl) + cx * (part * (ty == 0 ? 1.0 - simNode(ti, LAG).y : 0.0) * smoothstep(0.16, 0.50, sl));   // the parting is for the back hair only (it bent the front locks and the bun's wisps sideways), and closes when it floats (a full fan)
     float tip = 1.0 - smoothstep(0.50, 1.0, s);
     width = (ty == 0 ? 0.018 : 0.0080) * u_lod * (0.08 + 0.92 * pow(tip, 0.7)) * smoothstep(0.0, 0.06, s + 0.02);
     vec3 Wq = place(P), Vq = normalize(u_camPos - Wq), Tw = normalize(yaw(T)), lane = i_col.rgb;
@@ -499,7 +516,7 @@ export class Figure {
     const a = new Float32Array(list.length * INST_F);
     list.forEach((o, i) => {
       const p = o.pos || [0, 0, 0], lane = o.lane || LANES.main, tr = o.trail || {}, k = i * INST_F, seed = o.seed || 0, vary = seed ? (o.vary ?? 1) : 0;
-      const variant = (o.variant === 'bun' || o.variant === true || o.variant === 1) ? 1 : 0;
+      const variant = (o.variant === 'bun' || o.variant === true || o.variant === 1) ? 1 : o.variant === 'bun_write' ? 2 : o.variant === 'bun_one' ? 3 : 0;   // bun: two pencils | bun_write: one drawn, in her right hand | bun_one: one left (the other became the light)
       let mask = tr.mask; if (mask === undefined) mask = 15; if (Array.isArray(mask)) mask = mask.reduce((m, nm) => m | (1 << this.emitters.findIndex((e) => e.name === nm)), 0);
       const tc = tr.color || lane;
       // seeded per-instance variation: a few hundredths of a second, a little height (so a crowd reads as people)
