@@ -35,11 +35,28 @@ export default function seq(K) {
     cr.n = n; let pulse = 0; if (fold) beats.forEach((tb, k) => { if (t >= tb) pulse += Math.exp(-(t - tb) * 5) * (0.25 + 0.085 * k); });
     return { n: left, lights: nl ? LC.drawable(L, nl, { minPx: 1.4 }) : null, pulse }; }
   // main-Jade: `idle`, then `catch` (song_t0 220.0: the light lands in her hands on b129, her head lifts on "life", her arms are open on "become")
-  const tC = cast.songT0('catch') || 220.0, hero = (t, o = {}) => cast.actor('hero').set({ pos: [C[0], 0, 0], yaw: WEST, track: t < tC ? 'idle' : 'catch', time: t - tC, ...o });
+  // (r2: `catch` is 16 s and the shot needs 16.65: after "become" (arms open, 232.71) the take is played at 0.84 x so that she is still breathing at the cut to the day; it used to clamp and freeze from 236.0)
+  const tC = cast.songT0('catch') || 220.0, tOpen = tC + (cast.event('catch', 'open') ?? 12.71), cT = (t) => (t <= tOpen ? t - tC : tOpen - tC + (t - tOpen) * (cast.dur('catch') - 0.02 - (tOpen - tC)) / (bar(137) - tOpen));
+  const hero = (t, o = {}) => cast.actor('hero').set({ pos: [C[0], 0, 0], yaw: WEST, track: t < tC ? 'idle' : 'catch', time: cT(t), ...o });
   // the frontal camera of the catch (F3, and 13's first shot): low, on main, the sun dead behind her
   const front = (t) => { const u = sm(seg(t, tF3, tHit + 2.6)); return { pos: [C[0] - 7.4 + 1.5 * u, 1.12 + 0.08 * u, 0.42], target: [C[0] + 4, 1.34, -0.1], fov: 35, focusDist: 6.6 - 1.4 * u, aperture: 0.015, far: 30000 }; };
   const dawnAt = (t) => (t < tF2 ? lerp(D.dawnAt(tF1), 0.2, seg(t, tF1, tF2)) : t < tF3 ? lerp(0.2, 0.42, sm(seg(t, tF2, tF3))) : lerp(0.42, 0.5, seg(t, tF3, tHit)));
-  Object.assign(D, { crowd, hero, front, tHit, C });
+  // r2 · the sun stays under the horizon until the hit (222.735): its glow warms the east, its disc does not show. sunElev = the sky's own track (sky.js), sunHeld = what
+  // this act uses before the hit; 13_catch lets it go on the hit.
+  const k01 = (d, a, b) => sm(Math.min(1, Math.max(0, (d - a) / (b - a)))), sunElev = (d) => -0.30 + 0.30 * k01(d, 0.3, 0.52) + (0.17 - 0.115 * k01(d, 0.7, 1.0)) * 0.75 * k01(d, 0.5, 0.62) + 0.62 * k01(d, 0.66, 1.0);
+  const SUN_HELD = -0.195, sunHeld = (d) => ({ elev: Math.min(sunElev(d), SUN_HELD), gain: Math.max(k01(d, 0.36, 0.56), 0.55 * k01(d, 0.22, 0.42)) });
+  // r2 · the other branches coming home (3:37-3:41 was one comet and one road): lights in the lane colours converge on the same point from both sides of main while
+  // "becomes the one" is sung. Each comes in on its own bearing (12-62 degrees off main, alternately north and south), bends onto main as it nears, and lands among the
+  // thousand between 219.9 and 221.1. Head + a short tail, sized by distance from the lens.
+  const NCM = 18, NTL = 120, CM = [...Array(NCM)].map((_, i) => ({ side: i % 2 ? 1 : -1, b: ((12 + 50 * Math.pow(h1(i * 19 + 4), 1.25)) * Math.PI) / 180, ta: 219.9 + 1.2 * h1(i * 23 + 9), v: 115 + 60 * h1(i * 29 + 2), y0: 0.4 + 2.2 * h1(i * 31 + 7), lane: LN[i % 7], r: 6 + 40 * h1(i * 37 + 1) }));
+  const LCM = E.lights(NCM * NTL);
+  const cometAt = (c, t) => { const s = Math.max(0, c.ta - t), dist = c.v * s, be = c.b * (1 - Math.exp(-dist / 170)); return [C[0] + c.r - dist * Math.cos(be), 1.3 + c.y0 * (1 - Math.exp(-dist / 350)), c.side * (dist * Math.sin(be) + 0.4 * c.r)]; };
+  const comets = (t, cam) => { const d = new Float32Array(NCM * NTL * 7), on = ss(t, 215.9, 217.3); let n = 0; if (on <= 0) return null;
+    for (const c of CM) { const live = sm(seg(c.ta - t, 0, 0.25)); if (live <= 0) continue; const col = laneLin[c.lane];
+      for (let j = 0; j < NTL; j++) { const p = cometAt(c, t - 0.004 * j), u = j / NTL, dc = Math.hypot(p[0] - cam.pos[0], p[1] - cam.pos[1], p[2] - cam.pos[2]), g = on * live * (j ? 1.3 * Math.pow(1 - u, 1.6) : 8), w = j ? 0.12 : 0.6;
+        d.set([p[0], p[1], p[2], (col[0] + w) * g, (col[1] + w) * g, (col[2] + w) * g, j ? Math.max(0.0018 * dc, 0.3) * (1 - 0.6 * u) : 0.0055 * dc], n * 7); n++; } }
+    return n ? LCM.drawable(d, n, { minPx: 1.5, reflGain: 0.8 }) : null; };
+  Object.assign(D, { crowd, hero, front, tHit, C, sunElev, sunHeld, SUN_HELD });
 
   // ---- the flight camera: behind and above where the light was a moment ago, looking where it will be. It banks with the turn.
   const hdg = (t) => { const a = D.lightAt(t - 0.25), b = D.lightAt(t + 0.25); return Math.atan2(b[0] - a[0], b[2] - a[2]); };
@@ -58,11 +75,12 @@ export default function seq(K) {
     if (t < tF3) { const k = sm(seg(t, tF2, 218.2)), hi = sm(seg(t, tF2 - 0.6, tF2 + 1.6)), lo = sm(seg(t, 218.0, 220.3));
       const camera = chase(t, { back: lerp(0.5, 0.3, lo), up: lerp(lerp(30, 36, hi), 4.5, lo), lead: lerp(1.1, 0.8, lo), down: lerp(lerp(24, 46, hi), 3, lo), fov: lerp(46, 40, lo), side: lerp(22, 0, hi), bank: 9 });
       const type = (t < tF2 - 0.15 ? [K.lyric(20, camera, { font: 'hook', px: 104, x: -0.92, y: 0.27, rows: [2, 3], dist: 80, out: tF2 - 0.15, fade: 0.3, reflect: false })] : [K.lyric(21, camera, { font: 'hook', px: 80, x: -0.92, y: 0.2, rows: [2, 3, 2], dist: 80, out: tF3, fade: 0.01, reflect: false })]).map((d) => rolled(d, camera));
-      return { camera, env: { dawn: dawnAt(t), grade: { exposure: 1.5, bloom: 0.6 } }, world: flightWorld(k), extra: [D.roadDraw(t, { textGain: 0 }), D.lightDraw(t, { size: 0.012 * camera.mote, gain: 0.9, tail: 0.7, minPx: 2.2 })], type, hud: D.hudViolet(t) }; }
+      const cm = comets(t, camera), warm = ss(t, 216.5, 220.5), extra = [W.glow([{ x: C[0] + 900, z: 0, r: 1300, c: [1.0, 0.42, 0.2].map((q) => q * 0.1 * warm) }, { x: C[0] + 20, z: 0, r: 160, c: [1.0, 0.6, 0.3].map((q) => q * 0.25 * warm) }]), D.roadDraw(t, { textGain: 0 }), D.lightDraw(t, { size: 0.012 * camera.mote, gain: 0.9, tail: 0.7, minPx: 2.2 })]; if (cm) extra.push(cm);
+      return { camera, env: { dawn: dawnAt(t), sun: sunHeld(dawnAt(t)), grade: { exposure: 1.5, bloom: 0.6 } }, world: flightWorld(k), extra, type, hud: D.hudViolet(t) }; }
     // F3: she is waiting. The light's own glow runs up the road ahead of it.
     const camera = front(t), L = D.lightAt(t), cw = crowd(t), near = ss(t, tF3, tHit);
     hero(t);
-    return { camera, env: { dawn: dawnAt(t) }, world: { text: 0.5, flow: 0.1, lights: { gain: 0.4 }, violet: D.violetWorld },
+    return { camera, env: { dawn: dawnAt(t), sun: sunHeld(dawnAt(t)) }, world: { text: 0.5, flow: 0.1, lights: { gain: 0.4 }, violet: D.violetWorld },
       extra: [W.glow([{ x: L[0], z: L[2], r: 5 + 0.25 * Math.abs(C[0] - L[0]), c: [0.5, 0.36, 0.95].map((q) => q * (0.25 + 0.9 * near)) }]), D.lightDraw(t, { size: 0.035, gain: 1.2, tail: 0.3, minPx: 2 })],
       type: [K.lyric(21, camera, { font: 'hook', px: 70, x: -0.93, y: 0.3, rows: [2, 3, 2], dist: 34, out: 221.6, fade: 0.4, reflect: false }), K.lyric(22, camera, { font: 'hook', px: 96, x: -0.93, y: 0.36, rows: [1, 3], dist: 34, reflect: false })], hud: K.hudMain(t, { count: cw.n }) };
   } };
