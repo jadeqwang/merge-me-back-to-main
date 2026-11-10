@@ -39,6 +39,7 @@ uniform sampler2D u_joint, u_sim, u_tracks;
 uniform mat4 u_viewProj; uniform vec3 u_camPos, u_sun;
 uniform float u_px, u_H, u_aspect, u_focus, u_aperture, u_dawn, u_time, u_maxPS, u_lod;
 uniform int u_pass;
+uniform vec3 u_amb, u_rimCol, u_rimDir; uniform float u_rimBoth, u_sunAmt, u_under, u_emis, u_trans, u_fibG;
 const int ATH = ${ATH}; const int SIMW = ${SIM.W}; const int NODES = ${HAIR.NODES}; const int LAG = ${SIM.lag}; const int STRAP = ${SIM.strap}; const int LEGS = ${SIM.leg};
 vec3 qrot(vec4 q, vec3 v){ vec3 t = 2.0*cross(q.xyz, v); return v + q.w*t + cross(q.xyz, t); }
 struct TI { int g0; int g1; float fr; vec2 o0; vec2 o1; };
@@ -106,7 +107,7 @@ bool emissive(int p){ return p == ${PART.STRIPE} || p == ${PART.PHONE} || p == $
 
 const MESH_VS = COMMON + SKIN + `
 uniform int u_points;
-out vec3 v_n; out vec3 v_w; out vec2 v_uv; out vec3 v_la; out vec4 v_flags;   // region, thin, point part (-1 = mesh), -
+out vec3 v_n; out vec3 v_w; out vec2 v_uv; out vec3 v_la; out vec4 v_flags;   // region, thin, point part (-1 = mesh), height above her feet (m)
 flat out vec4 v_inst; flat out vec4 v_lane; flat out float v_eyes;
 void cull(){ gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; }
 void main(){
@@ -119,11 +120,12 @@ void main(){
     vec3 V = normalize(u_camPos - W); W += V * 0.005; v_flags.z = a_la.w;
     gl_PointSize = clamp(2.0 * a_uv.x * i_par.x * u_px / distance(u_camPos, W) * 1.15, 1.5, u_maxPS);
   }
-  v_w = W; gl_Position = u_viewProj * vec4(W, 1.0);
+  v_w = W; v_flags.w = (W.y - i_pos.y) / i_par.x; gl_Position = u_viewProj * vec4(W, 1.0);
 }`;
 const MESH_FS = `#version 300 es
 precision highp float; precision highp int;
 uniform sampler2D u_parts; uniform vec3 u_camPos, u_sun; uniform int u_points; uniform float u_psize;
+uniform vec3 u_amb, u_rimCol, u_rimDir; uniform float u_rimBoth, u_sunAmt, u_under, u_emis, u_trans;
 in vec3 v_n; in vec3 v_w; in vec2 v_uv; in vec3 v_la; in vec4 v_flags;
 flat in vec4 v_inst; flat in vec4 v_lane; flat in float v_eyes;
 layout(location=0) out vec4 o_col; layout(location=1) out vec4 o_aux;
@@ -148,25 +150,25 @@ void main(){
     brow = smoothstep(0.0013, 0.0007, abs(ly - (0.0245 + 0.0022 * (1.0 - t * t) - 0.001 * t))) * step(abs(t - 0.05), 0.82);
     vec2 b = vec2((abs(v_la.x) - 0.045) / 0.017, (ly + 0.026) / 0.009); blush = exp(-dot(b, b) * 1.4);
   }
-  // ---- light: the body only occludes; skin is a paper lantern; accents and decals are solid light ----
-  vec3 lit = vec3(0.0030, 0.0030, 0.0055) + lane * (0.26 * pow(fres, 3.5)) * v_lane.a;
-  if (part == ${PART.SKIN}) lit = mix(vec3(1.0, 0.86, 0.72), lane, 0.22) * (0.010 + 0.30 * pow(facing, 2.2)) * (1.0 - 0.62 * eye) * v_lane.a;
-  else if (emissive(part)) lit = ORANGE * 1.15 * v_lane.a;
-  else if (part == ${PART.DOT}) lit = vec3(0.32, 0.58, 1.0) * 0.95 * v_lane.a;
-  else if (part == ${PART.TEXT}) lit = vec3(1.0, 0.95, 0.86) * 1.7 * v_lane.a;
-  else if (part == ${PART.PATCH}) lit = vec3(0.95, 0.93, 0.90) * v_lane.a;
-  else if (part == ${PART.SHOE} || part == ${PART.SOLE}) lit += mix(lane, vec3(1.0), 0.6) * (0.012 + 0.10 * fres * fres) * v_lane.a;
-  // ---- silhouette: black against the sun, a warm rim, thin cloth lets a little sun through ----
-  float rim = pow(fres, 2.6) * smoothstep(-0.2, 0.6, dot(N, u_sun)), back = smoothstep(0.1, 0.9, dot(-V, u_sun));
-  vec3 sil = vec3(0.010, 0.007, 0.013) + rim * vec3(1.0, 0.50, 0.16) * 2.6 + vec3(1.0, 0.42, 0.10) * back * thin * thin * 0.09;
-  if (emissive(part)) sil = ORANGE * 1.7; else if (part == ${PART.DOT}) sil += vec3(0.02, 0.04, 0.09);
-  // ---- cel: the character sheet ----
+  // ONE shading model: she is always the cel character; only the world's light changes (night -> sunrise -> day).
   vec3 base = celColor(part);
-  if (part == ${PART.SKIN}) { base = mix(base, S(0.96, 0.66, 0.64), 0.34 * blush); base = mix(base, S(0.20, 0.15, 0.17), max(eye, 0.4 * brow)); }
+  if (part == ${PART.SKIN}) { base = mix(base, S(0.96, 0.66, 0.64), 0.34 * blush * u_sunAmt); base = mix(base, S(0.20, 0.15, 0.17), max(eye, 0.4 * brow) * u_sunAmt); }
   float sh = smoothstep(-0.07, 0.07, dot(N, normalize(KEY)) + 0.10);
-  vec3 celc = base * mix(vec3(0.70, 0.73, 0.88), vec3(1.0), sh) * (1.0 - 0.55 * inside * step(2.5, region) * step(region, 4.5));
-  o_col = vec4(mix(lit, mix(sil, celc, cel), solid), 1.0);
-  o_aux = vec4(celColor(part) * 0.7 + 0.3 * vec3(hash(region + 0.37), hash(region + 1.7), hash(region + 4.1)), cel * solid);
+  vec3 lightc = u_amb + (vec3(1.0) - u_amb) * (u_sunAmt * sh);
+  vec3 diff = base * lightc * (1.0 - 0.55 * inside * step(2.5, region) * step(region, 4.5));
+  // a thin rim on both edges, tinted by the horizon glow and stronger toward it
+  float rimMask = u_rimBoth + (1.0 - u_rimBoth) * smoothstep(-0.2, 0.6, dot(N, u_rimDir));
+  vec3 rim = mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.35) * pow(fres, 3.2) * rimMask;
+  // underlight from her road, in her lane colour: shoes and hems, gone by the hip
+  float hf = smoothstep(1.05, 0.0, v_flags.w);
+  vec3 under = lane * (u_under * 1.3 * hf * hf * (0.40 + 0.60 * clamp(0.3 - N.y * 1.4, 0.0, 1.0))) * (base * 0.55 + 0.20);
+  // accents are light sources at night and plain colour by day
+  vec3 em = vec3(0.0);
+  if (emissive(part)) em = ORANGE * 1.15; else if (part == ${PART.DOT}) em = vec3(0.32, 0.58, 1.0) * 0.95; else if (part == ${PART.TEXT}) em = vec3(1.0, 0.95, 0.86) * 1.7; else if (part == ${PART.PATCH}) em = vec3(0.55, 0.54, 0.52);
+  float back = smoothstep(0.1, 0.9, dot(-V, u_sun));
+  vec3 tr = vec3(1.0, 0.42, 0.10) * (back * thin * thin * 0.09 * u_trans);
+  o_col = vec4((diff + under + tr) * solid + rim * (0.45 + 0.55 * solid) + em * (u_emis * v_lane.a), 1.0);
+  o_aux = vec4(celColor(part) * 0.7 + 0.3 * vec3(hash(region + 0.37), hash(region + 1.7), hash(region + 4.1)), u_sunAmt * solid);
 }`;
 
 const FIB_VS = COMMON + SKIN + `
@@ -176,20 +178,20 @@ void cull(){ gl_Position = vec4(2.0, 2.0, 2.0, 1.0); }
 void main(){
   float solid = i_par.w, dens = i_par.z, seed = a_fib.y; v_lane = i_col; v_id = vec3(seed, i_misc.z, i_fx.z);
   float vis = smoothstep(dens + 0.02, dens - 0.02, hash(seed * 7.3) * 0.96 + 0.02);
-  if (solid > 0.995 || i_fx.x <= 0.0 || vis <= 0.0) { cull(); return; }
+  if (u_fibG <= 0.003 || i_fx.x <= 0.0 || vis <= 0.0) { cull(); return; }
   TI ti = trackInfo(i_misc.x, i_par.y); vec3 P, N, B; skin(ti, a_n.xyz, a_bin.xyz, P, N, B);
   vec3 W = place(P), Nw = yaw(N), Bw = normalize(yaw(B));
   float dist = distance(u_camPos, W); vec3 V = (u_camPos - W) / dist; float facing = dot(Nw, V);
   W += V * 0.012;
   float sc = i_par.x, wpx = 2.0 * a_fib.z * sc * u_px / dist, glyph = smoothstep(6.5, 10.5, wpx);
-  float halfW = a_fib.z * sc * mix(0.34, 1.0, glyph) * (1.0 + 2.5 * solid);
+  float halfW = a_fib.z * sc * mix(0.5, 1.0, glyph);
   vec4 c0 = u_viewProj * vec4(W, 1.0), c1 = u_viewProj * vec4(W + Bw * halfW, 1.0);
   float dpx = length((c1.xy / c1.w - c0.xy / c0.w) * vec2(u_aspect, 1.0)) * 0.5 * u_H, minHalf = 0.62;
   float k = dpx < minHalf ? min(minHalf / max(dpx, 1e-3), 8.0) : 1.0;
   gl_Position = u_viewProj * vec4(W + Bw * (halfW * k * a_bin.w), 1.0);
   float bright = mix(0.16, 1.5, pow(hash(seed * 3.1), 2.2));
   float coc = u_aperture * abs(1.0 / u_focus - 1.0 / dist) * u_H;
-  v_gain = smoothstep(-0.15, 0.02, facing) * bright * (0.42 + 1.5 * pow(1.0 - max(facing, 0.0), 1.6)) * vis * (1.0 - solid) * i_fx.x * i_col.w * min(dpx / minHalf, 1.0) * min(u_lod, 8.0) * (max(dpx, minHalf) / (max(dpx, minHalf) + 0.5 * coc));
+  v_gain = smoothstep(-0.15, 0.02, facing) * bright * (0.035 + 1.7 * pow(1.0 - max(facing, 0.0), 2.4)) * vis * (0.3 + 0.7 * dens) * u_fibG * i_fx.x * i_col.w * min(dpx / minHalf, 1.0) * min(u_lod, 8.0) * (max(dpx, minHalf) / (max(dpx, minHalf) + 0.5 * coc));
   v_glyph = glyph * (1.0 - smoothstep(0.3 * wpx, wpx, coc)); v_f = vec3(a_bin.w, a_fib.x, a_fib.z * 2.0); v_uv = a_uv.xy;
 }`;
 const FIB_FS = `#version 300 es
@@ -213,7 +215,8 @@ void main(){
   }
   float word = floor(v_f.y / (v_f.z * 2.6) + v_id.x * 31.0), wh = fract(sin(word * 91.7 + v_id.x * 517.0) * 43758.5453);
   I *= mix(1.0, wh < 0.30 ? 0.10 : 0.55 + 0.75 * wh, 1.0 - v_glyph);                 // far away the text reads as dashes of light: words
-  I *= 0.74 + 0.26 * sin(v_f.y * 13.0 - u_time * 2.1 + v_id.x * 40.0);
+  float nz = 0.5 + 0.5 * sin(v_f.y * 5.0 + v_id.x * 37.0 + u_time * 0.45) * sin(v_f.y * 12.0 - u_time * 0.3 + v_id.x * 91.0);
+  I *= 0.15 + 1.9 * nz * nz;                                                       // slow shimmer in patches, never uniform stripes
   if (I * v_gain < 0.0004) discard;
   o_col = vec4(col * I * v_gain, 0.0); o_aux = vec4(0.0);
 }`;
@@ -241,37 +244,38 @@ void main(){
     int ty = int(a_r2.w + 0.5); bool bun = i_misc.y > 0.5;
     if ((ty == 1) != bun) { cull(); return; }
     TI ti = trackInfo(i_misc.x, i_par.y);
-    float sl = s * (0.86 + 0.14 * hash(seed * 23.0)) * (ty == 0 ? 1.0 - 0.08 * hash(i_fx.y * 3.3 + 1.0) : 1.0);
+    // length varies smoothly across the mass (soft scallops, not a comb), a little per instance
+    float sl = s * (0.90 + 0.07 * sin(a_r3.x * 7.0 + 1.3) + 0.03 * hash(seed * 23.0)) * (ty == 0 ? 1.0 - 0.08 * hash(i_fx.y * 3.3 + 1.0) : 1.0);
     float sn = sl * float(NODES - 1); int i = int(floor(sn)); float f = sn - float(i); if (i >= NODES - 1) { i = NODES - 2; f = 1.0; }
     vec3 p0 = hairNode(ti, i - 1), p1 = hairNode(ti, i), p2 = hairNode(ti, i + 1), p3 = hairNode(ti, i + 2);
     P = cr(p0, p1, p2, p3, f); T = crT(p0, p1, p2, p3, f);
     vec3 rnd = vec3(hash(seed * 91.0), hash(seed * 57.0 + 2.0), hash(seed * 13.0 + 5.0)) - 0.5;
     vec3 cx = qrot(jquat(ti, ${J.chest}), vec3(1.0, 0.0, 0.0));
-    P += jpos(ti, 0) + rnd * a_r3.y * (0.3 + 1.5 * sl) * smoothstep(0.0, 0.15, sl) + cx * (a_r3.x * 0.055 * smoothstep(0.22, 0.8, sl));
-    float vis = smoothstep(dens * 1.15 + 0.02, dens * 1.15 - 0.02, seed), tip = 1.0 - smoothstep(0.86, 1.0, s);
-    float wide = (ty == 0 ? 0.017 : 0.0075) * u_lod * (0.45 + 0.55 * tip) * smoothstep(0.0, 0.06, s + 0.02);
-    width = mix(0.0016 * (0.4 + 0.6 * tip), wide, smoothstep(0.0, 0.5, solid));
+    // the mass parts down the middle of the back, so the disc and RARE EARTH stay readable between two curtains
+    float part = (a_r3.x + 0.02 * (hash(seed * 31.0) - 0.5) >= 0.0 ? 1.0 : -1.0) * 0.105 + a_r3.x * 0.028;
+    P += jpos(ti, 0) + rnd * a_r3.y * (0.3 + 1.2 * sl) * smoothstep(0.0, 0.15, sl) + cx * (part * smoothstep(0.16, 0.50, sl));
+    float tip = 1.0 - smoothstep(0.62, 1.0, s);
+    width = (ty == 0 ? 0.018 : 0.0080) * u_lod * (0.08 + 0.92 * pow(tip, 0.7)) * smoothstep(0.0, 0.06, s + 0.02);
     vec3 Wq = place(P), Vq = normalize(u_camPos - Wq), Tw = normalize(yaw(T)), lane = i_col.rgb;
-    float sheen = pow(clamp(1.0 - abs(dot(Tw, normalize(Vq + normalize(KEY)))), 0.0, 1.0), 9.0);
-    float band = exp(-pow((s - 0.21 - 0.04 * hash(seed * 7.0)) / 0.075, 2.0));
-    float strandB = 0.25 + 1.3 * pow(hash(seed * 4.7), 2.0);
-    colAdd = (lane * 0.50 + vec3(0.04, 0.05, 0.14) + mix(lane, vec3(1.0), 0.5) * (0.45 * band + 0.4 * sheen)) * strandB * (0.25 + 0.75 * tip) * vis * 0.080 * i_col.w * u_lod;
-    vec3 Nh = normalize(Wq - place(jpos(ti, ${J.head}) + vec3(0.0, 0.02, 0.0)) + vec3(0.0, 0.25, 0.0));
-    float rim = pow(1.0 - abs(dot(Nh, Vq)), 2.5) * smoothstep(-0.2, 0.7, dot(Nh, u_sun)), back = smoothstep(0.1, 0.9, dot(-Vq, u_sun));
-    vec3 sil = vec3(0.008, 0.006, 0.011) + rim * vec3(1.0, 0.5, 0.16) * 0.35 + vec3(1.0, 0.40, 0.09) * back * step(0.7, hash(seed * 5.0)) * 0.10 * smoothstep(0.7, 1.0, s);
-    vec3 celc = celColor(${PART.HAIR}) * (0.85 + 0.3 * hash(seed * 3.0)) + vec3(0.034, 0.038, 0.078) * band + vec3(0.012, 0.012, 0.03) * sheen;
-    colOpaque = mix(sil, celc, cel);
-    v_cov = smoothstep(0.0, 0.35, solid) * (seed < 0.02 + dens * 1.2 ? 1.0 : 0.0);
-    v_aux = vec4(celColor(${PART.HAIR}), cel * solid);
+    // black hair: an anisotropic sheen band (Kajiya-Kay) that slides as she moves, and a rim
+    vec3 Hh = normalize(Vq + normalize(u_rimDir + vec3(0.0, 0.9, 0.0))); float th = dot(Tw, Hh), kk = pow(max(0.0, 1.0 - th * th), 48.0);
+    vec3 sheen = kk * (0.35 + 0.65 * hash(seed * 7.0)) * (mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.5) / (1.0 + 1.5 * dot(u_rimCol, vec3(0.5))) * 0.9 + vec3(0.070, 0.075, 0.15) * u_sunAmt);
+    vec3 Nh = normalize((Wq - place(mix(jpos(ti, ${J.chest}), jpos(ti, ${J.head}), clamp(1.0 - sl * 1.6, 0.0, 1.0)))) * vec3(1.0, 0.2, 1.0) + vec3(0.0, 0.1 * (1.0 - sl), 0.0));
+    float rimMask = u_rimBoth + (1.0 - u_rimBoth) * smoothstep(-0.2, 0.7, dot(Nh, u_rimDir)), back = smoothstep(0.1, 0.9, dot(-Vq, u_sun));
+    vec3 rim = u_rimCol / (1.0 + 1.5 * dot(u_rimCol, vec3(0.5))) * 0.30 * pow(1.0 - abs(dot(Nh, Vq)), 5.0) * rimMask + vec3(1.0, 0.40, 0.09) * (back * step(0.7, hash(seed * 5.0)) * 0.10 * smoothstep(0.7, 1.0, s) * u_trans);
+    vec3 alb = celColor(${PART.HAIR}) * (0.85 + 0.3 * hash(seed * 3.0)), lightc = u_amb + (vec3(1.0) - u_amb) * (u_sunAmt * 0.9);
+    colOpaque = alb * lightc * solid + (sheen + rim) * (0.45 + 0.55 * solid);
+    v_cov = smoothstep(1.0, 0.86, s);
+    v_aux = vec4(celColor(${PART.HAIR}), u_sunAmt * solid);
   } else if (kind == 1) {
     TI ti = trackInfo(i_misc.x, i_par.y); int id = int(a_r0.y + 0.5);
     float sn = s * float(${STRAP_N - 1}); int i = int(floor(sn)); float f = sn - float(i); if (i >= ${STRAP_N - 1}) { i = ${STRAP_N - 2}; f = 1.0; }
     vec3 p0 = strapNode(ti, id, i - 1), p1 = strapNode(ti, id, i), p2 = strapNode(ti, id, i + 1), p3 = strapNode(ti, id, i + 2);
     P = cr(p0, p1, p2, p3, f) + jpos(ti, 0); T = crT(p0, p1, p2, p3, f); width = a_r3.x;
     float buckle = min(1.0, step(abs(s - 0.34), 0.03) + step(abs(s - 0.50), 0.022) + step(0.965, s));
-    vec3 lit = mix(ORANGE * 1.15 * i_col.w, vec3(0.004), buckle);
-    colOpaque = mix(lit, mix(mix(ORANGE * 1.7, vec3(0.012), buckle), mix(celColor(${PART.STRAP}), vec3(0.03), buckle), cel), solid);
-    v_aux = vec4(celColor(${PART.STRAP}), cel * solid); solid = 1.0;
+    vec3 lightc = u_amb + (vec3(1.0) - u_amb) * (u_sunAmt * 0.9);
+    colOpaque = mix(celColor(${PART.STRAP}) * lightc * solid + ORANGE * (1.15 * u_emis * i_col.w), vec3(0.03) * lightc, buckle);
+    v_aux = vec4(celColor(${PART.STRAP}), u_sunAmt * solid);
   } else {
     float L = i_trail.x; if (L <= 0.0 || u_pass == 0) { cull(); return; }
     float m = floor(i_trail.z / exp2(a_r0.y)); if (mod(m, 2.0) < 0.5) { cull(); return; }
@@ -289,13 +293,13 @@ void main(){
   float wpx = width * i_par.x * u_px / dist, minPx = (u_pass == 0) ? 1.6 : 1.1, wc = max(wpx, minPx), comp = wpx / wc;
   c0.xy += nrm * side * (wc / u_H) * c0.w * vec2(1.0 / u_aspect, 1.0); gl_Position = c0;
   if (u_pass == 0) {
-    if (kind == 2 || (kind == 0 && solid < 0.01)) { cull(); return; }
-    v_col = vec4(mix(vec3(0.0035, 0.0035, 0.006), colOpaque, kind == 1 ? 1.0 : solid), 1.0);
-    v_cov *= (kind == 0) ? mix(comp, 1.0, 0.5) : 1.0;
+    if (kind == 2) { cull(); return; }
+    v_col = vec4(colOpaque, 1.0);
+    v_cov *= (kind == 0) ? mix(comp, 1.0, 0.3) : 1.0;
   } else {
-    if (kind == 1) { cull(); return; }
+    if (kind != 2) { cull(); return; }
     float coc = u_aperture * abs(1.0 / u_focus - 1.0 / dist) * u_H;
-    v_col = vec4(colAdd * comp * (kind == 2 ? 1.0 : (1.0 - solid)) * i_fx.x * (wc / (wc + coc)), 1.0);
+    v_col = vec4(colAdd * comp * i_fx.x * (wc / (wc + coc)), 1.0);
   }
 }`;
 const RIB_FS = `#version 300 es
@@ -415,6 +419,22 @@ export class Figure {
     gl.bindTexture(gl.TEXTURE_2D, this.texTracks); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, 8, n, 0, gl.RGBA, gl.FLOAT, TT); near(); this.dirty = false;
   }
 
+  // ---- light: one shading model, lit by the world. Defaults follow ctx.dawn; ctx.env.figLight and fig.light override fields. ----
+  lightFor(ctx) {
+    const K = [
+      { d: 0.00, ambient: [0.022, 0.028, 0.080], rimCol: [0.26, 0.66, 0.80], rimBoth: 0.45, sunAmt: 0, under: 1.0, emissive: 1.25, fibres: 1.0, trans: 0 },
+      { d: 0.35, ambient: [0.170, 0.180, 0.360], rimCol: [0.80, 0.40, 0.52], rimBoth: 0.30, sunAmt: 0.12, under: 0.5, emissive: 1.0, fibres: 0.55, trans: 0.2 },
+      { d: 0.60, ambient: [0.030, 0.020, 0.030], rimCol: [2.6, 1.30, 0.42], rimBoth: 0.0, sunAmt: 0, under: 0.12, emissive: 1.5, fibres: 0.10, trans: 1 },
+      { d: 1.00, ambient: [0.700, 0.730, 0.880], rimCol: [0, 0, 0], rimBoth: 0.0, sunAmt: 1, under: 0, emissive: 0, fibres: 0, trans: 0 },
+    ];
+    const d = Math.min(1, Math.max(0, ctx.dawn || 0)); let i = 0; while (i < K.length - 2 && d > K[i + 1].d) i++;
+    const a = K[i], b = K[i + 1], t = Math.min(1, Math.max(0, (d - a.d) / (b.d - a.d))), mix = (x, y) => x + (y - x) * t, mix3 = (x, y) => [mix(x[0], y[0]), mix(x[1], y[1]), mix(x[2], y[2])];
+    const L = { ambient: mix3(a.ambient, b.ambient), rimCol: mix3(a.rimCol, b.rimCol), rimDir: [1, 0.05, 0], rimBoth: mix(a.rimBoth, b.rimBoth), sunAmt: mix(a.sunAmt, b.sunAmt), under: mix(a.under, b.under), emissive: mix(a.emissive, b.emissive), fibres: mix(a.fibres, b.fibres), trans: mix(a.trans, b.trans) };
+    const o = { ...((ctx.env && ctx.env.figLight) || {}), ...(this.light || {}) };
+    for (const k in o) { if (k === 'under' && Array.isArray(o.under)) L.under = Math.max(...o.under); else if (k === 'sunDir') this.sun = o.sunDir; else if (k !== 'sunCol') L[k] = o[k]; }
+    return L;
+  }
+
   // ---- instances ----
   begin() { this.inst.length = 0; }
   add(o) { this.inst.push(o); return o; }
@@ -427,11 +447,13 @@ export class Figure {
     const tex = (unit, t, loc) => { if (loc) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.uniform1i(loc, unit); } };
     tex(0, this.texJoint, u.u_joint); tex(1, this.texSim, u.u_sim); tex(2, this.texTracks, u.u_tracks); tex(3, this.texAtlas, u.u_atlas); tex(4, this.texText, u.u_text); tex(5, this.texParts, u.u_parts);
     if (u.u_psize) gl.uniform1f(u.u_psize, this.body.atlas.size);
+    const L = this._L; if (u.u_amb) gl.uniform3fv(u.u_amb, L.ambient); if (u.u_rimCol) gl.uniform3fv(u.u_rimCol, L.rimCol); if (u.u_rimDir) gl.uniform3fv(u.u_rimDir, L.rimDir);
+    const f1 = (loc, x) => { if (loc) gl.uniform1f(loc, x); }; f1(u.u_rimBoth, L.rimBoth); f1(u.u_sunAmt, L.sunAmt); f1(u.u_under, L.under); f1(u.u_emis, L.emissive); f1(u.u_trans, L.trans); f1(u.u_fibG, L.fibres);
   }
   draw(ctx) {
     const gl = this.gl; if (!this.inst.length || !this.tracks.length) return;
     if (this.dirty) this._upload();
-    const opaque = ctx.pass === 'opaque', v = ctx.view;
+    const opaque = ctx.pass === 'opaque', v = ctx.view, L = this._L = this.lightFor(ctx);
     const camPos = v ? [-(v[0] * v[12] + v[1] * v[13] + v[2] * v[14]), -(v[4] * v[12] + v[5] * v[13] + v[6] * v[14]), -(v[8] * v[12] + v[9] * v[13] + v[10] * v[14])] : ctx.camPos;
     const ppm1 = ctx.H / (2 * Math.tan((ctx.fovY || 0.6) / 2));
     const NB = 9, buckets = Array.from({ length: NB }, () => []), q = this.quality * (ctx.reflect ? 0.7 : 1);
@@ -455,15 +477,14 @@ export class Figure {
         gl.uniform1i(U.u_points, 0); gl.bindVertexArray(M.vao); gl.drawElementsInstanced(gl.TRIANGLES, M.n, gl.UNSIGNED_INT, 0, n);
         if (lvl <= 5) { gl.uniform1i(U.u_points, 1); gl.bindVertexArray(this.vaoPts); gl.drawArraysInstanced(gl.POINTS, 0, Math.max(1, Math.ceil(body.nPoints * Math.min(1, frac * 4))), n); }
         this._uniforms(this.ribProg, ctx, camPos); gl.bindVertexArray(this.vaoRib); const UR = this.ribProg.u;
-        if (maxSolid > 0.005) { gl.uniform1f(UR.u_lod, Math.sqrt(rib.nBack / strands)); gl.drawElementsInstanced(gl.TRIANGLES, strands * rib.perStrand, gl.UNSIGNED_INT, 0, n); gl.uniform1f(UR.u_lod, 1); gl.drawElementsInstanced(gl.TRIANGLES, rib.rest[1], gl.UNSIGNED_INT, rib.rest[0] * 4, n); }
+        { gl.uniform1f(UR.u_lod, Math.sqrt(rib.nBack / strands)); gl.drawElementsInstanced(gl.TRIANGLES, strands * rib.perStrand, gl.UNSIGNED_INT, 0, n); gl.uniform1f(UR.u_lod, 1); gl.drawElementsInstanced(gl.TRIANGLES, rib.rest[1], gl.UNSIGNED_INT, rib.rest[0] * 4, n); }
         if (lvl <= 6) { gl.uniform1f(UR.u_lod, 1); gl.drawElementsInstanced(gl.TRIANGLES, rib.strap[1], gl.UNSIGNED_INT, rib.strap[0] * 4, n); }
       } else {
-        if (minSolid < 0.995) {
+        if (L.fibres > 0.003) {
           this._uniforms(this.fibProg, ctx, camPos); gl.bindVertexArray(this.vaoFib); const nf = Math.max(24, Math.min(body.fibres.count, Math.ceil(body.fibres.count * Math.min(1, frac * 3))));
           gl.uniform1f(this.fibProg.u.u_lod, body.fibres.count / nf); gl.drawElementsInstanced(gl.TRIANGLES, nf * body.fibres.per, gl.UNSIGNED_INT, 0, n);
         }
         this._uniforms(this.ribProg, ctx, camPos); gl.bindVertexArray(this.vaoRib); const UR = this.ribProg.u;
-        if (minSolid < 0.995) { gl.uniform1f(UR.u_lod, rib.nBack / strands); gl.drawElementsInstanced(gl.TRIANGLES, strands * rib.perStrand, gl.UNSIGNED_INT, 0, n); gl.uniform1f(UR.u_lod, 1); gl.drawElementsInstanced(gl.TRIANGLES, rib.rest[1], gl.UNSIGNED_INT, rib.rest[0] * 4, n); }
         if (anyTrail) { gl.uniform1f(UR.u_lod, 1); gl.drawElementsInstanced(gl.TRIANGLES, rib.trail[1], gl.UNSIGNED_INT, rib.trail[0] * 4, n); }
       }
     }
@@ -477,7 +498,7 @@ export class Figure {
       let mask = tr.mask; if (mask === undefined) mask = 15; if (Array.isArray(mask)) mask = mask.reduce((m, nm) => m | (1 << this.emitters.findIndex((e) => e.name === nm)), 0);
       const tc = tr.color || lane;
       // seeded per-instance variation: a few hundredths of a second, a little height (so a crowd reads as people)
-      a.set([p[0], p[1], p[2], o.yaw || 0, (o.scale ?? 1) * (1 + vary * (h1(seed * 1.7) - 0.5) * 0.05), (o.time || 0) + vary * (h1(seed * 2.9) - 0.5) * 0.05, o.density ?? 1, o.solid || 0, lane[0], lane[1], lane[2], o.gain ?? 1,
+      a.set([p[0], p[1], p[2], o.yaw || 0, (o.scale ?? 1) * (1 + vary * (h1(seed * 1.7) - 0.5) * 0.05), (o.time || 0) + vary * (h1(seed * 2.9) - 0.5) * 0.05, o.density ?? 1, o.solid ?? 1, lane[0], lane[1], lane[2], o.gain ?? 1,
         this.trackId(o.track ?? 0), variant, Math.min(this.nStories - 1, o.story || 0), o.cel ?? -1, o.alpha ?? 1, seed, o.flow ?? 0, o.eyes ? 1 : 0,
         tr.len || 0, tr.gain ?? 1, mask, 0, tc[0], tc[1], tc[2], tr.width || 0.03], k);
     });

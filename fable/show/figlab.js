@@ -32,14 +32,14 @@ const FSQ = `#version 300 es
 out vec2 v; void main(){ v = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2); gl_Position = vec4(v * 2.0 - 1.0, 0.0, 1.0); }`;
 const SKY = prog(FSQ, `#version 300 es
 precision highp float; in vec2 v; layout(location=0) out vec4 o; layout(location=1) out vec4 o1;
-uniform mat4 u_inv; uniform vec3 u_cam; uniform float u_dawn, u_ground; uniform sampler2D u_refl; uniform vec2 u_res;
+uniform mat4 u_inv; uniform vec3 u_cam, u_road; uniform float u_dawn, u_ground; uniform sampler2D u_refl; uniform vec2 u_res;
 float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 vec3 sky(vec3 d){
   float y = max(d.y, 0.0), k = pow(1.0 - y, 5.0);
   vec3 night = mix(vec3(0.012, 0.014, 0.060), vec3(0.030, 0.050, 0.200), k) + vec3(0.0, 0.05, 0.06) * pow(1.0 - y, 16.0);
   vec3 sunD = normalize(vec3(1.0, 0.045, 0.0)); float sd = dot(d, sunD);
-  vec3 rise = mix(vec3(0.30, 0.22, 0.52), vec3(1.0, 0.50, 0.36), pow(1.0 - y, 2.2)) + vec3(1.0, 0.62, 0.22) * (pow(max(sd, 0.0), 6.0) * 0.45 + pow(1.0 - y, 10.0) * 0.35);
-  rise += vec3(1.0, 0.72, 0.36) * 1.5 * smoothstep(0.9930, 0.9940, sd);
+  vec3 rise = mix(vec3(0.050, 0.035, 0.16), vec3(0.95, 0.30, 0.26), pow(1.0 - y, 2.6)) + vec3(1.0, 0.45, 0.10) * (pow(max(sd, 0.0), 8.0) * 0.55 + pow(1.0 - y, 12.0) * 0.30);
+  rise += vec3(1.0, 0.36, 0.08) * 2.4 * smoothstep(0.9930, 0.9940, sd);
   vec3 day = mix(vec3(0.55, 0.72, 0.98), vec3(1.0, 0.93, 0.80), pow(1.0 - y, 2.5));
   float a = smoothstep(0.15, 0.6, u_dawn), b = smoothstep(0.62, 0.95, u_dawn);
   vec3 c = mix(mix(night, rise, a), day, b);
@@ -57,7 +57,7 @@ void main(){
   float rip = sin(hit.x * 9.0 + sin(hit.z * 7.0)) * 0.0009 + sin(hit.z * 23.0) * 0.0004;
   for (int i = -3; i <= 3; i++) { float w = 1.0 - abs(float(i)) / 4.0; r += texture(u_refl, uv + vec2(rip, float(i) * 0.0016)).rgb * w; ws += w; }
   r /= ws; float b = smoothstep(0.62, 0.95, u_dawn);
-  vec3 base = mix(vec3(0.003, 0.004, 0.010), vec3(0.80, 0.78, 0.74), b);
+  vec3 base = mix(vec3(0.003, 0.004, 0.010), vec3(0.80, 0.78, 0.74), b) + u_road * (1.5 * exp(-hit.x * hit.x / 0.0016) + 0.07 * exp(-hit.x * hit.x / 0.35));
   o = vec4(base + r * fres * mix(0.72, 0.55, b), 1.0);
 }`);
 const DOWN = prog(FSQ, `#version 300 es
@@ -114,7 +114,7 @@ function renderFrame(shot, time = 0) {
     const v = view, camPos = [-(v[0] * v[12] + v[1] * v[13] + v[2] * v[14]), -(v[4] * v[12] + v[5] * v[13] + v[6] * v[14]), -(v[8] * v[12] + v[9] * v[13] + v[10] * v[14])];
     gl.bindFramebuffer(gl.FRAMEBUFFER, target.f); gl.viewport(0, 0, W, H); gl.depthMask(true); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.disable(gl.DEPTH_TEST); gl.disable(gl.BLEND); gl.useProgram(SKY.p);
-    gl.uniformMatrix4fv(SKY.u.u_inv, false, inv4(vp)); gl.uniform3fv(SKY.u.u_cam, camPos); gl.uniform1f(SKY.u.u_dawn, dawn); gl.uniform1f(SKY.u.u_ground, reflect ? 0 : 1); gl.uniform2f(SKY.u.u_res, W, H);
+    gl.uniformMatrix4fv(SKY.u.u_inv, false, inv4(vp)); gl.uniform3fv(SKY.u.u_cam, camPos); gl.uniform1f(SKY.u.u_dawn, dawn); gl.uniform1f(SKY.u.u_ground, reflect ? 0 : 1); gl.uniform2f(SKY.u.u_res, W, H); gl.uniform3fv(SKY.u.u_road, shot.road || [0, 0, 0]);
     bindTex(0, reflect ? mips[5].c[0] : refl.c[0], SKY.u.u_refl); quad();
     const ctx = { gl, W, H, reflect, view, proj: cam.proj, viewProj: vp, camPos, fovY: cam.fovY, focusDist: cam.focus, aperture: cam.aperture, dawn, t: time, sunDir: [0.999, 0.045, 0] };
     fig.draw({ ...ctx, pass: 'opaque' }); fig.draw({ ...ctx, pass: 'add' });
@@ -142,42 +142,34 @@ const sunCam = (o = {}) => ({ target: [0, 1.0, 0], dist: 6.2, fov: 22, az: -PI /
 const grid = (n, sp, fn) => { const a = []; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) a.push(fn(i, j, (i - (n - 1) / 2) * sp, (j - (n - 1) / 2) * sp)); return a; };
 const laneList = ['main', 'rose', 'blue', 'cyan', 'mint', 'gold', 'coral', 'magenta'];
 const crowd = (n, sp, o) => grid(n, sp, (i, j, x, z) => { const k = i * n + j + 1, r = (q) => { const s = Math.sin(k * q) * 43758.5453; return s - Math.floor(s); }; return { pos: [x + (r(12.9) - 0.5) * 0.5, 0, z + (r(78.2) - 0.5) * 0.5], seed: k, lane: LANES[laneList[Math.floor(r(3.3) * laneList.length)]], story: 1 + (k % 11), ...o(i, j, r) }; });
+const wedge = (o) => { const a = []; for (let r = 0; a.length < 64; r++) for (let k = 0; k <= r && a.length < 64; k++) { const n = a.length + 1, h = (q) => { const x = Math.sin(n * q) * 43758.5453; return x - Math.floor(x); }; a.push({ pos: [(k - r / 2) * 2.2 + (h(12.9) - 0.5) * 0.3, 0, -r * 1.9 + (h(78.2) - 0.5) * 0.3], seed: n, lane: LANES[laneList[n % laneList.length]], story: 1 + (n % 11), ...o(r, k, h) }); } return a; };
+const turn = (list, yaw) => list.map((o) => { const c = Math.cos(yaw), s = Math.sin(yaw), p = o.pos; return { ...o, pos: [c * p[0] + s * p[2], 0, -s * p[0] + c * p[2]], yaw: (o.yaw || 0) + yaw }; });
 const SHOTS = {
-  // light (night)
-  light_start_34back: { cam: { ...full, az: PI - 0.62, el: 0.05 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
-  light_front_full: { cam: { ...full, az: 0.30, el: 0.04 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
-  light_side_full: { cam: { ...full, az: PI / 2, el: 0.03 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
-  light_front_close: { cam: { ...close, az: 0.35, el: 0.02 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
-  light_back_close: { cam: { ...close, target: [0, 1.30, 0], az: PI - 0.25, el: 0.03 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
-  light_density: { cam: { target: [0, 0.86, 0], dist: 7.2, fov: 24, az: 0.22, el: 0.04 }, inst: () => [0.15, 0.5, 1.0].map((d, i) => ({ pos: [(i - 1) * 1.45, 0, 0], track: 'idle', time: 3.0 + i * 1.1, lane: LANES.cyan, density: d })) },
-  light_lanes: { cam: { target: [0, 0.86, 0], dist: 9.5, fov: 24, az: 0.0, el: 0.05 }, inst: () => ['rose', 'gold', 'mint', 'main', 'blue', 'magenta', 'coral'].map((l, i) => ({ pos: [(i - 3) * 1.15, 0, 0], yaw: (i - 3) * -0.12, track: 'walk_loop', time: i * 0.137, lane: LANES[l], story: i + 1 })) },
-  light_run_behind: { cam: { target: [0, 1.0, 0], dist: 4.6, fov: 26, az: PI - 0.35, el: 0.06 }, inst: one({ track: 'run_loop', time: 2.2, lane: LANES.main }) },
-  light_run_side: { cam: { target: [0, 0.95, 0], dist: 5.4, fov: 24, az: PI / 2 - 0.25, el: 0.03 }, inst: one({ track: 'sprint_loop', time: 2.1, lane: LANES.main }) },
-  light_butterfly_trail: { cam: { target: [0, 1.0, 0], dist: 6.4, fov: 24, az: 1.0, el: 0.03 }, inst: one({ track: 'butterfly', time: 1.26, lane: LANES.main, trail: { len: 0.5, gain: 1.4, mask: ['handL', 'handR', 'toeL', 'toeR', 'hemL', 'hemR'], width: 0.035 } }) },
-  light_sidekick: { cam: { target: [0, 1.0, 0], dist: 6.0, fov: 24, az: 0.9, el: 0.03 }, inst: one({ track: 'sidekick', time: 1.2, lane: LANES.rose }) },
-  bun_violet_back: { cam: { ...full, az: PI - 0.6, el: 0.06 }, inst: one({ track: 'idle', time: 5.0, lane: LANES.violet, variant: 'bun', story: 12 }) },
-  bun_violet_close: { cam: { ...close, target: [0, 1.48, 0], dist: 1.8, az: 0.75, el: 0.05 }, inst: one({ track: 'idle', time: 5.0, lane: LANES.violet, variant: 'bun', story: 12 }) },
-  // silhouette (sunrise)
-  sil_butterfly: { dawn: 0.6, cam: sunCam({ target: [0, 1.15, 0] }), inst: one({ track: 'butterfly', time: 1.24, solid: 1, yaw: 0.9 }) },
-  sil_sidekick: { dawn: 0.6, cam: sunCam(), inst: one({ track: 'sidekick', time: 1.2, solid: 1, yaw: PI / 2 }) },
-  sil_sidekick_b: { dawn: 0.6, cam: sunCam(), inst: one({ track: 'sidekick', time: 1.2, solid: 1, yaw: -PI / 2 }) },
-  sil_butterfly_b: { dawn: 0.6, cam: sunCam({ target: [0, 1.15, 0] }), inst: one({ track: 'butterfly', time: 1.24, solid: 1, yaw: -0.7 }) },
-  sil_butterfly_c: { dawn: 0.6, cam: sunCam({ target: [0, 1.15, 0] }), inst: one({ track: 'butterfly', time: 1.12, solid: 1, yaw: 2.4 }) },
-  sil_run: { dawn: 0.6, cam: sunCam({ target: [0, 0.95, 0] }), inst: one({ track: 'sprint_loop', time: 2.1, solid: 1 }) },
-  sil_idle_34: { dawn: 0.6, cam: sunCam({ target: [0, 0.9, 0], az: -PI / 2 - 0.5, dist: 5.6, el: 0.02 }), inst: one({ track: 'idle', time: 3.0, solid: 1, yaw: 0.5 }) },
-  sil_half: { dawn: 0.5, cam: sunCam(), inst: one({ track: 'sidekick', time: 1.0, solid: 0.5, lane: LANES.main }) },
-  // cel (day)
-  cel_front: { dawn: 1, bloom: 0.05, cam: { ...full, az: 0.45, el: 0.05 }, inst: one({ track: 'idle', time: 3.0, solid: 1 }) },
-  cel_34back: { dawn: 1, bloom: 0.05, cam: { ...full, az: PI - 0.62, el: 0.05 }, inst: one({ track: 'idle', time: 3.0, solid: 1 }) },
-  cel_close: { dawn: 1, bloom: 0.05, cam: { ...close, az: 0.4, el: 0.02 }, inst: one({ track: 'idle', time: 3.0, solid: 1 }) },
-  cel_close_open: { dawn: 1, bloom: 0.05, cam: { ...close, az: -0.3, el: 0.02 }, inst: one({ track: 'idle', time: 3.0, solid: 1, eyes: 1 }) },
-  cel_sidekick: { dawn: 1, bloom: 0.05, cam: { target: [0, 1.0, 0], dist: 5.8, fov: 24, az: 0.9, el: 0.03 }, inst: one({ track: 'sidekick', time: 1.2, solid: 1 }) },
-  cel_run: { dawn: 1, bloom: 0.05, cam: { target: [0, 0.95, 0], dist: 5.4, fov: 24, az: PI / 2 - 0.4, el: 0.03 }, inst: one({ track: 'sprint_loop', time: 2.1, solid: 1 }) },
-  cel_bun: { dawn: 1, bloom: 0.05, cam: { ...full, az: PI - 0.7, el: 0.05 }, inst: one({ track: 'idle', time: 5.0, solid: 1, variant: 'bun' }) },
-  // crowds
-  formation_light: { cam: { target: [0, 0.6, 0], dist: 34, fov: 26, az: 0.25, el: 0.20 }, inst: () => crowd(32, 1.9, (i, j, r) => ({ track: 'idle', time: 2 + 14 * r(5.1), yaw: (r(9.7) - 0.5) * 0.5 })) },
-  formation_sil: { dawn: 0.6, cam: { target: [6, 0.8, 0], dist: 30, fov: 26, az: -PI / 2, el: 0.075 }, inst: () => crowd(32, 1.9, (i, j, r) => ({ yaw: -PI / 2 + PI, track: 'sidekick', time: 0.55 + 0.016 * (31 - i), solid: 1 })) },
-  formation_mid: { cam: { target: [0, 0.9, 2], dist: 9, fov: 30, az: 0.5, el: 0.10, aperture: 0.02, focus: 8 }, inst: () => crowd(32, 1.9, (i, j, r) => ({ track: 'walk_loop', time: 3 * r(5.1), yaw: (r(9.7) - 0.5) * 0.3 })) },
+  // night
+  night_start_34back: { road: LANES.main, cam: { ...full, az: PI - 0.62, el: 0.05 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
+  night_front: { road: LANES.main, cam: { ...full, az: 0.35, el: 0.04 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
+  night_run_behind: { road: LANES.main, cam: { target: [0, 1.0, 0], dist: 4.6, fov: 26, az: PI - 0.35, el: 0.06 }, inst: one({ track: 'run_loop', time: 2.2, lane: LANES.main }) },
+  night_run_side: { road: LANES.cyan, cam: { target: [0, 0.95, 0], dist: 5.4, fov: 24, az: PI / 2 - 0.25, el: 0.03 }, inst: one({ track: 'sprint_loop', time: 2.1, lane: LANES.cyan }) },
+  night_sidekick_trail: { road: LANES.rose, cam: { target: [0, 1.0, 0], dist: 6.0, fov: 24, az: 0.5, el: 0.03 }, inst: one({ track: 'sidekick', time: 1.2, lane: LANES.rose, trail: { len: 0.45, gain: 1.3, mask: ['handL', 'handR', 'toeL', 'toeR', 'hemL', 'hemR'], width: 0.035 } }) },
+  night_close_back: { road: LANES.main, cam: { ...close, target: [0, 1.30, 0], dist: 2.3, az: PI - 0.55, el: 0.03 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
+  night_bun: { road: LANES.violet, cam: { ...full, az: PI - 0.7, el: 0.06 }, inst: one({ track: 'idle', time: 5.0, lane: LANES.violet, variant: 'bun', story: 12 }) },
+  night_solid_ramp: { road: LANES.main, cam: { target: [0, 0.86, 0], dist: 7.2, fov: 24, az: 0.3, el: 0.04 }, inst: () => [0, 0.5, 1].map((v, i) => ({ pos: [(i - 1) * 1.5, 0, 0], track: 'idle', time: 3.0 + i * 1.1, lane: LANES.main, solid: v })) },
+  night_density: { cam: { target: [0, 0.86, 0], dist: 7.2, fov: 24, az: PI - 0.4, el: 0.04 }, inst: () => [0.15, 0.5, 1.0].map((d, i) => ({ pos: [(i - 1) * 1.5, 0, 0], track: 'idle', time: 3.0 + i * 1.1, lane: LANES.mint, density: d })) },
+  // blue hour and sunrise
+  blue_wedge64: { dawn: 0.35, cam: { target: [0, 0.9, -7], dist: 21, fov: 26, az: 0.3, el: 0.13 }, inst: () => wedge((r, k, h) => ({ track: 'lookback', time: 1.2 + 2.2 * h(5.1), yaw: (h(9.7) - 0.5) * 0.5 })) },
+  sunrise_wedge64: { dawn: 0.6, cam: sunCam({ target: [-9, 1.0, 0], dist: 30, el: 0.09 }), inst: () => turn(wedge((r, k, h) => ({ track: 'sidekick', time: 1.2 - 0.045 * r })), PI / 2) },
+  sunrise_butterfly: { dawn: 0.6, cam: sunCam({ target: [0, 1.15, 0] }), inst: one({ track: 'butterfly', time: 1.12, yaw: 2.4 }) },
+  sunrise_sidekick: { dawn: 0.6, cam: sunCam(), inst: one({ track: 'sidekick', time: 1.2, yaw: -PI / 2 }) },
+  sunrise_run: { dawn: 0.6, cam: sunCam({ target: [0, 0.95, 0] }), inst: one({ track: 'sprint_loop', time: 2.1 }) },
+  // day
+  day_front: { dawn: 1, bloom: 0.05, cam: { ...full, az: 0.45, el: 0.05 }, inst: one({ track: 'idle', time: 3.0 }) },
+  day_34back: { dawn: 1, bloom: 0.05, cam: { ...full, az: PI - 0.62, el: 0.05 }, inst: one({ track: 'idle', time: 3.0 }) },
+  day_run: { dawn: 1, bloom: 0.05, cam: { target: [0, 0.95, 0], dist: 5.4, fov: 24, az: PI / 2 - 0.4, el: 0.03 }, inst: one({ track: 'sprint_loop', time: 2.1 }) },
+  day_close: { dawn: 1, bloom: 0.05, cam: { ...close, az: 0.4, el: 0.02 }, inst: one({ track: 'idle', time: 3.0 }) },
+  day_sidekick: { dawn: 1, bloom: 0.05, cam: { target: [0, 1.0, 0], dist: 5.8, fov: 24, az: 0.9, el: 0.03 }, inst: one({ track: 'sidekick', time: 1.2 }) },
+  // 1,024 (performance)
+  formation_night: { cam: { target: [0, 0.6, 0], dist: 34, fov: 26, az: 0.25, el: 0.20 }, inst: () => crowd(32, 1.9, (i, j, r) => ({ track: 'idle', time: 2 + 14 * r(5.1), yaw: (r(9.7) - 0.5) * 0.5 })) },
+  formation_sunrise: { dawn: 0.6, cam: { target: [6, 0.8, 0], dist: 30, fov: 26, az: -PI / 2, el: 0.075 }, inst: () => crowd(32, 1.9, (i, j, r) => ({ yaw: -PI / 2 + PI, track: 'sidekick', time: 0.55 + 0.016 * (31 - i) })) },
 };
 const TRACKS = (new URLSearchParams(location.search).get('tracks') || 'idle,butterfly,sidekick,run_loop,sprint_loop,walk_loop,lookback,turn_around').split(',');
 async function setup() {

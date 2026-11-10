@@ -97,7 +97,7 @@ export function buildBody(opts = {}) {
   const jacketBones = (P) => two(J.spine, J.chest, 1.20, 0.04)(P[1]);
   const jLag = (P) => smooth(1.28, 1.17, P[1]) * 0.6;
   const jacket = loft(new Loft([R3(1.165, 0.146, 0.116, 0.008), R3(1.178, 0.160, 0.128, 0.009), R3(1.215, 0.174, 0.139, 0.010), R3(1.275, 0.177, 0.140, 0.010), R3(1.328, 0.171, 0.128, 0.006), R3(1.365, 0.150, 0.100, 0.002), R3(1.395, 0.086, 0.074), R3(1.420, 0.065, 0.066, 0.002), R3(1.446, 0.061, 0.063, 0.003)]),
-    { nu: 64, nv: 26, region: 0, tileSize: TILE, bones: jacketBones, lag: jLag, fibres: 0.0092,
+    { nu: 64, nv: 26, region: 0, tileSize: TILE, bones: jacketBones, lag: jLag, fibres: 0.0033,
       part: (u, v, P, N) => { const x = P[0], y = P[1]; if (N[2] > 0 && Math.abs(x) < gap(y) && y < 1.415) return -1; if (y > STRIPE[0] && y < STRIPE[1] && !(N[2] < -0.15 && Math.abs(x) < 0.125)) return PART.STRIPE; return PART.JACKET; } });
   const sleeves = [];
   for (const side of [1, -1]) {
@@ -107,7 +107,7 @@ export function buildBody(opts = {}) {
     const S = (d, rx, rz, off = 0) => ({ c: at(d, off), rx, rz });
     const sleeveBones = (P) => { const d = dOf(P); if (d < 0.06) { const w = smooth(0.06, -0.035, d) * 0.6; return w > 0 ? { a: up, b: J.chest, w } : { a: up }; } return d < 0.40 ? two(up, fo, 0.27, 0.05)(d) : two(fo, ha, 0.505, 0.012)(d); };
     const sl = loft(new Loft([S(-0.035, 0.046, 0.056), S(0.03, 0.056, 0.062), S(0.12, 0.060, 0.064), S(0.27, 0.064, 0.068), S(0.38, 0.076, 0.081, 0.004), S(0.445, 0.081, 0.085, 0.006), S(0.475, 0.062, 0.066, 0.006), S(0.492, 0.037, 0.039, 0.005), S(0.508, 0.033, 0.035, 0.005)], X, Z),
-      { nu: 32, nv: 26, region: side > 0 ? 1 : 2, tileSize: TILE, bones: sleeveBones, fibres: 0.0092, fibreUp: mul(dir, -1),
+      { nu: 32, nv: 26, region: side > 0 ? 1 : 2, tileSize: TILE, bones: sleeveBones, fibres: 0.0033, fibreUp: mul(dir, -1),
         part: (u, v, P) => { const d = dOf(P); if (d < 0.0 && Math.abs(P[0]) < 0.14) return -1; return (d > 0.085 && d < 0.128) ? PART.STRIPE : PART.JACKET; } });
     sleeves.push({ sl, side, sh, dir, dOf, sleeveBones });
     // hand: a mitten with a natural curl, plus a thumb
@@ -122,18 +122,18 @@ export function buildBody(opts = {}) {
 
   // trousers: fitted at the high waist, then a long bell to the floor. The legs are chains of simulated ring centres.
   loft(new Loft([R3(0.86, 0.194, 0.130, 0.004), R3(0.92, 0.184, 0.130, 0.004), R3(0.98, 0.166, 0.122, 0.003), R3(1.03, 0.148, 0.110, 0.002), R3(1.06, 0.132, 0.098, 0.002), R3(1.092, 0.126, 0.094, 0.002)]),
-    { nu: 44, nv: 10, region: 6, fibres: 0.0098, part: (u, v, P) => (P[1] > 1.058 ? PART.BELT : PART.TROUSER),
+    { nu: 44, nv: 10, region: 6, fibres: 0.0036, part: (u, v, P) => (P[1] > 1.058 ? PART.BELT : PART.TROUSER),
       bones: (P) => { const w = smooth(0.95, 0.86, P[1]) * 0.55; return w > 0 ? { a: J.hips, b: P[0] > 0 ? J.thighL : J.thighR, w } : { a: J.hips }; } });
-  const LEGR = [[0.95, 0.092, 0.095, 0.118], [0.82, 0.108, 0.106, 0.126], [0.69, 0.124, 0.116, 0.133], [0.56, 0.139, 0.125, 0.140], [0.43, 0.153, 0.134, 0.147], [0.30, 0.166, 0.142, 0.153], [0.165, 0.178, 0.150, 0.158], [0.03, 0.190, 0.156, 0.162]];
+  const LEGR = [[0.95, 0.092, 0.095, 0.120], [0.82, 0.110, 0.108, 0.138], [0.69, 0.128, 0.121, 0.158], [0.56, 0.146, 0.134, 0.180], [0.43, 0.164, 0.148, 0.204], [0.30, 0.182, 0.163, 0.230], [0.165, 0.199, 0.180, 0.254], [0.03, 0.215, 0.196, 0.275]];   // hem 0.39 wide x 0.55 deep: drama wins
   const legs = [];
   for (const side of [1, -1]) {
     const c = side > 0 ? 0 : 1, th = side > 0 ? J.thighL : J.thighR, sn = side > 0 ? J.shinL : J.shinR, ft = side > 0 ? J.footL : J.footR, toe = side > 0 ? J.toeL : J.toeR;
     const pocket = (P, N) => { const o = N[0] * side, y = P[1]; if (o > 0.5 && y > 0.60 && y < 0.78 && Math.abs(P[2] - 0.005) < 0.088) return 1; if (o > 0.6 && y > 0.27 && y < 0.41 && Math.abs(P[2] - 0.01) < 0.078) return 2; return 0; };
     loft(new Loft(LEGR.map((r) => R3(r[0], r[2], r[3], 0.006, side * r[1]))),
-      { nu: 44, nv: 28, vParam: true, region: side > 0 ? 3 : 4, fibres: 0.0105, part: (u, v, P, N) => (pocket(P, N) ? PART.POCKET : PART.TROUSER), push: (part, P, N) => { const k = pocket(P, N); return k === 1 ? 0.020 : k === 2 ? 0.016 : 0; },
+      { nu: 44, nv: 28, vParam: true, region: side > 0 ? 3 : 4, fibres: 0.0040, part: (u, v, P, N) => (pocket(P, N) ? PART.POCKET : PART.TROUSER), push: (part, P, N) => { const k = pocket(P, N); return k === 1 ? 0.020 : k === 2 ? 0.016 : 0; },
         skin: (u, v, P, N, g) => ({ la: [P[0] - g.c[0], v / (LEG.NODES - 1), P[2] - g.c[2]], lb: [0, 0, 0], w: 0, n: N, a: th, b: th, chain: c, lagW: 0, frame: (d) => d }) });
     legs.push({
-      nodes: LEGR.map((r, k) => ({ bone: k <= 3 ? th : sn, local: toLocal(k <= 3 ? th : sn, [side * r[1], r[0], 0.006]), axis: toLocal(k <= 3 ? th : sn, [side * 0.085, r[0], 0]), lim: Math.min(r[2], r[3]) - 0.048 })),
+      nodes: LEGR.map((r, k) => ({ bone: k <= 3 ? th : sn, local: toLocal(k <= 3 ? th : sn, [side * r[1], r[0], 0.006]), axis: toLocal(k <= 3 ? th : sn, [side * 0.085, r[0], 0]), lim: (r[2] + r[3]) / 2 - 0.06 })),
       seg: LEGR.slice(1).map((r, k) => Math.hypot(r[0] - LEGR[k][0], r[1] - LEGR[k][1])), hipLocal: toLocal(J.hips, [side * LEGR[0][1], LEGR[0][0], 0.006]),
     });
     const an = REST_POS[ft];
@@ -189,14 +189,14 @@ export function buildBody(opts = {}) {
     });
     if (cfg.fibres) {                                  // threads running along the cloth, top to bottom
       const flip = L.ring(0).c[1] < L.ring(L.n - 1).c[1] && !cfg.fibreUp ? true : (cfg.fibreUp ? dot(sub(L.ring(L.n - 1).c, L.ring(0).c), cfg.fibreUp) > 0 : false);
-      const nF = Math.round(L.circ((L.n - 1) / 2) / cfg.fibres), SEG = 30;
+      const nF = Math.round(L.circ((L.n - 1) / 2) / cfg.fibres), SEG = 22;
       for (let k = 0; k < nF; k++) {
         const u = (k + 0.15 + 0.7 * R()) / nF * Math.PI * 2, seed = R(), base = fib.v.length / FSTRIDE; let along = 0, prev = null;
         for (let i = 0; i <= SEG; i++) {
           const f = flip ? 1 - i / SEG : i / SEG, v = vOf(L, cfg, f), o = vert(u, v, u / (Math.PI * 2), f, 0.004);
           const e = 0.02 * (flip ? -1 : 1), Tn = norm(sub(L.p(u, vOf(L, cfg, clamp(f + e, 0, 1))), L.p(u, vOf(L, cfg, clamp(f - e, 0, 1))))), B = o.s.frame(norm(cross(o.N, Tn)));
           if (prev) along += len(sub(o.P, prev)); prev = o.P;
-          for (const sd of [-1, 1]) { put(fib.v, o, seed); fib.v.push(B[0], B[1], B[2], sd, along, seed, 0.0043, 0); }
+          for (const sd of [-1, 1]) { put(fib.v, o, seed); fib.v.push(B[0], B[1], B[2], sd, along, seed, 0.0016, 0); }
         }
         for (let i = 0; i < SEG; i++) { const a = base + i * 2; fib.i.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
         fib.n++; fib.per = SEG * 6;

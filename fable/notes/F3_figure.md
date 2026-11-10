@@ -46,25 +46,35 @@ fig.draw(ctx);   // once per pass; ctx per SPEC §5 plus optional ctx.sunDir
 ```
 Looped in-place tracks (`run_loop`, ...) do not travel: the caller moves `pos` at `track.meta.speed`.
 
-## Look (current)
-- LIGHT (solid 0): mesh = near-black occluder with a thin lane rim; clothes = fibres (far: threads of light broken into "words";
-  close, when a glyph is > ~7 px: lines of real text along the thread, from the instance's story row); jacket threads pale warm, trouser
-  threads lane colour; band, straps, headphones solid orange; back disc blue; RARE EARTH and patch crisp; skin = cream lantern
-  (bright where it faces the camera, dark at the edge) with closed-eye arcs; hair = fine additive filaments (it does not occlude).
-  `density` removes fibres and hair strands.
-- SILHOUETTE (solid 1, dawn ~0.6): black mesh, warm rim toward `u_sun`, a little sun through the trouser hems and some hair tips,
-  orange accents alight; hair = opaque ribbons that close into a mass.
-- CEL (solid 1, dawn 1 or `cel:1`): character-sheet colours, soft 2-tone terminator, aux (flat colour mixed with a per-region tint,
-  alpha = cel) for the ink outline pass, face = closed arcs + brow hint + blush drawn in head space, hair black with one sheen band.
-- Performance (RTX 3090, 1080p, lab incl. reflection + bloom): 1 hero 2.3 ms; 1,024 instances 8-11 ms.
+## Look (current, after the director's second review): ONE shading model, lit by the world
+There is no separate "light mode" any more. She is always the cel character (mesh + flat albedo); `fig.lightFor(ctx)` picks the light.
+```js
+fig.light = { ambient:[r,g,b], rimCol:[r,g,b], rimDir:[x,y,z] (default east), rimBoth:0..1 (rim on both edges vs only toward rimDir),
+              sunAmt:0..1 (key light + ink outline + face), under:gain (road light from below, lane-coloured), emissive:gain,
+              fibres:gain, trans:0..1 (sun through hems / hair tips), sunDir };   // any subset; also ctx.env.figLight
+```
+With no input the values are interpolated from `ctx.dawn` between four keys in `lightFor` (figure.js): night 0 (deep indigo ambient,
+teal rim on both edges, underlight 1, accents emissive 1.25, fibres 1), blue hour 0.35, sunrise 0.6 (near-black, hot rim toward the
+sun, translucency 1, accents 1.5), day 1 (full cel, outline, face, no emissive).
+- Mesh: `albedo * (ambient + (1 - ambient) * sunAmt * terminator)` + thin rim (tinted 35 % by lane) + underlight (lane colour, strongest
+  at shoes/hems, gone by 1.05 m) + emissive accents (band, straps, headphones, back disc, RARE EARTH, patch) + hem translucency.
+- `solid` (default now 1): 0 = accents + rim only, 1 = fully lit by the current light. `cel` is ignored.
+- Hair: always opaque black ribbons (1,092 strands, tapering to points, length varying smoothly across the mass), Kajiya-Kay sheen
+  band + rim; the mass parts down the middle of the back (two curtains) so the disc and RARE EARTH show between them.
+- Fibres: 1,352 fine threads (3 mm pitch), additive, intensity = fresnel x slow patchy noise x `density` x `light.fibres`
+  (a shimmer at the silhouette edges at night, nothing by day).
+- Face: closed-eye arcs, brow hint and blush only appear with `sunAmt` (day). No face at night.
+- Trousers: hem 0.39 m wide x 0.55 m deep (bigger than the sheet, for the sail).
+- Performance (RTX 3090, 1080p, lab incl. reflection + bloom): 1 hero 5.5 ms; 1,024 instances 10-11 ms.
+- Lab: shots are named `night_*`, `blue_wedge64`, `sunrise_*`, `day_*`, `formation_*`; `road: LANES.x` on a shot draws a glowing line
+  under her; sheets `sheet_night.jpg`, `sheet_arc.jpg`, `sheet_wedge.jpg` in `work_fable/stills/f3/` are composites made by hand with `magick`.
 
 ## Known problems / next
-- Light-mode skin still reads a little like a matte mannequin in the lab (flat tonemap, no halo). Try in the real engine with bloom;
-  if it still does, add an additive soft halo sprite at head/hands and lower the surface term.
-- Trouser sail: the fabric hangs at most ~10 cm off a raised leg (limit = ring radius - 0.048); for a bigger sail raise the hem radii
-  in `LEGR` (the character sheet argues for the current size) or loosen the limit.
-- Hairline at the forehead is a bit jagged in cel close-ups; front locks are thin.
-- Butterfly silhouette depends a lot on yaw (see `sil_butterfly`, `_b`, `_c`); `_c` (t 1.12, yaw 2.4) reads best.
-- Open eyes (`eyes:true`) are plain dark ovals: use the closed arcs.
-- Opaque surfaces have no depth of field (only fibres/hair/trails attenuate with the circle of confusion).
-- In the lab's sunrise shots the sun and its reflection are the lab's own sky, not the engine's.
+- Frame-0 shot (3/4 back): the disc reads, RARE EARTH reads as "ARE EARTH" when the camera is on her left (the near hair curtain covers
+  the R). Either put the camera on the other side, widen the parting (`0.105` in the hair block of RIB_VS), or shorten the near curtain.
+- At rest in a narrow stance the big hems overlap and the trousers read as a gown from the front (day_front); in motion they read as trousers.
+- Night underlight is strong on the trousers (gain 1.3 in MESH_FS `under`); the real engine should pass `light.under` per shot.
+- Hair tips still show a little fringe in day close shots; forehead hairline is the cap edge of the head loft (512 px atlas tile).
+- Blue-hour look was only judged in the lab's sky, which goes pink there; re-judge in the real engine.
+- Butterfly silhouette depends on yaw (`sunrise_butterfly` uses t 1.12, yaw 2.4).
+- Opaque surfaces have no depth of field.
