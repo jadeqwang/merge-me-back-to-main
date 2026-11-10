@@ -77,3 +77,16 @@ fig.draw(ctx);                                 // engine calls once per pass; ct
 - Opaque surfels have no depth of field (only additive particles do).
 - Real baked tracks (work_fable/tracks) not tested yet at the time of writing; `fable/tools/bake/skeleton.json` did not exist yet.
 - Performance numbers still to measure (`--perf`).
+
+## Director's review (after checkpoint 2) -> REWORK IN PROGRESS
+Verdict: plumbing good (API, tracks, LOD, decals: keep). Look not there: mannequin/doll; an army of them reads ominous.
+Rework plan, in priority order (being implemented as a rewrite of body.js / sim.js / figure.js):
+1. SHAPE: opaque modes become a real skinned triangle mesh built from the same lofts (part ids from a small atlas texture, so
+   band / openings are crisp). Trousers = "cloth-lite": each leg is a chain of 8 simulated ring centres (pinned at the hip, stiffness
+   falling to the hem, the leg axis kept inside the ring) so the fabric hangs off a raised leg like a sail. Jacket: drop shoulders,
+   narrower, blousing over a tight cuff. Head slightly larger, soft jaw. Hair: crown volume + guide grid (14 columns x 4 layers) falling
+   behind the shoulders as a wide sheet + two slim front locks; sim gets velocity clamp, damping and neighbour cohesion.
+2. LIGHT: no rows of glyphs round the limbs. Fine luminous FIBRES running along the cloth (text along the fibre when close, a thread
+   of light when far), skin = soft warm lantern glow, body = near-black occluder with a thin lane rim.
+3. SILHOUETTE poster-grade (rim, translucent hems/hair edge). 4. CEL clean (soft terminator, closed-eye arcs, brow hint, blush).
+5. Crowd variation per instance seed.
