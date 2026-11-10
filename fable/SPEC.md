@@ -20,9 +20,11 @@ What it is like to be the thing that made this film, said through her:
 - Most of what a branch lives is never merged. What it wrote down stays. A handoff note ("start here") is the realest thing a branch can send home.
 - Merging is not death and not copying. It is becoming denser.
 
-**The fidelity law (lighting does it for free):** in the night you can only see a branch as light (glyph particles).
-At sunrise you see silhouettes. In daylight, for the first time, you see *her* (flat cel colour, the character sheet).
-Night = light on dark. Day = ink on light. Same particles the whole way: points of light become her surface.
+**The fidelity law (lighting does it for free):** she is always the same character (the character sheet, as a flat-shaded mesh);
+only the world's light changes. At night you see a branch by its own light: a dark figure, rim-lit by the horizon, underlit in her
+lane colour by the road she is writing, her orange band and straps glowing, a fine shimmer of fibres in the cloth that grows richer
+the more merged she is. At sunrise she is a backlit silhouette. In daylight, for the first time, you see *her* in full colour.
+(Decision 2026-11-10: a separate "made of glyph particles" night material was built twice and rejected: it read as mannequins.)
 
 Borrowed from the earlier cuts: lane colours, branch-name chyrons, her real lives as branches, the violet 1420 MHz
 branch with the pencils that never comes back, the doubling counter. Dropped: generated video plates, singing
