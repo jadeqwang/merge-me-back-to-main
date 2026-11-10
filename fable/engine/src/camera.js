@@ -44,7 +44,8 @@ export const v3 = {
 export function buildCamera(c, W, H, jx = 0, jy = 0) {
   const pos = c.pos, target = c.target; let up = c.up || [0, 1, 0];
   const fwd = v3.norm(v3.sub(target, pos));
-  if (Math.abs(v3.dot(fwd, up)) > 0.9995) up = [1, 0, 0];          // straight down/up: east is screen-up
+  // near vertical the up vector blends to topUp (default east = screen-up), so a crane from top-down into a level shot never snaps
+  { const d = Math.abs(v3.dot(fwd, up)); if (d > 0.96) { const w = Math.min(1, (d - 0.96) / 0.035), tu = c.topUp || [1, 0, 0]; const ww = w * w * (3 - 2 * w); up = v3.norm([up[0] * (1 - ww) + tu[0] * ww, up[1] * (1 - ww) + tu[1] * ww, up[2] * (1 - ww) + tu[2] * ww]); } }
   if (c.roll) { const r = (c.roll * Math.PI) / 180; const right = v3.norm(v3.cross(fwd, up)); const u2 = v3.cross(right, fwd); up = v3.add(v3.mul(u2, Math.cos(r)), v3.mul(right, Math.sin(r))); }
   const fovY = ((c.fov || 35) * Math.PI) / 180, near = c.near || 0.1, far = c.far || 30000;
   const view = m4.lookAt(pos, target, up);
@@ -56,21 +57,33 @@ export function buildCamera(c, W, H, jx = 0, jy = 0) {
     focusDist: c.focusDist || v3.len(v3.sub(target, pos)), aperture: c.aperture || 0 };
 }
 
-// Smooth camera path: keys [{t, pos, target, fov?, roll?, focusDist?, aperture?}], Catmull-Rom through the keys in time,
-// eased per segment (ease: 'io' default | 'lin'). No shake, no overshoot at the ends (endpoint tangents are clamped).
+// Smooth camera path: keys [{t, pos, target, fov?, roll?, focusDist?, aperture?, stop?}].
+// Monotone cubic (Fritsch-Carlson) per component in time: passes through every key, never overshoots between keys, no shake.
+// The camera is moving at the first and last key (so a cut lands on motion); give a key `stop:true` to arrive/leave at rest there.
+function pchip(ts, ys, stops) {
+  const n = ts.length, d = new Array(n - 1), m = new Array(n);
+  for (let i = 0; i < n - 1; i++) d[i] = (ys[i + 1] - ys[i]) / (ts[i + 1] - ts[i]);
+  if (n === 2) { m[0] = m[1] = d[0]; }
+  else {
+    for (let i = 1; i < n - 1; i++) { if (d[i - 1] * d[i] <= 0) m[i] = 0; else { const h0 = ts[i] - ts[i - 1], h1 = ts[i + 1] - ts[i]; const w1 = 2 * h1 + h0, w2 = h1 + 2 * h0; m[i] = (w1 + w2) / (w1 / d[i - 1] + w2 / d[i]); } }
+    m[0] = d[0]; m[n - 1] = d[n - 2];
+  }
+  for (let i = 0; i < n; i++) if (stops[i]) m[i] = 0;
+  return (t, i) => { const h = ts[i + 1] - ts[i], u = (t - ts[i]) / h, u2 = u * u, u3 = u2 * u; return (2 * u3 - 3 * u2 + 1) * ys[i] + (u3 - 2 * u2 + u) * h * m[i] + (-2 * u3 + 3 * u2) * ys[i + 1] + (u3 - u2) * h * m[i + 1]; };
+}
 export function camPath(keys) {
-  const K = keys.slice().sort((a, b) => a.t - b.t);
-  const cr = (p0, p1, p2, p3, u) => { const u2 = u * u, u3 = u2 * u; return 0.5 * (2 * p1 + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u2 + (-p0 + 3 * p1 - 3 * p2 + p3) * u3); };
+  const K = keys.slice().sort((a, b) => a.t - b.t), ts = K.map((k) => k.t), stops = K.map((k) => !!k.stop);
   const num = (k, f, d) => (k[f] === undefined ? d : k[f]);
+  const dist = (k) => v3.len(v3.sub(k.target, k.pos));
+  const ch = {}; const add = (name, get) => { ch[name] = pchip(ts, K.map(get), stops); };
+  for (let j = 0; j < 3; j++) { add('p' + j, (k) => k.pos[j]); add('q' + j, (k) => k.target[j]); }
+  add('fov', (k) => num(k, 'fov', 35)); add('roll', (k) => num(k, 'roll', 0)); add('ap', (k) => num(k, 'aperture', 0)); add('fd', (k) => num(k, 'focusDist', dist(k)));
+  const hasFocus = K.some((k) => k.focusDist !== undefined);
   return function (t) {
-    if (t <= K[0].t) return { ...K[0] }; if (t >= K[K.length - 1].t) return { ...K[K.length - 1] };
-    let i = 0; while (i < K.length - 2 && K[i + 1].t <= t) i++;
-    const a = K[i], b = K[i + 1], p = K[Math.max(0, i - 1)], n = K[Math.min(K.length - 1, i + 2)];
-    let u = (t - a.t) / (b.t - a.t); if ((a.ease || 'io') === 'io') u = u * u * (3 - 2 * u);
-    const vec = (f) => [0, 1, 2].map((j) => cr(p[f][j], a[f][j], b[f][j], n[f][j], u));
-    const sc = (f, d) => num(a, f, d) + (num(b, f, d) - num(a, f, d)) * u;
-    const o = { pos: vec('pos'), target: vec('target'), fov: sc('fov', 35), roll: sc('roll', 0), aperture: sc('aperture', 0) };
-    if (a.focusDist !== undefined || b.focusDist !== undefined) { const da = num(a, 'focusDist', v3.len(v3.sub(a.target, a.pos))), db = num(b, 'focusDist', v3.len(v3.sub(b.target, b.pos))); o.focusDist = da + (db - da) * u; }
+    if (K.length === 1) return { ...K[0] };
+    const tc = Math.min(ts[ts.length - 1], Math.max(ts[0], t)); let i = 0; while (i < K.length - 2 && ts[i + 1] <= tc) i++;
+    const o = { pos: [ch.p0(tc, i), ch.p1(tc, i), ch.p2(tc, i)], target: [ch.q0(tc, i), ch.q1(tc, i), ch.q2(tc, i)], fov: ch.fov(tc, i), roll: ch.roll(tc, i), aperture: Math.max(0, ch.ap(tc, i)) };
+    if (hasFocus) o.focusDist = Math.max(0.05, ch.fd(tc, i));
     return o;
   };
 }

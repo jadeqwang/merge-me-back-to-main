@@ -2,10 +2,10 @@
 // Every point of a road has a reveal value g (think: the song time at which that point was written). A road is visible where g <= head.
 // So "the road is written under her feet and never fades" is just head = t.
 //
-//   const R = engine.roads([{ pts:[[x,z],...], color:'#FF7A1A'|[r,g,b] linear, text:'COMMIT MESSAGE', g:[g0,g1] | gs:[per control point],
+//   const R = engine.roads([{ pts:[[x,z],...], color:'#FF7A1A'|[r,g,b] linear, text:'COMMIT MESSAGE', g:[g0,g1] | gs:[equally spaced in arc length] | gk:[[u,g],...],
 //                             width: 0.07 (m, half-width of the core), textSize: 0.42 (em, m), textSide: 1|-1, flip: false, repeat: true,
 //                             nodes:[{u:0..1 | s:metres, r:0.35}], smooth: true }], { step, maxGlyphs });
-//   R.drawable({ head, ink, gain, textGain, minPx, halo, headGain, headLen, pulses:[{g, width, gain}], flow })  -> drawable for the 'ground' pass
+//   R.drawable({ head, ink, gain, textGain, minPx, widthScale, halo, haloPx, headGain, headLen, pulses:[{g, width, gain}], flow, flowSpeed (negative = toward s=0) })  -> drawable for the 'ground' pass
 //   R.roads[i].at(s) -> {x,z,tx,tz};  .len;  .gAt(s);  .sAtG(g)   (place a runner where the road is being written)
 import { Program, FS_HEAD, canvasTex, hex } from './glx.js';
 import { setFont } from './type.js';
@@ -34,32 +34,39 @@ class Road {
   }
   at(s) { const f = Math.min(this.n - 1.0001, Math.max(0, s / this.ds)); const i = Math.floor(f), u = f - i; const P = this.P;
     const x = P[i * 2] + (P[i * 2 + 2] - P[i * 2]) * u, z = P[i * 2 + 1] + (P[i * 2 + 3] - P[i * 2 + 1]) * u; let tx = P[i * 2 + 2] - P[i * 2], tz = P[i * 2 + 3] - P[i * 2 + 1]; const l = Math.hypot(tx, tz) || 1; return { x, z, tx: tx / l, tz: tz / l }; }
-  gAt(s) { const gs = this.gs, m = gs.length - 1; const f = Math.min(1, Math.max(0, s / this.len)) * m; const i = Math.min(m - 1, Math.floor(f)); return gs[i] + (gs[i + 1] - gs[i]) * (f - i); }
-  sAtG(g) { const gs = this.gs, m = gs.length - 1; if (g <= gs[0]) return 0; if (g >= gs[m]) return this.len; for (let i = 0; i < m; i++) if (g <= gs[i + 1]) return ((i + (g - gs[i]) / Math.max(1e-9, gs[i + 1] - gs[i])) / m) * this.len; return this.len; }
+  // g along the road: def.gk = [[u, g], ...] (u = fraction of length, ascending) or gs/g = values equally spaced in arc length
+  gAt(s) { const u = Math.min(1, Math.max(0, s / this.len)); const k = this.def.gk;
+    if (k) { if (u <= k[0][0]) return k[0][1]; for (let i = 0; i < k.length - 1; i++) if (u <= k[i + 1][0]) return k[i][1] + (k[i + 1][1] - k[i][1]) * ((u - k[i][0]) / Math.max(1e-9, k[i + 1][0] - k[i][0])); return k[k.length - 1][1]; }
+    const gs = this.gs, m = gs.length - 1; const f = u * m; const i = Math.min(m - 1, Math.floor(f)); return gs[i] + (gs[i + 1] - gs[i]) * (f - i); }
+  sAtG(g) { const k = this.def.gk;
+    if (k) { if (g <= k[0][1]) return k[0][0] * this.len; for (let i = 0; i < k.length - 1; i++) if (g <= k[i + 1][1]) return (k[i][0] + (k[i + 1][0] - k[i][0]) * ((g - k[i][1]) / Math.max(1e-9, k[i + 1][1] - k[i][1]))) * this.len; return k[k.length - 1][0] * this.len; }
+    const gs = this.gs, m = gs.length - 1; if (g <= gs[0]) return 0; if (g >= gs[m]) return this.len; for (let i = 0; i < m; i++) if (g <= gs[i + 1]) return ((i + (g - gs[i]) / Math.max(1e-9, gs[i + 1] - gs[i])) / m) * this.len; return this.len; }
+  g0() { return this.gAt(0); } g1() { return this.gAt(this.len); }
 }
 
 const COMMON = `
-uniform float uHead, uSoft, uHeadLen, uHeadGain, uInk, uGain, uFlow, uTime; uniform vec4 uPulse[4];
+uniform float uHead, uSoft, uHeadLen, uHeadGain, uInk, uGain, uFlow, uFlowSpeed, uTime; uniform vec4 uPulse[4];
 float reveal(float g){ return smoothstep(uHead, uHead - uSoft, g); }
 float boost(float g, float s){
   float b = exp(-max(uHead - g, 0.)/uHeadLen) * uHeadGain;
   for (int i=0;i<4;i++) { float q = (g - uPulse[i].x)/max(uPulse[i].y, 1e-4); b += uPulse[i].z * exp(-q*q); }
-  b += uFlow * (0.5 + 0.5*sin(s*0.9 - uTime*5.0)) ;
+  b += uFlow * pow(0.5 + 0.5*sin(s*0.9 - uTime*uFlowSpeed), 3.0) * 2.0;
   return 1. + b;
 }
 vec3 inkOf(vec3 c){ float l = dot(c, vec3(0.2126,0.7152,0.0722)); return mix(vec3(l), c, 1.25) * 0.78; }
 `;
 const VS_LINE = `#version 300 es
 layout(location=0) in vec2 aPos; layout(location=1) in vec2 aDir; layout(location=2) in float aSide; layout(location=3) in float aS; layout(location=4) in float aG; layout(location=5) in vec3 aCol; layout(location=6) in float aW;
-uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uMinPx, uHaloPx;
+uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uMinPx, uHaloPx, uWidthScale, uCamY, uFogDist;
 out float vV, vCore, vG, vS, vE; out vec3 vCol;
 void main(){
   vec4 c = uVP*vec4(aPos.x, 0., aPos.y, 1.); vec4 cd = uVP*vec4(aDir.x, 0., aDir.y, 0.);
   vec2 sd = (cd.xy*c.w - c.xy*cd.w) * uRes; float l = length(sd); sd = l > 1e-12 ? sd/l : vec2(1., 0.);
   vec2 n = vec2(-sd.y, sd.x);
   float pxPerM = uProjK / max(abs(c.w), 1e-3);
-  float tru = aW*pxPerM; float core = max(tru, uMinPx*0.5);
-  vE = pow(min(1., tru/(uMinPx*0.5)), 0.6);
+  float tru = aW*uWidthScale*pxPerM; float core = max(tru, uMinPx*0.5);
+  float graze = smoothstep(0.0, 0.10, uCamY/max(abs(c.w), 1e-3));          // 0 at the horizon, 1 seen from above
+  vE = pow(min(1., tru/(uMinPx*0.5)), mix(1.25, 0.6, graze)) * mix(exp(-abs(c.w)/uFogDist), 1., graze);   // and night air: far roads seen edge-on fade out
   float half_ = core + uHaloPx + 1.5;
   c.xy += n * aSide * half_ * 2. / uRes * c.w;
   vV = aSide*half_; vCore = core; vG = aG; vS = aS; vCol = aCol; gl_Position = c;
@@ -169,9 +176,9 @@ export class Roads {
       const ink = o.ink ?? Math.min(1, Math.max(0, (ctx.dawn - 0.72) / 0.2)); const projK = ctx.H / (2 * Math.tan(ctx.fovY / 2));
       const pulses = new Float32Array(16); (o.pulses || []).slice(0, 4).forEach((p, i) => pulses.set([p.g, p.width ?? 0.3, p.gain ?? 2, 0], i * 4));
       const common = { uVP: ctx.viewProj, uRes: [ctx.W, ctx.H], uProjK: projK, uHead: o.head ?? 1e9, uSoft: o.soft ?? 0.05, uHeadLen: o.headLen ?? 0.35, uHeadGain: o.headGain ?? 0, uInk: ink,
-        uGain: o.gain ?? 2.2, uFlow: o.flow ?? 0, uTime: ctx.t, uPulse: pulses };
+        uGain: o.gain ?? 2.2, uFlow: o.flow ?? 0, uFlowSpeed: o.flowSpeed ?? 5, uTime: ctx.t, uPulse: pulses };
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      gl.bindVertexArray(self.lineVao); self.pLine.use().set({ ...common, uMinPx: o.minPx ?? 1.3, uHaloPx: o.haloPx ?? 5, uHalo: o.halo ?? 0.22 }); gl.drawElements(gl.TRIANGLES, self.ni, gl.UNSIGNED_INT, 0);
+      gl.bindVertexArray(self.lineVao); self.pLine.use().set({ ...common, uFogDist: o.fogDist ?? 260, uCamY: Math.abs(ctx.camPos[1]), uWidthScale: o.widthScale ?? 1, uMinPx: o.minPx ?? 1.3, uHaloPx: o.haloPx ?? 5, uHalo: o.halo ?? 0.22 }); gl.drawElements(gl.TRIANGLES, self.ni, gl.UNSIGNED_INT, 0);
       if (self.ng && (o.textGain ?? 1) > 0) { gl.bindVertexArray(self.glyphVao); self.pGlyph.use().set({ ...common, uT: self.atlas.tex, uCell: self.atlas.cellEm, uAtlas: [self.atlas.cols, self.atlas.rows, self.atlas.uv[0], self.atlas.uv[1]], uTextGain: o.textGain ?? 0.8 }); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, self.ng); }
       if (self.nn) { gl.bindVertexArray(self.nodeVao); self.pNode.use().set({ ...common, uNodeMinPx: o.nodeMinPx ?? 1.8 }); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, self.nn); }
       gl.bindVertexArray(null);

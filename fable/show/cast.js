@@ -1,0 +1,162 @@
+// CAST: the thin actor layer every sequence goes through. Shows never touch a figure implementation directly.
+//   const cast = makeCast(E)
+//   cast.begin()                                   start of every frame(t)
+//   const a = cast.actor('hero', { lane: 'main', variant: 'jade' | 'violet' })      (created once, same object returned for the same id)
+//   a.set({ pos:[x,y,z], yaw, track, time, density, solid, scale, visible, tilt, squat, arms, reach, cel, color })
+//   const c = cast.crowd('thousand', 1024);  c.put(i, { pos, yaw, time, lane | color, density, solid, tilt, squat, arms, reach, scale, cel });  c.n = how many are live this frame
+//   cast.drawables()                               -> drawables for this frame (actors + crowds)
+// yaw: radians about +Y; yaw 0 faces +Z, yaw = atan2(dx, dz) faces (dx, dz). East (+X) is PI/2.
+// density 0..1 = how much light she is made of (night look). solid 0..1 = opaque body (silhouette at sunrise, cel colour by day; `cel` overrides the dawn-driven mix).
+// track/time name a performance and its clock; the stand-in ignores the performance except for a small step/bob so motion reads.
+//
+// STAND-IN implementation (animatic): a 1.65 m capsule with a head, a facing tick, an arm bar (arms 0..1), a forward bar (reach 0..1) and, for violet, a bun with two pencils.
+// The real Figure replaces StandIn behind this interface.
+import { Program, FS_HEAD, hex } from '../engine/src/glx.js';
+import { mulberry32 } from '../engine/src/rng.js';
+import { LANE } from './world.js';
+
+const STRIDE = 16; // x y z yaw | tilt sy scale arms | reach r g b | density solid cel bun
+const XF = `
+layout(location=3) in vec4 iA; layout(location=4) in vec4 iB; layout(location=5) in vec4 iC; layout(location=6) in vec4 iD;
+vec3 xform(vec3 p, float part){
+  if (part > 2.5 && part < 3.5) p.x *= iB.w; else if (part > 3.5 && part < 4.5) p.z = 0.1 + (p.z - 0.1)*iC.x; else if (part > 4.5) p = vec3(0., 1.66, -0.05) + (p - vec3(0., 1.66, -0.05))*iD.w;
+  p.y *= iB.y; p *= iB.z;
+  float ct = cos(iB.x), st = sin(iB.x); p = vec3(p.x, p.y*ct + p.z*st + 0.19*iB.z*abs(st), -p.y*st + p.z*ct);   // tilt: falls backward about the feet and lies on the mirror
+  float cy = cos(iA.w), sy = sin(iA.w); p = vec3(p.x*cy + p.z*sy, p.y, -p.x*sy + p.z*cy);
+  return p + iA.xyz;
+}
+vec3 xdir(vec3 n){ float ct = cos(iB.x), st = sin(iB.x); n = vec3(n.x, n.y*ct + n.z*st, -n.y*st + n.z*ct); float cy = cos(iA.w), sy = sin(iA.w); return vec3(n.x*cy + n.z*sy, n.y, -n.x*sy + n.z*cy); }
+`;
+const VS_MESH = `#version 300 es
+layout(location=0) in vec3 aP; layout(location=1) in vec3 aN; layout(location=2) in float aPart;
+uniform mat4 uVP; out vec3 vN, vL, vLane; out float vPart, vSolid, vCel, vInst;` + XF + `
+void main(){ vec3 w = xform(aP, aPart); vN = xdir(aN); vL = aP; vPart = aPart; vLane = iC.yzw; vSolid = iD.y; vCel = iD.z; vInst = float(gl_InstanceID);
+  gl_Position = (iD.y <= 0.02 || (aPart > 2.5 && aPart < 3.5 && iB.w < 0.02) || (aPart > 3.5 && aPart < 4.5 && iC.x < 0.02) || (aPart > 4.5 && iD.w < 0.02)) ? vec4(2., 2., 2., 1.) : uVP*vec4(w, 1.); }`;
+const FS_MESH = FS_HEAD + `
+in vec3 vN, vL, vLane; in float vPart, vSolid, vCel, vInst; uniform vec3 uSun; uniform float uCelDawn;
+layout(location=0) out vec4 o0; layout(location=1) out vec4 o1;
+float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx)*.1031); p3 += dot(p3, p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
+void main(){
+  if (vSolid < 0.999 && h12(gl_FragCoord.xy + vInst*7.) > vSolid) discard;
+  float cel = vCel < 0. ? uCelDawn : vCel;
+  // costume by height (character sheet): navy cargo trousers, black crop top, white bomber with the lane-coloured band, black hair
+  vec3 c = vec3(0.012, 0.016, 0.05); float part = floor(vPart + 0.5); float band = 0.;
+  if (part < 0.5) { if (vL.y > 0.80) c = vec3(0.004); if (vL.y > 0.92) c = vec3(0.86, 0.84, 0.78); band = step(1.10, vL.y)*step(vL.y, 1.19); if (vL.y < 0.09) c = vec3(0.86, 0.84, 0.8); }
+  else if (part < 1.5) { c = vec3(0.006, 0.005, 0.012); if (vL.z > 0.075 && vL.y < 1.60 && vL.y > 1.46) c = vec3(0.80, 0.56, 0.42); }
+  else if (part < 2.5) { c = vLane; band = 1.; }
+  else if (part < 4.5) { c = vec3(0.86, 0.84, 0.78); band = part < 3.5 ? step(0.36, abs(vL.x))*step(abs(vL.x), 0.46) : 0.; }
+  else { c = vec3(0.006, 0.005, 0.012); if (vL.y > 1.70 || abs(vL.x) > 0.08) c = vec3(0.9, 0.62, 0.12); }
+  c = mix(c, vLane, band);
+  float lit = smoothstep(-0.05, 0.05, dot(normalize(vN), normalize(uSun + vec3(0., 0.35, 0.))));
+  vec3 celc = c * mix(0.62, 1.0, lit) * 1.05;
+  vec3 sil = vec3(0.010, 0.007, 0.018) + vLane * band * 1.6;                                   // silhouette: only the band still glows
+  o0 = vec4(mix(sil, celc, cel), 1.);
+  o1 = vec4(cel > 0.5 ? vec3(0.15 + 0.14*part, 0.2 + 0.5*band, fract(vInst*0.37)*0.5 + 0.3) : vec3(0.), 1.);
+}`;
+const VS_PTS = `#version 300 es
+layout(location=0) in vec3 aP; layout(location=1) in vec3 aN; layout(location=2) in float aPart;
+uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uAperture, uFocus, uSize, uMinPx, uT;
+out vec2 vC; out vec3 vCol; out float vR;` + XF + `
+void main(){ int j = gl_VertexID % 6; int cid = j < 3 ? j : (j == 3 ? 2 : (j == 4 ? 1 : 3)); vec2 c = vec2(float(cid&1), float((cid>>1)&1))*2.-1.; vC = c;
+  vec3 w = xform(aP, aPart); vec4 p = uVP*vec4(w, 1.); float dist = max(p.w, 1e-3);
+  float hide = (iD.x <= 0.004 || (aPart > 2.5 && aPart < 3.5 && iB.w < 0.02) || (aPart > 3.5 && aPart < 4.5 && iC.x < 0.02) || (aPart > 4.5 && iD.w < 0.02)) ? 1. : 0.;
+  float seed = aN.x;                                           // per-point random (0..1)
+  if (seed > iD.x*1.25) hide = 1.;                             // density thins the cloud
+  float r0 = uSize*iB.z*uProjK/dist; float coc = uAperture*abs(1./uFocus - 1./dist)*uRes.y; float r = max(sqrt(r0*r0 + coc*coc), uMinPx);
+  float e = (r0*r0)/(r*r); e = max(e, min(1., r0/uMinPx)*0.5*step(coc, uMinPx));
+  float tw = 0.7 + 0.3*sin(uT*(2. + 5.*aN.y) + aN.z*40.);
+  vec3 lane = iC.yzw; vec3 col = mix(lane, vec3(1.0, 0.92, 0.82), aPart > 0.5 && aPart < 1.5 ? 0.55 : 0.18 + 0.5*step(0.93, aN.y));
+  vCol = col * e * tw * (0.35 + aN.z) * min(iD.x*1.6, 1.3); vR = r;
+  p.xy += c*(r + 1.)*2./uRes*p.w; gl_Position = hide > 0.5 ? vec4(2., 2., 2., 1.) : p; }`;
+const FS_PTS = FS_HEAD + `in vec2 vC; in vec3 vCol; in float vR; uniform float uGain; out vec4 o;
+void main(){ float d = length(vC)*(vR + 1.); float a = smoothstep(vR + 0.7, vR - 0.7, d); o = vec4(vCol*a*uGain, 0.); }`;
+
+function buildTemplate() {
+  const P = [], I = []; let nv = 0;
+  // capsule along an axis from a to b with radius r (lat-long), part id
+  const capsule = (a, b, r, part, seg = 14, rings = 5) => {
+    const ax = [b[0] - a[0], b[1] - a[1], b[2] - a[2]]; const len = Math.hypot(...ax) || 1; const z = ax.map((v) => v / len);
+    let x = Math.abs(z[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0]; const y = [z[1] * x[2] - z[2] * x[1], z[2] * x[0] - z[0] * x[2], z[0] * x[1] - z[1] * x[0]]; const yl = Math.hypot(...y); y.forEach((v, i) => (y[i] = v / yl));
+    x = [y[1] * z[2] - y[2] * z[1], y[2] * z[0] - y[0] * z[2], y[0] * z[1] - y[1] * z[0]];
+    const rows = []; for (let i = 0; i <= rings; i++) { const th = (i / rings) * Math.PI / 2; rows.push([-Math.cos(th) * r, Math.sin(th) * r, 0]); } for (let i = rings; i >= 0; i--) { const th = (i / rings) * Math.PI / 2; rows.push([Math.cos(th) * r, Math.sin(th) * r, 1]); }
+    const base = nv;
+    rows.forEach(([h, rr, end]) => { for (let s = 0; s <= seg; s++) { const ph = (s / seg) * Math.PI * 2, cx = Math.cos(ph), sx = Math.sin(ph); const o = end ? b : a;
+      const px = o[0] + z[0] * h + (x[0] * cx + y[0] * sx) * rr, py = o[1] + z[1] * h + (x[1] * cx + y[1] * sx) * rr, pz = o[2] + z[2] * h + (x[2] * cx + y[2] * sx) * rr;
+      const nx = z[0] * h + (x[0] * cx + y[0] * sx) * rr, ny = z[1] * h + (x[1] * cx + y[1] * sx) * rr, nz = z[2] * h + (x[2] * cx + y[2] * sx) * rr; const nl = Math.hypot(nx, ny, nz) || 1;
+      P.push(px, py, pz, nx / nl, ny / nl, nz / nl, part); nv++; } });
+    for (let i = 0; i < rows.length - 1; i++) for (let s = 0; s < seg; s++) { const p = base + i * (seg + 1) + s, q = p + seg + 1; I.push(p, q, p + 1, p + 1, q, q + 1); }
+  };
+  capsule([0, 0.19, 0], [0, 1.24, 0], 0.19, 0, 18, 6);               // body (feet at y = 0, shoulders ~1.43)
+  capsule([0, 1.52, 0], [0, 1.521, 0], 0.13, 1, 16, 6);              // head (crown at 1.65)
+  capsule([0, 1.50, 0.12], [0, 1.50, 0.20], 0.035, 2, 8, 3);         // facing tick (nose)
+  capsule([0, 1.18, 0.17], [0, 1.18, 0.26], 0.05, 2, 8, 3);          // facing tick (chest)
+  capsule([-0.80, 1.30, 0], [0.80, 1.30, 0], 0.055, 3, 10, 3);       // arm bar (x scaled by arms)
+  capsule([0, 1.22, 0.1], [0, 1.22, 0.62], 0.06, 4, 10, 3);          // forward reach (z scaled by reach)
+  capsule([0, 1.66, -0.05], [0, 1.661, -0.05], 0.075, 5, 10, 4);     // violet's bun
+  capsule([-0.16, 1.60, -0.10], [0.13, 1.76, 0.0], 0.012, 5, 6, 2);  // two pencils through it
+  capsule([0.16, 1.61, -0.08], [-0.12, 1.75, -0.02], 0.012, 5, 6, 2);
+  const V = new Float32Array(P), X = new Uint32Array(I);
+  // light-mode points: random points on the surface, area-weighted. normal slot carries three randoms instead.
+  const rnd = mulberry32(99), tri = []; let area = 0; for (let i = 0; i < X.length; i += 3) { const a = X[i] * 7, b = X[i + 1] * 7, c = X[i + 2] * 7; const ux = V[b] - V[a], uy = V[b + 1] - V[a + 1], uz = V[b + 2] - V[a + 2], vx = V[c] - V[a], vy = V[c + 1] - V[a + 1], vz = V[c + 2] - V[a + 2];
+    const ar = 0.5 * Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) * (V[a + 6] > 0.5 ? 2.2 : 1); area += ar; tri.push([a, b, c, area]); }
+  const NP = 900, Q = new Float32Array(NP * 7);
+  for (let k = 0; k < NP; k++) { const r = rnd() * area; let lo = 0, hi = tri.length - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (tri[m][3] < r) lo = m + 1; else hi = m; } const [a, b, c] = tri[lo]; let u = rnd(), v = rnd(); if (u + v > 1) { u = 1 - u; v = 1 - v; }
+    for (let j = 0; j < 3; j++) Q[k * 7 + j] = V[a + j] + (V[b + j] - V[a + j]) * u + (V[c + j] - V[a + j]) * v; Q[k * 7 + 3] = k / NP; Q[k * 7 + 4] = rnd(); Q[k * 7 + 5] = rnd(); Q[k * 7 + 6] = V[a + 6]; }
+  return { V, X, Q, NP };
+}
+
+class StandIn {
+  constructor(E) {
+    const gl = (this.gl = E.gl); this.E = E; const T = buildTemplate(); this.ni = T.X.length; this.np = T.NP;
+    this.pMesh = new Program(gl, VS_MESH, FS_MESH, 'cast.mesh'); this.pPts = new Program(gl, VS_PTS, FS_PTS, 'cast.pts');
+    this.inst = gl.createBuffer(); this.cap = 0;
+    const attribs = (vao) => { gl.bindVertexArray(vao); gl.bindBuffer(gl.ARRAY_BUFFER, this.inst); for (let k = 0; k < 4; k++) { gl.enableVertexAttribArray(3 + k); gl.vertexAttribPointer(3 + k, 4, gl.FLOAT, false, STRIDE * 4, k * 16); gl.vertexAttribDivisor(3 + k, 1); } };
+    this.vaoMesh = gl.createVertexArray(); gl.bindVertexArray(this.vaoMesh); let b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, T.V, gl.STATIC_DRAW);
+    [[0, 3, 0], [1, 3, 12], [2, 1, 24]].forEach(([l, n, o]) => { gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, n, gl.FLOAT, false, 28, o); });
+    b = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, T.X, gl.STATIC_DRAW); attribs(this.vaoMesh);
+    // points: each point is a quad -> the template is per-instance too, so expand: one draw of np*inst quads needs both as instanced attributes. Simplest: bake the point template into a texture-free loop:
+    // draw np instanced quads per figure is too many draw calls for a crowd, so the point cloud is drawn as GL_POINTS-like quads via a vertex buffer of np*4 corner vertices.
+    const C = new Float32Array(T.NP * 6 * 7);
+    for (let k = 0; k < T.NP; k++) for (let j = 0; j < 6; j++) C.set(T.Q.subarray(k * 7, k * 7 + 7), (k * 6 + j) * 7);
+    this.vaoPts = gl.createVertexArray(); gl.bindVertexArray(this.vaoPts); b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, C, gl.STATIC_DRAW);
+    [[0, 3, 0], [1, 3, 12], [2, 1, 24]].forEach(([l, n, o]) => { gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, n, gl.FLOAT, false, 28, o); }); attribs(this.vaoPts);
+    gl.bindVertexArray(null);
+  }
+  // data: Float32Array n*STRIDE (a private copy per frame)
+  drawable(data, n) {
+    const self = this, gl = this.gl; let up = false; let anySolid = false, anyLight = false; for (let i = 0; i < n; i++) { if (data[i * STRIDE + 13] > 0.02) anySolid = true; if (data[i * STRIDE + 12] > 0.004) anyLight = true; }
+    return { passes: ['opaque', 'add'], draw(ctx) {
+      if (!n) return; if (ctx.pass === 'opaque' && !anySolid) return; if (ctx.pass === 'add' && !anyLight) return;
+      if (!up) { gl.bindBuffer(gl.ARRAY_BUFFER, self.inst); if (n > self.cap) { self.cap = Math.max(n, 64); gl.bufferData(gl.ARRAY_BUFFER, self.cap * STRIDE * 4, gl.DYNAMIC_DRAW); } gl.bufferSubData(gl.ARRAY_BUFFER, 0, data, 0, n * STRIDE); up = true; }
+      if (ctx.pass === 'opaque') { gl.bindVertexArray(self.vaoMesh);
+        self.pMesh.use().set({ uVP: ctx.viewProj, uSun: ctx.sunDir, uCelDawn: Math.min(1, Math.max(0, (ctx.dawn - 0.70) / 0.14)) }); gl.drawElementsInstanced(gl.TRIANGLES, self.ni, gl.UNSIGNED_INT, 0, n); }
+      else { gl.bindVertexArray(self.vaoPts);
+        self.pPts.use().set({ uVP: ctx.viewProj, uRes: [ctx.W, ctx.H], uProjK: ctx.H / (2 * Math.tan(ctx.fovY / 2)), uAperture: ctx.aperture, uFocus: ctx.focusDist, uSize: 0.011, uMinPx: 0.75, uT: ctx.t, uGain: ctx.reflect ? 0.6 : 1 });
+        gl.drawArraysInstanced(gl.TRIANGLES, 0, self.np * 6, n); }
+      gl.bindVertexArray(null);
+    } };
+  }
+}
+
+export function makeCast(E) {
+  const impl = new StandIn(E); const { hex, time: T } = E; const actors = new Map(), crowds = new Map(); const laneCol = {}; for (const k in LANE) laneCol[k] = hex(LANE[k]);
+  const DEF = { pos: [0, 0, 0], yaw: 0, tilt: 0, squat: 0, scale: 1, arms: 0, reach: 0, density: 1, solid: 0, cel: -1, visible: true, track: 'idle', time: 0 };
+  // stand-in motion: a small step/bob so that walking, running and beats read. Real figures play the named track at `time` instead.
+  const bob = (s) => { const tr = s.track || 'idle', tt = s.time || 0; if (tr === 'run') return 0.07 * Math.abs(Math.sin(tt * 9.4)); if (tr === 'walk') return 0.035 * Math.abs(Math.sin(tt * 5.6)); if (tr === 'beat') return 0.10 * Math.exp(-5 * ((T.beatAt(tt) % 1 + 1) % 1)); return 0.012 * Math.sin(tt * 1.7); };
+  const write = (d, o, s, color, bun) => { const y = s.pos[1] + (s.tilt > 0.3 ? 0 : bob(s)); d[o] = s.pos[0]; d[o + 1] = y; d[o + 2] = s.pos[2]; d[o + 3] = s.yaw; d[o + 4] = s.tilt; d[o + 5] = 1 - 0.32 * s.squat; d[o + 6] = s.scale; d[o + 7] = s.arms;
+    d[o + 8] = s.reach; d[o + 9] = color[0]; d[o + 10] = color[1]; d[o + 11] = color[2]; d[o + 12] = s.visible ? s.density * (1 - s.solid) : 0; d[o + 13] = s.visible ? s.solid : 0; d[o + 14] = s.cel; d[o + 15] = bun; };
+  const cast = {
+    impl, laneCol,
+    begin() { for (const a of actors.values()) a.live = false; for (const c of crowds.values()) c.n = 0; },
+    actor(id, o = {}) { let a = actors.get(id); if (!a) { a = { id, lane: o.lane || 'main', variant: o.variant || 'jade', s: { ...DEF }, live: false,
+      set(v) { this.s = { ...DEF, ...v }; this.live = true; return this; } }; actors.set(id, a); } if (o.lane) a.lane = o.lane; return a; },
+    crowd(id, max = 1024) { let c = crowds.get(id); if (!c) { c = { id, max, n: 0, data: new Float32Array(max * STRIDE),
+      put(i, v) { const s = { ...DEF, ...v }; write(this.data, i * STRIDE, s, v.color || laneCol[v.lane || 'main'], v.bun ? 1 : 0); if (i >= this.n) this.n = i + 1; } }; crowds.set(id, c); } return c; },
+    drawables() { const list = []; const live = [...actors.values()].filter((a) => a.live && a.s.visible);
+      if (live.length) { const d = new Float32Array(live.length * STRIDE); live.forEach((a, i) => write(d, i * STRIDE, a.s, a.s.color || laneCol[a.lane], a.variant === 'violet' ? 1 : 0)); list.push(impl.drawable(d, live.length)); }
+      for (const c of crowds.values()) if (c.n) list.push(impl.drawable(c.data.slice(0, c.n * STRIDE), c.n));
+      return list; },
+    yawTo: (dx, dz) => Math.atan2(dx, dz),
+  };
+  return cast;
+}

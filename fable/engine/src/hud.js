@@ -2,6 +2,7 @@
 // desc: { branch:'main', color:'#FF7A1A', hash?: string (default: ticks on every bar line), ctx?: 0..1, count?: number, ink?: 0..1, alpha?: 0..1 }
 export class Hud {
   constructor(W, H) { this.W = W; this.H = H; this.c = document.createElement('canvas'); this.c.width = W; this.c.height = H; this.g = this.c.getContext('2d'); }
+  clear() { this.g.clearRect(0, 0, this.W, this.H); return this.c; }
   draw(d, t, engine) {
     const g = this.g, s = this.H / 1080, fs = 26 * s; g.clearRect(0, 0, this.W, this.H);
     const a = d.alpha ?? 1; if (a <= 0) return this.c;

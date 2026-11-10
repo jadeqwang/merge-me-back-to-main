@@ -3,7 +3,7 @@
 import { Program, FS_HEAD } from './glx.js';
 const VS = `#version 300 es
 layout(location=0) in vec3 iPos; layout(location=1) in vec3 iCol; layout(location=2) in float iRad;
-uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uAperture, uFocus, uMinPx, uGain;
+uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uAperture, uFocus, uMinPx, uGain, uCamY;
 out vec2 vC; out vec3 vCol; out float vR, vCoc;
 void main(){
   vec2 c = vec2(float(gl_VertexID&1), float((gl_VertexID>>1)&1))*2.-1.; vC = c;
@@ -13,7 +13,9 @@ void main(){
   float coc = uAperture * abs(1./uFocus - 1./dist) * uRes.y;         // SPEC: coc_px = aperture*|1/focus - 1/dist|*H
   float r = max(sqrt(r0*r0 + coc*coc), uMinPx);
   float e = (r0*r0)/(r*r);                                           // energy conservation
-  e = max(e, min(1., r0/uMinPx)*0.6*step(coc, uMinPx));              // tiny sharp lights keep a floor so the far plain still glitters
+  float graze = smoothstep(0.0, 0.10, uCamY/dist);
+  e = max(e, min(1., r0/uMinPx)*0.6*mix(0.25*exp(-dist/1200.), 1., graze)*step(coc, uMinPx));   // tiny sharp lights keep a floor so the far plain still glitters (less at the horizon, where they stack)
+  e *= mix(exp(-dist/600.), 1., graze);                               // night air at the horizon
   vCol = iCol * uGain * e; vR = r; vCoc = coc;
   p.xy += c * (r + 1.5) * 2. / uRes * p.w;
   gl_Position = p;
@@ -42,8 +44,24 @@ export class Lights {
       if (!count) return;
       gl.bindVertexArray(self.vao);
       if (!uploaded) { gl.bindBuffer(gl.ARRAY_BUFFER, self.buf); gl.bufferSubData(gl.ARRAY_BUFFER, 0, data, 0, count * 7); uploaded = true; }
-      self.prog.use().set({ uVP: ctx.viewProj, uRes: [ctx.W, ctx.H], uProjK: ctx.H / (2 * Math.tan(ctx.fovY / 2)), uAperture: ctx.aperture, uFocus: ctx.focusDist, uMinPx: o.minPx ?? 0.9, uGain: (o.gain ?? 1) * (ctx.reflect ? (o.reflGain ?? 1) : 1) });
+      self.prog.use().set({ uVP: ctx.viewProj, uRes: [ctx.W, ctx.H], uProjK: ctx.H / (2 * Math.tan(ctx.fovY / 2)), uAperture: ctx.aperture, uFocus: ctx.focusDist, uCamY: Math.abs(ctx.camPos[1]), uMinPx: o.minPx ?? 0.9, uGain: (o.gain ?? 1) * (ctx.reflect ? (o.reflGain ?? 1) : 1) });
       gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count); gl.bindVertexArray(null);
     } };
   }
+}
+
+// Ground glow: soft pools of light lying on the mirror (the 'ground' pass). Under a canopy of roads, under a figure, at a merge.
+//   const G = engine.glows(2048);  per frame: G.drawable(data, count, {gain})  with data = Float32Array [x, z, radius m, r, g, b (linear HDR)] * count
+const VS_G = `#version 300 es
+layout(location=0) in vec3 iPR; layout(location=1) in vec3 iCol; uniform mat4 uVP; out vec2 vC; out vec3 vCol;
+void main(){ vec2 c = vec2(float(gl_VertexID&1), float((gl_VertexID>>1)&1))*2.-1.; vC = c; vCol = iCol; gl_Position = uVP*vec4(iPR.x + c.x*iPR.z, 0., iPR.y + c.y*iPR.z, 1.); }`;
+const FS_G = FS_HEAD + `in vec2 vC; in vec3 vCol; uniform float uGain, uInk; out vec4 o;
+void main(){ float d = dot(vC, vC); if (d > 1.) discard; float a = exp(-d*3.5) - 0.0302; o = vec4(vCol*uGain*a*(1.-uInk), 0.); }`;
+export class Glows {
+  constructor(gl, max = 2048) { this.gl = gl; this.prog = new Program(gl, VS_G, FS_G, 'glows'); this.vao = gl.createVertexArray(); this.buf = gl.createBuffer();
+    gl.bindVertexArray(this.vao); gl.bindBuffer(gl.ARRAY_BUFFER, this.buf); gl.bufferData(gl.ARRAY_BUFFER, max * 24, gl.DYNAMIC_DRAW);
+    for (const [loc, n, off] of [[0, 3, 0], [1, 3, 12]]) { gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, n, gl.FLOAT, false, 24, off); gl.vertexAttribDivisor(loc, 1); } gl.bindVertexArray(null); }
+  drawable(data, count, o = {}) { const self = this, gl = this.gl; let up = false;
+    return { passes: ['ground'], reflect: false, draw(ctx) { if (!count) return; gl.bindVertexArray(self.vao); if (!up) { gl.bindBuffer(gl.ARRAY_BUFFER, self.buf); gl.bufferSubData(gl.ARRAY_BUFFER, 0, data, 0, count * 6); up = true; }
+      gl.blendFunc(gl.ONE, gl.ONE); self.prog.use().set({ uVP: ctx.viewProj, uGain: o.gain ?? 1, uInk: Math.min(1, Math.max(0, (ctx.dawn - 0.72) / 0.2)) }); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count); gl.bindVertexArray(null); } }; }
 }

@@ -9,7 +9,7 @@ import { Sky, skyParams } from './sky.js';
 import { Ground } from './ground.js';
 import { Post } from './post.js';
 import { Roads } from './roads.js';
-import { Lights } from './lights.js';
+import { Lights, Glows } from './lights.js';
 import { TypeLayer, loadFonts } from './type.js';
 import { Hud } from './hud.js';
 import { growTree } from './tree.js';
@@ -49,6 +49,7 @@ async function boot() {
     type,                                              // engine.type.line(desc) -> drawable (or return descs in frame().type)
     roads: (defs, opts) => new Roads(gl, defs, opts),  // static road geometry; .drawable({head, ...}) per frame
     lights: (max) => new Lights(gl, max),              // bokeh lights; .drawable(Float32Array, count, opts) per frame
+    glows: (max) => new Glows(gl, max),                // soft pools of light on the mirror; .drawable(Float32Array [x,z,radius,r,g,b], count, {gain})
     capsule: (o) => new Capsule(gl, o),                // 1.65 m placeholder figure for scale
     hashAt: (t) => rng.hex7(Math.floor(time.barAt(t))),
     param: (k, d) => (Q.has(k) ? (isNaN(+Q.get(k)) ? Q.get(k) : +Q.get(k)) : d),
@@ -120,7 +121,8 @@ async function boot() {
       post.accumulate(scene.color, 1 / N);
     }
     const F0 = show.frame(t);
-    const hc = F0.hud ? hud.draw({ ink: ((F0.env && F0.env.dawn) || 0) > 0.5 ? 1 : 0, ...F0.hud }, t, engine) : null;
+    let hc = F0.hud ? hud.draw({ ink: ((F0.env && F0.env.dawn) || 0) > 0.5 ? 1 : 0, ...F0.hud }, t, engine) : null;
+    if (F0.overlay) { if (!hc) hc = hud.clear(); F0.overlay(hud.g, W, H, t); }     // 2D overlay drawn crisp over the graded frame (terminal card, credits)
     post.finish((F0.env && F0.env.grade) || {}, hc, Math.round(t * FPS));
     const err = gl.getError(); if (err) console.log('gl error 0x' + err.toString(16) + ' at t=' + t);
   }
@@ -152,6 +154,7 @@ Show module:
     drawables: [ ... ],        // drawn in array order inside each pass
     type: [ lineDesc, ... ],   // world-space lyric lines (see type.js)
     hud: { branch, color, hash?, ctx?, count? } | null,
+    overlay: (g2d, W, H, t) => {...}   // optional: draw on the HUD canvas (crisp, after grading)
   }; }
 Drawable: { draw(ctx), passes?: ['opaque','add'] (default) | ['ground'] | ..., reflect?: false to skip the mirror }
   ctx = { gl, W, H, pass, reflect, view, proj, viewProj, camPos, fovY, focusDist, aperture, dawn, t, near, far, env, sunDir }

@@ -8,6 +8,7 @@
 //     align: 'left'|'center'|'right',  rows: [n1, n2, ...] words per row (default one row),  leading: 1.25 (x cap height... in em units of the font: 1.0 em default)
 //     color: '#FFF1D6', gain: 1.35 (HDR), ink: 0..1 (default from dawn), inkColor: '#14122B'
 //     out: time the line leaves (default: last word end, at least 0.6 s after it starts, + hold 0.5), fade: 0.45
+//     raw: true keeps punctuation (labels, commit messages; lyrics never have any),
 //     mode: 'ground' => not drawn in the mirror,  wipe: true (written left to right by a bright edge),  alpha: 1, tracking: em }
 import { Program, FS_HEAD, canvasTex, hex } from './glx.js';
 
@@ -52,11 +53,11 @@ export class TypeLayer {
   constructor(gl) { this.gl = gl; this.prog = new Program(gl, VS, FS, 'type'); this.cache = new Map(); this.cream = hex('#FFF1D6'); this.inkc = hex('#14122B'); }
 
   layout(d) {
-    const face = FACES[d.font || 'serif']; const key = JSON.stringify([d.font || 'serif', d.words ? d.words.map((w) => w.w) : d.text, d.rows || 0, d.tracking || 0, d.upper]);
+    const face = FACES[d.font || 'serif']; const key = JSON.stringify([d.font || 'serif', d.words ? d.words.map((w) => w.w) : d.text, d.rows || 0, d.tracking || 0, d.upper, d.raw || 0]);
     let L = this.cache.get(key); if (L) return L;
     const upper = d.upper ?? face.upper; const px = face.px;
     const raw = d.words ? d.words.map((w) => w.w) : String(d.text).split(' ');
-    const texts = raw.map((s) => (upper ? s.toUpperCase() : s).replace(/[,.;:!?\u2026]/g, ''));   // rule 3: no punctuation (apostrophes stay)
+    const texts = raw.map((s) => (d.raw ? (upper ? s.toUpperCase() : s) : (upper ? s.toUpperCase() : s).replace(/[,.;:!?\u2026]/g, '')));   // rule 3: no punctuation (apostrophes stay)
     const c = document.createElement('canvas'); let g = c.getContext('2d'); setFont(g, d.font || 'serif', px);
     const track = (d.tracking ?? face.tracking) * px;
     try { g.letterSpacing = track + 'px'; } catch (e) {}

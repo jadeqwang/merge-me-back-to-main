@@ -9,7 +9,7 @@ export class Ground {
     this.prog = new Program(gl, VS_TRI, FS_HEAD + RAY_GLSL + SKY_GLSL + `
 in vec2 vUv; layout(location=0) out vec4 o0; layout(location=1) out vec4 o1;
 uniform sampler2D uRefl, uReflAux; uniform vec2 uRes;
-uniform vec3 uBase; uniform float uBaseCut, uF0, uRipple, uFogDist, uFogAmt, uReflGain, uReflBlur, uRough;
+uniform vec3 uBase; uniform float uWet, uBaseCut, uF0, uRipple, uFogDist, uFogAmt, uReflGain, uReflBlur, uRough;
 float gn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f); float a=h31(vec3(i,1.)), b=h31(vec3(i+vec2(1,0),1.)), c=h31(vec3(i+vec2(0,1),1.)), d=h31(vec3(i+vec2(1,1),1.)); return mix(mix(a,b,f.x), mix(c,d,f.x), f.y); }
 void main(){
   vec3 d = rayDir(vUv);
@@ -44,8 +44,11 @@ void main(){
   for (int i=-3;i<=3;i++){ float w = exp(-float(i*i)/6.0); vec2 q = uv + off + vec2(0., float(i)*blur); rc += texture(uRefl, q).rgb*w; cov += texture(uReflAux, q).a*w; }
   rc /= 4.165; cov /= 4.165;
   // large slow variation so that a top-down ground is never a flat void
-  float wet = 0.75 + 0.5*gn(p.xz*0.004 + 3.7);
+  float wet = mix(1., 0.75 + 0.5*gn(p.xz*0.004 + 3.7), uWet);
   vec3 col = uBase*wet*(1.-kS*uBaseCut) + kS*(skyR*(1.-cov) + rc*uReflGain);
+  // by day a hint of where the sun is: the mirror is warmer and a touch brighter toward it
+  { float sw = max(dot(normalize(d.xz + 1e-6), normalize(uSunDir.xz + 1e-6)), 0.); float dayk = smoothstep(0.7, 1.0, uDawn);
+    col *= mix(vec3(1.), vec3(1.10, 1.02, 0.86), dayk*sw*sw*0.8) * (1. - 0.10*dayk*(1.-sw)); }
   // aerial perspective into the horizon colour
   vec3 fogc = skyColor(normalize(vec3(d.x, 0.004, d.z)));
   float f = (1. - exp(-dist/uFogDist)) * uFogAmt;
@@ -60,7 +63,7 @@ void main(){
     const base = g.base || [0, 1, 2].map((i) => this.night[i] + (this.day[i] - this.night[i]) * kk);
     this.prog.use().set({ uInvVP: cam.invViewProj, uCam: cam.pos, ...sp, uRefl: refl, uReflAux: reflAux, uRes: [W, H], uBase: base,
       uF0: g.f0 ?? (0.55 - 0.3 * kk), uBaseCut: g.baseCut ?? (0.5 + 0.1 * kk), uRipple: g.ripple ?? 0.011, uFogDist: g.fogDist ?? 5000, uFogAmt: g.fogAmt ?? 1.0, uReflGain: g.reflGain ?? 0.6,
-      uReflBlur: g.reflBlur ?? 2.0, uRough: g.rough ?? 0.3 });
+      uWet: g.wet ?? 1, uReflBlur: g.reflBlur ?? 2.0, uRough: g.rough ?? 0.3 });
     drawTri(gl);
   }
 }

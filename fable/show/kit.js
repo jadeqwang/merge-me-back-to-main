@@ -1,0 +1,71 @@
+// SHOW KIT: what every sequence gets. K = { E, T, bar, bb, world, cast, type helpers, grade, hud helpers, small maths }.
+import { makeWorld, LANE, LIVES, VIOLET } from './world.js';
+import { makeCast } from './cast.js';
+
+export const clamp01 = (x) => Math.min(1, Math.max(0, x));
+export const lerp = (a, b, u) => a + (b - a) * u;
+export const mix3 = (a, b, u) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u];
+export const sm = (u) => { u = clamp01(u); return u * u * (3 - 2 * u); };
+export const seg = (t, a, b) => clamp01((t - a) / (b - a));            // 0..1 progress of t through [a, b]
+export const ss = (t, a, b) => sm(seg(t, a, b));                         // smoothstepped
+export const easeOut = (u) => 1 - Math.pow(1 - clamp01(u), 3);
+export const easeIn = (u) => Math.pow(clamp01(u), 3);
+
+export async function makeKit(E) {
+  const T = E.time, bar = (n) => T.bar(n), bb = (n, k) => T.bb(n, k);
+  const world = makeWorld(E), cast = makeCast(E);
+  let gitlog = { lines: ['* (HEAD -> fable/merge) the Fable cut'], branch: 'fable/merge' };
+  try { gitlog = await (await fetch('/fable/show/gitlog.json')).json(); } catch (e) { console.log('gitlog.json missing: run node fable/tools/gitlog.mjs'); }
+
+  // ---- camera basis (matches engine buildCamera)
+  const basis = (c) => { const f = E.v3.norm(E.v3.sub(c.target, c.pos)); let up = c.up || [0, 1, 0]; const d = Math.abs(E.v3.dot(f, up));
+    if (d > 0.96) { const w = Math.min(1, (d - 0.96) / 0.035), tu = c.topUp || [1, 0, 0], ww = w * w * (3 - 2 * w); up = E.v3.norm([up[0] * (1 - ww) + tu[0] * ww, up[1] * (1 - ww) + tu[1] * ww, up[2] * (1 - ww) + tu[2] * ww]); }
+    const r = E.v3.norm(E.v3.cross(f, up)); const u = E.v3.cross(r, f); return { f, r, u, tan: Math.tan(((c.fov || 35) * Math.PI) / 360), asp: E.W / E.H }; };
+  // world point seen at NDC (sx, sy) at depth d along the view axis
+  const at = (c, sx, sy, d) => { const b = basis(c); return [0, 1, 2].map((i) => c.pos[i] + b.f[i] * d + b.r[i] * sx * d * b.tan * b.asp + b.u[i] * sy * d * b.tan); };
+  // where a world point lands on screen (NDC), and its depth
+  const project = (c, p) => { const b = basis(c); const v = E.v3.sub(p, c.pos); const d = E.v3.dot(v, b.f); return { x: E.v3.dot(v, b.r) / (d * b.tan * b.asp), y: E.v3.dot(v, b.u) / (d * b.tan), d }; };
+
+  // ---- lyric type, placed by where it should sit in frame (rule 3: in the world, never over a head, >= 64 px cap height at 1080p)
+  //   lyric(id, cam, { font:'serif'|'hook', px: cap height in 1080p pixels, x, y: NDC of the left end of the LAST row's baseline (or centre/right with align),
+  //                    dist: metres from camera, mode: 'float' (upright, faces the camera) | 'stand' (upright, feet on the mirror at dist: y is ignored) | 'ground' (lying on the mirror),
+  //                    rows, align, leading, ink, gain, out, hold, ...type.js fields })
+  // Pass the camera of a fixed moment for world-locked type (parallax), or the current camera for frame-locked type.
+  function place(cam, o) {
+    const b = basis(cam), mode = o.mode || 'float'; let pos, right, up, d = o.dist ?? 30;
+    if (mode === 'ground') { const far = at(cam, o.x ?? 0, o.y ?? 0, 1), dir = E.v3.sub(far, cam.pos); const k = -cam.pos[1] / dir[1]; pos = [cam.pos[0] + dir[0] * k, 0.02, cam.pos[2] + dir[2] * k]; d = k;   // k = depth along the axis
+      const rh = E.v3.norm([b.r[0], 0, b.r[2]]); let uh = [b.u[0], 0, b.u[2]]; if (Math.hypot(uh[0], uh[2]) < 0.2) uh = [b.f[0], 0, b.f[2]]; uh = E.v3.norm(uh); right = rh; up = uh; }
+    else { const rh = E.v3.norm([b.r[0], 0, b.r[2]]); right = rh; up = [0, 1, 0]; pos = at(cam, o.x ?? 0, o.y ?? 0, d); if (mode === 'stand') pos[1] = 0.04; }
+    const size = ((o.px ?? 80) / 1080) * 2 * d * b.tan;
+    return { pos, right, up, size };
+  }
+  const FONT_DEF = { serif: { px: 90, leading: 1.0 }, hook: { px: 78, leading: 0.94 }, mono: { px: 40, leading: 1.2 } };
+  function lyric(id, cam, o = {}) { const font = o.font || 'serif'; const fd = FONT_DEF[font]; const pl = place(cam, { px: fd.px, ...o });
+    const words = o.words || T.words(id); const d = { words, font, leading: fd.leading, align: 'left', gain: 1.5, reflGain: font === 'hook' ? 0.1 : 0.22, ...o, ...pl }; if (o.mode === 'ground') d.mode = 'ground'; else delete d.mode; delete d.x; delete d.y; delete d.px; delete d.dist; return d; }
+  function label(text, cam, o = {}) { const font = o.font || 'mono'; const fd = FONT_DEF[font]; const pl = place(cam, { px: fd.px, ...o }); const d = { text, font, leading: fd.leading, align: 'left', gain: 1.3, wipe: false, raw: true, ...o, ...pl }; if (o.mode === 'ground') d.mode = 'ground'; else delete d.mode; delete d.x; delete d.y; delete d.px; delete d.dist; return d; }
+
+  // ---- grade by dawn (night / blue hour / sunrise / day), then per-shot overrides
+  const GK = [
+    [0.0, { exposure: 1.5, bloom: 0.55, bloomThreshold: 1.0, streak: 0.12, streakThreshold: 1.2, vignette: 0.36, saturation: 1.1, contrast: 1.04, grain: 0.028 }],
+    [0.35, { exposure: 1.45, bloom: 0.5, bloomThreshold: 1.0, streak: 0.12, streakThreshold: 1.2, vignette: 0.32, saturation: 1.1, contrast: 1.04, grain: 0.028 }],
+    [0.6, { exposure: 1.0, bloom: 0.55, bloomThreshold: 1.25, streak: 0.12, streakThreshold: 2.4, vignette: 0.30, saturation: 1.12, contrast: 1.1, grain: 0.026 }],
+    [1.0, { exposure: 1.75, bloom: 0.2, bloomThreshold: 4.5, streak: 0.0, streakThreshold: 5, vignette: 0.12, saturation: 1.18, contrast: 1.05, grain: 0.02 }],
+  ];
+  function grade(dawn, over = {}) { let i = 0; while (i < GK.length - 2 && GK[i + 1][0] <= dawn) i++; const a = GK[i], b = GK[i + 1], u = clamp01((dawn - a[0]) / (b[0] - a[0])); const g = {}; for (const k in a[1]) g[k] = lerp(a[1][k], b[1][k], u); return { ...g, ...over }; }
+
+  const ctxMain = (t) => clamp01(t / bar(137));                         // main's context fills over the night; it is full when the day comes
+  const hudMain = (t, o = {}) => ({ branch: 'main', color: LANE.main, ctx: ctxMain(t), ...o });
+  const yawTo = (dx, dz) => Math.atan2(dx, dz);
+  // a point relative to a road frame a = {x, z, tx, tz}: f metres ahead, r metres to the right of the heading, y up
+  const rel = (a, f, r, y = 0) => [a.x + a.tx * f - a.tz * r, y, a.z + a.tz * f + a.tx * r];
+  const yawOf = (a) => Math.atan2(a.tx, a.tz);
+  // a smoothed road frame for a moving subject: position at t, heading from the chord over +-w seconds
+  const frameOf = (posAt, t, w = 1.5) => { const p = posAt(t), a = posAt(t - w), b = posAt(t + w); let dx = b.x - a.x, dz = b.z - a.z; const l = Math.hypot(dx, dz); if (l < 1e-3) { dx = p.tx; dz = p.tz; } else { dx /= l; dz /= l; } return { x: p.x, z: p.z, tx: dx, tz: dz }; };
+  // how a body is drawn for a given dawn: light at night, silhouette at sunrise, (cel colour follows dawn in the figure itself)
+  const look = (dawn) => ({ density: 1 - ss(dawn, 0.40, 0.56), solid: ss(dawn, 0.38, 0.54) });
+  const shared = {};
+  // a shot list: pick the entry whose [t0, next t0) contains t. Each entry: { t0, f(t, u, t0, t1) }
+  const cut = (t, list, tEnd) => { let i = 0; while (i < list.length - 1 && t >= list[i + 1].t0) i++; const a = list[i].t0, b = i + 1 < list.length ? list[i + 1].t0 : tEnd; return list[i].f(t, (t - a) / (b - a), a, b); };
+
+  return { E, T, bar, bb, world, cast, gitlog, LANE, LIVES, VIOLET, basis, at, project, place, lyric, label, grade, hudMain, ctxMain, yawTo, rel, yawOf, frameOf, look, shared, cut, hex: E.hex, camPath: E.camPath, rng: E.rng };
+}

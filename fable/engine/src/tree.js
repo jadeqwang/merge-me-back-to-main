@@ -2,7 +2,7 @@
 // river delta / tree of life and never as an H-tree. Non-crossing by construction (nested wedges, monotone radius), organic by vigour,
 // uneven wedge splits and curved, slightly wandering limbs.
 //   growTree({ levels:10, seed, fan: deg total, r0: first limb length, q: length falloff, trunk: metres of main before the first fork,
-//              timeOfDepth: d => song time when depth-d forks happen })  ->  { roads:[def...], tips:[{x,z,road}], forks:[{x,z,depth,g}] }
+//              timeOfDepth: d => song time when depth-d forks happen, heirAngle: rad (main keeps to the wedge containing it) })  ->  { roads:[def...], tips:[{x,z,road}], forks:[{x,z,depth,g}] }
 // Each road def is ready for engine.roads(): {pts, g:[g0,g1], depth, index, parent, lane} with lane 0 = main (one unbroken main runs root to a tip), 1..7 = branch lanes (violet is never used here).
 import { mulberry32, fbm1 } from './rng.js';
 export function growTree(o = {}) {
@@ -14,9 +14,10 @@ export function growTree(o = {}) {
   forks.push({ x: 0, z: 0, depth: 0, g: T(0) });
   let seq = 1;
   function grow(parent, px, pz, pdir, r, a0, a1, depth, vigor, lane) {
-    if (depth > levels) { tips.push({ x: px, z: pz, road: parent }); return; }
+    if (depth > levels) { tips.push({ x: px, z: pz, road: parent, dir: pdir }); return; }
     const f = 0.5 + (rnd() - 0.5) * 0.30; const mid = a0 + (a1 - a0) * f;
-    const kids = [[a0, mid], [mid, a1]]; const heir = rnd() < 0.5 ? 0 : 1;
+    const kids = [[a0, mid], [mid, a1]]; let heir = rnd() < 0.5 ? 0 : 1;
+    if (o.heirAngle !== undefined && lane === 0) heir = o.heirAngle < mid ? 0 : 1;   // main (lane 0) keeps to the wedge that contains heirAngle
     kids.forEach(([b0, b1], k) => {
       const v = Math.min(1.7, Math.max(0.42, vigor * (0.80 + 0.42 * rnd()))); const len = r0 * Math.pow(q, depth - 1) * v * (depth === 1 ? 1 : 1);
       const ang = b0 + (b1 - b0) * (0.5 + (rnd() - 0.5) * 0.35); const rr = r + len;

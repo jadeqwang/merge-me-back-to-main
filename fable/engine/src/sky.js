@@ -8,7 +8,7 @@ import { Program, VS_TRI, FS_HEAD, drawTri, hex } from './glx.js';
 const KEYS = [
   { d: 0.00, Z: '#04051A', M: '#0B1040', H: '#141E66', HE: '#1A2880', B1: '#16286E', B2: '#0C1448', AG: '#1E7C86', ag: 0.5, star: 1.0, w1: 0.055, w2: 0.20, hg: 1.0 },
   { d: 0.35, Z: '#040722', M: '#0D1668', H: '#1A2488', HE: '#2A2E9E', B1: '#FF9E4A', B2: '#8E2C86', AG: '#2A6C9A', ag: 0.12, star: 0.4, w1: 0.026, w2: 0.065, hg: 1.0 },
-  { d: 0.60, Z: '#35309A', M: '#A86CCB', H: '#C77CB6', HE: '#FF9C7C', B1: '#FFC766', B2: '#FF7A8A', AG: '#000000', ag: 0.0, star: 0.0, w1: 0.07, w2: 0.24, hg: 1.0 },
+  { d: 0.60, Z: '#0F0D45', M: '#43218A', H: '#7E2686', HE: '#C22F6E', B1: '#FF8A2A', B2: '#E8325A', AG: '#000000', ag: 0.0, star: 0.08, w1: 0.05, w2: 0.16, hg: 1.0 },
   { d: 1.00, Z: '#4F93FF', M: '#9CC8FF', H: '#FFF6E6', HE: '#FFF8EA', B1: '#FFF1D4', B2: '#FFDDB0', AG: '#000000', ag: 0.0, star: 0.0, w1: 0.05, w2: 0.16, hg: 1.35 },
 ];
 const KL = KEYS.map((k) => ({ ...k, Z: hex(k.Z), M: hex(k.M), H: hex(k.H), HE: hex(k.HE), B1: hex(k.B1), B2: hex(k.B2), AG: hex(k.AG) }));
@@ -72,11 +72,11 @@ vec3 skyBase(vec3 d){
     float ang = acos(clamp(dot(d, uSunDir), -1., 1.));
     float disc = smoothstep(uSunRad + uPxAngle, uSunRad - uPxAngle, ang);
     float v = clamp((d.y - uSunDir.y)/uSunRad, -1., 1.);
-    vec3 dc = mix(vec3(1.0, 0.24, 0.22), vec3(1.0, 0.52, 0.14), smoothstep(-1.0, -0.15, v));
-    dc = mix(dc, vec3(1.0, 0.84, 0.46), smoothstep(-0.25, 0.95, v));
-    float hot = mix(1.2, 3.0, smoothstep(-0.9, 1.0, v)) * mix(1.0, 3.5, smoothstep(0.62, 1.0, uDawn));
+    vec3 dc = mix(vec3(1.0, 0.07, 0.05), vec3(1.0, 0.25, 0.04), smoothstep(-1.0, -0.3, v));
+    dc = mix(dc, vec3(1.0, 0.50, 0.11), smoothstep(-0.4, 0.8, v));
+    float hot = mix(1.3, 2.3, smoothstep(-0.9, 1.0, v)) * mix(1.0, 4.5, smoothstep(0.66, 1.0, uDawn));
     if (uSunBands > 0.) { float y = (v+1.)*0.5; float slit = smoothstep(0.42, 0.5, abs(fract(y*11. - 0.3*y*y*11.) - 0.5)*2.*(0.35+y)); disc *= mix(1., slit, uSunBands*smoothstep(0.62, 0.2, y)); }
-    vec3 glow = vec3(1.0, 0.62, 0.30) * exp(-max(ang-uSunRad,0.)/(0.10)) * 0.9 + vec3(1.0, 0.42, 0.50) * exp(-ang/0.55) * 0.35;
+    vec3 glow = vec3(1.0, 0.42, 0.10) * exp(-max(ang-uSunRad,0.)/(0.06)) * 0.7 + vec3(1.0, 0.16, 0.28) * exp(-ang/0.42) * 0.22;
     glow *= mix(1.0, 0.45, smoothstep(0.7, 1.0, uDawn));
     col = mix(col + glow*uSunGain, dc*hot, disc*uSunGain);
   }
