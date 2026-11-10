@@ -1,92 +1,70 @@
-# F3 — the figure (Jade as bone-attached particles). Working notes for whoever continues
+# F3 — the figure (Jade). Working notes for whoever continues
 
-Spec: `fable/SPEC.md` §3 (look) and §5 (skeleton, track format, Drawable contract). This file is the state of the work.
+Spec: `fable/SPEC.md` §3 (look) and §5 (skeleton, track format, Drawable contract). This file is the state of the work
+after the director's rework (mesh + cloth-lite trousers + fibres). The earlier surfel/glyph-row version is in git history (6361fa6, 2d1fb7a).
 
-## What exists and works
+## Files
 - `fable/engine/src/figure/m.js` — vec/quat helpers, seeded rng, tiny mat4 (lab camera).
-- `fable/engine/src/figure/skeleton.js` — 21-joint canonical skeleton, A-pose rest (arms 52° below horizontal), rest frames exactly as SPEC §5
-  (track quat = world orientation of the joint frame; local +Y to the child, +Z front; feet/toes +Z = top of foot), `loadTrack(urlNoExt)`,
-  `boneScales(track)` (per-bone along-bone scale from the track JSON's `boneLengths`), FK for authored poses and the procedural
-  test tracks `testTrack('idle'|'walk'|'run'|'turn'|'kick'|'lunge'|'stress')` (lab only).
-- `fable/engine/src/figure/body.js` — `buildBody()`: the particle template, shaped from lofted elliptical cross-sections in the rest pose.
-  Kinds: 0 fill surfels (close the surface), 1 glyph lattice (rows of text round the cloth: pitch 12.8 x 20.5 mm), 2 decals (back disc,
-  RARE EARTH, chest dot, 1420 MHz patch), 3 eyes (variant 3 = closed arcs, default; variant 4 = open ovals + lash). Variant 2 = bun + two pencils.
-  Also returns hair guides (60 long + 4 short temple strands, 14 nodes; each guide has `pins`: a combed path over the scalp that is kinematic),
-  ~936 render strands (3 nearest same-side guides + weights), 3 strap chains.
-- `fable/engine/src/figure/sim.js` — `simulate(track, body, opts)`: deterministic verlet over the whole track at 60 fps x 3 substeps:
-  hair guides (capsule colliders on head, neck, shoulders, jacket, arms, waist, pelvis; long hair is biased to fall BEHIND the shoulders),
-  3 strap chains (collide with pelvis and trouser legs), 3 lag springs (trouser hems L/R chase the ankles at 2.1 Hz, jacket hem chases the chest).
-  Output one row of `SIM.W` = 924 texels per frame (hair/strap nodes relative to the hips joint; lags are offsets). ~1 ms per track frame.
-- `fable/engine/src/figure/figure.js` — `Figure`: instanced renderer behind the Drawable contract. Two programs: body points and ribbons
-  (hair strands, straps, motion trails). Tracks live in a float atlas (joints RGBA32F, sim RGBA16F, 4096 rows per column), a track table
-  texture holds start/frames/loop/fps/loopDelta/bone scales. Auto LOD: instances are bucketed by on-screen height, each bucket draws a
-  prefix of the (shuffled) particle ranges with larger points.
-- Lab: `fable/show/figlab.js` (mini renderer: sky by `dawn`, mirror reflection, bloom, aux outline, tonemap; shot table `SHOTS`),
-  `fable/engine/figlab.html`, `fable/tools/figlab.mjs` (puppeteer still capture).
+- `fable/engine/src/figure/skeleton.js` — 21 joints, rest pose = `fable/tools/bake/skeleton.json` (A-pose, arms 35 deg from the body, hips 1.005 m),
+  rest frames per SPEC §5, `loadTrack(urlNoExt)` (keeps `meta`), `boneScales`, FK + procedural `testTrack(kind)` (lab only).
+- `fable/engine/src/figure/body.js` — `buildBody()`:
+  - every form is a `Loft` (elliptical rings, Catmull-Rom) listed with a config in `defs`; from the same lofts come
+    (1) the skinned triangle mesh in 3 LODs (20.3k / 5.3k / 1.7k triangles), (2) a part-id atlas (R8, one tile per loft, 255 = hole) so the
+    orange band, the open jacket front and skin/cloth borders are crisp, (3) the FIBRES (463 threads running top to bottom along jacket,
+    sleeves, waist and trouser legs; 30 segments each, shuffled so a prefix is an even subset);
+  - decal points (4.7k): back disc, RARE EARTH (canvas-rasterised Archivo), chest dot, 1420 MHz patch (text not mirrored: checked);
+  - trousers: each leg is a chain of 8 ring centres (`LEGR` = y, centre x, rx, rz per node; `LEG.K` = stiffness per node), hem about 0.31 x 0.32 m;
+  - hair: guide grid 14 columns (where the hair leaves the head, ear to ear round the back) x 4 layers (root height), each guide pinned
+    over the scalp then free to the waist; 2 slim front-lock guides per side; 4 short temple wisps (bun variant only); 1,092 render strands;
+  - variant 2 lofts: bun + two pencils.
+- `fable/engine/src/figure/sim.js` — `simulate(track, body, opts)`: once per track, 60 fps x 3 substeps, verlet with drag and a speed limit
+  (`vmax` 7 m/s): hair (capsule colliders, bending resistance, neighbour cohesion in the guide grid, back hair nudged behind the shoulders),
+  3 straps, jacket-hem lag spring, trouser chains (pinned at the hip, stiffness falling to the hem, leg axis kept inside each ring, floor).
+  In-place loops (`meta.speed`) get an apparent head wind (half the speed) so hair and cloth stream. One row of `SIM.W` = 940 texels per frame.
+- `fable/engine/src/figure/figure.js` — `Figure`: programs mesh (also draws the decal points), fibre, ribbon (hair, straps, trails).
+- Lab: `fable/show/figlab.js`, `fable/engine/figlab.html`, `fable/tools/figlab.mjs`.
 
 ## Commands
 ```
-node fable/tools/figlab.mjs                      # every shot -> work_fable/stills/f3/<shot>.jpg (1920x1080)
-node fable/tools/figlab.mjs light_back_full sil_kick
-node fable/tools/figlab.mjs --perf formation_light light_front_full
-node fable/tools/figlab.mjs --tracks idle,walk   # also load baked tracks work_fable/tracks/<name>.bin/.json
-node fable/tools/figlab.mjs --custom '{"cam":{"az":0.3,"dist":5},"dawn":0,"inst":[{"track":"idle","time":1}]}' --out mytest
+node fable/tools/figlab.mjs                       # every shot in SHOTS -> work_fable/stills/f3/<shot>.jpg (1920x1080)
+node fable/tools/figlab.mjs sil_sidekick cel_run  # some shots
+node fable/tools/figlab.mjs --perf light_front_full formation_light
+node fable/tools/figlab.mjs --tracks idle,butterfly,my_new_track --custom '{"dawn":0.6,"cam":{"az":-1.57,"dist":6,"target":[0,1,0]},"inst":[{"track":"my_new_track","time":1.2,"solid":1}]}' --out test
 ```
+The lab loads `idle,butterfly,sidekick,run_loop,sprint_loop,walk_loop,lookback,turn_around` from `work_fable/tracks/` by default.
 
-## API (what the show code uses)
+## API
 ```js
-const fig = new Figure(gl, { fontBase:'/engine/fonts/', stories:[...] }); await fig.init();
-const id = fig.addTrack(track /* from loadTrack or testTrack */, simOpts /* {wind:[x,y,z], gust} optional */);
-fig.begin();                                   // each frame
-fig.add({ pos:[x,0,z], yaw, scale, track:id|'name', time, lane:[r,g,b], density:0..1, solid:0..1, cel:-1(auto from dawn)|0..1,
-          variant:'bun', story:rowIndex, alpha, gain, seed, flow, eyes:true(open), lodBias,
-          trail:{ len:seconds, gain, width, color:[r,g,b], mask:bits|['handL','toeR',...] } });
-fig.draw(ctx);                                 // engine calls once per pass; ctx per SPEC §5 (+ optional ctx.sunDir)
+const fig = new Figure(gl, { fontBase:'/engine/fonts/', stories:[...] }); await fig.init();     // ~3 s (template + atlas)
+const id = fig.addTrack(await loadTrack('/work_fable/tracks/butterfly'), simOpts /* {wind, gust, airSpeed, drag} */);
+fig.begin();
+fig.add({ pos:[x,0,z], yaw, scale, track:id|'name', time, lane:[r,g,b], density:0..1, solid:0..1, cel:-1 (auto from dawn)|0..1,
+          variant:'bun', story:row, alpha, gain, eyes:true (open; default closed arcs), lodBias,
+          seed /* non-zero: per-instance variation: +-25 ms, +-2.5 % height, hair length */, vary:0|1,
+          trail:{ len:seconds, gain, width, color, mask:bits|['handL','handR','toeL','toeR','strap0..2','hair0..5','hemL','hemR'] } });
+fig.draw(ctx);   // once per pass; ctx per SPEC §5 plus optional ctx.sunDir
 ```
-`fig.emitters` lists trail emitters (handL, handR, toeL, toeR, strap0-2, hair0-5). `fig.sun` default sun direction (+X).
+Looped in-place tracks (`run_loop`, ...) do not travel: the caller moves `pos` at `track.meta.speed`.
 
-## Look decisions (settled so far)
-- LIGHT mode (solid 0): opaque pass draws a DARK GLASS body (near-black, fresnel rim in the lane tint; skin a little brighter; the orange band,
-  headphones, back disc, RARE EARTH and the patch are solid emissive surfels, so they are crisp); add pass draws only the glyph rows
-  (jacket pale, trousers lane-blue), hair as fine additive strands (not occluding, so RARE EARTH reads through), strap glow, trails.
-  A glitter "dust" body was tried and rejected (looked like sequins; a glowing-eyed dark face looked spooky).
-- Eyes: closed gentle arcs by default (serene); `eyes:true` shows open ovals with a lash line. Shown when the head is > ~60 px (opaque).
-- SILHOUETTE (solid 1, dawn ~0.6): near-black surfels + warm rim toward `u_sun`; band, straps, headphones stay orange (HDR 1.7).
-- CEL (solid 1, dawn -> 1, or `cel:1`): flat sRGB swatches from the character sheet (converted to linear in the shader), 2-tone,
-  aux = flat part colour varied per region (arm / leg / torso ...) with alpha = cel amount, so an outline pass can ink part and limb borders.
-- Hair: all long hair combed over the scalp and falling behind the shoulders (front locks covered the jacket and looked like a barcode).
-
-## Status at the second checkpoint
-- Rest pose now equals the motion library's `fable/tools/bake/skeleton.json` (A-pose, arms 35 deg from the body, hips 1.005 m), so baked
-  tracks attach without retargeting. Verified with real tracks `idle`, `butterfly` (CMU 88_06), `run_fwd`, `lookback`, `form_test`:
-  `node fable/tools/figlab.mjs --tracks idle,butterfly,run_fwd,lookback,form_test --custom '{...,"inst":[{"track":"butterfly","time":1.3}]}' --out x`.
-  In the lab the procedural tracks are named `t_idle`, `t_walk`, `t_run`, `t_turn`, `t_kick`, `t_lunge`, `t_stress`.
-- Particle counts: 167,564 fill surfels, 8,604 glyphs, 5,288 decal points, 920 eye points, 1,300 hair strands (27 segments each).
-- Performance (RTX 3090, 1080p, lab incl. reflection pass + bloom): 1 hero 2.4 ms/frame; 1,024 instances 11-16 ms/frame.
-  Sim at load: ~1 ms per track frame (a 20 s track = 1.8 s). Template build ~1.5 s.
-- Stills: `work_fable/stills/f3/` (all `SHOTS` + `sheet_light.jpg`, `sheet_solid.jpg`, `sheet_mocap.jpg`, `close_trio.jpg`, `cel_pair.jpg`).
+## Look (current)
+- LIGHT (solid 0): mesh = near-black occluder with a thin lane rim; clothes = fibres (far: threads of light broken into "words";
+  close, when a glyph is > ~7 px: lines of real text along the thread, from the instance's story row); jacket threads pale warm, trouser
+  threads lane colour; band, straps, headphones solid orange; back disc blue; RARE EARTH and patch crisp; skin = cream lantern
+  (bright where it faces the camera, dark at the edge) with closed-eye arcs; hair = fine additive filaments (it does not occlude).
+  `density` removes fibres and hair strands.
+- SILHOUETTE (solid 1, dawn ~0.6): black mesh, warm rim toward `u_sun`, a little sun through the trouser hems and some hair tips,
+  orange accents alight; hair = opaque ribbons that close into a mass.
+- CEL (solid 1, dawn 1 or `cel:1`): character-sheet colours, soft 2-tone terminator, aux (flat colour mixed with a per-region tint,
+  alpha = cel) for the ink outline pass, face = closed arcs + brow hint + blush drawn in head space, hair black with one sheen band.
+- Performance (RTX 3090, 1080p, lab incl. reflection + bloom): 1 hero 2.3 ms; 1,024 instances 8-11 ms.
 
 ## Known problems / next
-- Bun variant: the short temple strands hang across the face in light mode; move their roots further back / shorten.
-- Light mode close-up: jacket glyph rows and the crop-top rows under the open jacket can overlap visually near the opening.
-- Cel close-up: a few dark specks on the forehead (hair strands' scalp path poking through the skin near the parting).
-- In the lab's side-on sunrise shots the sun reflection is drawn by the lab sky, not physically; the real engine owns sky and ground.
-- Silhouette identity is weak when hair is at rest (head reads bald, sleeves read as biceps): add hair volume (cap offset, thicker mass),
-  check with real mocap where the hair flies.
-- Cel edges are slightly scalloped (surfel discs); raise `fillDensity` for hero shots if needed.
-- Opaque surfels have no depth of field (only additive particles do).
-- Real baked tracks (work_fable/tracks) not tested yet at the time of writing; `fable/tools/bake/skeleton.json` did not exist yet.
-- Performance numbers still to measure (`--perf`).
-
-## Director's review (after checkpoint 2) -> REWORK IN PROGRESS
-Verdict: plumbing good (API, tracks, LOD, decals: keep). Look not there: mannequin/doll; an army of them reads ominous.
-Rework plan, in priority order (being implemented as a rewrite of body.js / sim.js / figure.js):
-1. SHAPE: opaque modes become a real skinned triangle mesh built from the same lofts (part ids from a small atlas texture, so
-   band / openings are crisp). Trousers = "cloth-lite": each leg is a chain of 8 simulated ring centres (pinned at the hip, stiffness
-   falling to the hem, the leg axis kept inside the ring) so the fabric hangs off a raised leg like a sail. Jacket: drop shoulders,
-   narrower, blousing over a tight cuff. Head slightly larger, soft jaw. Hair: crown volume + guide grid (14 columns x 4 layers) falling
-   behind the shoulders as a wide sheet + two slim front locks; sim gets velocity clamp, damping and neighbour cohesion.
-2. LIGHT: no rows of glyphs round the limbs. Fine luminous FIBRES running along the cloth (text along the fibre when close, a thread
-   of light when far), skin = soft warm lantern glow, body = near-black occluder with a thin lane rim.
-3. SILHOUETTE poster-grade (rim, translucent hems/hair edge). 4. CEL clean (soft terminator, closed-eye arcs, brow hint, blush).
-5. Crowd variation per instance seed.
+- Light-mode skin still reads a little like a matte mannequin in the lab (flat tonemap, no halo). Try in the real engine with bloom;
+  if it still does, add an additive soft halo sprite at head/hands and lower the surface term.
+- Trouser sail: the fabric hangs at most ~10 cm off a raised leg (limit = ring radius - 0.048); for a bigger sail raise the hem radii
+  in `LEGR` (the character sheet argues for the current size) or loosen the limit.
+- Hairline at the forehead is a bit jagged in cel close-ups; front locks are thin.
+- Butterfly silhouette depends a lot on yaw (see `sil_butterfly`, `_b`, `_c`); `_c` (t 1.12, yaw 2.4) reads best.
+- Open eyes (`eyes:true`) are plain dark ovals: use the closed arcs.
+- Opaque surfaces have no depth of field (only fibres/hair/trails attenuate with the circle of confusion).
+- In the lab's sunrise shots the sun and its reflection are the lab's own sky, not the engine's.

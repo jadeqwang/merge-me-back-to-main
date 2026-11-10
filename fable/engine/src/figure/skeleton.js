@@ -57,7 +57,7 @@ export async function loadTrack(urlNoExt, name) {
   const data = new Float32Array(buf);
   if (meta.joints && meta.joints.join() !== JOINTS.join()) throw new Error('track ' + urlNoExt + ': joint order differs from the canonical skeleton');
   if (data.length !== meta.frames * STRIDE) throw new Error('track ' + urlNoExt + ': size mismatch');
-  return { name: name || urlNoExt.split('/').pop(), fps: meta.fps || FPS, frames: meta.frames, loop: !!meta.loop, events: meta.events || [], boneLengths: meta.boneLengths || null, data, simOpts: meta.simOpts || {} };
+  return { name: name || urlNoExt.split('/').pop(), fps: meta.fps || FPS, frames: meta.frames, loop: !!meta.loop, events: meta.events || [], boneLengths: meta.boneLengths || null, data, simOpts: meta.simOpts || {}, meta: meta.meta || {} };
 }
 // Per-joint scale applied to the template's along-bone coordinate when a track's bones differ from ours.
 export function boneScales(track) {

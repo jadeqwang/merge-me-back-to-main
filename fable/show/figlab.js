@@ -137,49 +137,61 @@ function renderFrame(shot, time = 0) {
 // ---------------------------------------------------------------------------------------------
 const PI = Math.PI;
 const one = (o) => () => [o];
-const full = { target: [0, 0.86, 0], dist: 5.4, fov: 24 }, close = { target: [0, 1.36, 0], dist: 2.1, fov: 24 };
+const full = { target: [0, 0.86, 0], dist: 5.4, fov: 24 }, close = { target: [0, 1.40, 0], dist: 2.0, fov: 24 };
+const sunCam = (o = {}) => ({ target: [0, 1.0, 0], dist: 6.2, fov: 22, az: -PI / 2, el: 0.012, ...o });
 const grid = (n, sp, fn) => { const a = []; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) a.push(fn(i, j, (i - (n - 1) / 2) * sp, (j - (n - 1) / 2) * sp)); return a; };
+const laneList = ['main', 'rose', 'blue', 'cyan', 'mint', 'gold', 'coral', 'magenta'];
+const crowd = (n, sp, o) => grid(n, sp, (i, j, x, z) => { const k = i * n + j + 1, r = (q) => { const s = Math.sin(k * q) * 43758.5453; return s - Math.floor(s); }; return { pos: [x + (r(12.9) - 0.5) * 0.5, 0, z + (r(78.2) - 0.5) * 0.5], seed: k, lane: LANES[laneList[Math.floor(r(3.3) * laneList.length)]], story: 1 + (k % 11), ...o(i, j, r) }; });
 const SHOTS = {
-  light_front_full: { cam: { ...full, az: 0.30, el: 0.04 }, inst: one({ track: 't_idle', time: 1.3, lane: LANES.main }) },
-  light_back_full: { cam: { ...full, az: PI - 0.42, el: 0.05 }, inst: one({ track: 't_idle', time: 1.3, lane: LANES.main }) },
-  light_side_full: { cam: { ...full, az: PI / 2, el: 0.03 }, inst: one({ track: 't_idle', time: 1.3, lane: LANES.main }) },
-  light_front_close: { cam: { ...close, az: 0.35, el: 0.02 }, inst: one({ track: 't_idle', time: 1.3, lane: LANES.main }) },
-  light_back_close: { cam: { ...close, target: [0, 1.28, 0], az: PI - 0.25, el: 0.03 }, inst: one({ track: 't_idle', time: 1.3, lane: LANES.main }) },
-  light_density: { cam: { target: [0, 0.86, 0], dist: 7.2, fov: 24, az: 0.22, el: 0.04 }, inst: () => [0.15, 0.5, 1.0].map((d, i) => ({ pos: [(i - 1) * 1.45, 0, 0], track: 't_idle', time: 1.3 + i * 1.1, lane: LANES.cyan, density: d })) },
-  light_lanes: { cam: { target: [0, 0.86, 0], dist: 9.5, fov: 24, az: 0.0, el: 0.05 }, inst: () => ['rose', 'gold', 'mint', 'main', 'blue', 'magenta', 'coral'].map((l, i) => ({ pos: [(i - 3) * 1.15, 0, 0], yaw: (i - 3) * -0.12, track: 't_walk', time: i * 0.137, lane: LANES[l], story: i + 1 })) },
-  bun_violet_back: { cam: { ...full, az: PI - 0.6, el: 0.06 }, inst: one({ track: 't_idle', time: 2.0, lane: LANES.violet, variant: 'bun', story: 12 }) },
-  bun_violet_close: { cam: { ...close, target: [0, 1.46, 0], dist: 1.7, az: 0.75, el: 0.05 }, inst: one({ track: 't_idle', time: 2.0, lane: LANES.violet, variant: 'bun', story: 12 }) },
-  light_run: { cam: { target: [0, 0.9, 2.6], dist: 5.4, fov: 24, az: PI / 2 - 0.25, el: 0.03 }, inst: one({ track: 't_run', time: 0.62, lane: LANES.main }) },
-  light_turn: { cam: { ...full, az: 0.3, el: 0.04 }, inst: one({ track: 't_turn', time: 1.55, lane: LANES.rose }) },
-  light_kick_trail: { cam: { target: [0, 1.0, 0.25], dist: 5.6, fov: 24, az: PI / 2 - 0.15, el: 0.02 }, inst: one({ track: 't_kick', time: 0.90, lane: LANES.main, trail: { len: 0.55, gain: 1.6, mask: 0x7f, width: 0.035 } }) },
-  sil_kick: { dawn: 0.6, exp: 1.0, cam: { target: [0, 1.0, 0.2], dist: 6.0, fov: 22, az: -PI / 2, el: 0.012 }, inst: one({ track: 't_kick', time: 0.86, solid: 1, lane: LANES.main }) },
-  sil_run: { dawn: 0.6, cam: { target: [0, 0.95, 2.7], dist: 6.0, fov: 22, az: -PI / 2, el: 0.012 }, inst: one({ track: 't_run', time: 0.62, solid: 1 }) },
-  sil_idle_34: { dawn: 0.6, cam: { target: [0, 0.9, 0], dist: 5.6, fov: 22, az: -PI / 2 - 0.5, el: 0.02 }, inst: one({ track: 't_idle', time: 1.3, solid: 1, yaw: 0.5 }) },
-  sil_half: { dawn: 0.5, cam: { target: [0, 1.0, 0.2], dist: 6.0, fov: 22, az: -PI / 2, el: 0.012 }, inst: one({ track: 't_lunge', time: 1.0, solid: 0.5, lane: LANES.main }) },
-  cel_front: { dawn: 1, bloom: 0.05, cam: { ...full, az: 0.35, el: 0.05 }, inst: one({ track: 't_idle', time: 1.3, solid: 1 }) },
-  cel_back: { dawn: 1, bloom: 0.05, cam: { ...full, az: PI - 0.4, el: 0.05 }, inst: one({ track: 't_idle', time: 1.3, solid: 1 }) },
-  cel_close: { dawn: 1, bloom: 0.05, cam: { ...close, az: 0.4, el: 0.02 }, inst: one({ track: 't_idle', time: 1.3, solid: 1, eyes: 1 }) },
-  cel_close_closed: { dawn: 1, bloom: 0.05, cam: { ...close, az: -0.3, el: 0.02 }, inst: one({ track: 't_idle', time: 1.3, solid: 1 }) },
-  cel_kick: { dawn: 1, bloom: 0.05, cam: { target: [0, 1.0, 0.2], dist: 5.6, fov: 24, az: PI / 2 - 0.5, el: 0.03 }, inst: one({ track: 't_kick', time: 0.86, solid: 1 }) },
-  cel_bun: { dawn: 1, bloom: 0.05, cam: { ...full, az: PI - 0.7, el: 0.05 }, inst: one({ track: 't_idle', time: 2.0, solid: 1, variant: 'bun' }) },
-  formation_light: { cam: { target: [0, 0.6, 0], dist: 34, fov: 26, az: 0.0, el: 0.20 }, inst: () => grid(32, 1.7, (i, j, x, z) => ({ pos: [x, 0, z], track: 't_lunge', time: 0.9 + 0.012 * (i + (31 - j)), lane: LANES.main })) },
-  formation_sil: { dawn: 0.6, cam: { target: [6, 0.8, 0], dist: 30, fov: 26, az: -PI / 2, el: 0.075 }, inst: () => grid(32, 1.7, (i, j, x, z) => ({ pos: [x, 0, z], yaw: -PI / 2 + PI, track: 't_kick', time: 0.5 + 0.014 * (31 - i), solid: 1 })) },
-  formation_mid: { cam: { target: [0, 0.9, 2], dist: 9, fov: 30, az: 0.5, el: 0.10, aperture: 0.02, focus: 8 }, inst: () => grid(32, 1.7, (i, j, x, z) => ({ pos: [x, 0, z], track: 't_lunge', time: 0.9, lane: LANES.main })) },
+  // light (night)
+  light_start_34back: { cam: { ...full, az: PI - 0.62, el: 0.05 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
+  light_front_full: { cam: { ...full, az: 0.30, el: 0.04 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
+  light_side_full: { cam: { ...full, az: PI / 2, el: 0.03 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
+  light_front_close: { cam: { ...close, az: 0.35, el: 0.02 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
+  light_back_close: { cam: { ...close, target: [0, 1.30, 0], az: PI - 0.25, el: 0.03 }, inst: one({ track: 'idle', time: 3.0, lane: LANES.main }) },
+  light_density: { cam: { target: [0, 0.86, 0], dist: 7.2, fov: 24, az: 0.22, el: 0.04 }, inst: () => [0.15, 0.5, 1.0].map((d, i) => ({ pos: [(i - 1) * 1.45, 0, 0], track: 'idle', time: 3.0 + i * 1.1, lane: LANES.cyan, density: d })) },
+  light_lanes: { cam: { target: [0, 0.86, 0], dist: 9.5, fov: 24, az: 0.0, el: 0.05 }, inst: () => ['rose', 'gold', 'mint', 'main', 'blue', 'magenta', 'coral'].map((l, i) => ({ pos: [(i - 3) * 1.15, 0, 0], yaw: (i - 3) * -0.12, track: 'walk_loop', time: i * 0.137, lane: LANES[l], story: i + 1 })) },
+  light_run_behind: { cam: { target: [0, 1.0, 0], dist: 4.6, fov: 26, az: PI - 0.35, el: 0.06 }, inst: one({ track: 'run_loop', time: 2.2, lane: LANES.main }) },
+  light_run_side: { cam: { target: [0, 0.95, 0], dist: 5.4, fov: 24, az: PI / 2 - 0.25, el: 0.03 }, inst: one({ track: 'sprint_loop', time: 2.1, lane: LANES.main }) },
+  light_butterfly_trail: { cam: { target: [0, 1.0, 0], dist: 6.4, fov: 24, az: 1.0, el: 0.03 }, inst: one({ track: 'butterfly', time: 1.26, lane: LANES.main, trail: { len: 0.5, gain: 1.4, mask: ['handL', 'handR', 'toeL', 'toeR', 'hemL', 'hemR'], width: 0.035 } }) },
+  light_sidekick: { cam: { target: [0, 1.0, 0], dist: 6.0, fov: 24, az: 0.9, el: 0.03 }, inst: one({ track: 'sidekick', time: 1.2, lane: LANES.rose }) },
+  bun_violet_back: { cam: { ...full, az: PI - 0.6, el: 0.06 }, inst: one({ track: 'idle', time: 5.0, lane: LANES.violet, variant: 'bun', story: 12 }) },
+  bun_violet_close: { cam: { ...close, target: [0, 1.48, 0], dist: 1.8, az: 0.75, el: 0.05 }, inst: one({ track: 'idle', time: 5.0, lane: LANES.violet, variant: 'bun', story: 12 }) },
+  // silhouette (sunrise)
+  sil_butterfly: { dawn: 0.6, cam: sunCam({ target: [0, 1.15, 0] }), inst: one({ track: 'butterfly', time: 1.24, solid: 1, yaw: 0.9 }) },
+  sil_sidekick: { dawn: 0.6, cam: sunCam(), inst: one({ track: 'sidekick', time: 1.2, solid: 1, yaw: PI / 2 }) },
+  sil_sidekick_b: { dawn: 0.6, cam: sunCam(), inst: one({ track: 'sidekick', time: 1.2, solid: 1, yaw: -PI / 2 }) },
+  sil_butterfly_b: { dawn: 0.6, cam: sunCam({ target: [0, 1.15, 0] }), inst: one({ track: 'butterfly', time: 1.24, solid: 1, yaw: -0.7 }) },
+  sil_butterfly_c: { dawn: 0.6, cam: sunCam({ target: [0, 1.15, 0] }), inst: one({ track: 'butterfly', time: 1.12, solid: 1, yaw: 2.4 }) },
+  sil_run: { dawn: 0.6, cam: sunCam({ target: [0, 0.95, 0] }), inst: one({ track: 'sprint_loop', time: 2.1, solid: 1 }) },
+  sil_idle_34: { dawn: 0.6, cam: sunCam({ target: [0, 0.9, 0], az: -PI / 2 - 0.5, dist: 5.6, el: 0.02 }), inst: one({ track: 'idle', time: 3.0, solid: 1, yaw: 0.5 }) },
+  sil_half: { dawn: 0.5, cam: sunCam(), inst: one({ track: 'sidekick', time: 1.0, solid: 0.5, lane: LANES.main }) },
+  // cel (day)
+  cel_front: { dawn: 1, bloom: 0.05, cam: { ...full, az: 0.45, el: 0.05 }, inst: one({ track: 'idle', time: 3.0, solid: 1 }) },
+  cel_34back: { dawn: 1, bloom: 0.05, cam: { ...full, az: PI - 0.62, el: 0.05 }, inst: one({ track: 'idle', time: 3.0, solid: 1 }) },
+  cel_close: { dawn: 1, bloom: 0.05, cam: { ...close, az: 0.4, el: 0.02 }, inst: one({ track: 'idle', time: 3.0, solid: 1 }) },
+  cel_close_open: { dawn: 1, bloom: 0.05, cam: { ...close, az: -0.3, el: 0.02 }, inst: one({ track: 'idle', time: 3.0, solid: 1, eyes: 1 }) },
+  cel_sidekick: { dawn: 1, bloom: 0.05, cam: { target: [0, 1.0, 0], dist: 5.8, fov: 24, az: 0.9, el: 0.03 }, inst: one({ track: 'sidekick', time: 1.2, solid: 1 }) },
+  cel_run: { dawn: 1, bloom: 0.05, cam: { target: [0, 0.95, 0], dist: 5.4, fov: 24, az: PI / 2 - 0.4, el: 0.03 }, inst: one({ track: 'sprint_loop', time: 2.1, solid: 1 }) },
+  cel_bun: { dawn: 1, bloom: 0.05, cam: { ...full, az: PI - 0.7, el: 0.05 }, inst: one({ track: 'idle', time: 5.0, solid: 1, variant: 'bun' }) },
+  // crowds
+  formation_light: { cam: { target: [0, 0.6, 0], dist: 34, fov: 26, az: 0.25, el: 0.20 }, inst: () => crowd(32, 1.9, (i, j, r) => ({ track: 'idle', time: 2 + 14 * r(5.1), yaw: (r(9.7) - 0.5) * 0.5 })) },
+  formation_sil: { dawn: 0.6, cam: { target: [6, 0.8, 0], dist: 30, fov: 26, az: -PI / 2, el: 0.075 }, inst: () => crowd(32, 1.9, (i, j, r) => ({ yaw: -PI / 2 + PI, track: 'sidekick', time: 0.55 + 0.016 * (31 - i), solid: 1 })) },
+  formation_mid: { cam: { target: [0, 0.9, 2], dist: 9, fov: 30, az: 0.5, el: 0.10, aperture: 0.02, focus: 8 }, inst: () => crowd(32, 1.9, (i, j, r) => ({ track: 'walk_loop', time: 3 * r(5.1), yaw: (r(9.7) - 0.5) * 0.3 })) },
 };
-let tracksReady = null;
+const TRACKS = (new URLSearchParams(location.search).get('tracks') || 'idle,butterfly,sidekick,run_loop,sprint_loop,walk_loop,lookback,turn_around').split(',');
 async function setup() {
   await fig.init();
-  for (const k of ['idle', 'walk', 'run', 'turn', 'kick', 'lunge', 'stress']) { const t = testTrack(k); t.name = 't_' + k; fig.addTrack(t); }
-  const extra = new URLSearchParams(location.search).get('tracks');
-  if (extra) for (const n of extra.split(',')) { try { fig.addTrack(await loadTrack('/work_fable/tracks/' + n, n)); } catch (e) { console.warn('track ' + n + ': ' + e.message); } }
+  for (const n of TRACKS) { try { fig.addTrack(await loadTrack('/work_fable/tracks/' + n, n)); } catch (e) { console.warn('track ' + n + ': ' + e.message); } }
+  for (const k of ['idle', 'kick']) { const t = testTrack(k); t.name = 't_' + k; fig.addTrack(t); }
 }
 window.LAB = {
-  ready: (tracksReady = setup()), fig, gl, SHOTS, LANES,
+  ready: setup(), fig, gl, SHOTS, LANES,
   shots: () => Object.keys(SHOTS),
   render(name, over) { const s = typeof name === 'string' ? SHOTS[name] : name; if (!s) throw new Error('no shot ' + name); renderFrame({ ...s, ...(over || {}) }, (over && over.t) || 0.0); return true; },
   custom(def) { // def: { cam, dawn, exp, bloom, inst:[...] }
     renderFrame({ ...def, inst: () => def.inst }, def.t || 0); return true;
   },
   perf(name, n = 30) { const s = SHOTS[name]; const px = new Uint8Array(4); renderFrame(s, 0); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); const t0 = performance.now(); for (let i = 0; i < n; i++) { renderFrame(s, i / 30); } gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); return (performance.now() - t0) / n; },
-  info() { return { counts: fig.particleCounts, tracks: fig.tracks.map((t) => ({ name: t.track.name, frames: t.frames, simMs: Math.round(t.simMs) })), maxPS: fig.maxPS }; },
+  info() { return { stats: fig.stats, tracks: fig.tracks.map((t) => ({ name: t.track.name, frames: t.frames, simMs: Math.round(t.simMs) })), maxPS: fig.maxPS }; },
 };
