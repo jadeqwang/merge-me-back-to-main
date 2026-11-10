@@ -13,6 +13,7 @@
 import { buildBody, PART, HAIR, VSTRIDE, FSTRIDE } from './body.js';
 import { simulate, SIM, STRAP_N } from './sim.js';
 import { J, NJ, STRIDE, boneScales } from './skeleton.js';
+import { skyParams } from '../sky.js';
 
 const ATH = 4096, SEG_HAIR = 26, SEG_STRAP = 14, SEG_TRAIL = 56, INST_F = 28;
 export const LANES = { main: [1.0, 0.48, 0.10], rose: [1.0, 0.24, 0.50], violet: [0.61, 0.42, 1.0], blue: [0.24, 0.55, 1.0], cyan: [0.13, 0.83, 0.93], mint: [0.24, 0.86, 0.59], gold: [1.0, 0.82, 0.25], coral: [1.0, 0.42, 0.37], magenta: [0.89, 0.29, 0.84] };
@@ -74,7 +75,8 @@ void skin(TI ti, vec3 nloc, vec3 bloc, out vec3 P, out vec3 N, out vec3 B){
     vec3 C = cr(p0, p1, p2, p3, f) + jpos(ti, 0), T = normalize(crT(p0, p1, p2, p3, f));
     vec3 Xr = normalize(mix(qrot(jquat(ti, ba), vec3(-1.0, 0.0, 0.0)), qrot(jquat(ti, ba + 1), vec3(-1.0, 0.0, 0.0)), smoothstep(0.35, 0.65, a_la.y)));
     vec3 Z = normalize(cross(T, Xr)), X = cross(Z, T);
-    P = C + X * a_la.x + Z * a_la.z; N = X * nloc.x - T * nloc.y + Z * nloc.z; B = X * bloc.x - T * bloc.y + Z * bloc.z;
+    float fl = simNode(ti, LAG + c).x, k = a_la.y * a_la.y * (1.0 - fl);          // at rest the hems draw in: two legs, not a gown
+    P = C + X * (a_la.x * (1.0 - 0.27 * k)) + Z * (a_la.z * (1.0 - 0.40 * k)); N = X * nloc.x - T * nloc.y + Z * nloc.z; B = X * bloc.x - T * bloc.y + Z * bloc.z;
   } else {
     int bb = int(a_bn.y + 0.5); vec4 qa = jquat(ti, ba); vec3 la = a_la.xyz; la.y *= bscale(i_misc.x, ba);
     P = jpos(ti, ba) + qrot(qa, la);
@@ -254,7 +256,7 @@ void main(){
     // the mass parts down the middle of the back, so the disc and RARE EARTH stay readable between two curtains
     float part = (a_r3.x + 0.02 * (hash(seed * 31.0) - 0.5) >= 0.0 ? 1.0 : -1.0) * 0.105 + a_r3.x * 0.028;
     P += jpos(ti, 0) + rnd * a_r3.y * (0.3 + 1.2 * sl) * smoothstep(0.0, 0.15, sl) + cx * (part * smoothstep(0.16, 0.50, sl));
-    float tip = 1.0 - smoothstep(0.62, 1.0, s);
+    float tip = 1.0 - smoothstep(0.50, 1.0, s);
     width = (ty == 0 ? 0.018 : 0.0080) * u_lod * (0.08 + 0.92 * pow(tip, 0.7)) * smoothstep(0.0, 0.06, s + 0.02);
     vec3 Wq = place(P), Vq = normalize(u_camPos - Wq), Tw = normalize(yaw(T)), lane = i_col.rgb;
     // black hair: an anisotropic sheen band (Kajiya-Kay) that slides as she moves, and a rim
@@ -422,14 +424,17 @@ export class Figure {
   // ---- light: one shading model, lit by the world. Defaults follow ctx.dawn; ctx.env.figLight and fig.light override fields. ----
   lightFor(ctx) {
     const K = [
-      { d: 0.00, ambient: [0.022, 0.028, 0.080], rimCol: [0.26, 0.66, 0.80], rimBoth: 0.45, sunAmt: 0, under: 1.0, emissive: 1.25, fibres: 1.0, trans: 0 },
-      { d: 0.35, ambient: [0.170, 0.180, 0.360], rimCol: [0.80, 0.40, 0.52], rimBoth: 0.30, sunAmt: 0.12, under: 0.5, emissive: 1.0, fibres: 0.55, trans: 0.2 },
+      { d: 0.00, ambient: [0.075, 0.090, 0.230], rimCol: [0.65, 1.65, 2.00], rimBoth: 0.50, sunAmt: 0, under: 1.0, emissive: 2.0, fibres: 1.6, trans: 0 },   // tuned in the real engine (ACES pre-scale 0.6, exposure ~1.5)
+      { d: 0.35, ambient: [0.210, 0.215, 0.420], rimCol: [1.60, 0.80, 1.04], rimBoth: 0.30, sunAmt: 0.12, under: 0.5, emissive: 1.5, fibres: 0.8, trans: 0.2 },
       { d: 0.60, ambient: [0.030, 0.020, 0.030], rimCol: [2.6, 1.30, 0.42], rimBoth: 0.0, sunAmt: 0, under: 0.12, emissive: 1.5, fibres: 0.10, trans: 1 },
       { d: 1.00, ambient: [0.700, 0.730, 0.880], rimCol: [0, 0, 0], rimBoth: 0.0, sunAmt: 1, under: 0, emissive: 0, fibres: 0, trans: 0 },
     ];
     const d = Math.min(1, Math.max(0, ctx.dawn || 0)); let i = 0; while (i < K.length - 2 && d > K[i + 1].d) i++;
     const a = K[i], b = K[i + 1], t = Math.min(1, Math.max(0, (d - a.d) / (b.d - a.d))), mix = (x, y) => x + (y - x) * t, mix3 = (x, y) => [mix(x[0], y[0]), mix(x[1], y[1]), mix(x[2], y[2])];
     const L = { ambient: mix3(a.ambient, b.ambient), rimCol: mix3(a.rimCol, b.rimCol), rimDir: [1, 0.05, 0], rimBoth: mix(a.rimBoth, b.rimBoth), sunAmt: mix(a.sunAmt, b.sunAmt), under: mix(a.under, b.under), emissive: mix(a.emissive, b.emissive), fibres: mix(a.fibres, b.fibres), trans: mix(a.trans, b.trans) };
+    // sit IN the world: the rim takes the colour of the engine's horizon at this dawn (keeping the key's brightness)
+    try { const sp = skyParams(d, (ctx.env && ctx.env.sun) || {}), hz = [0, 1, 2].map((j) => sp.uHE[j] + 0.6 * sp.uB2[j] + sp.uB1[j] * 0.4 + sp.uAG[j]), m = Math.max(hz[0], hz[1], hz[2], 1e-4), lum = Math.max(...L.rimCol); L.rimCol = L.rimCol.map((c, j) => 0.35 * c + 0.65 * lum * hz[j] / m); } catch (e) { /* lab without the engine sky */ }
+    if (ctx.sunDir && d > 0.45) L.rimDir = [ctx.sunDir[0], Math.max(0.03, ctx.sunDir[1]), ctx.sunDir[2]];
     const o = { ...((ctx.env && ctx.env.figLight) || {}), ...(this.light || {}) };
     for (const k in o) { if (k === 'under' && Array.isArray(o.under)) L.under = Math.max(...o.under); else if (k === 'sunDir') this.sun = o.sunDir; else if (k !== 'sunCol') L[k] = o[k]; }
     return L;

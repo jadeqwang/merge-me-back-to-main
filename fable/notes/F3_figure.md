@@ -78,3 +78,32 @@ sun, translucency 1, accents 1.5), day 1 (full cel, outline, face, no emissive).
 - Blue-hour look was only judged in the lab's sky, which goes pink there; re-judge in the real engine.
 - Butterfly silhouette depends on yaw (`sunrise_butterfly` uses t 1.12, yaw 2.4).
 - Opaque surfaces have no depth of field.
+
+## Phase 4: in the real engine (fable/show/figtest.js)
+`node fable/tools/render.mjs --show /fable/show/figtest.js --q "shot=N&v=K&tt=<track s>" --stills 0:work_fable/stills/figtest/x.png`
+Shots: 1 frame 0 · 2 night run (v0 behind, v1 side) · 3 fork (tt 0.9/1.0/1.4) · 4 violet (v0 writing t 18.5, v1 seated t 27) · 5 float top-down ·
+6 blue-hour wedge of 16 · 7 sunrise (v0 butterfly, v1 + 256 troupe, v2 1,024 lying, top-down) · 8 day (v0 `free` leap t 1.74, v1 standing) · 9 catch at sunrise.
+Stills: `work_fable/stills/figtest/` (`sheet_a.jpg` = shots 1-6, `sheet_b.jpg` = 4, 7, 8, 9; `s*_*.png` full size).
+- The figure needed NO engine patch: it is a plain drawable (`drawables: [..., fig]`), uses ctx.view/viewProj/sunDir/dawn/env, writes aux alpha =
+  sunAmt x solid, which the engine's outline pass reads as "ink only by day". It imports `skyParams` from `engine/src/sky.js` (read only) so the
+  rim takes the horizon colour of the engine sky at that dawn; at dawn > 0.45 the rim direction is the engine's sun direction.
+- Night keys in `lightFor` were re-tuned in the engine (ambient x3, rim x2.5, emissive 2.0): the lab now looks brighter than the film.
+- New: `water` sim mode (track `meta.water` or simOpts.water): hair rises to y~0.1 and fans from the head. Hems draw in at rest
+  (sim writes a per-leg flare 0..1 from hem speed into lag slots 0/1; the ring shrinks 27 % wide / 40 % deep at flare 0).
+- Tracks with root travel (e.g. `violet` ends 34.7 m along her +Z): place `pos` accordingly. In-place loops: move `pos` at `meta.speed`.
+- Performance in the real pipeline at 1080p, per sub-sample: 1 hero 1.6 ms; hero + 255 troupe 13.1 ms; 1,024 (top-down, far LOD) 7.3 ms.
+- Not judged closely: frame 0 is still dark (disc reads, RARE EARTH is small at that framing); 1,024 lying from 62 m read as small figure glyphs.
+
+### How cast.js should drive it
+```js
+import { Figure, LANES } from '../engine/src/figure/figure.js';
+import { loadTrack } from '../engine/src/figure/skeleton.js';
+const fig = new Figure(engine.gl, { fontBase: '/engine/fonts/' }); await fig.init();          // once, ~3 s
+const tracks = {}; for (const n of ['idle', 'run_loop', 'fork_L']) { const t = await loadTrack('/work_fable/tracks/' + n, n); tracks[n] = t; fig.addTrack(t); }
+// every frame(t), before returning:
+fig.begin();
+fig.add({ pos: [x, 0, z], yaw: Math.PI / 2 /* faces +X (east) */, track: 'run_loop', time: tLocal, lane: LANES.main,   // LANES here are linear [r,g,b]
+          density: 1, solid: 1, seed: branchId, variant: isViolet ? 'bun' : undefined, story: row, trail: { len: 0.4, mask: ['handL', 'toeR'] } });
+return { camera, env /* optional env.figLight = { under: 0.6, ... } */, drawables: [roads, lights, fig], hud };
+// in-place loops: x += tracks.run_loop.meta.speed * dt * rate;  track events: tracks[n].events = [{t, name}]
+```

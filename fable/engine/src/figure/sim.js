@@ -92,6 +92,7 @@ export function simulate(track, body, opts = {}) {
   lp.set(lx);
   const lagTarget = () => { lagT[0] = jp[J.chest * 3]; lagT[1] = jp[J.chest * 3 + 1]; lagT[2] = jp[J.chest * 3 + 2]; };
   lagTarget(); lagX.set(lagT);
+  const water = !!(o.water ?? (track.meta && track.meta.water));
   const gseed = guides.map((g, i) => (i * 12.9898) % 6.283), frontG = guides.map((g) => (g.kind === 0 ? -1 : 0));   // back hair is nudged behind the shoulders; locks and wisps just hang
 
   function step(ff, time) {
@@ -102,7 +103,10 @@ export function simulate(track, body, opts = {}) {
     for (let g = 0; g < G; g++) {
       const gust = 1 + o.gust * (0.6 * Math.sin(time * 1.7 + gseed[g] * 0.2) + 0.4 * Math.sin(time * 4.3 + gseed[g] * 0.5));
       const ax = o.wind[0] * gust, ay = -o.gravity + o.wind[1] * gust, az = o.wind[2] * gust, b = g * N * 3, pn = pinN[g], bias = 4.0 * frontG[g];
-      for (let n = pn; n < N; n++) { const i = b + n * 3, sh = hx[i + 1] > cy + 0.07 ? bias : 0; integ(hx, hp, i, ax + fwx * sh, ay + fwy * sh, az + fwz * sh, o.drag); }
+      if (water) { // floating: strands rise to the surface and fan out from the head
+        const hxc = jp[J.head * 3], hzc = jp[J.head * 3 + 2];
+        for (let n = pn; n < N; n++) { const i = b + n * 3, rx = hx[i] - hxc, rz = hx[i + 2] - hzc, rl = Math.hypot(rx, rz) || 1; integ(hx, hp, i, 1.6 * rx / rl, Math.max(-6, Math.min(6, (0.10 + 0.004 * (g % 5) - hx[i + 1]) * 80)), 1.6 * rz / rl, 0.10); }
+      } else for (let n = pn; n < N; n++) { const i = b + n * 3, sh = hx[i + 1] > cy + 0.07 ? bias : 0; integ(hx, hp, i, ax + fwx * sh, ay + fwy * sh, az + fwz * sh, o.drag); }
       for (let n = 0; n < pn; n++) world(J.head, pinL[g][n], hx, b + n * 3);
     }
     for (let it = 0; it < o.iters; it++) {
@@ -157,7 +161,13 @@ export function simulate(track, body, opts = {}) {
     put(hx, G * N, SIM.hair); put(sx, N_STRAPS * STRAP_N, SIM.strap); put(lx, 2 * LN, SIM.leg);
     let dx = lagX[0] - lagT[0], dy = lagX[1] - lagT[1], dz = lagX[2] - lagT[2]; const d = Math.hypot(dx, dy, dz), m = 0.045; if (d > m) { dx *= m / d; dy *= m / d; dz *= m / d; }
     const q = o4 + (SIM.lag + 2) * 4; out[q] = dx; out[q + 1] = dy; out[q + 2] = dz;
+    for (let c = 0; c < 2; c++) { // how much the hem flares: 0 at rest (two narrow legs), 1 in motion (the full sail)
+      const i = (c * LN + LN - 1) * 3, sp = Math.hypot(lx[i] - lprev[c * 3], lx[i + 1] - lprev[c * 3 + 1], lx[i + 2] - lprev[c * 3 + 2]) * track.fps + Math.abs(airZ) / dt;
+      lprev[c * 3] = lx[i]; lprev[c * 3 + 1] = lx[i + 1]; lprev[c * 3 + 2] = lx[i + 2];
+      const tgt = Math.min(1, Math.max(0, (sp - 0.35) / 1.8)); flare[c] += (tgt - flare[c]) * (tgt > flare[c] ? 0.25 : 0.035); out[o4 + (SIM.lag + c) * 4] = flare[c];
+    }
   }
+  const lprev = new Float64Array(6), flare = [0, 0]; for (let c = 0; c < 2; c++) for (let k = 0; k < 3; k++) lprev[c * 3 + k] = lx[(c * LN + LN - 1) * 3 + k];
   let time = 0;
   for (let i = 0; i < o.preroll * sub; i++) { step(0, time); time += dt; }
   const laps = track.loop ? 2 : 1;
