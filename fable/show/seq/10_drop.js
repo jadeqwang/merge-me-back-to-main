@@ -17,9 +17,9 @@ export default function seq(K) {
     return K.cut(t, [
       { t0, f: () => { const n = K.shared.thousand(t); const camera = { ...K.shared.dropCam(t), far: 30000 }; const imp = Math.exp(-(t - t0) * 3);
         return { camera, env: sunrise, world: { text: 0.5, flow: 0.1, lights: { gain: 0.5 } }, hud: K.hudMain(t, { count: n }), flash: 0.6 * imp }; } },
-      { t0: bar(93), f: () => { const n = K.shared.thousand(t, { canon: 0.012, cel: lerp(0, 0.9, ss(t, bar(95), bar(96.5))) }); const c = lift(Math.min(t, bb(96, 4))); const up = ss(t, bar(95), bb(96, 4));
+      { t0: bar(93), f: () => { const n = K.shared.thousand(t, { canon: 0.012 }); const c = lift(Math.min(t, bb(96, 4))); const up = ss(t, bar(95), bb(96, 4));
         return { camera: { ...c, far: 30000, topUp: [1, 0, 0] }, env: { ground: { base: [lerp(0.02, 0.62, up), lerp(0.02, 0.26, up), lerp(0.08, 0.2, up)], f0: lerp(0.5, 0.1, up), baseCut: lerp(0.5, 0.2, up) }, grade: { exposure: 1.02 } }, world: { text: 0.3, flow: 0.1, lights: { gain: 0.4 } }, hud: K.hudMain(t, { count: n }) }; } },
-      { t0: bar(97), f: (tt, u) => { const n = K.shared.thousand(t, { cel: 0.9 }); const h = top.h * (1 - 0.05 * u);
+      { t0: bar(97), f: (tt, u) => { const n = K.shared.thousand(t); const h = top.h * (1 - 0.05 * u);
         return { camera: { pos: [mcx, h, mcz], target: [mcx + 0.02 * h, 0, mcz], fov: 35, topUp: [1, 0, 0], near: 2, far: 30000 }, env: { ground: { base: [0.62, 0.26, 0.2], f0: 0.1, baseCut: 0.2, ripple: 0.02 }, grade: { exposure: 1.02, vignette: 0.34 } }, world: { text: 0, flow: 0.1, lights: false }, hud: K.hudMain(t, { count: n }) }; } },
       { t0: bar(99), f: (tt, u) => { const n = K.shared.thousand(t); const camera = { pos: [L[0] - 6.4 + 0.7 * u, 0.5, L[1] + 1.2], target: [L[0] + 6, 2.0, L[1] - 0.4], fov: 44, far: 30000 };
         return { camera, env: sunrise, world: { text: 0.3, flow: 0.1, lights: { gain: 0.4 } }, hud: K.hudMain(t, { count: n }) }; } },

@@ -10,11 +10,14 @@ export default function seq(K) {
   // the thousand at the catch: rows behind her (east), facing west with her
   const slots = new Float32Array(N * 2); { let n = 1; slots[0] = C[0]; slots[1] = 0; for (let r = 0; n < N; r++) { const cols = 16 + r * 2, x = C[0] + 5 + r * 2.4; for (let c = 0; c < cols && n < N; c++, n++) { slots[n * 2] = x + ((c * 7) % 3) * 0.3; slots[n * 2 + 1] = (c - (cols - 1) / 2) * 2.3; } } }
   K.shared.catchSlots = slots;
-  K.shared.catchCrowd = (t, o = {}) => { const cr = cast.crowd('thousand', N); const lk = K.look(W.dawn(t)); const fold = o.fold; let n = 0;
-    for (let i = 1; i < N; i++) { let x = slots[i * 2], z = slots[i * 2 + 1], lane = K.LANES8[i % 7], dens = lk.density, sol = lk.solid, track = 'idle';
+  // main-Jade: `idle`, then `catch` (song_t0 220.0: the light lands in her hands on b129, her head lifts on "life", her arms are open on "become")
+  const tC = cast.songT0('catch') || 220.0; K.shared.catchPerf = (t) => ({ track: t < tC ? 'idle' : 'catch', time: t - tC });
+  // the thousand stand in `idle` (each at its own point of the loop); when they fold in they run to her (`run_loop`, turned toward her)
+  K.shared.catchCrowd = (t, o = {}) => { const cr = cast.crowd('thousand', N); const fold = o.fold; let n = 0;
+    for (let i = 1; i < N; i++) { let x = slots[i * 2], z = slots[i * 2 + 1], lane = K.LANES8[i % 7], track = 'idle', yaw = -Math.PI / 2;
       if (fold) { const d = Math.hypot(x - C[0], z); const tv = fold.t0 + d / 34; if (t > tv) lane = 'violet';                       // the violet ripple runs out through them
-        const tg = fold.go(i, d); if (t > tg) { const u = Math.min(1, (t - tg) / 0.9); const e = u * u * u; if (u >= 1) continue; x = lerp(x, C[0], e); z = lerp(z, 0, e); track = 'run'; } }
-      cr.put(n++, { pos: [x, 0, z], yaw: -Math.PI / 2, track, time: t + i, lane, density: dens, solid: sol, cel: o.cel ?? -1 }); }
+        const tg = fold.go(i, d); if (t > tg) { const u = Math.min(1, (t - tg) / 0.9); const e = u * u * u; if (u >= 1) continue; yaw = Math.atan2(C[0] - x, -z); x = lerp(x, C[0], e); z = lerp(z, 0, e); track = 'run_loop'; } }
+      cr.put(n++, { pos: [x, 0, z], yaw, track, time: t + i, lane, seed: i + 1 }); }
     cr.n = n; return n + 1; };
   return { name: '12_flight', t0, t1, frame(t) {
     if (t < tB) { const L = K.shared.lightAt(t), Lb = K.shared.lightAt(t - 0.22), La = K.shared.lightAt(t + 0.7);
@@ -23,7 +26,7 @@ export default function seq(K) {
         type: [K.lyric(20, camera, { font: 'hook', x: -0.92, y: 0.36, rows: [2, 3], dist: 60 }), K.lyric(21, camera, { font: 'hook', x: -0.92, y: 0.20, rows: [2, 2, 3], dist: 60 })],
         hud: { branch: K.VIOLET.name, color: K.LANE.violet, ctx: 1 } }; }
     const u = seg(t, tB, t1); const camera = { pos: [C[0] - 6.4 + 0.6 * u, 1.2, 1.3], target: [C[0] + 3, 1.45, -0.4], fov: 37, focusDist: 6.5, aperture: 0.02, far: 30000 };
-    const lk = K.look(W.dawn(t)); cast.actor('hero').set({ pos: [C[0], 0, 0], yaw: -Math.PI / 2, track: 'idle', time: t, density: lk.density, solid: lk.solid });
+    cast.actor('hero').set({ pos: [C[0], 0, 0], yaw: -Math.PI / 2, ...K.shared.catchPerf(t) });
     const n = K.shared.catchCrowd(t);
     return { camera, world: { text: 0.5, flow: 0.1, lights: { gain: 0.5 } }, extra: [K.shared.lightDraw(t, 0.6)], type: [K.lyric(22, camera, { font: 'hook', x: -0.92, y: 0.36, rows: [2, 2], dist: 34 })], hud: K.hudMain(t, { count: n }) };
   } };

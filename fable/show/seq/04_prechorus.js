@@ -1,5 +1,5 @@
 // 4 · bars 33-40 · 0:55.8-1:09.7 · pre-chorus; kick 62.73 (b37); riser from 64.9
-// A  b33     "And every branch remembers"  five more lives, two beats each, the same framing: each one walks away and looks back with the identical move
+// A  b33     "And every branch remembers"  five more lives, two beats each, the same framing: each one is in her life and looks back with the identical move (life_* t = 4.5 on "remembers")
 // B  b35.5   "Where I started from"        straight down: a pulse runs home from every tip, down every road, and lands on the root on the b37 kick
 // C  b38     the riser: the camera dives and flies back down her road to the root; white on the chorus downbeat
 import { seg, ss, lerp, sm, easeIn } from '../kit.js';
@@ -17,10 +17,9 @@ export default function seq(K) {
       for (const [tt, s, h] of [[bar(38.7), sTop * 0.95, 210], [bar(39.4), sTop * 0.66, 120], [bar(40.0), sTop * 0.36, 50], [bar(40.6), sTop * 0.1, 10], [t1, 5.5, 1.6]]) { const a = P.at(s); k.push({ t: tt, pos: [a.x, h, a.z], target: [0, 2 + h * 0.05, 0], fov: 35 }); }       // always looking at the root
       dive = K.camPath(k); }
     if (t < tB) return K.cut(t, CUTS.map((c, j) => ({ t0: c, f: (tt, u, c0) => { // A: match cuts. Same lens, same place in frame, same move.
-      const i = 6 + j, L = W.lives[i]; const a = K.frameOf((x) => W.walkerAt(L.name, x), t, 1.5);
+      const i = 6 + j, L = W.lives[i]; const a = K.shared.lifeFrame(i, c0);
       const camera = { pos: K.rel(a, -4.6, 1.3, 1.45), target: K.rel(a, 4, -0.9, 1.05), fov: 35, focusDist: 4.8, aperture: 0.03 };
-      const turn = sm(seg(t, c0 + 0.10, c0 + 0.62));
-      cast.actor(L.name, { lane: L.lane }).set({ pos: [a.x, 0, a.z], yaw: K.yawOf(a) + turn * 2.7, track: 'idle', time: t, ...(turn < 0.5 ? K.shared.POSE[i] : {}) });
+      cast.actor(L.name, { lane: L.lane }).set({ pos: [a.x, 0, a.z], yaw: K.yawOf(a), ...K.shared.lifePerf(i, t, c0) });      // every life track looks back from "remembers" (57.03)
       return { camera, world: { text: 0.8, flow: 0.12, gain: 1.7, lights: { gain: 0.6 } }, type: [K.lyric(5, camera, { x: -0.9, y: 0.30, rows: [2, 2], dist: 26, out: tB })], hud: { branch: L.name, color: L.color, ctx: 0.34 + 0.045 * i + 0.002 * (t - 47) } }; } })), tB);
     const B2 = t < tC; const c = B2 ? top(t) : dive(t); const low = B2 ? 0 : ss(t, bar(39.6), bar(40.8));
     // the pulse: every tip remembers. It runs back down the graph in g (= the time each point was written) and reaches the root (g = TF[0]) on the kick.

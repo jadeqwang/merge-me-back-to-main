@@ -1,7 +1,8 @@
 // MERGE, the Fable cut: the whole film. 16 sequences (SPEC §4), one file each in ./seq. This file only picks the sequence for time t,
 // fills in defaults (dawn, grade, the world, the cast) and returns the frame description the engine draws.
 //   node fable/tools/render.mjs --show /fable/show/main.js --from 0 --to 282.5 --res 1280x720 --mb 2 --workers 4 --audio --mp4 work_fable/out/animatic_v1.mp4
-//   dev views: --q "dev=map" (the whole continent, top-down, at time t)  --q "dev=cast" (stand-in turntable)
+//   dev views: --q "dev=map" (the whole continent, top-down, at time t)  --q "dev=cast" (four performances on a turntable)
+//   --q "standin=1": the capsule stand-ins instead of the real figure (fast)   --q "tracks=a,b": load only these tracks (dev)
 // A sequence module exports { t0, t1 (song seconds, from bars), setup?(K), frame(t, K) } where frame returns:
 //   { camera, env?: {dawn?, sun?, ground?, grade?: overrides}, world?: opts for world.draw (false = no world), extra?: [drawables], type?: [...], hud?, overlay?, fade?: 0..1 to black }
 import { makeKit, clamp01 } from './kit.js';
@@ -36,12 +37,13 @@ function devFrame(t) {
   const W = K.world;
   if (dev === 'almond') { const b = W.almondBox; if (!devFrame.p) { devFrame.p = 1; console.log('almondBox', JSON.stringify(b), 'forkBox', JSON.stringify(W.forkBox)); } const c = W.frameBox(b.x0 - 60, b.x1 + 80, b.z0, b.z1, { up: K.E.Q.get('up') || 'map' }); return { camera: c, env: { dawn: 0, ground: { fogAmt: 0, ripple: 0, base: K.hex('#0A0F46'), f0: 0.1 }, grade: K.grade(0, { vignette: 0.2, streak: 0, bloom: 0.5 }) }, drawables: W.draw(t, { minPx: 1.4, text: 0, conn: { gain: 0.6, halo: 0, minPx: 1.0 }, canopy: K.E.Q.get('plain') ? false : { gain: 0.6 }, lights: K.E.Q.get('plain') ? false : { gain: 0.5, minPx: 1.2 } }), hud: { branch: 'main', color: K.LANE.main, count: W.count(t) } }; }
   if (dev === 'map') { const c = W.frameBox(-1450, 2700, -1700, 1500, { up: 'map' }); return { camera: c, env: { dawn: 0, ground: { fogAmt: 0, ripple: 0, base: K.hex('#0A0F46'), f0: 0.1 }, grade: K.grade(0, { vignette: 0.2 }) }, drawables: W.draw(t, { head: K.E.Q.get('all') ? 1e9 : t, minPx: 1.6, text: 0, canopy: true }), hud: { branch: 'main', color: K.LANE.main, count: W.count(t) } }; }
-  K.cast.begin(); const dawn = +(K.E.Q.get('dawn') || 0); const a = t * 0.5;
-  K.cast.actor('hero').set({ pos: [0, 0, 0], yaw: 0.5, density: dawn < 0.5 ? 1 : 0, solid: dawn < 0.5 ? 0 : 1, track: 'beat', time: t });
-  K.cast.actor('v', { lane: 'violet', variant: 'violet' }).set({ pos: [1.4, 0, 0], yaw: -0.6, density: dawn < 0.5 ? 1 : 0, solid: dawn < 0.5 ? 0 : 1, arms: 1 });
-  K.cast.actor('f', { lane: 'mint' }).set({ pos: [-1.6, 0, 0.5], yaw: 0, tilt: -Math.PI / 2, density: dawn < 0.5 ? 1 : 0, solid: dawn < 0.5 ? 0 : 1 });
-  K.cast.actor('s', { lane: 'rose' }).set({ pos: [3, 0, 0], yaw: 0.3, squat: 1, reach: 1, density: dawn < 0.5 ? 1 : 0, solid: dawn < 0.5 ? 0 : 1 });
-  return { camera: { pos: [Math.sin(a) * 7, 1.6, Math.cos(a) * 7 + 0.01], target: [0.8, 0.9, 0], fov: 35, aperture: 0.03 }, env: { dawn, grade: K.grade(dawn) }, drawables: K.cast.drawables(), hud: null };
+  // dev=cast: a turntable of four performances (--q "dev=cast&dawn=0.6&a=idle&b=violet&c=float&d=build")
+  K.cast.begin(); const dawn = +(K.E.Q.get('dawn') || 0); const a = t * 0.5; const q = (k, d) => K.E.Q.get(k) || d; const tk = (n) => t - K.cast.songT0(n);
+  K.cast.actor('hero').set({ pos: [0, 0, 0], yaw: 0.5, track: q('a', 'idle'), time: tk(q('a', 'idle')) });
+  K.cast.actor('v', { lane: 'violet', variant: 'violet' }).set({ pos: [1.6, 0, 0], yaw: -0.6, track: q('b', 'sit_idle'), time: tk(q('b', 'sit_idle')) });
+  K.cast.actor('f', { lane: 'mint' }).set({ pos: [-1.8, 0, 0.5], yaw: 0, track: q('c', 'float'), time: tk(q('c', 'float')) });
+  K.cast.actor('s', { lane: 'rose' }).set({ pos: [3.4, 0, 0], yaw: 0.3, track: q('d', 'life_wushu'), time: tk(q('d', 'life_wushu')) });
+  return { camera: { pos: [Math.sin(a) * 7, 1.6, Math.cos(a) * 7 + 0.01], target: [0.8, 0.9, 0], fov: 35, aperture: 0.03 }, env: { dawn, grade: K.grade(dawn) }, drawables: K.cast.drawables(dawn), hud: null };
 }
 
 export function frame(t) {
@@ -54,7 +56,7 @@ export function frame(t) {
   const out = { camera: F.camera, env: { ...env, dawn, grade: K.grade(dawn, env.grade || {}) }, drawables: [], type: F.type || [], hud: F.hud === undefined ? null : F.hud, overlay: F.overlay };
   if (F.world !== false) out.drawables.push(...K.world.draw(tt, F.world || {}));
   if (F.extra) out.drawables.push(...F.extra);
-  out.drawables.push(...K.cast.drawables());
+  out.drawables.push(...K.cast.drawables(dawn));
   if (F.fade) { const g = out.env.grade; g.exposure = (g.exposure ?? 1) * (1 - clamp01(F.fade)); }
   if (F.flash) { const g = out.env.grade; g.exposure = (g.exposure ?? 1) * (1 + 6 * F.flash); g.bloom = (g.bloom ?? 0.5) + 1.5 * F.flash; }
   return out;

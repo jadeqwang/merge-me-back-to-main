@@ -1,19 +1,39 @@
 // CAST: the thin actor layer every sequence goes through. Shows never touch a figure implementation directly.
-//   const cast = makeCast(E)
+//   const cast = await makeCast(E)                 loads every track in work_fable/tracks once (names in TRACKS; `_*` never), builds ONE shared Figure
 //   cast.begin()                                   start of every frame(t)
-//   const a = cast.actor('hero', { lane: 'main', variant: 'jade' | 'violet' })      (created once, same object returned for the same id)
-//   a.set({ pos:[x,y,z], yaw, track, time, density, solid, scale, visible, tilt, squat, arms, reach, cel, color })
-//   const c = cast.crowd('thousand', 1024);  c.put(i, { pos, yaw, time, lane | color, density, solid, tilt, squat, arms, reach, scale, cel });  c.n = how many are live this frame
-//   cast.drawables()                               -> drawables for this frame (actors + crowds)
-// yaw: radians about +Y; yaw 0 faces +Z, yaw = atan2(dx, dz) faces (dx, dz). East (+X) is PI/2.
-// density 0..1 = how much light she is made of (night look). solid 0..1 = opaque body (silhouette at sunrise, cel colour by day; `cel` overrides the dawn-driven mix).
-// track/time name a performance and its clock; the stand-in ignores the performance except for a small step/bob so motion reads.
+//   const a = cast.actor('hero', { lane: 'main' | [r,g,b], variant: 'jade' | 'violet', seed })      (created once, same object returned for the same id)
+//   a.set({ pos:[x,y,z], yaw, track, time, scale, density, solid, alpha, gain, visible, vary, trail })
+//   const c = cast.crowd('thousand', 1024);  c.put(i, { pos, yaw, track, time, lane, seed, ... });  c.n = how many are live this frame
+//   cast.drawables(dawn)                           -> drawables for this frame (actors + crowds)
+// yaw: radians about +Y; yaw 0 faces +Z, yaw = atan2(dx, dz) faces (dx, dz). East (+X) is PI/2. Track space: she faces +Z, her left is +X.
+// track/time name a baked performance (work_fable/tracks/<track>) and its clock in seconds. Song-timed tracks carry meta.song_t0: time = t - song_t0
+//   (cast.songT0(track)). Loop tracks wrap; others clamp. In-place loops (run_loop, sprint_loop, walk_loop; meta.speed) do not travel: the sequence moves pos.
+//   Tracks with root motion (violet, sprint_stop_look, free, drop ...) travel from their origin = pos. Helpers to place them:
+//     cast.root(track, time, joint = 0)        -> [x, y, z] of a joint (hips) in track space
+//     cast.rot(yaw, x, z)                      -> [wx, wz] track-space offset turned into the world
+//     cast.origin([wx, wz], yaw, [x, z])       -> pos that puts track-space point (x, z) on world (wx, wz)
+//     cast.hips(track, time, pos, yaw)         -> world [x, y, z] of the hips of an instance
+//     cast.dur(track), cast.meta(track), cast.speed(track), cast.has(track), cast.event(track, name)
+// density 0..1 = how rich the fibre shimmer in her clothes is (night). solid 0..1 = lit by the world's light (default 1; the figure follows dawn by itself).
+// alpha 0..1 = presence (dithered); gain = glow of her accents. lane = a LANE name or a road colour [r,g,b] (matched to the nearest lane).
+// seed: per-instance variation (+-25 ms, +-2.5 % height, hair). Actors default to a hash of their id ('hero' = 0, the canonical her); crowds to i + 1.
 //
-// STAND-IN implementation (animatic): a 1.65 m capsule with a head, a facing tick, an arm bar (arms 0..1), a forward bar (reach 0..1) and, for violet, a bun with two pencils.
-// The real Figure replaces StandIn behind this interface.
+// Two backends behind this interface:
+//   the real Figure (fable/engine/src/figure/figure.js): default
+//   StandIn (?standin=1, --q "standin=1"): a 1.65 m capsule with a head and a facing tick, for fast animatic renders. It follows the track's hips
+//   (so root motion, sitting, lying and jumps read as position/height), nothing else.
 import { Program, FS_HEAD, hex } from '../engine/src/glx.js';
 import { mulberry32 } from '../engine/src/rng.js';
 import { LANE } from './world.js';
+import { Figure, LANES as FIG_LANES } from '../engine/src/figure/figure.js';
+import { loadTrack } from '../engine/src/figure/skeleton.js';
+
+// The render harness's static server cannot list a directory, so the track names live here (everything in work_fable/tracks except `_*`).
+// A missing file is skipped with a console line; add new names here. --q "tracks=a,b,c" loads only those (dev).
+export const TRACKS = ['build', 'butterfly', 'butterfly_only', 'catch', 'drop', 'fall_only', 'float', 'fork_L', 'fork_R', 'fork_walk_L', 'fork_walk_R', 'form_test', 'free', 'idle', 'land',
+  'life_band', 'life_home', 'life_nasa', 'life_piano', 'life_poet', 'life_stage', 'life_violin', 'life_wetlab', 'life_wushu', 'lookback', 'release', 'rise', 'run_fwd', 'run_loop', 'salute_only',
+  'sidekick', 'sit_idle', 'sprint_loop', 'sprint_stop_look', 'turn_around', 'violet', 'walk_fwd', 'walk_lookback', 'walk_loop', 'walk_turn'];
+const SIM_OPTS = { life_nasa: { wind: [0, 0, -9], gust: 1.0 } };          // the wind tunnel (track meta: wind from +Z)
 
 const STRIDE = 16; // x y z yaw | tilt sy scale arms | reach r g b | density solid cel bun
 const XF = `
@@ -138,23 +158,56 @@ class StandIn {
   }
 }
 
-export function makeCast(E) {
-  const impl = new StandIn(E); const { hex, time: T } = E; const actors = new Map(), crowds = new Map(); const laneCol = {}; for (const k in LANE) laneCol[k] = hex(LANE[k]);
-  const DEF = { pos: [0, 0, 0], yaw: 0, tilt: 0, squat: 0, scale: 1, arms: 0, reach: 0, density: 1, solid: 0, cel: -1, visible: true, track: 'idle', time: 0 };
-  // stand-in motion: a small step/bob so that walking, running and beats read. Real figures play the named track at `time` instead.
-  const bob = (s) => { const tr = s.track || 'idle', tt = s.time || 0; if (tr === 'run') return 0.07 * Math.abs(Math.sin(tt * 9.4)); if (tr === 'walk') return 0.035 * Math.abs(Math.sin(tt * 5.6)); if (tr === 'beat') return 0.10 * Math.exp(-5 * ((T.beatAt(tt) % 1 + 1) % 1)); return 0.012 * Math.sin(tt * 1.7); };
-  const write = (d, o, s, color, bun) => { const y = s.pos[1] + (s.tilt > 0.3 ? 0 : bob(s)); d[o] = s.pos[0]; d[o + 1] = y; d[o + 2] = s.pos[2]; d[o + 3] = s.yaw; d[o + 4] = s.tilt; d[o + 5] = 1 - 0.32 * s.squat; d[o + 6] = s.scale; d[o + 7] = s.arms;
-    d[o + 8] = s.reach; d[o + 9] = color[0]; d[o + 10] = color[1]; d[o + 11] = color[2]; d[o + 12] = s.visible ? s.density * (1 - s.solid) : 0; d[o + 13] = s.visible ? s.solid : 0; d[o + 14] = s.cel; d[o + 15] = bun; };
+export async function makeCast(E) {
+  const { hex } = E; const standin = !!E.param('standin', 0); const only = E.Q.get('tracks');
+  const names = (only ? String(only).split(',') : TRACKS).filter((n) => n && !n.startsWith('_'));
+  // ---- tracks: loaded once, by both backends (the stand-in only reads the hips)
+  const tracks = {}; const tl = performance.now();
+  await Promise.all(names.map(async (n) => { try { tracks[n] = await loadTrack('/work_fable/tracks/' + n, n); } catch (e) { console.log('cast: track ' + n + ' not loaded (' + e.message + ')'); } }));
+  let fig = null, impl = null;
+  if (standin) impl = new StandIn(E);
+  else { fig = new Figure(E.gl, { fontBase: '/engine/fonts/' }); await fig.init(); const ts = performance.now(); let fr = 0;
+    for (const n of Object.keys(tracks).sort()) { fig.addTrack(tracks[n], SIM_OPTS[n]); fr += tracks[n].frames; }
+    console.log(`cast: ${Object.keys(tracks).length} tracks, ${fr} frames; load ${(ts - tl).toFixed(0)} ms, sim ${(performance.now() - ts).toFixed(0)} ms`); }
+  const laneLin = {}, laneCol = {}; for (const k in LANE) { laneLin[k] = hex(LANE[k]); laneCol[k] = standin ? laneLin[k] : (FIG_LANES[k] || laneLin[k]); }
+  // a lane name, or a road colour (linear rgb, from E.hex) matched to the nearest lane
+  const laneOf = (l) => { if (!Array.isArray(l)) return laneCol[l] || laneCol.main; if (standin) return l; let best = 'main', bd = 1e9; for (const k in laneLin) { const c = laneLin[k], d = (c[0] - l[0]) ** 2 + (c[1] - l[1]) ** 2 + (c[2] - l[2]) ** 2; if (d < bd) { bd = d; best = k; } } return laneCol[best]; };
+  const warned = {}; const T = (n) => { const t = tracks[n]; if (!t && !warned[n]) { warned[n] = 1; console.log('cast: unknown track "' + n + '" (idle is played instead)'); } return t || tracks.idle; };
+  const dur = (n) => { const t = T(n); return t ? (t.loop ? t.frames : t.frames - 1) / t.fps : 1; };
+  const wrap = (n, time) => { const t = T(n), d = dur(n); return t && t.loop ? ((time % d) + d) % d : Math.min(d, Math.max(0, time)); };
+  const root = (n, time, j = 0) => { const t = T(n); if (!t) return [0, 1, 0]; const ft = wrap(n, time) * t.fps, f0 = Math.min(t.frames - 1, Math.floor(ft)), f1 = f0 + 1 < t.frames ? f0 + 1 : (t.loop ? 0 : f0), u = ft - f0, D = t.data, a = f0 * 147 + j * 7, b = f1 * 147 + j * 7;
+    return [D[a] + (D[b] - D[a]) * u, D[a + 1] + (D[b + 1] - D[a + 1]) * u, D[a + 2] + (D[b + 2] - D[a + 2]) * u]; };
+  const rot = (yaw, x, z) => { const c = Math.cos(yaw), s = Math.sin(yaw); return [x * c + z * s, -x * s + z * c]; };
+  const origin = (w, yaw, p) => { const o = rot(yaw, p[0], p[1]); return [w[0] - o[0], 0, w[1] - o[1]]; };
+  const hips = (n, time, pos, yaw) => { const r = root(n, time), o = rot(yaw, r[0], r[2]); return [pos[0] + o[0], pos[1] + r[1], pos[2] + o[1]]; };
+  const hashStr = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619); return 1 + ((h >>> 0) % 9973); };
+  const DEF = { pos: [0, 0, 0], yaw: 0, scale: 1, density: 1, solid: 1, alpha: 1, gain: 1, visible: true, track: 'idle', time: 0 };
+  // ---- the real figure: one instance description per body
+  const inst = (s, lane, variant, seed) => { const t = T(s.track); return { pos: s.pos, yaw: s.yaw, scale: s.scale, track: t ? t.name : 0, time: t ? wrap(t.name, s.time) : 0, lane: laneOf(lane), density: s.density, solid: s.solid, alpha: s.visible ? s.alpha : 0, gain: s.gain,
+    variant: variant === 'violet' || variant === 'bun' ? 'bun' : undefined, seed: s.seed ?? seed, vary: s.vary, trail: s.trail, story: s.story, eyes: s.eyes, lodBias: s.lodBias }; };
+  // ---- the stand-in: a capsule that follows the track's hips
+  const ss = (x, a, b) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
+  const write = (d, o, s, color, bun, dawn) => { const r = root(s.track, s.time), w = rot(s.yaw, r[0], r[2]), vis = s.visible ? s.alpha : 0, sol = s.solid * ss(dawn, 0.38, 0.54), den = (0.25 + 0.75 * s.density) * (1 - ss(dawn, 0.40, 0.56));
+    d[o] = s.pos[0] + w[0]; d[o + 1] = s.pos[1] + Math.max(0, r[1] - 1.02); d[o + 2] = s.pos[2] + w[1]; d[o + 3] = s.yaw; d[o + 4] = 0; d[o + 5] = Math.min(1, Math.max(0.12, r[1] / 0.98)); d[o + 6] = s.scale; d[o + 7] = 0;
+    d[o + 8] = 0; d[o + 9] = color[0]; d[o + 10] = color[1]; d[o + 11] = color[2]; d[o + 12] = vis * den * (1 - sol); d[o + 13] = vis * sol; d[o + 14] = -1; d[o + 15] = bun; };
+  const actors = new Map(), crowds = new Map();
   const cast = {
-    impl, laneCol,
+    standin, fig, impl, tracks, laneCol, laneOf, root, rot, origin, hips, dur,
+    has: (n) => !!tracks[n], meta: (n) => (tracks[n] && tracks[n].meta) || {}, speed: (n) => (tracks[n] && tracks[n].meta && tracks[n].meta.speed) || 0, songT0: (n) => (tracks[n] && tracks[n].meta && tracks[n].meta.song_t0) || 0,
+    event: (n, name) => { const e = tracks[n] && tracks[n].events.find((q) => q.name === name); return e ? e.t : undefined; },
     begin() { for (const a of actors.values()) a.live = false; for (const c of crowds.values()) c.n = 0; },
-    actor(id, o = {}) { let a = actors.get(id); if (!a) { a = { id, lane: o.lane || 'main', variant: o.variant || 'jade', s: { ...DEF }, live: false,
-      set(v) { this.s = { ...DEF, ...v }; this.live = true; return this; } }; actors.set(id, a); } if (o.lane) a.lane = o.lane; return a; },
-    crowd(id, max = 1024) { let c = crowds.get(id); if (!c) { c = { id, max, n: 0, data: new Float32Array(max * STRIDE),
-      put(i, v) { const s = { ...DEF, ...v }; write(this.data, i * STRIDE, s, v.color || laneCol[v.lane || 'main'], v.bun ? 1 : 0); if (i >= this.n) this.n = i + 1; } }; crowds.set(id, c); } return c; },
-    drawables() { const list = []; const live = [...actors.values()].filter((a) => a.live && a.s.visible);
-      if (live.length) { const d = new Float32Array(live.length * STRIDE); live.forEach((a, i) => write(d, i * STRIDE, a.s, a.s.color || laneCol[a.lane], a.variant === 'violet' ? 1 : 0)); list.push(impl.drawable(d, live.length)); }
-      for (const c of crowds.values()) if (c.n) list.push(impl.drawable(c.data.slice(0, c.n * STRIDE), c.n));
+    actor(id, o = {}) { let a = actors.get(id); if (!a) { a = { id, lane: o.lane || 'main', variant: o.variant || 'jade', seed: o.seed ?? (id === 'hero' ? 0 : hashStr(id)), s: { ...DEF }, live: false,
+      set(v) { this.s = { ...DEF, ...v }; this.live = true; return this; } }; actors.set(id, a); } if (o.lane) a.lane = o.lane; if (o.variant) a.variant = o.variant; return a; },
+    crowd(id, max = 1024) { let c = crowds.get(id); if (!c) { c = { id, max, n: 0, items: new Array(max),
+      put(i, v) { this.items[i] = v; if (i >= this.n) this.n = i + 1; } }; crowds.set(id, c); } return c; },
+    drawables(dawn = 0) {
+      const live = [...actors.values()].filter((a) => a.live && a.s.visible && a.s.alpha > 0);
+      if (fig) { fig.begin(); let n = 0; for (const a of live) { fig.add(inst(a.s, a.s.lane || a.lane, a.variant, a.seed)); n++; }
+        for (const c of crowds.values()) for (let i = 0; i < c.n; i++) { const v = c.items[i]; if (!v || v.visible === false) continue; fig.add(inst({ ...DEF, ...v }, v.lane || 'main', v.variant, i + 1)); n++; }
+        return n ? [fig] : []; }
+      const list = [];
+      if (live.length) { const d = new Float32Array(live.length * STRIDE); live.forEach((a, i) => write(d, i * STRIDE, a.s, laneOf(a.s.lane || a.lane), a.variant === 'violet' ? 1 : 0, dawn)); list.push(impl.drawable(d, live.length)); }
+      for (const c of crowds.values()) if (c.n) { const d = new Float32Array(c.n * STRIDE); let n = 0; for (let i = 0; i < c.n; i++) { const v = c.items[i]; if (!v || v.visible === false) continue; write(d, n++ * STRIDE, { ...DEF, ...v }, laneOf(v.lane || 'main'), v.variant === 'violet' ? 1 : 0, dawn); } if (n) list.push(impl.drawable(d, n)); }
       return list; },
     yawTo: (dx, dz) => Math.atan2(dx, dz),
   };

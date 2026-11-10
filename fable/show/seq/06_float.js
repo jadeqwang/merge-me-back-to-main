@@ -30,7 +30,10 @@ export default function seq(K) {
   const cam = (t) => { const h = lerp(6.8, 9.6, sm(seg(t, t0, t1))) + (t > t1 ? 40 * Math.pow(seg(t, t1, bar(69)), 1.6) : 0); const half = h * Math.tan((35 * Math.PI) / 360) * (K.E.W / K.E.H);
     return { pos: [H[0] + 0.25 - 0.02 * h, h, 0.12 * half], target: [H[0] + 0.25, 0, 0.12 * half], fov: 35, topUp: [1, 0, 0], near: 0.3, far: 20000 }; };
   K.shared.floatCam = cam;
-  K.shared.floatBody = (t, o = {}) => cast.actor('hero').set({ pos: [fx - 0.76, 0, 0], yaw: -Math.PI / 2, tilt: Math.PI / 2, track: 'idle', time: t, density: 0.7, arms: 0.35, ...o });
+  // `float` (song_t0 97.513; supine, head toward its -Z) until 116.0, then `rise` (song_t0 116.0; its frame 0 is the float's pose there). Head east, on H: the strands leave it.
+  const tF0 = cast.songT0('float') || t0, tR0 = cast.songT0('rise') || 116.0, hd = cast.root('float', 0, 4), P0 = cast.origin(H, -Math.PI / 2, [hd[0], hd[2] - 0.12]);
+  K.shared.tRise = tR0;
+  K.shared.floatBody = (t, o = {}) => cast.actor('hero').set({ pos: P0, yaw: -Math.PI / 2, track: t < tR0 ? 'float' : 'rise', time: t < tR0 ? t - tF0 : t - tR0, density: 0.7, ...o });
   K.shared.hairDraw = (t, o = {}) => hair.R.drawable({ head: t, gain: 2.0, textGain: 0.3, minPx: 1.3, haloPx: 3, halo: 0.25, headGain: 2.5, headLen: 0.25, nodeMinPx: 1.2, soft: 0.1, ...o });
   return { name: '06_float', t0, t1, frame(t) {
     const camera = cam(t); K.shared.floatBody(t);
