@@ -89,7 +89,7 @@ Total time = 1.5 + (0.2267 + 0.7667 k) / r + 1.2 s. `K.loopFor` / `K.gait` are n
 
 **Why it is not wired into `actC_form.js`** (measured on the act's own assignment, 1,023 copies, runs mean 15.7 m / median 14.7 m / max 31.3 m):
 1. Speed. The run block gives everyone 5.2 s (b93 -> b96.1) and moves the far half on `sprint_loop` at up to 5.67 m/s. Stand -> run -> stand on `run_loop`
-   at rate 1.15 covers at most 14.2 m by b96.1 and 16.9 m by the `set` pose (166.42): only 501 copies (689 by `set`) can make their cell; the rest
+   at rate 1.15 covers at most 14.2 m by b96.1 (k = 3) and 19.5 m by the `set` pose (166.42, k = 5): about 500 copies (about 770 by `set`) can make their cell; the rest
    would still be running at the fall. They need a sprint pair (`sprint_stop_look` frames 0-4.2 already is sprint_loop phase 0 -> stand; a
    `sprint_from_stand` does not exist) or shorter runs (re-pair cells, or start before the b93 cut).
 2. Facing. `run_to_stand` stops facing the way she ran; `drop` on the cell faces EAST. The runs point every way: 816 of 1,023 are more than 45 deg off east,
@@ -102,3 +102,21 @@ Total time = 1.5 + (0.2267 + 0.7667 k) / r + 1.2 s. `K.loopFor` / `K.gait` are n
    attention, fists at the waist: 0.3 m in the hands from the idle stance).
 None of this is a small edit to the director's run block; the tracks are ready for a re-plan of it (e.g. nearer cells + curved arrivals facing east).
 - Sheets: `work_fable/out/reel/m3/run_from_stand.jpg` (0-1.9 s every 0.1 s, side), `run_to_stand.jpg` (0-2.85 s every 0.15 s, side).
+
+## 5. Leftovers
+- `free`, the dragging step at 240.3-240.6 — done. Cause: the join skip (CMU 142_09) -> whirl (CMU 55_01) at 240.13: `concat`'s inertialisation carried the
+  join's pose / root difference into the whirl and dragged its planted LEFT foot 0.42 m over the ground (the capture has it still). New helper
+  `_pin_feet_like(m, a, b, span)` in `recipes_util.py`: for 0.9 s after a join, a foot that is planted in clip b is held where it comes down (following only
+  b's own roll) and the difference is given back in the next swing. Left ankle slide 0.42 -> 0.03 m; the right foot's landing at 240.65 no longer slides
+  (1.5 -> 0.1-0.3 m/s). Only frames 240.21-241.26 changed (max 0.49 m, the left foot); everything else and every event is bit-identical (skip apex,
+  leap, joy, cartwheel, turn, flourish, walk and the root path seq 14 places her by). Sheet: `work_fable/out/reel/m3/free_skip.jpg`.
+- `drop`, support foot at 163.1-163.4 — NOT changed. It is the pubu's extended left foot turning 112 deg (toes -8 -> 104 deg) about a fixed ankle while she rises
+  and turns for the first travelling snap kick: a heel pivot, which is how pubu -> a forward stance is done; it only lacks a toe lift to read as one.
+  In the film nobody is close to it (the hero is sprinting to the head of main, the copies are seen from 15-80 m up), and `drop` is otherwise
+  bit-identical to the reviewed track, so it was left. If wanted: raise the toes ~10 deg between 163.10 and 163.45 on that foot in `_drop`.
+
+## Files
+`fable/tools/bake/recipes_m3.py` (new: fork_go_L/R, run_from_stand, run_to_stand, helpers `_hold_start_feet`, `_from_stand`, `_to_stand`),
+`recipes_util.py` (`_violet_sit`, `_pin_feet_like`), `recipes_choreo.py` (`_drop(join)`, `drop_join`); `fable/show/cast.js` (TRACKS: fork_go_L, fork_go_R,
+drop_join), `seq/01_root.js`, `seq/11_violet.js`, `seq/actC_form.js`. Tracks re-baked: violet, free, drop (identical), + the five new ones.
+All pass `validate.py --tracks`. Not re-rendered: the act clips (`work_fable/out/act*.mp4`) and v1.

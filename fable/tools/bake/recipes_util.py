@@ -772,6 +772,41 @@ def turn_in_place(m, t0, t1, ang, lift=0.05):
     return out
 
 
+def _pin_feet_like(m, a, b, span, fade=0.25, near=0.03):
+    """After m = concat(a, b): for `span` seconds after the join, a foot that is planted in clip b stays
+    planted in m. concat's inertialisation carries the pose and root difference of the join into b,
+    which drags b's support foot over the ground; here, once that foot has come down to b's height, it
+    is held where it is (following only b's own heel-to-toe roll) to the end of b's contact, and the
+    difference is given back over `fade` seconds of the swing that follows."""
+    n0 = a.frames - 1
+    n1 = min(m.frames, n0 + int(span * m.fps))
+    bb = M.place(b, 0, M.heading(a, -1), (a.root[-1, 0], a.root[-1, 2]))
+    Pb = bb.fk()
+    con = M.contacts(bb)
+    out = m
+    for k, sd in enumerate("LR"):
+        j = J["foot" + sd]
+        Pm = out.fk()[:, j]
+        corr = np.zeros((m.frames, 3))
+        for st, en in M._runs(con[:n1 - n0, k]):
+            ok = np.where(np.abs(Pm[n0 + st:n0 + en, 1] - Pb[st:en, j, 1]) < near)[0]
+            if len(ok) == 0:
+                continue
+            k0 = st + int(ok[0])
+            if en - k0 < 3:
+                continue
+            tgt = Pm[n0 + k0] + (Pb[k0:en, j] - Pb[k0, j])
+            corr[n0 + k0:n0 + en] = tgt - Pm[n0 + k0:n0 + en]
+            nf = int(fade * m.fps)
+            e1 = min(m.frames, n0 + en + nf)
+            u = M.smoothstep((np.arange(n0 + en, e1) - (n0 + en) + 1) / (nf + 1))
+            corr[n0 + en:e1] = corr[n0 + en - 1][None] * (1.0 - u[:, None])
+        corr[:, 1] = 0.0
+        if np.abs(corr).max() > 1e-4:
+            out = M.leg_ik(out, sd, Pm + corr)
+    return out
+
+
 @recipe("free")
 def free():
     """The outro in daylight (song_t0 = 236.648, b137): skipping, a turn with her arms flung wide, a
@@ -787,6 +822,7 @@ def free():
     wh = _clip("cmu:55_01")
     b = M.trim(wh, 0.9, 2.9)
     m = M.concat(a, b, halflife=0.22)
+    m = _pin_feet_like(m, a, b, 0.9)          # M3: the whirl's support foot was dragged 0.35 m by the join (240.3-240.6)
     # b140: the run-up; b141.1 the leap
     lp = M.with_events(_clip("cmu:49_04"), kicks=False)
     t_ap = lp.ev("jump_apex")[0]
