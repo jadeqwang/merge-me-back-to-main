@@ -42,7 +42,7 @@ export function actBFloat(K) {
   const path = K.camPath(CK.map(([t, h, th, e]) => ({ t, pos: [h, th, e], target: [0, 0, 0] })));
   const cam = (t) => { const [h, thd, e] = path(t).pos, th = (thd * Math.PI) / 180, cx = H[0] + e * Math.cos(0); return { pos: [cx, h, 0], target: [cx, 0, 0], topUp: [Math.sin(th), 0, -Math.cos(th)], fov: 35, near: 0.2, far: 20000, h }; };
   // `float` (song_t0 97.513; supine, head toward its -Z) until 116.0, then `rise` (song_t0 116.0; its frame 0 is the float's pose there, she stands up facing west)
-  const body = (t, o = {}) => cast.actor('hero').set({ pos: G.P0, yaw: G.WEST, track: t < G.tR0 ? 'float' : 'rise', time: t < G.tR0 ? t - G.tF0 : t - G.tR0, ...o });
+  const body = (t, o = {}) => cast.actor('hero').set({ pos: G.P0, yaw: G.WEST, track: t < G.tR0 ? 'float' : 'rise', time: t < G.tR0 ? t - G.tF0 : t - G.tR0, hair: 'strands', ...o });   // hair: 'strands' (anime figure): the fine strand hair for the whole of 06-07; the b73 flash hides the change back
   const feetX = cast.hips('float', 0, G.P0, G.WEST)[0] - 0.85;                               // main is written up to her feet
   // ---- the frame of the top-down shot (06 and 07 A share it; the cut between the two sequences is not a cut)
   const { T } = K, tHats = 111.42, RET = [T.bb(65, 1), T.bb(65, 2), T.bb(65, 3), T.bb(65, 4)], RDUR = 2.0;      // "Merge and return": four pulses come home, one a beat, the first on the hats

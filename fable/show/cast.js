@@ -18,14 +18,20 @@
 // alpha 0..1 = presence (dithered); gain = glow of her accents. lane = a LANE name or a road colour [r,g,b] (matched to the nearest lane).
 // seed: per-instance variation (+-25 ms, +-2.5 % height, hair). Actors default to a hash of their id ('hero' = 0, the canonical her); crowds to i + 1.
 //
-// Two backends behind this interface:
-//   the real Figure (fable/engine/src/figure/figure.js): default
+// FIGURE SWITCH (2026-11-10): ?fig=anime (default; fable/engine/src/figure_anime, notes/anime_lookdev.md) | ?fig=classic (fable/engine/src/figure: the film as it was).
+//   The anime figure takes three more fields through set()/put():  face: { expr, amt, blink, gaze: [x, y], lookAt: [x, y, z] } (any subset; overrides the default below),
+//   hand: -1 splayed .. 0 relaxed .. 1 fist | { L, R },  hair: 'strands' (the fine strand hair, for the float).  The classic figure ignores them.
+//   Without them every body gets the FILM DEFAULTS (autoFace / autoHand below): expression from the track, its time and the daylight; gaze forward with
+//   small saccades, turning with the head; seeded blinks every 2.5-6 s that never sit on a beat or a cut; fists for punches and the salute's right hand.
+// Three backends behind this interface:
+//   the Figure chosen by ?fig
 //   StandIn (?standin=1, --q "standin=1"): a 1.65 m capsule with a head and a facing tick, for fast animatic renders. It follows the track's hips
 //   (so root motion, sitting, lying and jumps read as position/height), nothing else.
 import { Program, FS_HEAD, hex } from '../engine/src/glx.js';
 import { mulberry32 } from '../engine/src/rng.js';
 import { LANE } from './world.js';
-import { Figure, LANES as FIG_LANES } from '../engine/src/figure/figure.js';
+import { Figure as FigureClassic, LANES as FIG_LANES } from '../engine/src/figure/figure.js';
+import { Figure as FigureAnime } from '../engine/src/figure_anime/figure.js';
 import { loadTrack } from '../engine/src/figure/skeleton.js';
 
 // The render harness's static server cannot list a directory, so the track names live here (everything in work_fable/tracks except `_*`).
@@ -160,6 +166,7 @@ class StandIn {
 
 export async function makeCast(E) {
   const { hex } = E; const standin = !!E.param('standin', 0); const only = E.Q.get('tracks');
+  const figKind = E.Q.get('fig') === 'classic' ? 'classic' : 'anime', anime = figKind === 'anime', Figure = anime ? FigureAnime : FigureClassic;
   const names = (only ? String(only).split(',') : TRACKS).filter((n) => n && !n.startsWith('_'));
   // ---- tracks: loaded once, by both backends (the stand-in only reads the hips)
   const tracks = {}; const tl = performance.now();
@@ -168,7 +175,7 @@ export async function makeCast(E) {
   if (standin) impl = new StandIn(E);
   else { fig = new Figure(E.gl, { fontBase: '/engine/fonts/' }); await fig.init(); const ts = performance.now(); let fr = 0;
     for (const n of Object.keys(tracks).sort()) { fig.addTrack(tracks[n], SIM_OPTS[n]); fr += tracks[n].frames; }
-    console.log(`cast: ${Object.keys(tracks).length} tracks, ${fr} frames; load ${(ts - tl).toFixed(0)} ms, sim ${(performance.now() - ts).toFixed(0)} ms`); }
+    console.log(`cast: fig=${figKind}; ${Object.keys(tracks).length} tracks, ${fr} frames; load ${(ts - tl).toFixed(0)} ms, sim ${(performance.now() - ts).toFixed(0)} ms`); }
   const laneLin = {}, laneCol = {}; for (const k in LANE) { laneLin[k] = hex(LANE[k]); laneCol[k] = standin ? laneLin[k] : (FIG_LANES[k] || laneLin[k]); }
   // a lane name, or a road colour (linear rgb, from E.hex) matched to the nearest lane
   const laneOf = (l) => { if (!Array.isArray(l)) return laneCol[l] || laneCol.main; if (standin) return l; let best = 'main', bd = 1e9; for (const k in laneLin) { const c = laneLin[k], d = (c[0] - l[0]) ** 2 + (c[1] - l[1]) ** 2 + (c[2] - l[2]) ** 2; if (d < bd) { bd = d; best = k; } } return laneCol[best]; };
@@ -185,14 +192,76 @@ export async function makeCast(E) {
   // ---- the real figure: one instance description per body
   const inst = (s, lane, variant, seed) => { const t = T(s.track); return { pos: s.pos, yaw: s.yaw, scale: s.scale, track: t ? t.name : 0, time: t ? wrap(t.name, s.time) : 0, lane: laneOf(lane), density: s.density, solid: s.solid, alpha: s.visible ? s.alpha : 0, gain: s.gain,
     variant: s.pencil === 'hand' ? 'bun_write' : s.pencil === 'gone' ? 'bun_one' : variant === 'violet' || variant === 'bun' ? 'bun' : undefined, seed: s.seed ?? seed, /* set({ pencil: 'hand' | 'gone' }): the violet branch has drawn one pencil / it became the light (actD) */ vary: s.vary, trail: s.trail, story: s.story, eyes: s.eyes, lodBias: s.lodBias }; };
+  // the anime figure: the same instance plus face, hand and hair (film defaults unless the sequence set them)
+  const instA = (s, lane, variant, seed) => { const o = inst(s, lane, variant, seed), sd = o.seed || 0, f = autoFace(o.track, s.time, sd, s.eyes === false ? { expr: 'calm', ...(s.face || {}) } : s.face);
+    o.face = f; o.hand = s.hand ?? autoHand(o.track, s.time, o.variant); o.hair = s.hair; return o; };
+
   // ---- the stand-in: a capsule that follows the track's hips
   const ss = (x, a, b) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
   const write = (d, o, s, color, bun, dawn) => { const r = root(s.track, s.time), w = rot(s.yaw, r[0], r[2]), vis = s.visible ? s.alpha : 0, sol = s.solid * ss(dawn, 0.38, 0.54), den = (0.25 + 0.75 * s.density) * (1 - ss(dawn, 0.40, 0.56));
     d[o] = s.pos[0] + w[0]; d[o + 1] = s.pos[1] + Math.max(0, r[1] - 1.02); d[o + 2] = s.pos[2] + w[1]; d[o + 3] = s.yaw; d[o + 4] = 0; d[o + 5] = Math.min(1, Math.max(0.12, r[1] / 0.98)); d[o + 6] = s.scale; d[o + 7] = 0;
     d[o + 8] = 0; d[o + 9] = color[0]; d[o + 10] = color[1]; d[o + 11] = color[2]; d[o + 12] = vis * den * (1 - sol); d[o + 13] = vis * sol; d[o + 14] = -1; d[o + 15] = bun; };
+  // ---- FILM DEFAULTS for the anime figure (fable/notes/anime_lookdev.md "defaults"; SPEC section 5). All pure functions of (track, track time, song time, seed).
+  // Face law: at night she is calm or neutral, in shadow tones; a silhouette stays a silhouette (the light does that); her first open-eyed, lit look is in
+  // `catch` when her head lifts (229.6); by day she is joyful. Per-actor override: set({ face: { expr, amt, blink, gaze, lookAt } }) (any subset).
+  let FT = 0, DAY = 0, NIGHT = 1, CUTS = [];
+  if (anime && !standin) { try { const r = await fetch('/fable/show/cuts.json'); if (r.ok) CUTS = (await r.json()).cuts || []; } catch (e) { /* no cut list: blinks only avoid the beats */ } }
+  const TM = E.time, DUR = TM.duration || 283, h1 = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  const evt = (n, name) => { const e = tracks[n] && tracks[n].events.find((q) => q.name === name); return e ? e.t : undefined; };
+  const bump = (x, c, w) => Math.exp(-((x - c) / w) * ((x - c) / w));
+  // blinks: one every 2.5-6 s per seed, 0.17 s long, centred on an OFF-beat (so never on a beat or bar accent) and moved a beat away from any cut (cuts.json)
+  const BL = 0.17, blinkMemo = new Map();
+  const cutNear = (c) => { let lo = 0, hi = CUTS.length - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (CUTS[m] < c - 0.17) lo = m + 1; else hi = m; } return CUTS.length > 0 && Math.abs(CUTS[lo] - c) < 0.17; };
+  const blinkTimes = (seed) => { let a = blinkMemo.get(seed); if (a) return a; a = []; let t = -6 * h1(seed * 3.7 + 0.1), k = 0;
+    while (t < DUR + 6) { t += 2.5 + 3.5 * h1(seed * 9.13 + k * 1.618 + 0.5); k++; const b = Math.floor(TM.beatAt(t)) + 0.5; let c = TM.beatTime(b); for (const d of [0, 1, -1, 2, -2]) { c = TM.beatTime(b + d); if (!cutNear(c)) break; } a.push(c); }
+    blinkMemo.set(seed, a); return a; };
+  const blinkAt = (seed, t) => { const a = blinkTimes(seed); let lo = 0, hi = a.length - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < t - BL / 2) lo = m + 1; else hi = m; } const x = (t - a[lo]) / BL + 0.5; return x > 0 && x < 1 ? Math.pow(Math.sin(Math.PI * x), 0.7) : 0; };
+  // gaze: forward, with small saccades (a new fixation every 1.2-1.7 s, reached in 70 ms; 40 % of them straight ahead) ...
+  const sacc = (seed, t, amp) => { const per = 1.15 + 0.5 * h1(seed * 5.3 + 2), x = t / per + 7 * h1(seed * 1.9 + 4), n = Math.floor(x), u = Math.min(1, ((x - n) * per) / 0.07), w = u * u * (3 - 2 * u);
+    const tg = (k) => (h1(seed * 13.7 + k * 7.31) < 0.4 ? [0, 0] : [(h1(seed * 3.1 + k * 5.77) - 0.5) * 2 * amp, (h1(seed * 8.3 + k * 2.39) - 0.5) * amp]), a = tg(n - 1), b = tg(n); return [a[0] + (b[0] - a[0]) * w, a[1] + (b[1] - a[1]) * w]; };
+  // ... and the eyes lead the head: how far the head is turned from the chest (rad, + = to her left), from the track itself
+  const headTurn = (n, time) => { const t = tracks[n]; if (!t) return 0; const f = Math.min(t.frames - 1, Math.max(0, Math.round(time * t.fps))), D = t.data;
+    const fw = (j) => { const b = f * 147 + j * 7 + 3, x = D[b], y = D[b + 1], z = D[b + 2], w = D[b + 3]; return [2 * (x * z + w * y), 2 * (y * z - w * x), 1 - 2 * (x * x + y * y)]; }, c = fw(2), h = fw(4);
+    if (Math.abs(c[1]) > 0.75 || Math.abs(h[1]) > 0.8) return 0; const d = Math.atan2(h[0], h[2]) - Math.atan2(c[0], c[2]); return Math.atan2(Math.sin(d), Math.cos(d)); };
+  const RUNS = { sprint_loop: 1, run_loop: 1, run_fwd: 1, run_from_stand: 1, run_to_stand: 1, turn_around: 1 }, ACTION = { build: 1, drop: 1, drop_join: 1, butterfly: 1, butterfly_only: 1, fall_only: 1, salute_only: 1, sidekick: 1, form_test: 1, land: 1 };
+  const FREE_ACC = ['skip_apex', 'whirl', 'leap_apex', 'joy_apex', 'cartwheel', 'flourish_start', 'flourish_end'];
+  function autoFace(n, tt, seed, over) {
+    let expr = 'neutral', amt = 1, amp = 0.16, gx = 0, gy = 0;
+    if (n === 'free') { let a = 0; for (const e of FREE_ACC) { const te = evt(n, e); if (te !== undefined) a = Math.max(a, bump(tt, te, 0.5)); } expr = 'joy'; amt = 0.62 + 0.38 * a; amp = 0.10; }     // joy, widest on the accents
+    else if (ACTION[n]) { expr = 'determined'; amt = 0.85; amp = 0.05; const fs = evt(n, 'fall'), pu = evt(n, 'push_up');
+      if (fs !== undefined && pu !== undefined) { const c = ss(tt, fs - 0.45, fs + 0.05) * (1 - ss(tt, pu - 0.15, pu + 0.35)); if (c > 0.5) { expr = 'calm'; amt = c * 2 - 1; } else amt *= 1 - 2 * c; } }      // lying on the mirror: eyes closed
+    else if (RUNS[n]) { expr = 'determined'; amt = 0.5; amp = 0.05; }
+    else if (n === 'float' || n === 'sit_idle') { expr = 'calm'; }
+    else if (n === 'rise') { expr = 'calm'; amt = 1 - ss(tt, 1.9, 2.5); }                                                        // her eyes open as she is lifted (the b69 leap)
+    else if (n === 'violet') { let a = 0.28 * (1 - ss(tt, 9.3, 9.9)); const w = ss(tt, 14.9, 15.5) * (1 - ss(tt, 19.9, 20.6)); a += 0.40 * w; a = Math.max(a, ss(tt, 24.3, 27.6));       // lowered lids; open for the look east; down on the writing; closed once seated
+      expr = 'calm'; amt = a; gx = -0.25 * w; gy = -0.55 * w; amp = 0.08; }
+    else if (n.startsWith('life_')) { expr = 'back'; amt = ss(tt, 4.5, 5.3); }                                                    // the same look-back in every life
+    else if (n === 'lookback' || n === 'walk_lookback') { const a = evt(n, 'look') ?? 1.75, b = evt(n, 'look_end') ?? a + 1.5; expr = 'back'; amt = ss(tt, a - 0.3, a + 0.3) * (1 - ss(tt, b, b + 0.6)); }
+    else if (n === 'sprint_stop_look') { if (tt < 4.6) { expr = 'determined'; amt = 0.5 * (1 - ss(tt, 3.6, 4.6)); } else { expr = 'back'; amt = ss(tt, 6.0, 7.2); } }
+    else if (n === 'release') { expr = 'back'; amt = 0.7 * ss(tt, 2.3, 3.2); }
+    else if (n === 'catch') { const c = ss(tt, 2.9, 3.6) * (1 - ss(tt, 9.6, 10.3)), j = 0.9 * ss(tt, 11.3, 12.9); if (j > 0) { expr = 'joy'; amt = j; } else { expr = 'calm'; amt = c; } }   // bowed over it, eyes closed; head lifts 9.6: eyes open; arms open: joy
+    if (expr === 'determined') amt *= 1 - 0.6 * NIGHT;                                                                           // night: calm or neutral
+    if (expr === 'joy') amt *= ss(DAY, 0.05, 0.5);
+    if (DAY > 0.02 && (expr === 'neutral' || amt < 0.02)) { expr = 'joy'; amt = 0.45 * DAY; }                                     // by day she is joyful
+    const closed = (expr === 'calm' || expr === 'laugh') && amt > 0.8, sc = sacc(seed + 1, FT, closed ? 0 : amp), ht = headTurn(n, tt), lead = Math.sign(ht) * Math.max(0, Math.abs(ht) - 0.12) * 1.6;
+    const cl = (x) => Math.min(0.9, Math.max(-0.9, x)), f = { expr, amt, blink: closed ? 0 : blinkAt(seed + 1, FT), gaze: [cl(gx + sc[0] + lead), cl(gy + sc[1])] };
+    if (over) { if (over.expr !== undefined) { f.expr = over.expr; f.amt = over.amt ?? 1; } else if (over.amt !== undefined) f.amt = over.amt; if (over.blink !== undefined) f.blink = over.blink; if (over.gaze) f.gaze = over.gaze; if (over.lookAt) f.lookAt = over.lookAt; }
+    return f;
+  }
+  // hands: fists for punches (both: the other one is chambered at the hip) and for the salute's right hand, open palms where the choreography says so, relaxed otherwise
+  const handMemo = {};
+  function autoHand(n, tt, variant) {
+    let H = handMemo[n]; if (!H) { const ev = (tracks[n] && tracks[n].events) || []; H = handMemo[n] = { punch: ev.filter((e) => /punch/.test(e.name)).map((e) => e.t), salute: evt(n, 'salute'), palm: ev.filter((e) => /double_palm|arms_wide|^open$/.test(e.name)).map((e) => e.t) }; if (n === 'life_wushu') H.punch.push(0.92); }
+    if (RUNS[n]) return 0.4;
+    let fist = 0, open = 0; for (const p of H.punch) fist = Math.max(fist, ss(tt, p - 0.45, p - 0.2) * (1 - ss(tt, p + 0.3, p + 0.6))); for (const p of H.palm) open = Math.max(open, ss(tt, p - 0.4, p - 0.1) * (1 - ss(tt, p + 0.6, p + 1.0)));
+    if (n === 'catch') open = Math.max(open, ss(tt, 11.8, 12.9)); if (n === 'free') open = Math.max(open, 0.35);
+    const base = fist - 0.6 * open * (1 - fist);
+    if (H.salute !== undefined) { const k = ss(tt, H.salute - 0.6, H.salute - 0.15); if (k > 0) return { L: base * (1 - k) - 0.25 * k, R: base * (1 - k) + k }; }      // bao quan: right fist into the open left palm
+    return base === 0 && variant === 'bun_write' ? undefined : base;
+  }
   const actors = new Map(), crowds = new Map();
   const cast = {
-    standin, fig, impl, tracks, laneCol, laneOf, root, rot, origin, hips, dur,
+    standin, fig, figKind, impl, tracks, laneCol, laneOf, root, rot, origin, hips, dur,
     has: (n) => !!tracks[n], meta: (n) => (tracks[n] && tracks[n].meta) || {}, speed: (n) => (tracks[n] && tracks[n].meta && tracks[n].meta.speed) || 0, songT0: (n) => (tracks[n] && tracks[n].meta && tracks[n].meta.song_t0) || 0,
     event: (n, name) => { const e = tracks[n] && tracks[n].events.find((q) => q.name === name); return e ? e.t : undefined; },
     begin() { for (const a of actors.values()) a.live = false; for (const c of crowds.values()) c.n = 0; },
@@ -200,10 +269,11 @@ export async function makeCast(E) {
       set(v) { this.s = { ...DEF, ...v }; this.live = true; return this; } }; actors.set(id, a); } if (o.lane) a.lane = o.lane; if (o.variant) a.variant = o.variant; return a; },
     crowd(id, max = 1024) { let c = crowds.get(id); if (!c) { c = { id, max, n: 0, items: new Array(max),
       put(i, v) { this.items[i] = v; if (i >= this.n) this.n = i + 1; } }; crowds.set(id, c); } return c; },
-    drawables(dawn = 0) {
+    drawables(dawn = 0, t = 0, figLight = null) {      // t (song time) and the frame's env.figLight drive the anime figure's default face
       const live = [...actors.values()].filter((a) => a.live && a.s.visible && a.s.alpha > 0);
-      if (fig) { fig.begin(); let n = 0; for (const a of live) { fig.add(inst(a.s, a.s.lane || a.lane, a.variant, a.seed)); n++; }
-        for (const c of crowds.values()) for (let i = 0; i < c.n; i++) { const v = c.items[i]; if (!v || v.visible === false) continue; fig.add(inst({ ...DEF, ...v }, v.lane || 'main', v.variant, i + 1)); n++; }
+      if (fig) { fig.begin(); let n = 0; const mk = anime ? instA : inst; FT = t; DAY = Math.min(1, Math.max(0, (figLight && figLight.sunAmt !== undefined) ? figLight.sunAmt : (dawn - 0.6) / 0.4)); NIGHT = 1 - ss(dawn, 0.1, 0.33);
+        for (const a of live) { fig.add(mk(a.s, a.s.lane || a.lane, a.variant, a.seed)); n++; }
+        for (const c of crowds.values()) for (let i = 0; i < c.n; i++) { const v = c.items[i]; if (!v || v.visible === false) continue; fig.add(mk({ ...DEF, ...v }, v.lane || 'main', v.variant, i + 1)); n++; }
         return n ? [fig] : []; }
       const list = [];
       if (live.length) { const d = new Float32Array(live.length * STRIDE); live.forEach((a, i) => write(d, i * STRIDE, a.s, laneOf(a.s.lane || a.lane), a.variant === 'violet' ? 1 : 0, dawn)); list.push(impl.drawable(d, live.length)); }

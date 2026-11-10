@@ -176,7 +176,7 @@ void main(){
   bool skin = head || part == 0; vec3 base = head ? celColor(0) : celColor(part); float forceSh = 0.0, catchA = 0.0, irisGlow = 0.0;
   if (head && hairM < 1.0 && v_la.z > 0.015) {
     vec3 h = v_la; float px = max(length(dFdx(h.xy)), length(dFdy(h.xy))) + 1e-6;         // metres of face per pixel
-    float vis = 1.0 - smoothstep(0.0050, 0.0105, px);                                     // crowd distance: nothing
+    float vis = 1.0 - smoothstep(0.0050, 0.0105, px), visD = 1.0 - smoothstep(0.0030, 0.0062, px);   // face LOD without a switch: first the details go (mouth, brows, blush), then the eyes; at crowd distance nothing
     float sx = h.x < 0.0 ? -1.0 : 1.0, ex = abs(h.x) - F_EX, u = ex / F_EW, ey = h.y - F_EY, open = v_fa.x, joy = v_fb.y, smile = v_fa.w;
     float uc = clamp(u, -1.0, 1.0), q = 1.0 - uc * uc;
     vec2 lu = lidUp(u, open, joy); float yC = mix(-0.0052, 0.0072, joy) * q + mix(-0.0014, -0.0040, joy) + F_TILT * u, squint = clamp((smile - 0.45) / 0.55, 0.0, 1.0);
@@ -184,7 +184,7 @@ void main(){
     float inEye = aa(min(lu.x - ey, ey - lo) - 0.0002, px) * step(abs(u), 1.0) * smoothstep(0.0, 0.15, open);
     // blush, nose, mouth
     vec2 bq = vec2((abs(h.x) - 0.047) / 0.017, (h.y + 0.006) / 0.0085);
-    base = mix(base, S(0.965, 0.640, 0.640), (0.20 + 0.22 * joy) * exp(-dot(bq, bq)) * vis);
+    base = mix(base, S(0.965, 0.640, 0.640), (0.20 + 0.22 * joy) * exp(-dot(bq, bq)) * visD);
     vec3 lineC = S(0.52, 0.25, 0.25), darkC = S(0.105, 0.085, 0.115);
     vec2 nq = vec2((h.x - 0.0006) / 0.0048, (h.y - F_NY) / 0.0016); base = mix(base, S(0.84, 0.56, 0.54), aa((1.0 - length(nq)) * 0.0015, px) * 0.85 * vis * (1.0 - smoothstep(0.0012, 0.0030, px)));
     float mw = 0.0112 + 0.0038 * max(smile, 0.0), mx = h.x / mw, mq = max(0.0, 1.0 - mx * mx), ym = F_MY + smile * 0.0040 * (mx * mx - 0.45), ms = smile * 0.0080 * mx / mw;
@@ -192,8 +192,8 @@ void main(){
     { float yl0 = ym - mo * 0.0090 * mq; vec2 lq = vec2(h.x / (mw * 0.70), (h.y - (yl0 - 0.0034)) / 0.0036), uq = vec2(h.x / (mw * 0.62), (h.y - (ym + 0.0016)) / 0.0022);
       base = mix(base, S(0.905, 0.560, 0.545), 0.62 * aa((1.0 - length(lq)) * 0.0036, px) * step(h.y, yl0) * vis * lipV);                     // lower lip
       base = mix(base, S(0.880, 0.540, 0.530), 0.40 * aa((1.0 - length(uq)) * 0.0022, px) * step(ym, h.y) * (1.0 - mo) * vis * lipV); }             // upper lip
-    if (mo > 0.01) { float yl = ym - mo * 0.0090 * mq; base = mix(base, mix(S(0.86, 0.47, 0.47), S(0.50, 0.17, 0.20), smoothstep(yl + 0.002, yl + 0.006, h.y)), aa(min(ym - h.y, h.y - yl), px) * inM * vis); }
-    base = mix(base, lineC, line(abs(h.y - ym) / sqrt(1.0 + ms * ms), 0.00110 * (0.30 + 0.70 * mq), px) * inM * vis);
+    if (mo > 0.01) { float yl = ym - mo * 0.0090 * mq; base = mix(base, mix(S(0.86, 0.47, 0.47), S(0.50, 0.17, 0.20), smoothstep(yl + 0.002, yl + 0.006, h.y)), aa(min(ym - h.y, h.y - yl), px) * inM * visD); }
+    base = mix(base, lineC, line(abs(h.y - ym) / sqrt(1.0 + ms * ms), 0.00110 * (0.30 + 0.70 * mq), px) * inM * visD);
     // eye: white (shaded under the lid), iris, pupil
     float sclA = inEye * vis * (1.0 - 0.75 * smoothstep(0.0022, 0.0045, px));
     base = mix(base, mix(S(0.970, 0.965, 0.985), S(0.70, 0.69, 0.84), smoothstep(0.0055, 0.0020, lu.x - ey)), sclA);
@@ -204,11 +204,11 @@ void main(){
     base = mix(base, icol, iris); irisGlow = iris * (1.0 - pup) * smoothstep(0.0, -0.75, e.y) * smoothstep(0.55, 1.0, r + 0.25);
     catchA = max(aa((1.0 - length((e - vec2(-0.36, 0.38)) / vec2(0.30, 0.25))) * 0.0030, px), 0.9 * aa((1.0 - length((e - vec2(0.38, -0.50)) / 0.14)) * 0.0015, px)) * iris * smoothstep(0.25, 0.6, open);
     // lower lid, lash, brow
-    base = mix(base, lineC, line(abs(ey - lo), 0.0007, px) * smoothstep(0.05, 0.45, u) * step(u, 1.0) * open * 0.6 * vis);
+    base = mix(base, lineC, line(abs(ey - lo), 0.0007, px) * smoothstep(0.05, 0.45, u) * step(u, 1.0) * open * 0.6 * visD);
     float tl = mix(0.0030, 0.0054, smoothstep(-0.9, 0.9, u)) * smoothstep(-1.10, -0.82, u) * smoothstep(1.32, 1.0, u) * (1.0 + 0.2 * (1.0 - open));
     base = mix(base, darkC, line(abs(ey - lu.x - 0.0004) / sqrt(1.0 + lu.y * lu.y), tl, px) * vis);
     float ub = u - 0.05, tb = max(u - 0.45, 0.0), yb = F_BY + 0.0017 * u + 0.0019 * (1.0 - ub * ub) - 0.0070 * tb * tb + v_fa.y * 0.0042 * u + v_fa.z * 0.0030, sb = (0.0017 - 0.0038 * ub - 0.0140 * tb + v_fa.y * 0.0042) / F_EW;
-    base = mix(base, darkC, 0.95 * line(abs(ey - yb) / sqrt(1.0 + sb * sb), mix(0.0047, 0.0017, smoothstep(-0.6, 1.05, u)), px) * smoothstep(-1.00, -0.84, u) * smoothstep(1.12, 0.92, u) * vis);
+    base = mix(base, darkC, 0.95 * line(abs(ey - yb) / sqrt(1.0 + sb * sb), mix(0.0047, 0.0017, smoothstep(-0.6, 1.05, u)), px) * smoothstep(-1.00, -0.84, u) * smoothstep(1.12, 0.92, u) * visD);
     forceSh = smoothstep(-0.0078, -0.0064, dH) * vis;                                        // the shadow the hair lays on the forehead
   }
   if (u_points == 0 && (region == 10.0 || region == 11.0)) {       // the mitten reads as fingers: three drawn lines from the knuckles to the tips
