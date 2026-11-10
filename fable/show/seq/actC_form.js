@@ -6,7 +6,7 @@
 //               stage 1-8  a quarter fan toward the sun (|bearing| < 45 deg) growing outward: the wedge
 //               stage 9    the fan opens to a half circle (b82), stage 10 it closes into full rings behind her (b83)
 //             A new copy leaves its parent as a streak (a road written on the mirror in its lane colour, 0.3 s) and locks into its slot.
-//   MAIN      the word, in body-sized cells (1.0 x 2.1 m), centred on her rings; the corridor between A and I lies on main.
+//   MAIN      the word (Archivo 900 condensed), in body-sized cells (0.8 x 2.05 m), centred on her rings and on main.
 //             The hero's own place is the HEAD of main, 6.5 m east of the top of the letters.
 // THE PERFORMANCE (CHOREO B; the baked tracks, the same for the hero and every copy)
 //   b73      `land` (impact frame 125.343, 0.2 s) -> `build` (song_t0 = b73). They face WEST, the camera, the way they came.
@@ -149,7 +149,7 @@ export function makeActC(K) {
   const mainHead = (t) => headAt(heroHips(t)[0] - 0.1);
   // pools of light under the fallen bodies (the letters glow as they are laid down), and the same list for any other moment
   function fallGlow(t, o = {}) { const list = [], c0 = o.color || [1.0, 0.55, 0.22];
-    for (let i = 0; i < N; i++) { const p = P[i], age = t - (tFall + p.tau); if (age < 0) continue; const hit = Math.exp(-age / 0.35), up = 1 - sm(seg(t, bar(98.2), bar(99.2))), k = (0.20 + 0.45 * hit) * up * (o.gain ?? 1); if (k < 0.004) continue;
+    for (let i = 0; i < N; i++) { const p = P[i], age = t - (tFall + p.tau); if (age < 0) continue; const hit = Math.exp(-age / 0.35), up = 1 - 0.4 * sm(seg(t, bar(98.2), bar(99.2))), k = (0.20 + 0.45 * hit) * up * (o.gain ?? 1); if (k < 0.004) continue;
       const c = i === 0 ? [1.6, 0.62, 0.16] : c0; list.push({ x: p.B[0] + 0.95, z: p.B[1], r: 1.7 + 0.5 * hit, c: [c[0] * k, c[1] * k, c[2] * k] }); }
     return list.length ? [W.glow(list)] : []; }
 
