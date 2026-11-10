@@ -28,7 +28,7 @@ const fract = (x) => x - Math.floor(x);
 export const hairD = (x, y, z) => {
   const ax = Math.abs(x), apx = Math.abs(x - FACE.PARTX);
   const tip = (c, wi, wo, hgt) => hgt * Math.pow(Math.max(0, 1 - (apx < c ? (c - apx) / wi : (apx - c) / wo)), 1.5);   // a swept strand tip: long inner slope, steep outer side
-  const yh = 0.1195 - 0.038 * Math.pow(apx / 0.072, 2.0) - tip(0.046, 0.026, 0.012, 0.0030);   // high and open: the hair is drawn back from a centre parting
+  const yh = 0.1195 - 0.038 * Math.pow(apx / 0.072, 2.0) + 0.0080 * Math.max(0, 1 - apx / 0.0050) - tip(0.047, 0.0070, 0.0026, 0.0090) - tip(0.058, 0.0080, 0.0028, 0.0150) - tip(0.0665, 0.0060, 0.0024, 0.0100);   // high and open: the hair is drawn back from a centre parting
   const xs = 0.0840 - 0.0100 * smooth(0.030, 0.090, y);
   const zb = -0.045 + 0.050 * smooth(-0.075, 0.070, y);          // side view: the hair comes forward to the temple, runs behind the cheek, back to the nape
   const a = y - yh, b = y > -0.06 ? ax - xs : -1, k = 0.012, hh = clamp(0.5 + 0.5 * (a - b) / k, 0, 1);      // a rounded corner at the temple
@@ -38,8 +38,9 @@ const gau = (v, s) => Math.exp(-(v * v) / (2 * s * s));
 // the profile: nose (long bridge, sharp underneath), lips, the dip under them, chin. Head-local, pushed along the normal.
 const faceBump = (x, y, z) => {
   if (z < 0.03) return 0;
-  const ny = y - (-0.010);
-  return 0.0125 * gau(x, 0.0095) * (ny > 0 ? gau(ny, 0.024) : gau(ny, 0.0055)) + 0.0030 * gau(x, 0.016) * gau(y + 0.0375, 0.0050) - 0.0020 * gau(x, 0.02) * gau(y + 0.049, 0.005) + 0.0030 * gau(x, 0.02) * gau(y + 0.059, 0.007);
+  const ny = y - (-0.0125);
+  return 0.0165 * gau(x, 0.0090) * (ny > 0 ? gau(ny, 0.021) : gau(ny, 0.0050)) + 0.0030 * gau(x, 0.045) * gau(y - 0.088, 0.030) - 0.0045 * gau(x, 0.020) * gau(y - 0.034, 0.011)
+    + 0.0050 * gau(x, 0.014) * gau(y + 0.0365, 0.0052) - 0.0028 * gau(x, 0.018) * gau(y + 0.0475, 0.0042) + 0.0058 * gau(x, 0.016) * gau(y + 0.0585, 0.0065);
 };
 
 class Loft {
@@ -107,10 +108,10 @@ export function buildBody(opts = {}) {
   const PARTX = FACE.PARTX, HY = REST_POS[J.head][1];
   const hl = (P) => [P[0], P[1] - HY, P[2]];
   const isHair = (P) => hairD(P[0], P[1] - HY, P[2]) > 0;
-  const head = loft(new Loft([R3(1.441, 0.014, 0.012, 0.064), R3(1.448, 0.032, 0.031, 0.051), R3(1.464, 0.054, 0.056, 0.034), R3(1.489, 0.0725, 0.078, 0.018), R3(1.520, 0.0855, 0.091, 0.008), R3(1.555, 0.089, 0.098, 0.003), R3(1.600, 0.090, 0.102, -0.002), R3(1.640, 0.082, 0.095, -0.005), R3(1.664, 0.060, 0.070, -0.007), R3(1.676, 0.028, 0.034, -0.008), R3(1.679, 0.005, 0.006, -0.008)]),
-    { nu: 64, nv: 56, region: 5, tileSize: 64, warp: (P, g) => (P[2] > g.c[2] ? [P[0], P[1], g.c[2] + (P[2] - g.c[2]) * 0.86] : P),   // a flatter face plane: both eyes hold in three-quarter view
+  const head = loft(new Loft([R3(1.441, 0.0170, 0.012, 0.064), R3(1.4475, 0.0315, 0.030, 0.052), R3(1.464, 0.0495, 0.055, 0.034), R3(1.489, 0.0685, 0.078, 0.018), R3(1.520, 0.0840, 0.091, 0.008), R3(1.555, 0.089, 0.098, 0.003), R3(1.600, 0.090, 0.102, -0.002), R3(1.640, 0.082, 0.095, -0.005), R3(1.664, 0.060, 0.070, -0.007), R3(1.676, 0.028, 0.034, -0.008), R3(1.679, 0.005, 0.006, -0.008)]),
+    { nu: 88, nv: 68, region: 5, tileSize: 64, warp: (P, g) => (P[2] > g.c[2] ? [P[0], P[1], g.c[2] + (P[2] - g.c[2]) * 0.86] : P),   // a flatter face plane: both eyes hold in three-quarter view
       part: (u, v, P) => (isHair(P) ? PART.HAIR : PART.SKIN), bones: one(J.head),
-      push: (part, P) => { const h = hl(P); return (0.006 + 0.014 * smooth(0.03, 0.13, h[1])) * smooth(-0.004, 0.020, hairD(h[0], h[1], h[2])) + faceBump(h[0], h[1], h[2]); } });
+      push: (part, P) => { const h = hl(P), hd = smooth(-0.004, 0.020, hairD(h[0], h[1], h[2])); return (0.006 + 0.020 * smooth(0.03, 0.13, h[1]) - 0.0085 * gau(h[0] - PARTX, 0.0075) * smooth(0.10, 0.14, h[1]) * smooth(-0.075, -0.035, h[2])) * hd + faceBump(h[0], h[1], h[2]); } });
 
   // jacket: cropped under the ribs, drop shoulders, soft boxy body, stand collar, worn open
   const STRIPE = [1.272, 1.314];
@@ -301,6 +302,7 @@ export function buildBody(opts = {}) {
   [1.0, 2.1, 3.2, 4.4, 5.6, 7.4, 8.6, 9.8, 10.9, 12.0].forEach((cf) => back(cf, 3, { w: 0.029, th: 0.012, len: 0.93 + 0.07 * R() }));
   [1.6, 2.7, 3.8, 5.0, 8.0, 9.2, 10.3, 11.4].forEach((cf) => back(cf, 1, { w: 0.026, th: 0.011, len: 0.80 + 0.10 * R() }));
   for (let k = 0; k < 2; k++) { const g0 = HAIR.G_BACK + k * 2; clumps.push({ g: [g0, g0 + 1], a: 0.35, type: 2, seed: R(), fan: 0, w: 0.017, th: 0.011, len: 1 }, { g: [g0, g0 + 1], a: 1.0, type: 2, seed: R(), fan: 0, w: 0.009, th: 0.007, len: 0.86 }); }
+  for (let k = 0; k < 2; k++) { const g0 = HAIR.G_BACK + k * 2; clumps.push({ g: [g0, g0 + 1], a: 1.0, type: 2, seed: R(), fan: 0.017, w: 0.0046, th: 0.0034, len: 0.58 - 0.09 * k }); if (k === 0) clumps.push({ g: [g0, g0 + 1], a: 0.6, type: 2, seed: R(), fan: 0.027, w: 0.0034, th: 0.0028, len: 0.44 }); }   // (fan of a side lock = metres forward of the lock: a loose strand that hangs with it, never across the face)
   for (let k = 0; k < 2; k++) { const g0 = HAIR.G_BACK + HAIR.G_LOCK + k * 2; clumps.push({ g: [g0, g0 + 1], a: 0.5, type: 1, seed: R(), fan: 0, w: 0.008, th: 0.006, len: 1 }); }
   // STRANDS: the fine hair of the classic figure, on the same guides. Drawn instead of the back clumps for instances with hair: 'strands'
   // (the float shot: her hair fans on the water and its strands become the roads). Generated after everything else, so nothing above changes.

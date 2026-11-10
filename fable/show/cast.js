@@ -193,8 +193,8 @@ export async function makeCast(E) {
   const inst = (s, lane, variant, seed) => { const t = T(s.track); return { pos: s.pos, yaw: s.yaw, scale: s.scale, track: t ? t.name : 0, time: t ? wrap(t.name, s.time) : 0, lane: laneOf(lane), density: s.density, solid: s.solid, alpha: s.visible ? s.alpha : 0, gain: s.gain,
     variant: s.pencil === 'hand' ? 'bun_write' : s.pencil === 'gone' ? 'bun_one' : variant === 'violet' || variant === 'bun' ? 'bun' : undefined, seed: s.seed ?? seed, /* set({ pencil: 'hand' | 'gone' }): the violet branch has drawn one pencil / it became the light (actD) */ vary: s.vary, trail: s.trail, story: s.story, eyes: s.eyes, lodBias: s.lodBias }; };
   // the anime figure: the same instance plus face, hand and hair (film defaults unless the sequence set them)
-  const instA = (s, lane, variant, seed) => { const o = inst(s, lane, variant, seed), sd = o.seed || 0, f = autoFace(o.track, s.time, sd, s.eyes === false ? { expr: 'calm', ...(s.face || {}) } : s.face);
-    o.face = f; o.hand = s.hand ?? autoHand(o.track, s.time, o.variant); o.hair = s.hair; return o; };
+  const instA = (s, lane, variant, seed) => { const o = inst(s, lane, variant, seed), sd = o.seed || 0, f = autoFace(o.track, o.time, sd, s.eyes === false ? { expr: 'calm', ...(s.face || {}) } : s.face);      // o.time: wrapped (loops) or clamped
+    o.face = f; o.hand = s.hand ?? autoHand(o.track, o.time, o.variant); o.hair = s.hair; return o; };
 
   // ---- the stand-in: a capsule that follows the track's hips
   const ss = (x, a, b) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
@@ -226,6 +226,7 @@ export async function makeCast(E) {
   const RUNS = { sprint_loop: 1, run_loop: 1, run_fwd: 1, run_from_stand: 1, run_to_stand: 1, turn_around: 1 }, ACTION = { build: 1, drop: 1, drop_join: 1, butterfly: 1, butterfly_only: 1, fall_only: 1, salute_only: 1, sidekick: 1, form_test: 1, land: 1 };
   const FREE_ACC = ['skip_apex', 'whirl', 'leap_apex', 'joy_apex', 'cartwheel', 'flourish_start', 'flourish_end'];
   function autoFace(n, tt, seed, over) {
+    if (typeof n !== 'string') n = 'idle';
     let expr = 'neutral', amt = 1, amp = 0.16, gx = 0, gy = 0;
     if (n === 'free') { let a = 0; for (const e of FREE_ACC) { const te = evt(n, e); if (te !== undefined) a = Math.max(a, bump(tt, te, 0.5)); } expr = 'joy'; amt = 0.62 + 0.38 * a; amp = 0.10; }     // joy, widest on the accents
     else if (ACTION[n]) { expr = 'determined'; amt = 0.85; amp = 0.05; const fs = evt(n, 'fall'), pu = evt(n, 'push_up');
@@ -239,7 +240,7 @@ export async function makeCast(E) {
     else if (n === 'lookback' || n === 'walk_lookback') { const a = evt(n, 'look') ?? 1.75, b = evt(n, 'look_end') ?? a + 1.5; expr = 'back'; amt = ss(tt, a - 0.3, a + 0.3) * (1 - ss(tt, b, b + 0.6)); }
     else if (n === 'sprint_stop_look') { if (tt < 4.6) { expr = 'determined'; amt = 0.5 * (1 - ss(tt, 3.6, 4.6)); } else { expr = 'back'; amt = ss(tt, 6.0, 7.2); } }
     else if (n === 'release') { expr = 'back'; amt = 0.7 * ss(tt, 2.3, 3.2); }
-    else if (n === 'catch') { const c = ss(tt, 2.9, 3.6) * (1 - ss(tt, 9.6, 10.3)), j = 0.9 * ss(tt, 11.3, 12.9); if (j > 0) { expr = 'joy'; amt = j; } else { expr = 'calm'; amt = c; } }   // bowed over it, eyes closed; head lifts 9.6: eyes open; arms open: joy
+    else if (n === 'catch') { const c = ss(tt, 2.55, 2.95) * (1 - ss(tt, 9.6, 10.3)), j = 0.9 * ss(tt, 11.3, 12.9); if (j > 0) { expr = 'joy'; amt = j; } else { expr = 'calm'; amt = c; } }   // bowed over it, eyes closed; head lifts 9.6: eyes open; arms open: joy
     if (expr === 'determined') amt *= 1 - 0.6 * NIGHT;                                                                           // night: calm or neutral
     if (expr === 'joy') amt *= ss(DAY, 0.05, 0.5);
     if (DAY > 0.02 && (expr === 'neutral' || amt < 0.02)) { expr = 'joy'; amt = 0.45 * DAY; }                                     // by day she is joyful
@@ -251,6 +252,7 @@ export async function makeCast(E) {
   // hands: fists for punches (both: the other one is chambered at the hip) and for the salute's right hand, open palms where the choreography says so, relaxed otherwise
   const handMemo = {};
   function autoHand(n, tt, variant) {
+    if (typeof n !== 'string') return 0;
     let H = handMemo[n]; if (!H) { const ev = (tracks[n] && tracks[n].events) || []; H = handMemo[n] = { punch: ev.filter((e) => /punch/.test(e.name)).map((e) => e.t), salute: evt(n, 'salute'), palm: ev.filter((e) => /double_palm|arms_wide|^open$/.test(e.name)).map((e) => e.t) }; if (n === 'life_wushu') H.punch.push(0.92); }
     if (RUNS[n]) return 0.4;
     let fist = 0, open = 0; for (const p of H.punch) fist = Math.max(fist, ss(tt, p - 0.45, p - 0.2) * (1 - ss(tt, p + 0.3, p + 0.6))); for (const p of H.palm) open = Math.max(open, ss(tt, p - 0.4, p - 0.1) * (1 - ss(tt, p + 0.6, p + 1.0)));

@@ -88,11 +88,11 @@ vec3 hairLit(vec3 h, vec3 N, vec3 Nt, vec3 Nm, float wet, vec3 V, vec3 hv, vec3 
   vec3 lightc = mix(mix(u_amb, vec3(0.60, 0.60, 0.80), u_sunAmt), vec3(1.9, 1.9, 2.7), u_sunAmt * sh);
   vec3 c0 = vec3(0.0, 0.066, -0.004), d = normalize(h - c0); float az = atan(d.x, d.z) / 6.2832, teeth = tri(az * 22.0 + 0.3), t2 = tri(az * 9.0 + 0.1);
   float ta = az * 15.0 + 0.3, id = floor(ta), sp = 1.0 - abs(fract(ta) - 0.5) * 2.0;                       // a few spikes of uneven height, up and down
-  float y0 = 0.52 + 0.20 * hv.y + 0.03 * t2, dy = d.y - y0, ay = fwidth(d.y) + 0.003, hu = fract(sin(id * 12.99) * 43758.5), hd2 = fract(sin(id * 78.23) * 43758.5);
+  float apx = abs(h.x - F_PARTX), y0 = 0.52 + 0.20 * hv.y + 0.03 * t2 + 0.11 * exp(-apx * apx / (0.026 * 0.026)) * step(-0.02, h.z), dy = d.y - y0, ay = fwidth(d.y) + 0.003, hu = fract(sin(id * 12.99) * 43758.5), hd2 = fract(sin(id * 78.23) * 43758.5);
   float wu = 0.004 + 0.085 * sp * hu * hu, wl = 0.004 + 0.060 * sp * hd2;
   float band = smoothstep(-wl - ay, -wl + ay, dy) * (1.0 - smoothstep(wu - ay, wu + ay, dy)) * step(0.22, max(hu, hd2));
   vec2 hd = normalize(hv.xz + 0.45 * hl.xz + vec2(1e-4)), dd = normalize(d.xz + vec2(1e-4));
-  float ring = band * smoothstep(0.45, 0.85, dot(dd, hd)) * onHead * smoothstep(0.165, 0.140, length(h - c0));
+  float ring = band * smoothstep(0.45, 0.85, dot(dd, hd)) * onHead * smoothstep(0.165, 0.140, length(h - c0)) * (h.z > -0.02 ? smoothstep(0.0025, 0.0090, apx) : 1.0);
   float fres = 1.0 - abs(dot(Nt, V)), fm = 1.0 - abs(dot(Nm, V)), dirM = smoothstep(-0.2, 0.6, dot(Nm, u_rimDir)), ar = fwidth(fres) * 0.8 + 0.01;   // a thin edge, and only where the whole mass turns away
   vec3 rim = mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.35) * (0.26 * smoothstep(0.80 - ar, 0.80 + ar, fres) * max(smoothstep(0.50, 0.72, fm), wet) * (u_rimBoth + (1.0 - u_rimBoth) * dirM));
   glow = rim + ring * (vec3(0.060, 0.068, 0.135) * u_sunAmt + u_rimCol * 0.045 * (1.0 - u_sunAmt));
@@ -123,7 +123,7 @@ float tipA(float apx, float c, float wi, float wo, float hgt){ return hgt * pow(
 // > 0 = hair (head joint frame). Keep in step with body.js hairD.
 float hairD(vec3 h){
   float ax = abs(h.x), apx = abs(h.x - F_PARTX);
-  float yh = 0.1195 - 0.038 * pow(apx / 0.072, 2.0) - tipA(apx, 0.046, 0.026, 0.012, 0.0030);
+  float yh = 0.1195 - 0.038 * pow(apx / 0.072, 2.0) + 0.0080 * max(0.0, 1.0 - apx / 0.0050) - tipA(apx, 0.047, 0.0070, 0.0026, 0.0090) - tipA(apx, 0.058, 0.0080, 0.0028, 0.0150) - tipA(apx, 0.0665, 0.0060, 0.0024, 0.0100);
   float xs = 0.0840 - 0.0100 * smoothstep(0.030, 0.090, h.y);
   float zb = -0.045 + 0.050 * smoothstep(-0.075, 0.070, h.y);
   float a = h.y - yh, b = h.y > -0.06 ? ax - xs : -1.0, k = 0.012, hh = clamp(0.5 + 0.5 * (a - b) / k, 0.0, 1.0);
@@ -227,11 +227,14 @@ void main(){
     diff = base * lightc * (1.0 - 0.55 * inside * step(2.5, region) * step(region, 4.5));
     float dirM = smoothstep(-0.2, 0.6, dot(N, u_rimDir)), thr = head ? mix(0.92, 0.84, dirM) : (skin ? mix(0.86, 0.72, dirM) : mix(0.80, 0.60, dirM)), ar = fwidth(fres) * 0.8 + 0.01;
     glow = mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.35) * ((head ? 0.30 : 0.50) * smoothstep(thr - ar, thr + ar, fres) * (u_rimBoth + (1.0 - u_rimBoth) * dirM));
-    if (hairM > 0.0) { vec3 g2, hc = hairLit(v_la, N, N, N, 0.0, V, v_hv, v_hl, lane, 1.0, g2); diff = mix(diff, hc, hairM); glow = mix(glow, g2, hairM); }
+    if (hairM > 0.0) { vec3 g2, hc = hairLit(v_la, N, N, N, 0.0, V, v_hv, v_hl, lane, 1.0, g2);
+      float pxh = max(length(dFdx(v_la.xz)), length(dFdy(v_la.xz))) + 1e-6, pl = line(abs(v_la.x - F_PARTX - 0.0012 * sin(v_la.z * 75.0)), 0.0017, pxh) * smoothstep(-0.060, -0.030, v_la.z) * step(0.09, v_la.y) * (1.0 - smoothstep(0.0035, 0.0075, pxh));
+      hc = mix(hc, S(0.50, 0.40, 0.44) * lightc, 0.75 * pl); diff = mix(diff, hc, hairM); glow = mix(glow, g2, hairM); }
   }
   // underlight from her road, in her lane colour: shoes and hems, gone by the hip
   float hf = smoothstep(1.05, 0.0, v_flags.w);
   vec3 under = lane * (u_under * 1.3 * hf * hf * (0.40 + 0.60 * clamp(0.3 - N.y * 1.4, 0.0, 1.0))) * (base * 0.55 + 0.20);
+  under *= 1.0 - (head ? hairM : ((part == ${PART.HAIR} || part == ${PART.BUN}) ? 1.0 : 0.0));       // black hair takes no underlight (lying on the water it turned ginger)
   // accents are light sources at night and plain colour by day
   vec3 em = vec3(0.0);
   if (emissive(part)) em = ORANGE * 1.15; else if (part == ${PART.DOT}) em = vec3(0.32, 0.58, 1.0) * 0.95; else if (part == ${PART.TEXT}) em = vec3(1.0, 0.95, 0.86) * 1.7; else if (part == ${PART.PATCH}) em = vec3(0.55, 0.54, 0.52);
@@ -239,8 +242,8 @@ void main(){
   vec3 tr = vec3(1.0, 0.42, 0.10) * (back * thin * thin * 0.09 * u_trans);
   vec3 col = (diff + under + tr) * solid + glow * (0.45 + 0.55 * solid) + em * (u_emis * v_lane.a);
   // the eyes keep their light: white catchlights by day; at night the horizon in them, and her road's colour low in the iris
-  vec3 catchC = mix((u_rimCol * 0.22 + lane * 0.10 + 0.05) * u_faceG, vec3(1.0), u_sunAmt);
-  col = mix(col, catchC, catchA * mix(u_faceG, 1.0, u_sunAmt) * solid) + lane * (0.07 * u_faceG * (1.0 - u_sunAmt) * irisGlow * solid);
+  vec3 catchC = mix((u_rimCol * 0.22 + lane * 0.10 + 0.05) * u_faceG, vec3(1.0), min(1.0, u_sunAmt * 2.0));
+  col = mix(col, catchC, catchA * max(u_faceG, min(1.0, u_sunAmt * 3.0)) * solid) + lane * (0.04 * u_faceG * (1.0 - u_sunAmt) * irisGlow * solid);
   o_col = vec4(col, 1.0); o_aux = vec4(auxc, u_sunAmt * solid);
 }`;
 
@@ -271,6 +274,7 @@ void main(){
   // the back mass parts down the middle, so the disc and RARE EARTH stay readable between two curtains (closes when it floats)
   vec3 cx = qrot(jquat(ti, ${J.chest}), vec3(1.0, 0.0, 0.0)); float fan = a_c1.w;
   if (ty == 0) { float sg = fan >= 0.0 ? 1.0 : -1.0; C += cx * ((sg * (0.100 - 0.050 * abs(fan)) * smoothstep(0.37, 0.58, sl) - (fan - sg * 0.55) * 0.030 * smoothstep(0.50, 1.0, sl)) * (1.0 - simNode(ti, LAG).y)); }   // straight down behind the shoulders first; the parting opens only below the shoulder line, behind the jacket   // ... and each curtain gathers toward its tips
+  if (ty == 2 && fan != 0.0) C += qrot(jquat(ti, ${J.head}), vec3(0.0, 0.0, 1.0)) * (fan * smoothstep(0.10, 0.32, sl));        // loose strands in front of the ears
   float prof = pow(smoothstep(0.0, 0.05, s), 0.6) * (1.0 - pow(smoothstep(0.48, 1.0, s), 1.5));
   float root = smoothstep(ty == 0 ? 0.16 : 0.10, ty == 0 ? 0.34 : 0.30, sl);                 // over the scalp the clumps lie flat under the cap; they take their body where the hair leaves the head
   float w = a_c2.x * prof * (0.86 + 0.28 * hash(seed * 17.0)) * (ty == 0 ? (0.55 + 0.45 * root) * (1.0 + 1.6 * simNode(ti, LAG).y) : 0.25 + 0.75 * root), th = a_c2.y * (0.35 + 0.65 * prof) * (0.20 + 0.80 * root), cs = cos(a_c1.y), sn2 = sin(a_c1.y);
@@ -290,6 +294,7 @@ in vec3 v_n; in vec3 v_nm; in vec3 v_nt; in vec3 v_w; in vec3 v_h; in vec2 v_s;
 flat in vec4 v_inst; flat in vec4 v_lane; flat in vec3 v_hv; flat in vec3 v_hl;
 layout(location=0) out vec4 o_col; layout(location=1) out vec4 o_aux;
 ${PARTS}
+${FACE_GLSL}
 ${HAIR_FN}
 float ign(vec2 p){ return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715)))); }
 void main(){
