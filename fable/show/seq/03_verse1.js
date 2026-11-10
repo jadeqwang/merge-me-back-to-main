@@ -12,6 +12,7 @@
 // nobody is slid, and the road is written under their feet (head = t everywhere).
 import { seg, ss, sm, lerp, clamp01 } from '../kit.js';
 import { makeProps } from '../props.js';
+import { makeBT } from './bt.js';
 
 // The lives' vignettes (also used by seq 4). face: degrees she is turned from her road toward the camera; start: track time at the cut (own clock).
 export const LIFE = {
@@ -61,6 +62,14 @@ export default function seq(K) {
     { t: tTips, pos: [-5.9, 1.25, 4.9], target: [1.2, 0.86, -2.3] }, { t: tB, pos: [-7.6, 1.35, 3.0], target: [3, 0.86, -1.0] }]);
   const followA = (t) => { const a = hf(t), c = camA(t); return { pos: K.rel(a, c.pos[0], c.pos[2], c.pos[1]), target: K.rel(a, c.target[0], c.target[2], c.target[1]), fov: 35, focusDist: Math.hypot(c.pos[0], c.pos[1] - 1, c.pos[2]), aperture: 0.03 }; };
   K.shared.followA = followA;
+  // ---- the Banach-Tarski split (bt.js), on "split": her lattice lifts ON the word, the point-up cells go to jade/violin in gold, the point-down cells stay
+  // with main in orange, both seat as whole lattices half a second later, the seams flash gold. The commit message beside her road says what happened.
+  const BT = (K.shared.bt = K.shared.bt || makeBT(K, props)), xzOf = (p) => (t) => { const a = p.at(t); return [a.x, a.z]; };
+  const btS = BT.event({ seed: 9, a: 0.09, tPre: tSplit - 0.13, tLift: tSplit, tSeat: tSplit + 0.5, tEnd: tSplit + 0.85, cam0: followA(tSplit), cam1: followA(tSplit + 0.5), swing: 0.5, groups: [
+    { cls: 0, color: K.hex(W.lives[VIOLIN].color), src: hero.perf(tSplit), dst: lives[VIOLIN].perf(tSplit + 0.5), srcAt: xzOf(hero), dstAt: xzOf(lives[VIOLIN]) },
+    { cls: 1, color: K.hex(K.LANE.main), src: hero.perf(tSplit), dst: hero.perf(tSplit + 0.5), srcAt: xzOf(hero), dstAt: xzOf(hero) }] });
+  const eggS = (() => { const s0 = hero.s(tSplit) + 0.5, pts = [], L = 9.0; for (let k = 0; k <= 36; k++) { const q = W.heroPath.at(s0 + (k / 36) * L); pts.push([q.x, q.z]); }
+    const v = hero.s(tSplit + 1) - hero.s(tSplit); return E.roads([{ pts, smooth: false, g: [tSplit + 0.5 / v, tSplit + (0.5 + L) / v], color: K.hex(K.LANE.main), width: 0.001, text: 'split: 5 pieces, nothing left over', textSize: 0.36, textSide: -1, textOff: -(0.04 + 0.36 * 0.72), textStart: 0.15, repeat: false }], { step: 0.25 }); })();
 
   // ---- C: the light. It gathers between her hands, leaves them on "light" and becomes the head of her road (the world's own clock: conn.sAtG(t))
   const BL = E.lights(64), conn = W.heroPath.roads[10], mainC = K.hex(K.LANE.main);
@@ -103,7 +112,10 @@ export default function seq(K) {
   return { name: '03_verse1', t0, t1, frame(t) {
     if (t < tB) { // A
       const camera = followA(t), clr = bodies(t, camera, 40), ca = ss(t, t0, t0 + 0.4) * (1 - seg(t, tThou + 1.7, tThou + 2.3));
-      return { camera, world: { text: 0.85, flow: 0.12, lights: { gain: 0.6, clear: clr }, conn: { gain: 0.8 }, named: { widthScale: 1.3 } }, extra: [W.glow(pops(t))],
+      const dip = btS.dip(t), bb = props.begin(), bt = btS.draw(bb, t);
+      if (dip > 0) { cast.actor('hero').set({ ...hero.perf(t), vary: 0, alpha: 1 - 0.82 * dip }); if (present(VIOLIN, t)) cast.actor(W.lives[VIOLIN].name, { lane: W.lives[VIOLIN].lane }).set({ ...lives[VIOLIN].perf(t), vary: 0, alpha: 1 - 0.82 * dip }); }
+      return { camera, world: { text: 0.85, flow: 0.12, lights: { gain: 0.6, clear: clr }, conn: { gain: 0.8 }, named: { widthScale: 1.3 } },
+        extra: [W.glow(pops(t)), eggS.drawable({ head: t, gain: 1.6, textGain: 1.0, minPx: 0.5, halo: 0 }), ...(bt ? [props.drawable(bb, { gain: 1, minPx: 1.3, haloPx: 3, halo: 0.22 })] : [])],
         type: [K.lyric(1, camera, { ...LY, y: 0.6, dist: 24, reflGain: 0 }), K.lyric(2, camera, { ...LY, y: 0.6, dist: 24, reflGain: 0 })], hud: K.hudMain(t, t > tThou + 2 ? { count: 1024 } : ca < 0.99 ? { count: W.count(t) } : {}), overlay: K.shared.counter(t, ca, { top: 1 }) }; }
     if (t < tC) { // B: side truck from her left; the camera eases as she brakes, then leans in while she gathers herself
       const sc = (hero.s(t - 0.45) + hero.s(t - 0.15) + hero.s(t + 0.15) + hero.s(t + 0.45)) / 4, p = W.heroPath.at(sc), q0 = W.heroPath.at(sc - 2.5), q1 = W.heroPath.at(sc + 2.5), l = Math.hypot(q1.x - q0.x, q1.z - q0.z) || 1, a = { x: p.x, z: p.z, tx: (q1.x - q0.x) / l, tz: (q1.z - q0.z) / l };

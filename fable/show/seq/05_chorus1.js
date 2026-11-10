@@ -3,10 +3,13 @@
 //                                                    sides and fuse with her at each node (8 -> 4 -> 2 around her, on b42, b43.2 and the cut)
 // B  b44.3   "Every road I ran becomes the one"      high over M1: the delta of roads braids into main, 8 -> 4 ("road") -> 2 ("ran") -> 1 ("one"); the one light runs out east
 // C  b49     "Fold me in again"                      side-on: her eleven lives as afterimages in their lane colours, one folds into her on every beat
-// D  89.46   "Nothing that I lived can come undone"  she stops on the 89.80 hit and looks back down her road; its commits lock on, oldest first, through "undone"
+// D  89.46   "Nothing that I lived can come undone"  she stops on the 89.80 hit and looks back down her road; its commits lock on, oldest first, toward us; the last
+//                                                    one under her feet on "un-DONE" (94.04); the camera pushes in all the way to the crash
 import { seg, ss, lerp, sm, clamp01 } from '../kit.js';
 import { hash1 } from '../../engine/src/rng.js';
 import { actBGeo } from './actB_geo.js';
+import { makeProps } from '../props.js';
+import { makeBT } from './bt.js';
 
 export default function seq(K) {
   const { bar, world: W, cast, T, E } = K; const G = actBGeo(K), A = W.almond, M = W.M1, HP = W.heroPath, MR = W.sets.merge.roads;
@@ -49,15 +52,33 @@ export default function seq(K) {
   const dot = (x, z, g, r) => ({ pts: [[x - 0.4, z], [x + 0.4, z]], smooth: false, gs: [1e9, 1e9], color: W.col('main'), width: 0.01, nodes: [{ u: 0.5, r, g }] });
   const commits = E.roads(barX.map((q) => dot(q.x, 0, q.g, 0.22)), { step: 1 });
 
+  // ---- the Banach-Tarski fold (bt.js), the split of verse 1 run backwards, on ONE fold: copy 8 (the one that comes home on b51.1 = 87.08, the downbeat
+  // nearest "again"). The copy's point-up cells in its lane colour and her own point-down cells in orange lift on b50.4, braid, and seat on her as a
+  // checkerboard on the downbeat; the seams flash gold. The commit beside that bar line's node on main says so.
+  const camC = (t) => { const hx = G.heroX(t), pu = sm(seg(t, tC + 0.4, tD)); return { pos: [hx + 1.7 - 0.9 * pu, 1.0 - 0.1 * pu, 5.5 - 1.9 * pu], target: [hx - 1.3 + 0.75 * pu, 1.22 - 0.14 * pu, 0], fov: 35, aperture: 0.03 }; };   // the fan shortens as it folds: the camera closes in on her
+  const IB = 7, tSeatF = T.beatTime(Math.round(beatC) + IB + 1), tLiftF = T.beatTime(Math.round(beatC) + IB);
+  const copyS = (t) => Math.max(0, IB + 1 - foldQ(t)), copyBody = (t) => { const sC = copyS(t), b = G.body(t - sC * DT); return { ...b, pos: [b.pos[0], 0, -0.16 * sC] }; };
+  const props = (K.shared.props = K.shared.props || makeProps(K)), BT = (K.shared.bt = K.shared.bt || makeBT(K, props));
+  const btF = BT.event({ seed: 23, a: 0.09, tPre: tLiftF - 0.1, tLift: tLiftF, tSeat: tSeatF, tEnd: tSeatF + 0.34, cam0: camC(tLiftF), cam1: camC(tSeatF), swing: 0.42, groups: [
+    { cls: 0, color: W.col(lives[IB].lane), src: copyBody(tLiftF), dst: G.body(tSeatF), srcAt: (t) => { const sC = copyS(t); return [G.heroX(t - sC * DT), -0.16 * sC]; }, dstAt: (t) => [G.heroX(t), 0] },
+    { cls: 1, color: W.col('main'), src: G.body(tLiftF), dst: G.body(tSeatF), srcAt: (t) => [G.heroX(t), 0], dstAt: (t) => [G.heroX(t), 0] }] });
+  const eggF = (() => { const x0 = G.heroX(tSeatF) + 0.45, L = 7.4, gk = []; let pu = -1; for (let q = tSeatF; q <= tSeatF + 3.0; q += 0.05) { const u = Math.max(pu + 1e-5, Math.min(1, (G.heroX(q) - x0) / L)); if (u > 0) gk.push([u, q]); pu = u; if (u >= 1) break; } gk.unshift([0, gk[0][1] - 0.09]); gk[gk.length - 1][0] = 1;
+    return E.roads([{ pts: [[x0, 0], [x0 + L / 2, 0], [x0 + L, 0]], smooth: false, gk, color: W.col('main'), width: 0.001, text: 'merge: banach-tarski, inverted', textSize: 0.36, textSide: -1, textOff: -(0.045 + 0.36 * 0.72), textStart: 0.1, repeat: false }], { step: 0.25 }); })();
+
   // ================= D: her road's commits, oldest first: the root, her ten merges, the bar lines on main, HEAD under her feet. They lock on eighth notes,
   // the last one on b56.4 (97.08), one beat before the crash.
   const locks = [{ x: 0, z: 0 }, ...hc.map((ti) => { const r = MR[ti - 1], e = r.at(r.len - 0.01); return { x: e.x, z: e.z }; }), ...barX.map((q) => ({ x: q.x, z: 0 })), { x: G.stopX, z: 0 }];
-  const bLast = Math.round(T.beatAt(bar(56))) + 3; locks.forEach((q, i) => { q.t = T.beatTime(bLast - (locks.length - 1 - i) * 0.5); q.g = i === 0 ? W.TF[0] : i <= 10 ? W.TM[10 - i] : G.headAtX(q.x); });
+  // r2 (NOTES_v2): the LAST one locks under her feet on the final syllable of "undone" (the d of "-done" is at 93.98-94.04 in the vocal stem = b55.1, 94.039);
+  // they come toward us from the horizon on eighth notes from 90.78. (v2: last on b56.4.)
+  const bLast = Math.round(T.beatAt(bar(55))); locks.forEach((q, i) => { q.t = T.beatTime(bLast - (locks.length - 1 - i) * 0.5); q.g = i === 0 ? W.TF[0] : i <= 10 ? W.TM[10 - i] : G.headAtX(q.x); });
   const lockR = E.roads(locks.map((q) => dot(q.x, q.z, q.t, 0.3)), { step: 1 });
   const lockG = (t) => { if (t <= locks[0].t) return -1e3; for (let i = 0; i < locks.length - 1; i++) if (t <= locks[i + 1].t) return lerp(locks[i].g, locks[i + 1].g, (t - locks[i].t) / (locks[i + 1].t - locks[i].t)); return 1e3; };
-  const gazeG = (t) => { const k = [[92.0, G.headAtX(G.stopX)], [92.25, 90.5], [92.9, tOne], [93.3, t0], [93.75, 20]]; if (t <= k[0][0] || t >= k[4][0]) return -1e3; let i = 0; while (t > k[i + 1][0]) i++; return lerp(k[i][1], k[i + 1][1], (t - k[i][0]) / (k[i + 1][0] - k[i][0])); };
-  const sx = G.stopX;
-  const camD = K.camPath([{ t: tD, pos: [sx + 5.7, 1.25, 1.7], target: [sx - 30, 0.3, -2.4], fov: 35 }, { t: 93.6, pos: [sx + 5.0, 1.45, 2.0], target: [sx - 30, 0.0, -2.1], fov: 35 }, { t: t1, pos: [sx + 4.4, 1.75, 2.35], target: [sx - 30, -0.6, -1.8], fov: 35 }]);
+  const sx = G.stopX, tDone = locks[locks.length - 1].t;
+  // r2: one slow push straight at her, 7.5 m -> 4.8 m, eye height 1.3 m (whole body: 37 % -> 55 % of frame height), on a fixed bearing so that she stays in the right third and
+  // her road's vanishing point stays left of centre under the lyric.
+  const camD = (t) => { const u = seg(t, tD, t1), e = 0.7 * u + 0.3 * sm(u), pos = [sx + lerp(7.0, 4.5, e), lerp(1.25, 1.3, e), lerp(2.6, 1.67, e)];
+    const b = Math.atan2(-pos[2], sx - pos[0]) - 0.246, d = Math.hypot(sx - pos[0], pos[2]);                 // the lens looks 14.1 degrees to the left of her: she sits at NDC x = +0.45
+    return { pos, target: [pos[0] + Math.cos(b) * d, lerp(1.1, 1.04, e), pos[2] + Math.sin(b) * d], fov: 35, focusDist: d, aperture: 0.02 }; };
 
   return { name: '05_chorus1', t0, t1, frame(t) {
     return K.cut(t, [
@@ -86,26 +107,28 @@ export default function seq(K) {
           type: [K.lyric(8, camera, { font: 'hook', mode: 'ground', x: -0.9, y: -0.86, rows: [2, 2, 3], px: 72 })], hud: K.hudMain(t, { count: W.count(t) }), flash: one ? 0.22 * Math.exp(-(t - tOne) * 5) : 0 }; } },
       { t0: tC, f: () => {
         const hx = G.heroX(t), u = seg(t, tC, tD), q = foldQ(t), bt = T.beatAt(t) - beatC;
-        const pu = sm(seg(t, tC + 0.4, tD)), camera = { pos: [hx + 1.7 - 0.9 * pu, 1.0 - 0.1 * pu, 5.5 - 1.9 * pu], target: [hx - 1.3 + 0.75 * pu, 1.22 - 0.14 * pu, 0], fov: 35, aperture: 0.03 };   // the fan shortens as it folds: the camera closes in on her
+        const camera = camC(t), dip = btF.dip(t), bb = props.begin(), btOn = btF.draw(bb, t);
         const glows = []; let flash = 0, last = -1;
         for (let i = 0; i < NF; i++) { const s = i + 1 - q, ln = lives[i].lane, c = W.col(ln);
           if (s <= 0) { const k = Math.exp(-(bt - (i + 1)) * 2.6); if (k > 0.02) { glows.push({ x: hx, z: 0, r: 1.3 + 2.2 * (1 - k), c: mul(c, 1.3 * k) }); flash += k; } last = i; continue; }
           const tt = t - s * DT, b = G.body(tt);
-          cast.actor('fan' + i, { lane: ln }).set({ ...b, pos: [b.pos[0], 0, -0.16 * s], alpha: 0.9 * Math.min(1, s * 1.6) - 0.03 * s, gain: 1.4, trail: { len: 0.22, gain: 1.6, width: 0.02, color: c, mask: ['handL', 'handR', 'hemL', 'hemR'] } });
+          cast.actor('fan' + i, { lane: ln }).set({ ...b, pos: [b.pos[0], 0, -0.16 * s], alpha: (0.9 * Math.min(1, s * 1.6) - 0.03 * s) * (i === IB ? 1 - 0.85 * dip : 1), gain: 1.4, trail: { len: 0.22, gain: 1.6, width: 0.02, color: c, mask: ['handL', 'handR', 'hemL', 'hemR'] } });
           glows.push({ x: G.heroX(tt), z: -0.16 * s, r: 0.9, c: mul(c, 0.5) }); }
-        cast.actor('hero').set({ ...G.body(t), gain: 1 + 0.9 * Math.min(1.5, flash) });
+        cast.actor('hero').set({ ...G.body(t), gain: 1 + 0.9 * Math.min(1.5, flash), alpha: 1 - 0.7 * dip });
         const just = last >= 0 && bt - (last + 1) < 1 && last < NF ? lives[last].name : null;
-        return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.15, ...far(40, 40), main: { head: G.headAtX(hx), fogDist: 260 }, lights: { clear: [[hx, 0, 6]], gain: 0.35, air: 120 } }, extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.3 })],
+        return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.15, ...far(40, 40), main: { head: G.headAtX(hx), fogDist: 260 }, lights: { clear: [[hx, 0, 6]], gain: 0.35, air: 120 } }, extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.3 }), eggF.drawable({ head: t, gain: 1.6, textGain: 1.0, minPx: 0.5, halo: 0 }), ...(btOn ? [props.drawable(bb, { gain: 1, minPx: 1.3, haloPx: 3, halo: 0.22 })] : [])],
           type: [K.lyric(9, camera, { font: 'hook', x: -0.93, y: 0.44, rows: [1, 3], dist: 34 })], hud: K.hudMain(t, { count: 1, branch: just ? 'main ← ' + just : 'main' }) }; } },
       { t0: tD, f: () => {
         const camera = camD(t), hx = G.heroX(t);
-        cast.actor('hero').set(G.body(t));                                                  // at rest on the hit; the look-back over her right shoulder begins at 91.8
-        const glows = []; for (const q of locks) if (t >= q.t) { const k = Math.exp(-(t - q.t) * 3.5), dist = Math.hypot(q.x - camera.pos[0], q.z - camera.pos[2]); glows.push({ x: q.x, z: q.z, r: Math.max(0.8, dist * 0.022) * (1 + 0.6 * k), c: mul([1.0, 0.5, 0.16], 0.5 + 1.6 * k) }); }
+        const done = t >= tDone ? Math.exp(-(t - tDone) * 2.2) : 0, bt = T.beatAt(t), held = t > tDone + 0.5 ? 0.35 * Math.exp(-(bt % 1) * 2.5) : 0;      // through the held "undone" the locked road breathes on the beat
+        cast.actor('hero').set({ ...G.body(t), gain: 1 + 1.2 * done + 0.5 * held });                    // at rest on the hit; the look-back over her right shoulder begins at 91.8
+        const glows = []; for (const q of locks) if (t >= q.t) { const k = Math.exp(-(t - q.t) * 3.5), dist = Math.hypot(q.x - camera.pos[0], q.z - camera.pos[2]); glows.push({ x: q.x, z: q.z, r: Math.max(0.8, dist * 0.022) * (1 + 0.6 * k), c: mul([1.0, 0.5, 0.16], 0.5 + 1.6 * k + held) }); }
         const hit = Math.exp(-Math.max(0, t - tHit) * 3.5) * (t >= tHit ? 1 : 0);
         if (hit > 0.02) glows.push({ x: hx, z: 0, r: 1 + 5 * (1 - hit), c: mul([1.0, 0.55, 0.25], 1.2 * hit) });
-        return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.1, ...far(90, 80), pulses: [{ g: gazeG(t), width: 0.7, gain: 3 }, { g: lockG(t), width: 0.5, gain: 3.5 }], lights: { gain: 0.4, air: 160, clear: [[hx, 0, 6]] }, main: { head: G.headAtX(hx), fogDist: 260 } },
-          extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.2 }), lockR.drawable({ head: t, gain: 3.2, nodeMinPx: 2.2 })],
-          type: [K.lyric(10, camera, { font: 'hook', x: -0.93, y: 0.30, rows: [2, 2, 3], dist: 34, px: 70, out: t1, fade: 0.01, reflGain: 0.03 })], hud: K.hudMain(t, { count: 1 }) }; } },
+        if (done > 0.02) glows.push({ x: hx, z: 0, r: 1.2 + 6 * (1 - done), c: mul([1.0, 0.55, 0.25], 1.5 * done) });
+        return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.1, ...far(90, 80), pulses: [{ g: lockG(t), width: 0.5, gain: 3.5 }], lights: { gain: 0.4, air: 160, clear: [[hx, 0, 6]] }, main: { head: G.headAtX(hx), fogDist: 260 } },
+          extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.2 }), lockR.drawable({ head: t, gain: 3.2 + 2 * held, nodeMinPx: 2.2 })],
+          type: [K.lyric(10, camera, { font: 'hook', x: -0.93, y: 0.19, rows: [2, 2, 2, 1], dist: 34, px: 66, out: t1, fade: 0.01, reflGain: 0.03 })], hud: K.hudMain(t, { count: 1 }) }; } },
     ], t1);
   } };
 }

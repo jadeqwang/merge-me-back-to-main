@@ -33,7 +33,12 @@ export function actBFloat(K) {
   const draw = (t, o = {}) => hair.drawable({ head: t, gain: 2.0, textGain: 0.3, minPx: 1.2, haloPx: 3, halo: 0.25, headGain: 3, headLen: 0.3, nodeMinPx: 1.1, soft: 0.12, ...o });
   const drawFil = (t, o = {}) => fil.drawable({ head: t, gain: 0.8, minPx: 0.7, haloPx: 1.5, halo: 0.1, headGain: 2.5, headLen: 0.3, soft: 0.25, ...o });
   // ---- the top-down shot. Keys: [t, height, turn (deg: where east points on screen, counter-clockwise from screen-right), centre (m east of H)]
-  const CK = [[97.515, 2.75, 28, -0.5], [100.0, 3.1, 44, -0.42], [102.65, 5.6, 78, -0.1], [104.9, 7.0, 100, 0.5], [107.2, 9.5, 110, 1.2], [109.43, 20, 116, 3.2], [111.43, 26, 121, 4.8], [113.4, 22, 127, 4.2], [115.3, 12, 135, 2.0], [116.64, 6.6, 141, 0.7]];
+  // r2 (NOTES_v2): the widest point (24 m) is held for about a bar round "return"; from the hats (111.43) the camera comes home WITH the pulses, one a beat:
+  // 7 m by b66.3, close on her (she is 3/4 of the frame) for the last bar and the hand-over to the rise. (v2: 26 m at 111.43, still 12 m at 115.3.)
+  const CK = [[97.515, 2.75, 28, -0.5], [100.0, 3.1, 44, -0.42], [102.65, 5.6, 78, -0.1], [104.9, 7.0, 100, 0.5], [107.2, 9.5, 110, 1.2], [109.43, 20, 116, 3.2], [110.6, 24, 119, 4.2], [111.43, 23, 121, 4.2],
+    [112.3, 16.5, 124, 3.1], [113.17, 10.5, 127, 1.9], [114.04, 7.0, 130, 1.1], [115.3, 4.6, 136, 0.4], [116.0, 3.7, 139, 0.15], [116.64, 3.3, 141, 0.0],
+    // r2: the shot now runs on to b68.4 (117.952): the sit-up is seen from straight above (she rises toward the lens and the lens rises with her), never side-on
+    [117.3, 3.9, 145, -0.45], [117.952, 4.9, 149, -0.8]];
   const path = K.camPath(CK.map(([t, h, th, e]) => ({ t, pos: [h, th, e], target: [0, 0, 0] })));
   const cam = (t) => { const [h, thd, e] = path(t).pos, th = (thd * Math.PI) / 180, cx = H[0] + e * Math.cos(0); return { pos: [cx, h, 0], target: [cx, 0, 0], topUp: [Math.sin(th), 0, -Math.cos(th)], fov: 35, near: 0.2, far: 20000, h }; };
   // `float` (song_t0 97.513; supine, head toward its -Z) until 116.0, then `rise` (song_t0 116.0; its frame 0 is the float's pose there, she stands up facing west)
@@ -47,14 +52,15 @@ export function actBFloat(K) {
     const camera = cam(t), dl = ss(t, tHats, 116.6);
     // pulses in flight: the four that return on the words, then one arriving on every beat of the download
     const arr = RET.filter((a) => t > a - RDUR && t < a + 0.15).map((a) => ({ a, d: RDUR }));
-    if (t > RET[3] - 1.0) { const b0 = Math.ceil(T.beatAt(Math.max(t, RET[3] + 0.01)) - 1e-6); for (let j = 0; j < 4 && arr.length < 4; j++) { const a = T.beatTime(b0 + j); if (a - 1.74 < t && a < 116.8) arr.push({ a, d: 1.74 }); } }
+    if (t > RET[3] - 1.0) { const b0 = Math.ceil(T.beatAt(Math.max(t, RET[3] + 0.01)) - 1e-6); for (let j = 0; j < 4 && arr.length < 4; j++) { const a = T.beatTime(b0 + j); if (a - 1.74 < t && a < 118.0) arr.push({ a, d: 1.74 }); } }
     const pulses = arr.map(({ a, d }) => ({ g: gHome(1 - (a - t) / d), width: 0.4, gain: 3.2 }));
     // her light: a step as each pulse comes home, and a slow swell through the download
     let lit = 0.72 * dl, kick = 0; for (const a of RET) lit += 0.07 * ss(t, a - 0.03, a + 0.3); if (t > RET[0]) { const f = T.beatAt(t) % 1; kick = Math.exp(-f * 3.2); }
     const imp = Math.exp(-(t - 97.515) * 1.6);
     body(t, { density: lerp(0.5, 1, lit), gain: 1 + 1.3 * lit + 0.5 * kick * (0.4 + lit) });
     const hx = H[0] - 0.55, warm = [1.0, 0.56, 0.24];
-    const glows = [{ x: hx, z: 0, r: 1.5 + 1.0 * lit + 0.3 * kick, c: warm.map((c) => c * (0.08 + 0.5 * lit + 0.3 * kick * lit + 0.1 * imp)) }];
+    const near = 0.3 + 0.7 * ss(camera.h, 3.5, 9);                                         // close to her the pool would fill the frame: keep it a pool
+    const glows = [{ x: hx, z: 0, r: 1.5 + 1.0 * lit + 0.3 * kick, c: warm.map((c) => c * near * (0.08 + 0.5 * lit + 0.3 * kick * lit + 0.1 * imp)) }];
     const inward = ss(t, 109.2, 110.4);
     return { camera, env: { dawn: 0.03 * dl, ground: { ripple: 0.016 + 0.05 * imp, fogAmt: 0.2, base: K.hex('#081038'), f0: 0.2 }, grade: { exposure: 1.5, vignette: 0.4, bloom: 0.6 },
         figLight: { under: 0.25 + 0.5 * lit, ambient: [0.06 + 0.13 * lit, 0.07 + 0.09 * lit, 0.19 + 0.02 * lit], emissive: 2 + 1.6 * lit + 0.8 * kick * lit, fibres: 1.6 + 2.2 * lit } },
