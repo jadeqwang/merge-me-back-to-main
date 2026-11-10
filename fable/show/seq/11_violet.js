@@ -26,7 +26,7 @@ export default function seq(K) {
   const pts = [-120, -80, -40, 0].map((d) => { const p = WP.at(sJ + d); return [p.x, p.z]; });
   { const S = onC(thJ), n = Math.max(2, Math.round(Math.hypot(S[0] - J.x, S[1] - J.z) / 45)); for (let i = 1; i < n; i++) pts.push([J.x + (S[0] - J.x) * i / n, J.z + (S[1] - J.z) * i / n]);
     const na = Math.ceil((thJ - TH) / (9 * D2R)); for (let i = 0; i <= na; i++) pts.push(onC(thJ + (TH - thJ) * i / na)); pts.push([V[0] - LAST * 0.5 * hE[0], V[1] - LAST * 0.5 * hE[1]], [V[0], V[1]]); }
-  const gJ = WP.gAt(sJ - 120), rdef = { pts, color: W.col('violet'), width: 0.04, text: VIOLET.name + '  ' + VIOLET.text, textSize: 0.34, textSide: 1, nodes: [{ u: 1, r: 0.2 }], g: [0, 0] };
+  const gJ = WP.gAt(sJ - 120), rdef = { pts, color: W.col('violet'), width: 0.04, text: VIOLET.name + '  ' + VIOLET.text, textSize: 0.34, textSide: 1, flip: true, nodes: [{ u: 1, r: 0.12 }], g: [0, 0] };
   { const L = E.roads([rdef], { step: 1.0 }).roads[0].len; rdef.gk = [[0, gJ], [1 - 56 / L, bar(105)], [1 - 19 / L, T.line(17).start], [1 - 0.5 / L, 190.6], [1, tGo]]; delete rdef.g; }
   const LR = E.roads([rdef], { step: 1.0 }), P = LR.roads[0];
   // world options for every shot of the act that can see her road: the world's own violet road stops where this one takes over
@@ -79,7 +79,7 @@ export default function seq(K) {
   const LL = E.lights(160), VC = K.hex(K.LANE.violet);
   const lightDraw = (t, o = {}) => { const d = new Float32Array(160 * 7), g = (o.gain ?? 1) * 20, sz = o.size ?? 0.012, tail = o.tail ?? 0.5, N = 120; let n = 0; const p = lightAt(t);
     const put = (q, k, w, r) => { d.set([q[0], q[1], q[2], (VC[0] + w) * g * k, (VC[1] + w) * g * k, (VC[2] + w * 1.1) * g * k, r], n * 7); n++; };
-    put(p, 2.2, 1.4, sz); put(p, 0.16, 0.5, sz * 2.6); put(p, 0.012, 0.3, sz * 8);
+    put(p, 2.4, 1.4, sz); put(p, 0.1, 0.5, sz * 2.3);
     for (let j = 1; j <= N; j++) { const u = j / N, tj = t - tail * u * u; if (tj < tL) break; put(lightAt(tj), 0.5 * (1 - u) * (1 - u) * Math.min(1, j / 3), 0.25, sz * (0.7 - 0.45 * u)); }
     return LL.drawable(d, n, { minPx: o.minPx ?? 1.5, reflGain: 0.8 }); };
 
@@ -100,31 +100,31 @@ export default function seq(K) {
     t0: 199.72, wipe: true, wipeDur: 0.3, stagger: 0.2, t1: tGo + 0.05, fade: 0.5, reflGain: 0.4 });
 
   // ---- HUD: her context fills; it is full as she comes to rest. Her last commit is the note: the hash does not change after it.
-  const ctxAt = (t) => (t < tC ? lerp(0.97, 0.982, seg(t, t0, tC)) : t < tGo ? lerp(0.982, 0.992, seg(t, tC, tGo)) : lerp(0.992, 1, ss(t, tGo, tSeated)));
+  const ctxAt = (t) => (t < tC ? lerp(0.97, 0.982, seg(t, t0, tC)) : t < tGo ? lerp(0.982, 0.992, seg(t, tC, tGo)) : t < tSeated ? lerp(0.992, 0.994, seg(t, tGo, tSeated)) : 1);     // 99% until she has come to rest; then it is full
   const hud = (t) => ({ branch: VIOLET.name, color: K.LANE.violet, ctx: ctxAt(t), ...(t >= tGo ? { hash: E.hashAt(tGo + 0.05) } : {}) });
   // ---- night light. `dim` 0..1: her body goes down to its accents (band, straps, the pencil left in her bun)
-  const dawnAt = (t) => lerp(0.03, 0.105, ss(t, t0 + 3, 191)) + 0.025 * seg(t, 191, tEnd);
+  const dawnAt = (t) => lerp(0.03, 0.12, ss(t, t0 + 3, 191)) + 0.02 * seg(t, 191, tEnd);
   const figLight = (dim = 0) => ({ under: 0.4 * (1 - dim), fibres: 0.8 * (1 - dim), ambient: [0.105 * (1 - 0.9 * dim), 0.118 * (1 - 0.9 * dim), 0.27 * (1 - 0.88 * dim)], rimBoth: 0.5 * (1 - dim), emissive: 2.0 + 0.5 * dim });
   const env = (t, dim = 0, o = {}) => ({ dawn: dawnAt(t), figLight: figLight(dim), grade: { exposure: 1.6, bloom: 0.62, ...o } });
   const world = (t, o = {}) => ({ text: 0.85, flow: 0.12, lights: { gain: 0.5 }, violet: violetWorld, ...o });
   // far lights on the eastern horizon: where main's morning is (a handful, small, warm)
-  const LF = E.lights(16), farLights = (t) => { const d = new Float32Array(16 * 7), c = K.hex(K.LANE.main); let n = 0; for (let i = 0; i < 9; i++) { const a = (h1(i * 17 + 3) - 0.5) * 0.3, r = 700 + 500 * h1(i * 5 + 1), tw = 0.8 + 0.2 * Math.sin(t * (1.3 + h1(i)) + i * 2.1), k = 16 * (0.35 + h1(i * 7)) * tw;
+  const LF = E.lights(16), farLights = (t) => { const d = new Float32Array(16 * 7), c = K.hex(K.LANE.main); let n = 0; for (let i = 0; i < 9; i++) { const a = (h1(i * 17 + 3) - 0.5) * 0.3, r = 700 + 500 * h1(i * 5 + 1), tw = 0.8 + 0.2 * Math.sin(t * (1.3 + h1(i)) + i * 2.1), k = 40 * (0.35 + h1(i * 7)) * tw;
     d.set([V[0] + r * Math.cos(a), 2.5, V[1] + r * Math.sin(a), (c[0] + 0.25) * k, (c[1] + 0.2) * k, (c[2] + 0.12) * k, 1.1], n * 7); n++; } return LF.drawable(d, n, { minPx: 1.2 }); };
   const eastGlow = (t) => W.glow([{ x: V[0] + 2400, z: V[1], r: 1500, c: [0.5, 0.2, 0.1].map((q) => q * (0.5 + 5 * dawnAt(t))) }]);
   // her body: the pencil is in her bun, then in her hand (from tPencil), then it is the light (from tGo)
   const who = (t, o = {}) => cast.actor('violet', { lane: 'violet', variant: 'violet' }).set({ ...place(t), track: VT, time: t - tV, vary: 0, pencil: t >= tGo ? 'gone' : t >= tPencil ? 'hand' : undefined, ...o });
-  const selfLight = (t, k) => { const c = jw(t, JC, [0, 0.05, 0.12]), d = new Float32Array(14); d.set([c[0], c[1], c[2], (VC[0] + 0.5) * 7 * k, (VC[1] + 0.5) * 7 * k, (VC[2] + 0.5) * 7 * k, 0.03, c[0], c[1], c[2], VC[0] * 0.5 * k, VC[1] * 0.5 * k, VC[2] * 0.5 * k, 0.22]); return LS.drawable(d, 2, { minPx: 1.8 }); };
+  const selfLight = (t, k, sz = 1) => { const c = jw(t, JC, [0, 0.05, 0.12]), d = new Float32Array(14); d.set([c[0], c[1], c[2], (VC[0] + 0.5) * 16 * k, (VC[1] + 0.5) * 16 * k, (VC[2] + 0.5) * 16 * k, 0.035 * sz, c[0], c[1], c[2], VC[0] * 1.2 * k, VC[1] * 1.2 * k, VC[2] * 1.2 * k, 0.1 * sz]); return LS.drawable(d, 2, { minPx: 2.2 }); };
   const LS = E.lights(4);
 
   // ---- D, the sit (203.60 - 210.96). One shot: medium from her right while she lowers herself and looks up; then the camera lifts away.
   const tLift = T.words(20)[0].start;                                           // "Merge" (208.13): the camera begins to leave
   const shotD = (t) => { const lift = sm(seg(t, tLift, tEnd + 0.35)), l2 = lift * lift, dim = ss(t, tLift - 0.3, tLift + 2.3), u = ss(t, tD + 0.3, tSeated), dr = seg(t, tD, tLift);
-    const camera = { pos: K.rel(fr, 0.8 + 0.1 * u - 4.9 * l2, 3.45 - 1.0 * u - 0.12 * dr + 4 * lift + 23.5 * l2, 0.92 - 0.32 * u + 1.2 * lift + 5.2 * l2), target: K.rel(fr, 0.8 + 0.1 * u - 0.55 * lift, -0.75 - 8 * lift, 0.9 - 0.36 * u + 1.9 * lift), fov: 35, aperture: 0.008 * (1 - lift) };
+    const camera = { pos: K.rel(fr, 0.8 + 0.1 * u - 4.9 * l2, 3.45 - 0.45 * u - 0.12 * dr + 4 * lift + 23 * l2, 0.92 - 0.27 * u + 1.2 * lift + 5.2 * l2), target: K.rel(fr, 0.8 + 0.1 * u - 0.55 * lift, -0.75 - 8 * lift, 0.9 - 0.3 * u + 1.85 * lift), fov: 35, aperture: 0.008 * (1 - lift) };
     camera.focusDist = Math.hypot(camera.pos[0] - fr.x, camera.pos[1] - 0.8, camera.pos[2] - fr.z);
     who(t);
     const type = [K.lyric(19, camera, { x: 0.12, y: 0.4, rows: [3, 4], dist: 30, px: 80, out: 207.45, fade: 0.5, reflGain: 0.1 })];
     if (t > tLift - 0.1) type.push(K.lyric(20, camera, { font: 'hook', px: 120, x: 0, y: 0.52, align: 'center', dist: 200, words: T.words(20).slice(0, 1), out: tEnd + 1, reflGain: 0 }));
-    return { camera, env: env(t, dim, { exposure: 1.6 + 0.15 * dim }), world: world(t, { violet: violetWorld, text: 0.85 + 0.4 * lift, minPx: 1.3 + 0.9 * lift }), extra: [roadDraw(t, { head: headAt(t), textGain: 0.85 + 0.4 * lift, minPx: 1.3 + 0.9 * lift, gain: 2.4 + 1.2 * lift }), lightDraw(t, { size: 0.012 + 0.0022 * Math.hypot(lightAt(t)[0] - fr.x, lightAt(t)[2] - fr.z), gain: 1 - 0.8 * ss(t, 206.5, 209.5), tail: 0.35 }), farLights(t), eastGlow(t), selfLight(t, dim * (0.35 + 0.65 * lift))], type, hud: hud(t) }; };
+    return { camera, env: env(t, dim, { exposure: 1.6 + 0.15 * dim }), world: world(t, { violet: violetWorld, text: 0.85 + 0.4 * lift, minPx: 1.3 + 0.9 * lift }), extra: [roadDraw(t, { head: headAt(t), textGain: 0.85 + 0.3 * lift, minPx: 1.3 + 0.5 * lift, gain: 2.4 - 0.9 * lift }), lightDraw(t, { size: 0.012 + 0.0022 * Math.hypot(lightAt(t)[0] - fr.x, lightAt(t)[2] - fr.z), gain: 1 - 0.8 * ss(t, 206.5, 209.5), tail: 0.35 }), farLights(t), eastGlow(t), selfLight(t, dim * (0.3 + 0.7 * lift), 1 + 1.4 * l2)], type, hud: hud(t) }; };
 
   K.shared.actD = { held, lightAt, lightDraw, roadDraw, violetWorld, shotD, tEnd, hudViolet: hud, P, fr, dawnAt }; K.shared.lightAt = lightAt;                    // (15_map draws the flight from K.shared.lightAt)
   return { name: '11_violet', t0, t1, frame(t) {
@@ -135,7 +135,7 @@ export default function seq(K) {
         who(t);
         return { camera, env: env(t), world: world(t), extra: [roadDraw(t, { head: headAt(t) })], type: [K.lyric(16, camera, { x: 0.2, y: 0.3, rows: [2, 2, 3], dist: 40 })], hud: hud(t) }; } },
       // B · she walks into the frame, stops, and looks east.
-      { t0: bar(109), f: (tt, u) => { const k = 1 - ss(t, bar(109), 191), cam0 = K.rel(a, -3.75 - 0.5 * k, 2.55, 1.38), camera = { pos: [cam0[0] + 0.25 * u * EAST[0], cam0[1], cam0[2]], target: K.rel(a, 3.4, -4.6, 1.22), fov: 36, focusDist: 4.6, aperture: 0.04 };
+      { t0: bar(109), f: (tt, u) => { const k = 1 - ss(t, bar(109), 191), cam0 = K.rel(a, -3.42 - 0.5 * k, 3.08, 1.38), camera = { pos: [cam0[0] + 0.3 * u * EAST[0], cam0[1], cam0[2]], target: K.rel(a, 1.88, -5.4, 1.22), fov: 36, focusDist: 4.6, aperture: 0.04 };
         who(t);
         return { camera, env: env(t), world: world(t), extra: [roadDraw(t, { head: headAt(t) }), farLights(t), eastGlow(t)], type: [K.lyric(17, camera, { x: -0.92, y: 0.36, rows: [4, 3], dist: 30 })], hud: hud(t) }; } },
       // C · the writing, and the letting go (no cut on the drum-out: the picture holds its breath with the music).
