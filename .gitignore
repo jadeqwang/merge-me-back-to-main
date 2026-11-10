@@ -22,3 +22,5 @@ work/gen_kv_ns.txt
 # review videos Jade asked to share through this (public) repo, each <100 MB (GitHub's per-file limit)
 !review/
 !review/**
+# fable cut scratch (mocap, tracks, stills, renders)
+work_fable/
