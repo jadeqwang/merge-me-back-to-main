@@ -8,23 +8,32 @@ export default function seq(K) {
   const { bar, world: W } = K; const t0 = bar(9), t1 = bar(17); const fb = W.forkBox;
   const A = W.frameBox(-70, 400, -330, 330), B = W.frameBox(fb.x0 - 110, fb.x1 + 30, fb.z0 - 30, fb.z1 + 30);
   const top = (t) => { const u = sm(seg(t, bar(9), bar(14.5))); return { pos: [lerp(A.pos[0], B.pos[0], u), lerp(A.h, B.h, u), lerp(A.pos[2], B.pos[2], u)], target: [lerp(A.pos[0], B.pos[0], u), 0, lerp(A.pos[2], B.pos[2], u)], fov: 35 }; };
-  let swoop = null;
   // The live counter: JetBrains Mono, cap height 70 px at 1080p, lower right. It changes exactly when the tree's tips double (W.TF), with a small roll and flash.
-  K.shared.counter = (t, alpha = 1) => (g, Wd, Hd) => { if (alpha <= 0.01) return; const s = Hd / 1080, n = W.count(t); let tc = -1e9; for (const q of W.TF) if (q <= t && q > tc) tc = q;
-    const dt = t - tc, roll = 1 - Math.min(1, dt / 0.16), fl = Math.exp(-Math.max(0, dt) * 4), x = Wd - 70 * s, y0 = Hd - 62 * s;
+  // o.top = 1: upper right, in the sky, the number on the baseline of a lyric row at NDC y 0.6 (seq 3: the lower right is road and runners there)
+  K.shared.counter = (t, alpha = 1, o = {}) => (g, Wd, Hd) => { if (alpha <= 0.01) return; const s = Hd / 1080, n = W.count(t); let tc = -1e9; for (const q of W.TF) if (q <= t && q > tc) tc = q;
+    const dt = t - tc, roll = 1 - Math.min(1, dt / 0.16), fl = Math.exp(-Math.max(0, dt) * 4), x = Wd - 70 * s, y0 = o.top ? 266 * s : Hd - 62 * s;
     g.save(); g.textAlign = 'right'; g.textBaseline = 'alphabetic'; g.shadowColor = 'rgba(5,6,26,0.75)'; g.shadowBlur = 16 * s;
     g.font = `500 ${34 * s}px "JetBrains Mono"`; g.fillStyle = `rgba(255,241,214,${0.62 * alpha})`; g.fillText('branches', x, y0);
     g.font = `600 ${96 * s}px "JetBrains Mono"`; g.fillStyle = `rgba(255,${Math.round(241 - 30 * fl)},${Math.round(214 - 90 * fl)},${0.95 * (1 - 0.6 * roll) * alpha})`; g.fillText(n.toLocaleString('en-US'), x + 4 * s, y0 - 50 * s + roll * roll * 22 * s); g.restore(); };
   return { name: '02_tree', t0, t1, frame(t) {
-    if (!swoop) { const e = K.shared.followA(t1), h = W.heroAt(t1); const s = top(bar(15));
-      swoop = K.camPath([{ t: bar(15), pos: s.pos, target: [s.target[0] + 0.02 * B.h, 0, s.target[2]], fov: 35 }, { t: bar(15.55), pos: [lerp(s.pos[0], h.x, 0.25), B.h * 0.8, lerp(s.pos[2], h.z, 0.3)], target: [lerp(s.target[0], h.x, 0.5) + 0.12 * B.h, 0, lerp(s.target[2], h.z, 0.5)], fov: 35 },
-        { t: bar(16.4), pos: [h.x - 150, 80, h.z - 24], target: [h.x - 40, 0, h.z - 2], fov: 35 }, { t: bar(16.75), pos: [h.x - 17, 6.5, h.z - 4], target: [h.x + 2, 1, h.z], fov: 35 }, { t: t1, ...e }]); }
-    const sw = t >= bar(15); const c = sw ? swoop(t) : top(t); const camera = { ...c, far: 40000, near: sw ? 0.2 : 20, aperture: 0, topUp: [1, 0, 0] };
-    const low = ss(t, bar(16.05), bar(16.85));                                     // 0 top-down .. 1 ground level
-    const hero = W.heroAt(t); if (low > 0.002) K.cast.actor('hero').set({ pos: [hero.x, 0, hero.z], yaw: K.yawOf(hero), ...K.shared.heroRun(t), alpha: low, vary: 0 });
+    // r2 (NOTES_v2): the fall is ONE move with her tip held in the middle of the frame: the gaze slides from the tree to her tip, the distance to it falls
+    // log-uniformly (1,540 m -> 10 m: a power of ten every 1.4 s), the view tilts from straight down to seq 3's low camera behind her. At the end it IS that
+    // camera (K.shared.followA(t)), so there is no cut and no jump. A pool of her lane's light of constant screen size marks the tip until she is a body.
+    const sw = t >= bar(15), s0 = top(t), u = seg(t, bar(15), 27.5), w = sm(u);              // down by 27.5: she is a body from 26.8, the camera is seq 3's for the last half second
+    let c = s0, dCam = 1e4;
+    if (sw) { const e = K.shared.followA(t), o1 = [0, 1, 2].map((i) => e.pos[i] - e.target[i]), d1 = Math.hypot(...o1), n1 = o1.map((v) => v / d1), d0 = s0.pos[1];
+      const wT = sm(seg(u, 0, 0.42)), tg = [0, 1, 2].map((i) => lerp(s0.target[i], e.target[i], wT)), d = Math.exp(lerp(Math.log(d0), Math.log(d1), w));
+      const th = Math.acos(Math.min(1, n1[1])) * sm(seg(u, 0.04, 0.86)), hl = Math.hypot(n1[0], n1[2]) || 1, n = [(n1[0] / hl) * Math.sin(th), Math.cos(th), (n1[2] / hl) * Math.sin(th)];       // from straight up, tilting back toward where seq 3's camera sits
+      c = { pos: [0, 1, 2].map((i) => tg[i] + n[i] * d), target: tg, fov: 35, focusDist: e.focusDist, aperture: e.aperture * seg(u, 0.85, 1) }; dCam = d; }
+    const camera = { ...c, far: 40000, near: sw ? Math.max(0.2, Math.min(20, dCam * 0.02)) : 20, topUp: [1, 0, 0] };
+    const low = sm(seg(w, 0.45, 0.93));                                            // 0 top-down .. 1 ground level
+    const hero = W.heroAt(t), body = sm(seg(w, 0.4, 0.62)); if (body > 0.002) K.cast.actor('hero').set({ pos: [hero.x, 0, hero.z], yaw: K.yawOf(hero), ...K.shared.heroRun(t), alpha: body, vary: 0 });
+    const mk = sw ? sm(seg(u, 0.08, 0.3)) * (1 - 0.8 * low) : 0, mr = Math.max(0.9, dCam * 0.016), mc = K.hex(K.LANE.main);                // the tip's marker: constant on screen, then a pool under her feet
+    const ca = 1 - seg(t, bar(15), bar(15) + 0.5);                                 // the counter leaves as the fall begins; seq 3 brings it back in the sky
     const type = t < bar(15) ? [K.label('MERGE', top(t), { font: 'hook', mode: 'ground', px: 150, x: -0.93, y: -0.84, gain: 1.5, t0: bar(9), wipe: true, wipeDur: 0.5, stagger: 0, t1: bar(14.5), fade: 0.8 })] : [];
     return { camera, env: { ground: { fogAmt: low, ripple: 0.011 * low, base: K.hex('#0A0F46').map((v, i) => lerp(v, K.hex('#060926')[i], low)), f0: lerp(0.12, 0.55, low) }, grade: { bloom: lerp(0.8, 0.6, low), bloomThreshold: lerp(0.8, 1.0, low), streak: 0.22 * low, vignette: lerp(0.46, 0.36, low), exposure: lerp(1.35, 1.5, low) } },
       world: { text: 0.7 * low, flow: 0.12, minPx: lerp(2.3, 1.3, low), haloPx: lerp(4, 5, low), halo: lerp(0.32, 0.22, low), headGain: 3 * (1 - low), headLen: 0.15, nodeMinPx: lerp(1.8, 1.4, low), canopy: { gain: 1.2 * (1 - low) }, lights: { gain: lerp(0.8, 0.7, low), minPx: lerp(1.6, 1, low), clear: low > 0.3 ? [[hero.x, hero.z, 14]] : [] }, art: { gain: 1.2 } },
-      type, hud: K.hudMain(t), overlay: K.shared.counter(t) };
+      extra: mk > 0.01 ? [W.glow([{ x: hero.x, z: hero.z, r: mr, c: mc.map((v, i) => (v * 1.5 + [0.3, 0.2, 0.1][i]) * mk) }, { x: hero.x, z: hero.z, r: mr * 3.2, c: mc.map((v) => v * 0.35 * mk) }])] : [],
+      type, hud: K.hudMain(t, ca < 1 ? { count: W.count(t) } : {}), overlay: K.shared.counter(t, ca) };
   } };
 }

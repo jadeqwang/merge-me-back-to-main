@@ -159,7 +159,7 @@ export function makeProps(K) {
 
   // ---- jade/home: the Copernican model at 10:30 pm. A sun and two planets where she points; the outer one rides her fingertip as she traces its orbit
   const orr = new Map();
-  function orreryOf(track) { let q = orr.get(track); if (q) return q; const D = 1.2, S = [0, 0, 0], n = 60, t0 = 0.9, T = 2.5; let cn = [0, 0, 0];
+  function orreryOf(track, D = 1.2) { const key = track + '@' + D; let q = orr.get(key); if (q) return q; const S = [0, 0, 0], n = 60, t0 = 0.9, T = 2.5; let cn = [0, 0, 0];      // D (opts.reach): metres from her shoulder to the model
     for (let k = 0; k < n; k++) { const s = cast.root(track, t0 + (k / n) * T, JN.upArmR); S[0] += s[0] / n; S[1] += s[1] / n; S[2] += s[2] / n; }
     const P = (tt) => add(S, mul(norm(sub(cast.root(track, tt, JN.handR), cast.root(track, tt, JN.upArmR))), D));
     for (let k = 0; k < n; k++) cn = add(cn, mul(P(t0 + (k / n) * T), 1 / n));
@@ -169,8 +169,8 @@ export function makeProps(K) {
     const tab = [], ta = 0.9, tb = 4.3, dt = 1 / 30; let prev = ang(ta), acc = prev; for (let tt = ta; tt <= tb + 1e-6; tt += dt) { const a = ang(tt); let d = a - prev; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; acc += d; prev = a; tab.push(acc); }
     const w = (tab[tab.length - 1] - tab[0]) / (tb - ta);
     const theta = (tt) => (tt <= ta ? tab[0] + w * (tt - ta) : tt >= tb ? tab[tab.length - 1] + w * (tt - tb) : (() => { const x = (tt - ta) / dt, i = Math.min(tab.length - 2, Math.floor(x)); return tab[i] + (tab[i + 1] - tab[i]) * (x - i); })());
-    q = { cn, u, v, r: Math.max(0.24, r), theta, w }; orr.set(track, q); return q; }
-  function orrery(b, o) { const M = placer(o), c = tint(o), g = (o.gain ?? 1) * G0, q = orreryOf(o.track), th = q.theta(o.time ?? 0);
+    q = { cn, u, v, r: Math.max(0.24 * Math.min(1, D / 1.2), r), theta, w }; orr.set(key, q); return q; }
+  function orrery(b, o) { const M = placer(o), c = tint(o), g = (o.gain ?? 1) * G0, q = orreryOf(o.track, o.reach ?? 1.2), th = q.theta(o.time ?? 0);
     const at = (rr, a) => M(add(q.cn, add(mul(q.u, rr * Math.cos(a)), mul(q.v, rr * Math.sin(a)))));
     for (const [rr, k] of [[q.r, 0.75], [q.r * 0.56, 0.55]]) { const ring = []; for (let i = 0; i < 64; i++) ring.push(at(rr, (i / 64) * 6.2832)); poly(b, ring, c, 0.0022, g * k, true); }
     dot(b, M(q.cn), [1, 0.86, 0.5], 0.05, g * 1.5); dot(b, at(q.r, th), [0.75, 0.9, 1], 0.022, g * 1.5); dot(b, at(q.r * 0.56, th * 2.39 + 1.2), tint(o, 0.6), 0.015, g * 1.3);

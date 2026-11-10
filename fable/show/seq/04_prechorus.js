@@ -3,6 +3,7 @@
 //    b34.1   the roll call, one beat each, the frame anchored on her head, the SAME look-back continuing through every cut (one shared clock):
 //            sandstorm, wushu, nasa, poet, violin, piano: back through her lives to the piano bench, then to the root
 // B  b35.3   "Where I started from"        straight down: a pulse runs home from every tip, down every road, and lands on the root on the b37 kick
+//            (r2: the line lies on the ground, upright to the top-down camera only: it is gone before the dive turns over it)
 // C  b38     the riser: the camera dives and flies back down her road to the root, which answers: rings spread from it on every beat, its light grows; white on b41
 import { seg, ss, lerp, sm, easeIn } from '../kit.js';
 
@@ -38,6 +39,6 @@ export default function seq(K) {
       world: { text: 0.6 * low, minPx: lerp(1.9, 1.3, low), halo: 0.3, haloPx: 4, nodeMinPx: lerp(1.5, 1.4, low), flow: 0.25, flowSpeed: -9, canopy: { gain: (0.8 + 2.5 * hit) * (1 - 0.6 * low) }, lights: { gain: lerp(0.5, 1, low), minPx: lerp(1.3, 1, low) }, conn: { gain: lerp(0.3, 0.8, low), halo: 0.0 },
         pulses: t < tHit + 0.1 ? [{ g: pg, width: 2.2, gain: 6 }] : [{ g: W.TF[0] + (t - tHit) * 14, width: 3, gain: 3 * hit }] },
       extra: [beacon(t), ...(rg ? [rg] : []), W.glow([{ x: 0, z: 0, r: 30 + 300 * (1 - hit) * (t >= tHit ? 1 : 0) + 8 * low + 40 * grow, c: [1.6 * hit + 0.5 * grow + 2.5 * flash, 0.75 * hit + 0.26 * grow + 1.4 * flash, 0.3 * hit + 0.1 * grow + 0.8 * flash] }])],
-      type: [K.lyric(6, B2 ? top(t) : top(tC), { mode: 'ground', x: -0.93, y: -0.80, rows: [2, 2], px: 110, out: bar(39), fade: 0.8 })], hud: K.hudMain(t, { count: 1024 }), flash: flash * 0.9 };
+      type: [K.lyric(6, B2 ? top(t) : top(tC), { mode: 'ground', x: -0.93, y: -0.80, rows: [2, 2], px: 110, out: tC - 0.3, fade: 0.35 })], hud: K.hudMain(t, { count: 1024 }), flash: flash * 0.9 };
   } };
 }

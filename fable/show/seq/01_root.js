@@ -28,7 +28,8 @@ export default function seq(K) {
     return { trk, x: m.step_x ?? -side * 0.9, z: (t) => Math.max(0, cast.root(trk, t - tS)[2]), tWk: tS + wf, zWk: m.walk_z0 ?? 0.33, ph: (m.walk_phase_t ?? 0) + (TFK[1] - tS - wf) }; };
   // ---- the little tree: lanes, colours and messages from the world tree's first three levels; geometry nested in a 98 degree fan (never crossing)
   const F = W.almond.F, kids = (i) => { const o = []; for (let j = 1; j < F.roads.length; j++) if (F.roads[j].parent === i) o.push(j); return o; };
-  const LEAF = [-49, -35, -21, -7, 7, 21, 35, 49].map((d) => (d * Math.PI) / 180); const limbs = [];
+  // r2: a 60 degree fan (was 98): at b9 the eight are 12 m abreast, so the frame that holds them all keeps them people (about 20 % of its height)
+  const LEAF = [-30, -21.5, -13, -4.5, 4.5, 13, 21.5, 30].map((d) => (d * Math.PI) / 180); const limbs = [];
   const walkPath = (x, z, h0, h1, len, lc) => { const pts = [[x, z]], ds = 0.05; let s = 0; while (s < len - 1e-6) { const d = Math.min(ds, len - s), h = h0 + (h1 - h0) * sm((s + d / 2) / lc); x += Math.cos(h) * d; z += Math.sin(h) * d; s += d; pts.push([x, z]); } return { pts, x, z, h: h0 + (h1 - h0) * sm(len / lc) }; };
   function grow(wi, depth, lo, hi, st, tA, parent) { const a = (LEAF[lo] + LEAF[hi - 1]) / 2, tB = TFK[depth], wr = W.sets.fork.roads[wi - 1], lane0 = F.roads[wi].lane === 0;
     let pts, gk, sWalk0 = 0, side = 0, w, go = null;
@@ -44,12 +45,17 @@ export default function seq(K) {
   { const ks = kids(0); grow(ks[0], 1, 0, 4, null, tF, null); grow(ks[1], 1, 4, 8, null, tF, null); }
   const R = E.roads(limbs.map((l) => l.def), { step: 0.1, maxGlyphs: 20000 }); limbs.forEach((l, i) => { l.road = R.roads[i]; });
   // a child that carries its parent's lane IS the parent walking on; the other child is the new branch and steps out of her
-  for (const l of limbs) l.heir = !l.parent || l.color === l.parent.color;
+  // (r2: decided by lane VALUE, exactly one heir per fork. It was an array-identity test that never matched, so at b5 and b7 BOTH children stayed hidden
+  //  until they were 3 cm apart: everybody vanished for two to six frames.)
+  const sameCol = (p, q) => Math.abs(p[0] - q[0]) + Math.abs(p[1] - q[1]) + Math.abs(p[2] - q[2]) < 1e-4;
+  for (const l of limbs) l.heir = !l.parent || sameCol(l.color, l.parent.color);
+  for (const l of limbs) if (l.parent) { const sb = limbs.find((q) => q !== l && q.parent === l.parent); if (sb && sb.heir === l.heir) { const first = limbs.indexOf(l) < limbs.indexOf(sb); l.heir = first; sb.heir = !first; } }
   const sibOf = (l) => limbs.find((q) => q !== l && q.parent === l.parent && q.depth === l.depth);
   const posOn = (l, t) => { const a = l.road.at(Math.min(l.road.len - 0.02, l.sWalk0 + vW * Math.max(0, t - l.tA))); return a; };
 
-  const crane = K.camPath([{ t: tF - 0.4, ...rootCam(tF - 0.4) }, { t: bar(4), pos: [-4.5, 1.9, 2.7], target: [3.0, 0.95, -2.0], fov: 35 }, { t: bar(5), pos: [-6.2, 3.1, 2.5], target: [3.8, 0.75, -1.0], fov: 35 },
-    { t: bar(7), pos: [-8.2, 4.9, 1.4], target: [5.6, 0.45, -0.3], fov: 35 }, { t: t1, pos: [-9.6, 6.6, 0.5], target: [7.6, 0.25, 0], fov: 35 }]);
+  // r2 (NOTES_v2): the crane rises less and FOLLOWS them east instead of backing away: 3.9 m from her at frame 0, 9 m from the four at b5, 11 m from the eight at b7, 13 m at b9
+  const crane = K.camPath([{ t: tF - 0.4, ...rootCam(tF - 0.4) }, { t: bar(4), pos: [-4.4, 1.8, 2.6], target: [3.0, 0.95, -1.8], fov: 35 }, { t: bar(5), pos: [-4.9, 2.4, 2.0], target: [3.8, 0.8, -0.5], fov: 35 },
+    { t: bar(7), pos: [-3.7, 3.3, 1.0], target: [7.4, 0.6, -0.1], fov: 35 }, { t: t1, pos: [-2.2, 4.1, 0.3], target: [11.0, 0.5, 0], fov: 35 }]);
   const NODES = limbs.filter((l) => l.depth < 3).map((l) => ({ x: l.end.x, z: l.end.z, t: l.tB, c: l.color }));
 
   return { name: '01_root', t0, t1, frame(t) {
