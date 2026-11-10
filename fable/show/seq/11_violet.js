@@ -117,9 +117,10 @@ export default function seq(K) {
   const LS = E.lights(4);
 
   // ---- D, the sit (203.60 - 210.96). One shot: medium from her right while she lowers herself and looks up; then the camera lifts away.
+  // (M3: the re-baked sit keeps her feet where she stood and puts her seat 0.53 m behind them, so the frame goes back 0.5 m with her: `0.8 - 0.4 * u`.)
   const tLift = T.words(20)[0].start;                                           // "Merge" (208.13): the camera begins to leave
   const shotD = (t) => { const lift = sm(seg(t, tLift, tEnd + 0.35)), l2 = lift * lift, dim = ss(t, tLift - 0.3, tLift + 2.3), u = ss(t, tD + 0.3, tSeated), dr = seg(t, tD, tLift);
-    const camera = { pos: K.rel(fr, 0.8 + 0.1 * u - 4.9 * l2, 3.45 - 0.45 * u - 0.12 * dr + 4 * lift + 23 * l2, 0.92 - 0.27 * u + 1.2 * lift + 5.2 * l2), target: K.rel(fr, 0.8 + 0.1 * u - 0.55 * lift, -0.75 - 8 * lift, 0.9 - 0.3 * u + 1.85 * lift), fov: 35, aperture: 0.008 * (1 - lift) };
+    const camera = { pos: K.rel(fr, 0.8 - 0.4 * u - 4.9 * l2, 3.45 - 0.45 * u - 0.12 * dr + 4 * lift + 23 * l2, 0.92 - 0.27 * u + 1.2 * lift + 5.2 * l2), target: K.rel(fr, 0.8 - 0.4 * u - 0.55 * lift, -0.75 - 8 * lift, 0.9 - 0.3 * u + 1.85 * lift), fov: 35, aperture: 0.008 * (1 - lift) };
     camera.focusDist = Math.hypot(camera.pos[0] - fr.x, camera.pos[1] - 0.8, camera.pos[2] - fr.z);
     who(t);
     const type = [K.lyric(19, camera, { x: 0.12, y: 0.4, rows: [3, 4], dist: 30, px: 80, out: 207.45, fade: 0.5, reflGain: 0.1 })];

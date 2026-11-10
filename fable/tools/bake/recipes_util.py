@@ -234,6 +234,112 @@ def sit_idle():
 
 
 # ----------------------------------------------------------------------------- violet
+def _violet_sit(m, dur, t_seated, debug=False):
+    """The sit that ends the violet take, authored from the last frame of `m` (standing, feet stay where
+    they are): a breath, squats with the arms forward, right hand to the ground beside the hip, lowers
+    the seat onto the ground (on it at t_seated - 0.55), brings both arms round the knees, lifts the
+    chin to the sky, and stays: breath and a slow drift. Returns `dur` seconds; frame 0 = m's last."""
+    P1 = m.fk()[-1]
+    h1 = float(M.heading(m, -1))
+    Q1 = M.rot_y(h1)
+    o1 = np.array([m.root[-1, 0], 0.0, m.root[-1, 2]])
+    W = lambda p: o1 + Q1 @ np.asarray(p, dtype=np.float64)         # body space at the stand -> world
+    D = lambda d: Q1 @ np.asarray(d, dtype=np.float64)
+    feet, fz = {}, 0.0
+    for s in "LR":
+        a, d = P1[J["foot" + s]], m.R[-1, J["toe" + s]][:, 1]
+        feet[s] = ((a[0], a[2]), math.degrees(math.atan2(d[0], d[2])))
+        fz += 0.5 * float((Q1.T @ (a - o1))[2])
+    y0 = float(m.root[-1, 1])
+    seat_y = lambda pitch: 0.075 * math.cos(math.radians(pitch)) + 0.075 + 0.004      # thigh joints rest on the ground
+
+    def body(y, dz, pitch, spine, heel=0.0, dx=0.0, syaw=0.0):
+        p = M.Poser()
+        p.hips(pos=W([dx, y, fz + dz]), yaw=math.degrees(h1), pitch=pitch)
+        p.spine(pitch=spine, yaw=syaw)
+        for s in "LR":
+            p.foot(s, feet[s][0], yaw=feet[s][1], space="world", heel=heel)
+        return p
+
+    def knee(p, s):
+        return p.P()[J["shin" + s]]
+
+    def arm(p, s, wrist, fingers, palm, pole):
+        p.arm(s, wrist, "world", pole=D(pole), pole_space="world", fingers=D(fingers), palm=D(palm), dir_space="world")
+        return p
+
+    def wrap(p, amt=1.0):
+        """Arms round the knees: elbows outside the knees, forearms across the shins, each hand lying
+        on the other forearm (right in front). amt < 1 = on the way there (hands wider, higher)."""
+        kL, kR = knee(p, "L"), knee(p, "R")
+        aL, aR = p.P()[J["footL"]], p.P()[J["footR"]]
+        mid = 0.5 * (kL + kR) * 0.52 + 0.5 * (aL + aR) * 0.48          # a point on the shins, a little below the middle
+        fwd = D([0, 0, 1.0])
+        left = D([1.0, 0, 0])
+        open_ = 1.0 - amt
+        wl = mid + fwd * (0.105 - 0.03 * open_) - left * (0.015 - 0.20 * open_) + np.array([0, 0.015 + 0.10 * open_, 0])
+        wr = mid + fwd * (0.140 - 0.03 * open_) + left * (0.045 - 0.22 * open_) + np.array([0, 0.045 + 0.10 * open_, 0])
+        arm(p, "L", wl, (-1.0, -0.22, 0.10 + 0.5 * open_), (0.1, 0.1, -1.0), (1.0, -0.45, 0.25))
+        arm(p, "R", wr, (1.0, -0.25, 0.05 + 0.5 * open_), (-0.1, 0.1, -1.0), (-1.0, -0.45, 0.25))
+        return p
+
+    k0 = M.Poser(m, m.frames - 1)
+    # a breath out: the shoulders drop, the eyes come down to the ground in front of her
+    k1 = body(y0 - 0.012, -0.012, 3.0, 5.0)
+    for s in "LR":
+        k1.arm_fk(s, raise_=9.0, fwd=10.0, elbow=14.0)
+    k1.look(target=W([0.05, 0.0, fz + 2.2]), space="world")
+    # squat: hips back, chest forward, arms forward for balance
+    k2 = body(0.62, -0.20, 34.0, 16.0)
+    for s in "LR":
+        k2.arm_fk(s, raise_=42.0, fwd=74.0, elbow=38.0)
+    k2.look(target=W([0.0, 0.0, fz + 1.3]), space="world")
+    # deep squat on the balls of the feet; the right hand goes down for the ground, the left rests on the knee
+    k3 = body(0.345, -0.345, 20.0, 24.0, heel=0.03, dx=-0.015, syaw=-9.0)
+    hz = fz - 0.47
+    ground_hand = W([-0.305, 0.045, hz - 0.085])
+    arm(k3, "R", ground_hand + np.array([0, 0.17, 0]) + D([0.02, 0, 0.10]), (-0.45, -0.55, 0.45), (0.2, -1.0, -0.2), (-0.9, 0.1, -0.7))
+    arm(k3, "L", knee(k3, "L") + D([0.035, 0, 0.05]) + np.array([0, 0.085, 0]), (-0.35, -0.3, 1.0), (0, -1.0, 0.2), (1.0, -0.6, 0.0))
+    k3.look(target=W([-0.1, 0.0, fz + 1.0]), space="world")
+    # the seat touches down, weight on the right hand
+    k4 = body(seat_y(-9.0) + 0.012, -0.47, -9.0, 20.0, dx=-0.012, syaw=-7.0)
+    arm(k4, "R", ground_hand, (-0.55, 0.0, 0.55), (0, -1.0, 0), (-0.8, 0.1, -0.8))
+    arm(k4, "L", knee(k4, "L") + D([0.04, 0, 0.06]) + np.array([0, 0.07, 0]), (-0.5, -0.35, 1.0), (0, -1.0, 0.3), (1.0, -0.6, 0.0))
+    k4.look(target=W([0.0, 0.25, fz + 1.6]), space="world")
+    # seated; the right hand leaves the ground and both arms come round the knees
+    k5 = wrap(body(seat_y(-13.0), -0.47, -13.0, 30.0, syaw=-2.0), 0.35)
+    k5.look(target=W([0.0, 0.55, fz + 2.5]), space="world")
+    k6 = wrap(body(seat_y(-15.0), -0.47, -15.0, 35.0), 1.0)
+    k6.look(direction=D([-0.08, 0.22, 1.0]), space="world")       # the head is already coming up as the arms close
+    # the chin lifts: up at the sky, a little to her right; the chest opens with it
+    sky = D([-0.20, 0.62, 1.0])
+    k7 = wrap(body(seat_y(-17.0), -0.47, -17.0, 31.0), 1.0)
+    k7.look(direction=sky, space="world", max_deg=60.0)
+    k8 = wrap(body(seat_y(-17.0), -0.47, -17.0, 32.5), 1.0)       # the sigh: she settles a little, the eyes stay up
+    k8.look(direction=sky, space="world", max_deg=60.0)
+    k9 = wrap(body(seat_y(-17.5), -0.47, -17.5, 32.0), 1.0)
+    k9.look(direction=D([-0.16, 0.66, 1.0]), space="world", max_deg=60.0)
+    ts = t_seated
+    keys = [(0.0, k0), (0.55, k1, "io"), (1.30, k2, "io"), (1.95, k3, "io"), (ts - 0.55, k4, "io"), (ts + 0.12, k5, "io"),
+            (ts + 0.78, k6, "io"), (ts + 1.4, k7, "io"), (ts + 2.6, k8, "io"), (dur + 0.5, k9, "io")]
+    if debug:
+        return keys
+    s = M.keyframes(keys, overlap=0.05, soften=5.0)
+    s = M.plant_hands(s)
+    t = s.times
+    alive = M.ramp(t, ts - 0.2, ts + 1.2)
+    b = 0.5 - 0.5 * np.cos(2 * np.pi * (t - ts) / 4.3)              # slow breaths; the wrapped arms ride on them
+    z = 0 * b
+    s = M.additive(s, "chest", np.stack([-math.radians(2.6) * alive * b, z, z], 1))
+    s = M.additive(s, "spine", np.stack([-math.radians(1.3) * alive * b, z, z], 1))
+    s = M.additive(s, "head", np.stack([math.radians(1.6) * alive * b, z, z], 1))
+    for sd, sg in (("L", 1.0), ("R", -1.0)):
+        s = M.additive(s, "clav" + sd, np.stack([z, z, sg * math.radians(2.6) * alive * b], 1))
+    s = M.drift(s, ["neck", "head"], deg=2.2, period=7.0, seed=11, weight=alive)
+    s = M.drift(s, ["spine"], deg=0.9, period=9.0, seed=5, axes=(0.4, 1.0, 1.0), weight=alive)
+    return M.trim(s, 0.0, dur)
+
+
 @recipe("violet")
 def violet():
     """The lone branch, verse 2, one take (song_t0 = 180.995): runs, slows and stops, looks to her left
@@ -319,19 +425,10 @@ def violet():
     m = M.look_at(m, away, M.ramp(t, T(201.7), T(202.1), T(203.6), t_sit + 0.3), max_deg=95.0)
     m = M.ground_clamp(m, floor=0.0)
 
-    # --- 203.7-206.9: lowers herself to the ground (capture), knees up, arms round the knees; still
-    sit = _sit_down_src()
-    m = M.concat(m, sit, halflife=0.30, lock=True)
-    t_down = m.duration
-    seat = M.concat(_seated_src(), M.trim(_seated_src(), 0.0, 5.9), halflife=0.6, lock=False)
-    m = M.concat(m, seat, halflife=0.42, lock=False, at=t_down - 0.25)
+    # --- 203.7-206.9: lowers herself to the ground with control, knees up, arms round the knees, chin
+    #     lifting to the sky; then still but breathing (authored: M3, fable/notes/M3_motionfix.md)
+    m = M.concat(m, _violet_sit(m, 30.0 - t_sit, T(206.9) - t_sit), halflife=0.25, align=False, lock=False)
     m = M.trim(m, 0.0, 30.0)
-    t = m.times
-    # she looks up, and stays that way
-    up = M.ramp(t, T(206.2), T(207.6))
-    m = M.additive(m, "neck", np.stack([-math.radians(12.0) * up, 0 * up, 0 * up], 1))
-    m = M.additive(m, "head", np.stack([-math.radians(22.0) * up, 0 * up, 0 * up], 1))
-    m = M.additive(m, "chest", np.stack([-math.radians(5.0) * up, 0 * up, 0 * up], 1))
     m = M.ground_clamp(M.rest_on_ground(m), floor=0.0)
     ev = [(t_stop, "stop"), (T(190.8), "look"), (T(195.98), "pencil"), (t_w0, "write_start"),
           (T(197.12), "stroke"), (t_w1, "write_end"), (T(201.865), "release"), (t_sit, "sit_start"), (T(206.9), "seated")]
