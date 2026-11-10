@@ -37,7 +37,7 @@ export default function seq(K) {
       { t0: bar(20), f: (tt, u) => { // B: wide truck
         const camera = { pos: K.rel(a, 1.5, -6.4, 1.35), target: K.rel(a, 2.3, 40, 1.0), fov: 35, focusDist: 6.6, aperture: 0.07 };
         cast.actor('hero').set({ pos: [hero.x, 0, hero.z], yaw: K.yawOf(a), track: 'walk', time: t });
-        return { camera, world: { text: 0.8, flow: 0.12 }, type: [K.lyric(2, camera, { x: -0.9, y: 0.30, rows: [3, 4], dist: 40 })], hud: K.hudMain(t, { count: 1024 }) }; } },
+        return { camera, world: { text: 0.8, flow: 0.12, lights: { gain: 0.55 } }, type: [K.lyric(2, camera, { x: -0.9, y: 0.30, rows: [3, 4], dist: 40 })], hud: K.hudMain(t, { count: 1024 }) }; } },
       { t0: bar(25), f: () => { // C: the release
         const camera = { pos: K.rel(a, -3.4, -1.6, 1.4), target: K.rel(a, 14, 1.0, 0.9), fov: 35, focusDist: 3.7, aperture: 0.05 };
         const acc = W.tSent; const reach = ss(t, acc - 1.6, acc - 0.1) * (1 - 0.6 * ss(t, acc + 1.2, acc + 3)); const pop = t >= acc ? Math.exp(-(t - acc) * 2.2) : 0;

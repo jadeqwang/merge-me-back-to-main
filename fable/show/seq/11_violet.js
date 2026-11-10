@@ -34,7 +34,7 @@ export default function seq(K) {
         // the written line: 0.9 m, chest height, left to right as seen by this camera (she writes it across herself)
         const line = { text: VIOLET.last, raw: true, font: 'mono', size: 0.074, pos: K.rel(fr, 0.42, 0.3, 1.22), right: [fr.tx, 0, fr.tz], up: [0, 1, 0], align: 'left', color: '#C9B3FF', gain: 2.4, t0: 196.4, wipe: true, wipeDur: 1.45, stagger: 1.48, reflGain: 0.5 };
         return { camera, env: night, world, type: [line, K.lyric(18, camera, { x: -0.06, y: 0.34, rows: [3, 3], dist: 30, out: tGo, fade: 0.2 })], hud: hud(t) }; } },
-      { t0: tGo, f: (tt, u) => { const fr = { x: p.x, z: p.z, tx: endDir.tx, tz: endDir.tz }; const camera = { pos: K.rel(fr, -4.6 - 8 * sm(u), 2.6 + 2.5 * u, 1.5 + 4.2 * sm(u)), target: K.rel(fr, 5, -1.6, 1.0), fov: 35, focusDist: 6 + 9 * u, aperture: 0.02 };
+      { t0: tGo, f: (tt, u) => { const fr = { x: p.x, z: p.z, tx: endDir.tx, tz: endDir.tz }; const camera = { pos: K.rel(fr, -4.4 - 3.6 * sm(u), 2.4 + 1.4 * u, 1.5 + 1.9 * sm(u)), target: K.rel(fr, 3, -1.3, 0.95), fov: 35, focusDist: 5 + 4 * u, aperture: 0.02 };
         const sit = sm(seg(t, 203.4, 206.9)); const still = ss(t, 206.9, t1);
         who(t, { pos: [p.x, 0, p.z], yaw: K.yawOf(fr), squat: sit, reach: 0.5 * (1 - ss(t, tGo, tGo + 1.5)), density: lerp(1, 0.22, still) });
         return { camera, env: { ...night, dawn: 0.085 + 0.02 * u }, world, extra: [K.shared.lightDraw(t)], type: [K.lyric(19, camera, { x: -0.9, y: 0.30, rows: [3, 4], dist: 30 })], hud: { ...hud(t), ctx: 1 } }; } },

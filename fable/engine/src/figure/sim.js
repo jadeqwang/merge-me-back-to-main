@@ -122,7 +122,7 @@ export function simulate(track, body, opts = {}) {
         const a = nb[q][0], b2 = nb[q][1], r = nbRest[q];
         for (let n = Math.max(pinN[a], pinN[b2]); n < N; n++) { const i = (a * N + n) * 3, j = (b2 * N + n) * 3, dx = hx[i] - hx[j], dy = hx[i + 1] - hx[j + 1], dz = hx[i + 2] - hx[j + 2], d = Math.sqrt(dx * dx + dy * dy + dz * dz); if (d > r[n]) { const k = (d - r[n]) / d * 0.25; hx[i] -= dx * k; hx[i + 1] -= dy * k; hx[i + 2] -= dz * k; hx[j] += dx * k; hx[j + 1] += dy * k; hx[j + 2] += dz * k; } }
       }
-      for (let g = 0; g < G; g++) { const b = g * N * 3, pad = 0.004 + 0.005 * (guides[g].layer || 0); for (let n = pinN[g]; n < N; n++) collide(HC, hx, hp, b + n * 3, pad, 0.2); }
+      for (let g = 0; g < G; g++) { const b = g * N * 3, pad = 0.004 + 0.005 * (guides[g].layer || 0); for (let n = pinN[g]; n < N; n++) { const i = b + n * 3; collide(HC, hx, hp, i, pad, 0.2); if (!water && hx[i + 1] < 0.012 + 0.004 * (guides[g].layer || 0)) { hx[i + 1] = 0.012 + 0.004 * (guides[g].layer || 0); hp[i] += (hx[i] - hp[i]) * 0.5; hp[i + 2] += (hx[i + 2] - hp[i + 2]) * 0.5; } } }   // the floor (prone, seated, rolling) with friction
     }
     // ---- straps ----
     for (let s = 0; s < N_STRAPS; s++) {

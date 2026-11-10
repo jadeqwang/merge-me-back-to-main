@@ -10,7 +10,7 @@ void main(){
   vec4 p = uVP * vec4(iPos, 1.);
   float dist = max(p.w, 1e-3);
   float r0 = iRad * uProjK / dist;                                   // true projected radius, px
-  float coc = uAperture * abs(1./uFocus - 1./dist) * uRes.y;         // SPEC: coc_px = aperture*|1/focus - 1/dist|*H
+  float coc = min(uAperture * abs(1./uFocus - 1./dist) * uRes.y, 0.04*uRes.y);   // SPEC: coc_px = aperture*|1/focus - 1/dist|*H (capped: a light brushing the lens must not fill the frame)
   float r = max(sqrt(r0*r0 + coc*coc), uMinPx);
   float e = (r0*r0)/(r*r);                                           // energy conservation
   float graze = smoothstep(0.0, 0.10, uCamY/dist);

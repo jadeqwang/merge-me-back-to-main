@@ -1,23 +1,22 @@
 {
  "branch": "fable/merge",
- "total": 46,
- "head": "811cc79",
+ "total": 56,
+ "head": "8b0c4d4",
  "generated": "2026-11-10",
  "lines": [
-  "* 811cc79 (HEAD -> fable/merge) fable F3: notes: director's review and rework plan",
-  "* c9efd7f (origin/fable/merge) fable cut: choreography spec (performances pinned to song times), RESUME checkpoint 2",
+  "* 8b0c4d4 (HEAD -> fable/merge) fable F1: show kit (world, cast stand-ins, formation), 16 sequences, engine fixes (monotone camPath, sunrise, glows, overlay) - animatic work in progress",
+  "* 1bd9af4 (origin/fable/merge) fable cut: RESUME checkpoint 3 (figure in engine, performances baked)",
+  "* 765c3bb fable F3: figure in the real engine (figtest show), sky-sampled rim, water hair, hems draw in at rest, night light tuned in-engine",
+  "* 2c04e99 fable M2: choreography polish (free-leg kicks, straight dive, stuck landing, dead-still fall), review movies, notes",
+  "* 474a969 fable F3: one shading model lit by the world (night/blue hour/sunrise/day), black hair with sheen, parted mass, bigger trouser sail, fine fibres",
+  "* ce027ae fable M2: build + drop choreography (pose builder, song-time timeline, five tracks), first pass",
+  "* 6f630ce fable M1: free, the nine lives, plant_hands + despike, pins measured; notes",
+  "* afdd404 fable spec: one lit-cel figure, lighting carries the arc (glyph-particle night material rejected)",
+  "* 778e216 fable F3: rework: skinned mesh from lofts, cloth-lite trousers, fibres for light mode, hair guide grid, cel face",
+  "* cb844fd fable M1: pose authoring in the motion library; utility performances (violet, sprint_stop_look, float, rise, release, catch, forks, land, sit_idle)",
+  "* 811cc79 fable F3: notes: director's review and rework plan",
+  "* c9efd7f fable cut: choreography spec (performances pinned to song times), RESUME checkpoint 2",
   "* d8759ca fable F2: phase-1 fixes after preview review (recovered from the interrupted agent)",
-  "* 2d1fb7a fable F3: adopt the motion library rest pose, hair combing + volume, eyes, patch text, notes",
-  "* f6577df fable F1: final look-dev stills settings, timings in the resume note",
-  "* 7ba272d fable F2: motion library (retarget, edit ops, IK, cycles, events), phase-1 recipes, previews, validation",
-  "* 4934033 fable F1: render harness, engine core and world (sky, mirror, roads, lights, type, HUD) + look-dev show",
-  "* 6361fa6 fable F3: figure module (skeleton, body template, sim, instanced renderer) + lab",
-  "* 72d5835 fable cut: RESUME (state, next steps, drop plan) for interruption-safe handoff",
-  "* 29e701a fable cut: mocap tooling (BVH parser, previews, catalogue), spec: track + drawable contracts",
-  "* c42b332 fable cut: director's spec (the graph is a land, east is time, dawn is at HEAD)",
-  "*   54bf08e Merge remote-tracking branch 'origin/claude/wonderful-mccarthy-f90kll' (CLOUD_HANDOFF start-here) into the frozen-frame + fork-tree fixes",
-  "|\\",
-  "| * 6f07f96 docs: CLOUD_HANDOFF \"start here\" for the next instance (Jade flying, v5a render pending, cloud findings)",
-  "* | 8964e4e docs: frozen-frame + fork-tree fixes (run sheet 1.1: each held frame and its fix, eyeball ranges, edl_check after picks.py)"
+  "* 2d1fb7a fable F3: adopt the motion library rest pose, hair combing + volume, eyes, patch text, notes"
  ]
 }

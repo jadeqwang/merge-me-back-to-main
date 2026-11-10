@@ -7,7 +7,7 @@ import { rootCam, ROOT_YAW } from './01_root.js';
 
 export default function seq(K) {
   const { bar, world: W, cast, T } = K; const t0 = bar(153), t1 = T.duration; const log = K.gitlog; const beat = 60 / 138;
-  const LINES = log.lines.slice(0, 7).map((l) => (l.length > 62 ? l.slice(0, 61) + '…' : l));
+  const LINES = log.lines.slice(0, 7).map((l) => (l.length > 58 ? l.slice(0, 57) + '…' : l));
   // script: [time, kind, text]. kind 'cmd' is typed character by character; 'out' appears at once.
   const S = [[t0 + 0.05, 'cmd', 'git log --oneline --graph']]; LINES.forEach((l, i) => S.push([t0 + 1.0 + i * beat, 'out', l]));
   const tA = t0 + 1.0 + LINES.length * beat + 1.3; S.push([tA, 'cmd', 'git checkout main'], [tA + 1.5, 'out', "Switched to branch 'main'"], [tA + 2.8, 'cmd', 'git merge ' + log.branch]);
@@ -17,7 +17,7 @@ export default function seq(K) {
     const tau = t - t1; const camera = rootCam(tau);
     cast.actor('hero').set({ pos: [0, 0, 0], yaw: ROOT_YAW, track: 'idle', time: tau });
     const a = (1 - ss(t, tOut0, tOut1));
-    const overlay = (g, Wp, Hp) => { const s = Hp / 1080; if (a <= 0) return; g.save(); g.globalAlpha = a; const fs = 27 * s, lh = 40 * s; let y = 200 * s; const x = 110 * s;
+    const overlay = (g, Wp, Hp) => { const s = Hp / 1080; if (a <= 0) return; g.save(); g.globalAlpha = a; const fs = 30 * s, lh = 44 * s; let y = 190 * s; const x = 100 * s;
       g.font = `500 ${fs}px "JetBrains Mono"`; g.textBaseline = 'alphabetic';
       let cur = null;
       for (const [ts, kind, txt] of S) { if (t < ts) break; if (kind === 'cmd') { const n = Math.min(txt.length, Math.floor((t - ts) / 0.045)); g.fillStyle = 'rgba(255,122,26,0.95)'; g.fillText('$', x, y); g.fillStyle = 'rgba(255,241,214,0.96)'; g.fillText(txt.slice(0, n), x + fs * 1.2, y); cur = [x + fs * 1.2 + g.measureText(txt.slice(0, n)).width + 4 * s, y]; y += lh; }

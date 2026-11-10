@@ -14,7 +14,7 @@ import { J, REST_POS, toLocal, dirToLocal } from './skeleton.js';
 
 export const PART = { SKIN: 0, HAIR: 1, JACKET: 2, STRIPE: 3, TOP: 4, TROUSER: 5, STRAP: 6, SHOE: 7, PHONE: 8, PATCH: 9, DOT: 10, TEXT: 11, PENCIL: 12, BUN: 13, BELT: 14, SOLE: 15, EYE: 16, POCKET: 17, PHONEBLK: 18, ERASER: 19, LEAD: 20, PTEXT: 21 };
 export const HAIR = { COLS: 14, LAYERS: 4, G_BACK: 56, G_LOCK: 4, G_SHORT: 4, G: 64, NODES: 14 };
-export const LEG = { NODES: 8, K: [1, 0.6, 0.2, 0.05, 0.015, 0.006, 0.003, 0.003] };
+export const LEG = { NODES: 8, K: [1, 0.8, 0.5, 0.3, 0.1, 0.03, 0.008, 0.004] };
 export const VSTRIDE = 20, FSTRIDE = 28, TILE = 512;
 
 class Loft {
@@ -124,7 +124,7 @@ export function buildBody(opts = {}) {
   loft(new Loft([R3(0.86, 0.194, 0.130, 0.004), R3(0.92, 0.184, 0.130, 0.004), R3(0.98, 0.166, 0.122, 0.003), R3(1.03, 0.148, 0.110, 0.002), R3(1.06, 0.132, 0.098, 0.002), R3(1.092, 0.126, 0.094, 0.002)]),
     { nu: 44, nv: 10, region: 6, fibres: 0.0036, part: (u, v, P) => (P[1] > 1.058 ? PART.BELT : PART.TROUSER),
       bones: (P) => { const w = smooth(0.95, 0.86, P[1]) * 0.55; return w > 0 ? { a: J.hips, b: P[0] > 0 ? J.thighL : J.thighR, w } : { a: J.hips }; } });
-  const LEGR = [[0.95, 0.092, 0.095, 0.120], [0.82, 0.110, 0.108, 0.138], [0.69, 0.128, 0.121, 0.158], [0.56, 0.146, 0.134, 0.180], [0.43, 0.164, 0.148, 0.204], [0.30, 0.182, 0.163, 0.230], [0.165, 0.199, 0.180, 0.254], [0.03, 0.215, 0.196, 0.275]];   // hem 0.39 wide x 0.55 deep: drama wins
+  const LEGR = [[0.95, 0.092, 0.095, 0.118], [0.82, 0.100, 0.103, 0.122], [0.69, 0.106, 0.104, 0.120], [0.56, 0.112, 0.104, 0.120], [0.43, 0.122, 0.110, 0.130], [0.30, 0.140, 0.130, 0.162], [0.165, 0.164, 0.160, 0.208], [0.03, 0.188, 0.192, 0.252]];   // fitted-baggy through thigh and knee (stances must read), then a bell: hem 0.38 wide x 0.50 deep at full flare
   const legs = [];
   for (const side of [1, -1]) {
     const c = side > 0 ? 0 : 1, th = side > 0 ? J.thighL : J.thighR, sn = side > 0 ? J.shinL : J.shinR, ft = side > 0 ? J.footL : J.footR, toe = side > 0 ? J.toeL : J.toeR;

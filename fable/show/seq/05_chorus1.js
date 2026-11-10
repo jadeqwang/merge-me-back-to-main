@@ -37,7 +37,7 @@ export default function seq(K) {
         return { camera, world: { text: 0.8, flow: 0.15 }, extra: k > 0 ? [W.glow([{ x: hero.x, z: 0, r: 1.5 + 2 * k, c: [1.0 * (1 - k), 0.55 * (1 - k), 0.3 * (1 - k)] }])] : [],
           type: [K.lyric(9, camera, { font: 'hook', x: -0.92, y: 0.36, rows: [2, 2], dist: 34 }), K.lyric(10, camera, { font: 'hook', x: -0.92, y: 0.28, rows: [2, 2, 3], dist: 34 })], hud: K.hudMain(t, { count: 1 }) }; } },
       { t0: tD, f: (tt, u) => {
-        const x = hero.x; const camera = { pos: [x + 4.2 - 0.4 * u, 1.35 + 1.4 * sm(u), 2.3], target: [x - 6, 1.15 + 0.2 * u, -2.2], fov: 35, focusDist: 4.8, aperture: 0.045 };
+        const x = hero.x; const camera = { pos: [x + 4.2 - 0.4 * u, 1.2 + 1.0 * sm(u), 2.3], target: [x - 6, 2.3 + 0.5 * u, -2.2], fov: 35, focusDist: 4.8, aperture: 0.045 };
         const turn = sm(seg(t, 91.8, 93.0));
         cast.actor('hero').set({ pos: [x, 0, 0], yaw: Math.PI / 2 + turn * 2.6, track: 'idle', time: t });
         // the commits light up in the order they were made

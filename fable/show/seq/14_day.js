@@ -8,7 +8,7 @@ export default function seq(K) {
   const { bar, bb, world: W, cast } = K; const t0 = bar(137), t1 = bar(149), C = W.CATCH; const cx = C[0] + 8;
   const O = W.sets.out.roads; const lim1 = O.filter((r) => r.def.depth === 1);
   // her free movement near the fork point (stand-in for the `free` track): a wandering loop, a leap on b141, then she stops and faces east for the second "Back to main"
-  const heroAt = (t) => { const tau = t - t0; const k = 1 - ss(t, 248.2, 249.44); return { x: cx - 2 + (3.2 * Math.sin(tau * 0.55) + 1.2 * Math.sin(tau * 1.3)) * k, z: (2.6 * Math.sin(tau * 0.8 + 1) + 0.8 * Math.sin(tau * 1.9)) * k }; };
+  const heroAt = (t) => { const tau = t - t0; const k = 1 - ss(t, 248.2, 249.44); return { x: cx - 2 + (1.3 * Math.sin(tau * 0.55) + 0.5 * Math.sin(tau * 1.3)) * k, z: (1.1 * Math.sin(tau * 0.8 + 1) + 0.4 * Math.sin(tau * 1.9)) * k }; };
   const bell = (t, tb, w) => { const x = (t - tb) / w; return Math.abs(x) < 1 ? 1 - x * x : 0; };
   // people who step out of her on each fork and run off along the new roads (at most 6 per fork are given bodies; the rest are their roads)
   const RUN = []; W.TO.slice(0, 5).forEach((tf, d) => { const n = Math.min(1 << d, 6); for (let j = 0; j < n; j++) { const r = O.filter((q) => q.def.depth === d + 1 && q.def.lane !== 0)[j % Math.max(1, O.filter((q) => q.def.depth === d + 1 && q.def.lane !== 0).length)]; RUN.push({ tf, r, j, d }); } });
@@ -22,15 +22,16 @@ export default function seq(K) {
     cr.n = n; return h; }
   const day = { outline: { strength: 1, width: 1.3 } };
   const world = { text: 0.9, minPx: 2.4, haloPx: 0 };
+  const soft = (t) => { let x = 0, z = 0; for (let j = -4; j <= 4; j++) { const p = heroAt(t + j * 0.35); x += p.x; z += p.z; } return { x: x / 9, z: z / 9 }; };   // where she roughly is (the camera does not chase every step)
   return { name: '14_day', t0, t1, frame(t) {
-    const h = people(t); const n = W.outCount(t);
+    const h = people(t); const n = W.outCount(t); const c = soft(t);
     return K.cut(t, [
-      { t0, f: (tt, u) => { const camera = { pos: [cx - 9.5 + 1.2 * u, 1.45, 5.2 - 1.0 * u], target: [cx + 4, 1.1, -2.2], fov: 35, far: 40000 };
-        return { camera, env: day, world, type: [K.lyric(24, camera, { font: 'hook', x: -0.9, y: 0.36, rows: [1, 2], px: 120, dist: 60, out: bar(138.6) })], hud: K.hudMain(t, { count: n }), flash: 0.5 * Math.exp(-(t - t0) * 5) }; } },
-      { t0: bar(141), f: (tt, u) => { const camera = { pos: [cx - 7.5, 0.55 + 0.3 * u, -4.2 + 1.0 * u], target: [cx + 3, 1.75, 1.6], fov: 37, far: 40000 };
+      { t0, f: (tt, u) => { const camera = { pos: [c.x - 5.4 + 0.5 * u, 1.4, c.z + 3.2], target: [c.x + 2.0, 1.0, c.z - 1.6], fov: 35, far: 40000 };
+        return { camera, env: day, world, type: [K.lyric(24, camera, { font: 'hook', x: -0.9, y: 0.24, rows: [1, 2], px: 104, dist: 60, out: bar(138.6) })], hud: K.hudMain(t, { count: n }), flash: 0.5 * Math.exp(-(t - t0) * 5) }; } },
+      { t0: bar(141), f: (tt, u) => { const camera = { pos: [c.x - 4.6, 0.5 + 0.2 * u, c.z - 2.8], target: [c.x + 1, 1.55, c.z + 0.8], fov: 38, far: 40000 };
         return { camera, env: day, world, hud: K.hudMain(t, { count: n }) }; } },
-      { t0: bar(145), f: (tt, u) => { const e = sm(u); const camera = { pos: [cx - 12 - 150 * e * e, 2.2 + 130 * e, 6 + 30 * e], target: [cx + 6 + 150 * e, 1.0 - 1.0 * e, -1], fov: 35, far: 40000 };
-        return { camera, env: day, world: { ...world, minPx: lerp(2.4, 2.0, e) }, type: [K.lyric(25, camera, { font: 'hook', x: -0.9, y: 0.42, rows: [1, 2], px: 110, dist: 80 })], hud: K.hudMain(t, { count: n }) }; } },
+      { t0: bar(145), f: (tt, u) => { const e = sm(u); const camera = { pos: [cx - 9 - 90 * e, 2.0 + 85 * e, 4.5 + 8 * e], target: [cx + 30 + 230 * e, 0.8 * (1 - e), 0], fov: 35, far: 40000 };
+        return { camera, env: day, world: { ...world, minPx: 2.2, widthScale: lerp(1, 34, e) }, type: [K.lyric(25, camera, { font: 'hook', x: -0.9, y: 0.24, rows: [1, 2], px: 100, dist: 80 })], hud: K.hudMain(t, { count: n }) }; } },
     ], t1);
   } };
 }
