@@ -5,7 +5,7 @@
 //   const R = engine.roads([{ pts:[[x,z],...], color:'#FF7A1A'|[r,g,b] linear, text:'COMMIT MESSAGE', g:[g0,g1] | gs:[equally spaced in arc length] | gk:[[u,g],...],
 //                             width: 0.07 (m, half-width of the core), textSize: 0.42 (em, m), textSide: 1|-1, flip: false, repeat: true, textStart, textOff, textGap,
 //                             nodes:[{u:0..1 | s:metres, r:0.35}], smooth: true }], { step, maxGlyphs });
-//   R.drawable({ head, ink, gain, textGain, minPx, widthScale, halo, haloPx, headGain, headLen, pulses:[{g, width, gain}], flow, flowSpeed (negative = toward s=0) })  -> drawable for the 'ground' pass
+//   R.drawable({ head, ink, gain, textGain, minPx, widthScale, halo, haloPx, headGain, headLen, pulses:[{g, width, gain}], flow, flowSpeed (negative = toward s=0), nodeAir (m; 0 = off) })  -> drawable for the 'ground' pass
 //   R.roads[i].at(s) -> {x,z,tx,tz};  .len;  .gAt(s);  .sAtG(g)   (place a runner where the road is being written)
 import { Program, FS_HEAD, canvasTex, hex } from './glx.js';
 import { setFont } from './type.js';
@@ -110,13 +110,15 @@ void main(){
 }`;
 const VS_NODE = `#version 300 es
 layout(location=0) in vec2 iPos; layout(location=1) in float iG; layout(location=2) in vec3 iCol; layout(location=3) in float iR;
-uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uNodeMinPx;
-out vec2 vC; out float vG, vR; out vec3 vCol;
+uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uNodeMinPx, uNodeCamY, uNodeAir;
+out vec2 vC; out float vG, vR, vAir; out vec3 vCol;
 void main(){ vec2 c = vec2(float(gl_VertexID&1), float((gl_VertexID>>1)&1))*2.-1.; vC = c;
   vec4 p = uVP*vec4(iPos.x, 0., iPos.y, 1.); float r = max(iR*uProjK/max(p.w, 1e-3), uNodeMinPx); vR = r;
+  // opts.nodeAir (metres; 0 = off, the default): night air for commit nodes seen at a grazing angle, as fogDist does for the lines (thousands of far nodes stack into a hot line on the horizon)
+  vAir = uNodeAir > 0. ? mix(exp(-abs(p.w)/uNodeAir), 1., smoothstep(0.0, 0.10, uNodeCamY/max(abs(p.w), 1e-3))) : 1.;
   p.xy += c*(r + 1.5)*2./uRes*p.w; vG = iG; vCol = iCol; gl_Position = p; }`;
 const FS_NODE = FS_HEAD + COMMON + `
-in vec2 vC; in float vG, vR; in vec3 vCol; out vec4 o;
+in vec2 vC; in float vG, vR, vAir; in vec3 vCol; out vec4 o;
 void main(){
   float vis = step(vG, uHead); if (vis <= 0.) discard;
   float d = length(vC)*(vR + 1.5);
@@ -126,7 +128,7 @@ void main(){
   float hole = smoothstep(ri + 0.75, ri - 0.75, d) * ring;
   float pop = exp(-max(uHead - vG, 0.)/0.35) * mix(3.0, 1.6, ring);        // a commit lands: it flashes, then settles
   float a = disc - hole*0.9;
-  vec3 em = mix(vCol, vec3(1.), 0.25) * uGain * (mix(1.6, 0.75, ring) + pop);
+  vec3 em = mix(vCol, vec3(1.), 0.25) * uGain * (mix(1.6, 0.75, ring) + pop) * vAir;
   o = vec4(em*a*(1.-uInk) + inkOf(vCol)*a*uInk, a*uInk);
 }`;
 
@@ -187,7 +189,7 @@ export class Roads {
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       gl.bindVertexArray(self.lineVao); self.pLine.use().set({ ...common, uFogDist: o.fogDist ?? 260, uCalm: (o.calm ?? 1) * (1 - ink), uCamY: Math.abs(ctx.camPos[1]), uWidthScale: o.widthScale ?? 1, uMinPx: o.minPx ?? 1.3, uHaloPx: o.haloPx ?? 5, uHalo: o.halo ?? 0.22 }); gl.drawElements(gl.TRIANGLES, self.ni, gl.UNSIGNED_INT, 0);
       if (self.ng && (o.textGain ?? 1) > 0) { gl.bindVertexArray(self.glyphVao); self.pGlyph.use().set({ ...common, uT: self.atlas.tex, uCell: self.atlas.cellEm, uAtlas: [self.atlas.cols, self.atlas.rows, self.atlas.uv[0], self.atlas.uv[1]], uTextGain: o.textGain ?? 0.8 }); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, self.ng); }
-      if (self.nn) { gl.bindVertexArray(self.nodeVao); self.pNode.use().set({ ...common, uNodeMinPx: o.nodeMinPx ?? 1.8 }); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, self.nn); }
+      if (self.nn) { gl.bindVertexArray(self.nodeVao); self.pNode.use().set({ ...common, uNodeMinPx: o.nodeMinPx ?? 1.8, uNodeCamY: Math.abs(ctx.camPos[1]), uNodeAir: o.nodeAir ?? 0 }); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, self.nn); }
       gl.bindVertexArray(null);
     } };
   }

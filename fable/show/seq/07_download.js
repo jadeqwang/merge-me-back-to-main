@@ -26,7 +26,7 @@ export default function seq(K) {
     const warm = [1.0, 0.56, 0.24], gl = 0.3 + 0.7 * leap + 0.15 * kick + 2.4 * roll * roll;
     return { camera, env: { dawn: dawnAt(t), grade: { bloom: 0.62 + 0.3 * leap + 0.5 * roll, exposure: 1.5 + 0.25 * leap }, ground: { ripple: 0.014 + 0.05 * (1 - up) + 0.03 * leap },
         figLight: { under: 0.75, emissive: 3.0 + 1.0 * leap + 2 * roll, fibres: 3.0 } },
-      world: { text: 0.6, flow: 0.25, flowSpeed: 6, fogDist: 110, lights: { gain: 0.6, air: 200, clear: [[sx, 0, 8]] }, main: { head: G.headAtX(F.feetX), fogDist: 260 } },
+      world: { text: 0.6, flow: 0.25, flowSpeed: 6, fogDist: 110, ...Object.fromEntries(['fork', 'merge', 'conn', 'named', 'art', 'violet'].map((k) => [k, { nodeAir: 100 }])), lights: { gain: 0.6, air: 200, clear: [[sx, 0, 8]] }, main: { head: G.headAtX(F.feetX), fogDist: 260 } },
       extra: [W.glow([{ x: sx, z: 0, r: 2.2 + 2.5 * leap + 8 * roll, c: warm.map((c) => c * gl) }]),
         F.drawFil(t, { gain: 1.6 }), F.draw(t, { pulses: pulses.map((q) => ({ ...q, gain: q.gain * (0.35 + 0.65 * roll) })), gain: 0.9 + 1.2 * leap + 0.9 * roll, flow: 0.4, flowSpeed: -(12 + 14 * roll), textGain: 0.6, halo: 0.12, minPx: 1.1, fogDist: 70 + 400 * roll })],
       hud: K.hudMain(t, { count: 1 }), flash: flash + 0.16 * leap * (t - tLeap < 0.5 ? 1 : 0) };

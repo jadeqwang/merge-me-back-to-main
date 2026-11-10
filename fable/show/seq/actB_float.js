@@ -14,22 +14,24 @@ export function actBFloat(K) {
   const gOfR = (r) => { if (r <= RG[0][0]) return RG[0][1]; for (let i = 0; i < RG.length - 1; i++) if (r <= RG[i + 1][0]) return lerp(RG[i][1], RG[i + 1][1], (r - RG[i][0]) / (RG[i + 1][0] - RG[i][0])); return RG[RG.length - 1][1]; };
   const lives = W.lives, defs = [], fdefs = [], NS = 30, M = 9, cream = [0.62, 0.55, 0.50];
   // one limb: from radius r0 at angle a0 out to r1, turning by da, wandering by wob (rad). Returns the end angle and radius.
+  // o.gm(r, u): its own clock (the filaments are ragged: each creeps out at its own pace; the first limbs leave their fork exactly on "Branch")
   const limb = (r0, a0, r1, da, wob, o) => { const pts = [], gs = [], seed = Math.floor(rnd() * 1e5); let a = a0;
-    for (let i = 0; i <= M; i++) { const u = i / M, r = r0 + (r1 - r0) * u; a = a0 + da * u + wob * fbm1(u * 2.4 + 0.2, seed, 2) * u * (1.3 - 0.3 * u); pts.push([H[0] + Math.cos(a) * r, H[1] + Math.sin(a) * r]); gs.push(gOfR(r)); }
+    for (let i = 0; i <= M; i++) { const u = i / M, r = r0 + (r1 - r0) * u; a = a0 + da * u + wob * fbm1(u * 2.4 + 0.2, seed, 2) * u * (1.3 - 0.3 * u); pts.push([H[0] + Math.cos(a) * r, H[1] + Math.sin(a) * r]); gs.push(o.gm ? o.gm(r, u) : gOfR(r)); }
     (o.fil ? fdefs : defs).push({ pts, gs, textSide: -1, ...o }); return a; };
   for (let s = 0; s < NS; s++) {
     const a0 = ((-93 + (186 * (s + 0.5)) / NS + 2.5 * (rnd() - 0.5)) * Math.PI) / 180;
-    const a1 = limb(0.3, a0 * 0.93, 1.6, a0 * 0.07, 0.05, { color: cream, width: 0.0016, step: 0.05, fil: 1 });        // the filament: out of the hair
-    for (const k of [-1, 1]) { const b0 = a0 * 0.93 + k * (0.035 + 0.02 * rnd()); limb(0.3 + 0.1 * rnd(), b0, 1.6, a1 - b0, 0.03, { color: cream, width: 0.0012, step: 0.05, fil: 1 }); }   // a lock of three gathers into each strand
+    const rf = 1.25 + 0.95 * rnd(), creep = (p, d) => (r, u) => 97.6 + d + (102.3 - 97.6 - d) * Math.pow(u, p);          // the fork is 1.25-2.2 m from her crown: no ring
+    const a1 = limb(0.3, a0 * 0.93, rf, a0 * 0.07, 0.16, { color: cream, width: 0.0016, step: 0.04, fil: 1, gm: creep(0.75 + 0.7 * rnd(), 0.5 * rnd()) });        // the filament: out of the hair
+    for (const k of [-1, 1]) { const b0 = a0 * 0.93 + k * (0.035 + 0.03 * rnd()); limb(0.3 + 0.12 * rnd(), b0, rf, a1 - b0, 0.12, { color: cream, width: 0.0012, step: 0.04, fil: 1, gm: creep(0.7 + 0.9 * rnd(), 0.9 * rnd()) }); }   // a lock of three gathers into each strand
     for (const s1 of [-1, 1]) { const li = (s * 2 + (s1 > 0 ? 1 : 0)) % lives.length, L = lives[li], col = W.col(L.lane), txt = L.name + '  ' + L.text;
-      const r2 = 4.2 + 0.9 * rnd(), a2 = limb(1.6, a1, r2, s1 * (0.05 + 0.03 * rnd()), 0.06, { color: col, width: 0.006, step: 0.1, nodes: [{ u: 0, r: 0.03 }] });
+      const r2 = 4.2 + 0.9 * rnd(), a2 = limb(rf, a1, r2, s1 * (0.05 + 0.03 * rnd()), 0.06, { color: col, width: 0.006, step: 0.1, nodes: [{ u: 0, r: 0.03 }], gm: (r, u) => gOfR(1.62 + (r2 - 1.62) * u) });
       for (const s2 of [-1, 1]) { const r3 = 10 + 2.2 * rnd(), a3 = limb(r2, a2, r3, s2 * (0.035 + 0.02 * rnd()), 0.09, { color: col, width: 0.01, step: 0.15, text: txt, textSize: 0.2, nodes: [{ u: 0, r: 0.06 }] });
         for (const s3 of [-1, 1]) { const r4 = 24 + 5 * rnd(), a4 = limb(r3, a3, r4, s3 * (0.02 + 0.012 * rnd()), 0.11, { color: col, width: 0.016, step: 0.3, text: txt, textSize: 0.34, nodes: [{ u: 0, r: 0.1 }] });
           limb(r4, a4, 62, s3 * 0.012, 0.12, { color: col, width: 0.024, step: 0.6, text: s3 > 0 ? txt : undefined, textSize: 0.5, nodes: [{ u: 0, r: 0.14 }] }); } } }
   }
   const hair = E.roads(defs, { step: 0.12, maxGlyphs: 300000 }), fil = E.roads(fdefs, { step: 0.05 });
   const draw = (t, o = {}) => hair.drawable({ head: t, gain: 2.0, textGain: 0.3, minPx: 1.2, haloPx: 3, halo: 0.25, headGain: 3, headLen: 0.3, nodeMinPx: 1.1, soft: 0.12, ...o });
-  const drawFil = (t, o = {}) => fil.drawable({ head: t, gain: 1.1, minPx: 0.7, haloPx: 1.5, halo: 0.1, headGain: 1.5, headLen: 0.35, soft: 0.25, ...o });
+  const drawFil = (t, o = {}) => fil.drawable({ head: t, gain: 0.8, minPx: 0.7, haloPx: 1.5, halo: 0.1, headGain: 2.5, headLen: 0.3, soft: 0.25, ...o });
   // ---- the top-down shot. Keys: [t, height, turn (deg: where east points on screen, counter-clockwise from screen-right), centre (m east of H)]
   const CK = [[97.515, 2.75, 28, -0.5], [100.0, 3.1, 44, -0.42], [102.65, 5.6, 78, -0.1], [104.9, 7.0, 100, 0.5], [107.2, 9.5, 110, 1.2], [109.43, 22, 116, 3.5], [111.43, 32, 121, 6.0], [113.4, 27, 127, 5.4], [115.3, 13, 135, 2.2], [116.64, 6.6, 141, 0.7]];
   const path = K.camPath(CK.map(([t, h, th, e]) => ({ t, pos: [h, th, e], target: [0, 0, 0] })));
@@ -57,7 +59,7 @@ export function actBFloat(K) {
     return { camera, env: { dawn: 0.03 * dl, ground: { ripple: 0.016 + 0.05 * imp, fogAmt: 0.2, base: K.hex('#081038'), f0: 0.2 }, grade: { exposure: 1.5, vignette: 0.4, bloom: 0.6 },
         figLight: { under: 0.25 + 0.5 * lit, ambient: [0.06 + 0.13 * lit, 0.07 + 0.09 * lit, 0.19 + 0.02 * lit], emissive: 2 + 1.6 * lit + 0.8 * kick * lit, fibres: 1.6 + 2.2 * lit } },
       world: { only: ['main'], lights: false, text: 0.45, flow: 0.12, flowSpeed: 6, main: { head: G.headAtX(feetX), gain: 2.6 } },
-      extra: [W.glow(glows), drawFil(t, { pulses, gain: 1.1 + 0.9 * lit }), draw(t, { pulses, gain: 2.0 - 0.7 * inward, flow: 0.05 + 0.3 * inward, flowSpeed: -(4 + 8 * dl) * inward, textGain: 0.3 + 0.9 * dl, halo: 0.25 - 0.13 * inward })],
+      extra: [W.glow(glows), drawFil(t, { pulses, gain: 0.8 + 1.0 * lit }), draw(t, { pulses, gain: 2.0 - 0.7 * inward, flow: 0.05 + 0.3 * inward, flowSpeed: -(4 + 8 * dl) * inward, textGain: 0.3 + 0.9 * dl, halo: 0.25 - 0.13 * inward })],
       type: [K.lyric(11, refL11, { mode: 'ground', x: 0.306, y: -0.91, rows: [1, 2], px: 87 }), K.lyric(12, refL12, { mode: 'ground', x: 0.33, y: -0.79, rows: [1, 2], px: 70 })],
       hud: K.hudMain(t, { count: 1 }) };
   };

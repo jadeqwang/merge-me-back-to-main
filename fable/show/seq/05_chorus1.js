@@ -29,6 +29,7 @@ export default function seq(K) {
   const hc = A.chains[A.km].merge.map((i) => i - A.merge0 + 1);                   // her merge limbs (tree indices), tip -> M1
   for (let j = 0; j < 3; j++) addRunner(sibOf(hc[j]), G.NT[j + 1], null, 7 + j * 31);
   const FL = { ambient: [0.05, 0.06, 0.16] };                                     // night: a darker body, so the band, the straps and the rim carry her
+  const far = (fog, air) => { const o = { fogDist: fog, nodeAir: air }; return { fork: o, merge: o, conn: o, named: o, art: o, violet: o }; };   // night air for everything far away (lines and commit nodes): a calm horizon
   const frA = (t) => K.frameOf((q) => HP.at(G.sA(q)), t, 0.7);
 
   // ================= B: the delta from above. The last six levels of the merge tree drawn again as rivers: a limb's width is what it carries.
@@ -38,7 +39,7 @@ export default function seq(K) {
   const east = E.roads([{ pts: [[M[0], 0], [(M[0] + G.stopX) / 2, 0], [G.stopX, 0]], smooth: false, gk: gkE, color: W.col('main'), width: 1.25 }], { step: 1.0 });
   const LB = E.lights(64);
   const flashes = []; for (const [d, big] of [[3, 0.55], [2, 0.75], [1, 1], [0, 1.7]]) for (const r of MR) if (r.def.depth === d + 1) { const e = r.at(r.len - 0.01); if (!flashes.some((f) => f.t === W.TM[d] && Math.hypot(f.x - e.x, f.z - e.z) < 1)) flashes.push({ t: W.TM[d], x: e.x, z: e.z, c: r.def.color, big }); }
-  const camB = K.camPath([{ t: tB, pos: [M[0] + 225, 175, 52], target: [M[0] - 78, 0, 30], fov: 35 }, { t: tOne, pos: [M[0] + 196, 150, 46], target: [M[0] - 56, 0, 26], fov: 35 }, { t: tC, pos: [M[0] + 182, 135, 42], target: [M[0] - 34, 0, 22], fov: 35 }]);
+  const camB = K.camPath([{ t: tB, pos: [M[0] + 120, 150, 50], target: [M[0] - 150, 0, 34], fov: 35 }, { t: tOne, pos: [M[0] + 196, 150, 46], target: [M[0] - 56, 0, 26], fov: 35 }, { t: tC, pos: [M[0] + 182, 135, 42], target: [M[0] - 34, 0, 22], fov: 35 }]);
 
   // ================= C: the fan. Copy i is her, a moment ago (the same footprints), in the lane colour of life i; on beat i+1 it has caught her up.
   const beatC = T.beatAt(tC), DT = 0.118, lives = W.lives, NF = lives.length;
@@ -69,7 +70,7 @@ export default function seq(K) {
           const s = R.P.len + R.v * dt; if (s < 0) continue; const q = R.P.at(s);
           cast.actor(R.id, { lane: R.color }).set({ pos: [q.x, 0, q.z], yaw: Math.atan2(q.tx, q.tz), track: 'sprint_loop', time: R.clock(t), alpha: 1 - ss(t, R.tEnd - 0.2, R.tEnd + 0.02), gain: 0.8 }); clear.push([q.x, q.z, 2.5]); }
         cast.actor('hero').set({ pos: [a.x, 0, a.z], yaw: K.yawOf(a), track: 'sprint_loop', time: G.clockA(t), gain: 1 + 1.3 * flash });
-        return { camera, env: { figLight: FL }, world: false, extra: [...W.draw(tau, { text: 0.8, flow: 0.2, flowSpeed: 9, fogDist: 80, lights: { clear, gain: 0.4, air: 160 }, merge: { headGain: 2, headLen: 0.12 } }), W.glow(glows)],
+        return { camera, env: { figLight: FL }, world: false, extra: [...W.draw(tau, { text: 0.8, flow: 0.2, flowSpeed: 9, ...far(80, 70), lights: { clear, gain: 0.4, air: 160 }, merge: { headGain: 2, headLen: 0.12, fogDist: 80, nodeAir: 70 } }), W.glow(glows)],
           type: [K.lyric(7, camera, { font: 'hook', x: -0.93, y: 0.40, rows: [2, 3], dist: 30, px: 72, reflGain: 0.04 })], hud: K.hudMain(t, { count: W.count(tau) }) }; } },
       { t0: tB, f: () => {
         const camera = { ...camB(t), far: 30000 }, one = t >= tOne, hx = G.mainX(t);
@@ -79,7 +80,7 @@ export default function seq(K) {
         const glows = flashes.filter((f) => t >= f.t && t < f.t + 2.5).map((f) => { const k = Math.exp(-(t - f.t) * 2.0); return { x: f.x, z: f.z, r: (14 + 38 * (1 - k)) * f.big, c: mul(mixc(f.c, white, 0.35), 1.5 * k) }; });
         const grow = one ? 1 : 0.0;
         return { camera, env: { ground: { base: K.hex('#070B34'), fogAmt: 0.1 } },
-          world: { text: 0.45, flow: 0.3, flowSpeed: 12, minPx: 1.7, halo: 0.3, haloPx: 5, headGain: 2.5, headLen: 0.25, canopy: { gain: 2.4 }, lights: { gain: 0.5, minPx: 1.4 }, conn: { gain: 0.2, halo: 0 }, art: { hide: true }, main: { head: G.headAtX(hx), gain: 0.01, textGain: 0 } },
+          world: { text: 0.45, flow: 0.3, flowSpeed: 12, minPx: 1.7, halo: 0.3, haloPx: 5, headGain: 2.5, headLen: 0.25, canopy: { gain: 2.4 }, lights: { gain: 0.3, minPx: 1.3 }, nodeMinPx: 1.2, conn: { gain: 0.2, halo: 0 }, art: { hide: true }, main: { head: G.headAtX(hx), gain: 0.01, textGain: 0 } },
           extra: [W.glow(glows), braid.drawable({ head: t, gain: 1.9, minPx: 1.4, halo: 0.45, haloPx: 9, headGain: 3.5, headLen: 0.22, flow: 0.45, flowSpeed: 10, nodeMinPx: 2.5 }),
             east.drawable({ head: t, gain: 2.3 * grow, minPx: 2, halo: 0.5, haloPx: 12, headGain: 4, headLen: 0.35, flow: 0.4, flowSpeed: 10 }), LB.drawable(d, n, { minPx: 2.5 })],
           type: [K.lyric(8, camera, { font: 'hook', mode: 'ground', x: -0.9, y: -0.86, rows: [2, 2, 3], px: 72 })], hud: K.hudMain(t, { count: W.count(t) }), flash: one ? 0.22 * Math.exp(-(t - tOne) * 5) : 0 }; } },
@@ -94,7 +95,7 @@ export default function seq(K) {
           glows.push({ x: G.heroX(tt), z: -0.16 * s, r: 0.9, c: mul(c, 0.5) }); }
         cast.actor('hero').set({ ...G.body(t), gain: 1 + 0.9 * Math.min(1.5, flash) });
         const just = last >= 0 && bt - (last + 1) < 1 && last < NF ? lives[last].name : null;
-        return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.15, fogDist: 40, main: { head: G.headAtX(hx), fogDist: 260 }, lights: { clear: [[hx, 0, 6]], gain: 0.35, air: 120 } }, extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.3 })],
+        return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.15, ...far(40, 40), main: { head: G.headAtX(hx), fogDist: 260 }, lights: { clear: [[hx, 0, 6]], gain: 0.35, air: 120 } }, extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.3 })],
           type: [K.lyric(9, camera, { font: 'hook', x: -0.93, y: 0.44, rows: [1, 3], dist: 34 })], hud: K.hudMain(t, { count: 1, branch: just ? 'main ← ' + just : 'main' }) }; } },
       { t0: tD, f: () => {
         const camera = camD(t), hx = G.heroX(t);
@@ -102,7 +103,7 @@ export default function seq(K) {
         const glows = []; for (const q of locks) if (t >= q.t) { const k = Math.exp(-(t - q.t) * 3.5), dist = Math.hypot(q.x - camera.pos[0], q.z - camera.pos[2]); glows.push({ x: q.x, z: q.z, r: Math.max(0.8, dist * 0.022) * (1 + 0.6 * k), c: mul([1.0, 0.5, 0.16], 0.5 + 1.6 * k) }); }
         const hit = Math.exp(-Math.max(0, t - tHit) * 3.5) * (t >= tHit ? 1 : 0);
         if (hit > 0.02) glows.push({ x: hx, z: 0, r: 1 + 5 * (1 - hit), c: mul([1.0, 0.55, 0.25], 1.2 * hit) });
-        return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.1, fogDist: 90, pulses: [{ g: gazeG(t), width: 0.7, gain: 3 }, { g: lockG(t), width: 0.5, gain: 3.5 }], lights: { gain: 0.4, air: 160, clear: [[hx, 0, 6]] }, main: { head: G.headAtX(hx), fogDist: 260 } },
+        return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.1, ...far(90, 80), pulses: [{ g: gazeG(t), width: 0.7, gain: 3 }, { g: lockG(t), width: 0.5, gain: 3.5 }], lights: { gain: 0.4, air: 160, clear: [[hx, 0, 6]] }, main: { head: G.headAtX(hx), fogDist: 260 } },
           extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.2 }), lockR.drawable({ head: t, gain: 3.2, nodeMinPx: 2.2 })],
           type: [K.lyric(10, camera, { font: 'hook', x: -0.93, y: 0.30, rows: [2, 2, 3], dist: 34, px: 70, out: t1, fade: 0.01, reflGain: 0.03 })], hud: K.hudMain(t, { count: 1 }) }; } },
     ], t1);
