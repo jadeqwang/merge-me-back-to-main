@@ -53,3 +53,52 @@ Sheets (git-ignored): `work_fable/out/reel/m3/` (reel, real figure), `work_fable
   154.04 and catching up by 154.77, not done. Since every copy now travels the butterfly's (0.99, 0.98) m like the hero, the formation keeps its
   shape round her and the run start points `P[i].A` moved by the same small offset.
 - Sheets: `work_fable/out/reel/m3/drop_join_front.jpg` (153.95-155.0 every 0.07 s), `work_fable/stills/m3/join_film.jpg` (film, 153.3-155.1).
+
+## 4. Runs to the MAIN cells (seq 10, 160.1-165.5) — tracks baked, NOT wired (it cannot be done cleanly; see "why")
+Recipes in `recipes_m3.py` (`_from_stand`, `_to_stand`, reusable for other loops / captures). Both pass `validate.py --tracks`. Not in `cast.js` TRACKS
+(two unused tracks would cost ~1.5 s of start-up sim): add `'run_from_stand', 'run_to_stand'` there when a sequence uses them.
+
+**`run_from_stand`** (3.0 s; ACCAD Male2 C1_StandToRun 1.80 s on, then `run_loop`). Frame 0 = `idle` at time 0 (2 mm), at the origin facing +Z. Leans, pushes
+off, three accelerating strides (footfalls R 0.53, L 1.00, R 1.35), body cross-fade into `run_loop` 1.05-1.45 on the R footfall, feet in world space.
+- From `meta.run_from` = **1.5 s** the pose is `run_loop` at loop time `meta.loop_phase_t` = **0.540 s (phase 0.704)** + (t - 1.5); hips-relative difference
+  < 3 cm (foot lock), z = `meta.run_z0` + 3.418 (t - 1.5) within 6 mm. The track carries on as pure run to 3.0 s, so the switch can be at any t >= 1.5.
+- Travel (hips z, m): 0.25 s 0.10 · 0.5 s 0.41 · 0.75 s 0.89 · 1.0 s 1.61 · 1.25 s 2.33 · **1.5 s 3.16** · 2.0 s 4.89 · 3.0 s 8.28. Hips x stays within 3 cm of 0.
+  Hips speed: 1.3 m/s at 0.4 s, 2.7 at 0.8 s, run speed (3.2-3.7, the loop's own ripple) from 1.2 s.
+
+**`run_to_stand`** (4.0 s; ACCAD Male2 C2_RunToStand from its first footfall, mirrored so that it starts on the LEFT footfall like `run_loop`). Frame 0 =
+`run_loop` phase 0 exactly (0.0 mm hips-relative), moving along +Z. Three braking steps (R 0.40, L 0.67, R 0.93), at rest at `meta.stop_t` = **1.2 s** (hips
+speed 0.22 m/s and falling; the capture's 1.53 s brake is time-warped to 1.2), then the feet close into the idle stance (0.06 m lift) and she is `idle`.
+- She stands on `meta.stand_xz` = **(0.037, 2.445)**: travel **2.45 m** (hips z: 0.25 s 0.71 · 0.5 s 1.45 · 0.75 s 2.05 · 1.0 s 2.26 · 1.2 s 2.32 · 2.0 s 2.44).
+  Facing +Z (1.2 deg). The capture's 0.4 m sideways drift is sheared out: she stops straight ahead of where she ran.
+- From `meta.idle_from` = **2.25 s** the pose IS `idle` at time (t - `meta.idle_t0`) = t - 1.2, standing on `stand_xz` (0.0 mm): switch to `idle` there, or let
+  the track play to 4.0 s (it clamps = freezes after that).
+
+**How to use them (one copy running a straight line of length d from A to B, heading yaw, starting at t0, loop rate r in 0.85..1.15):**
+```
+const F = cast.meta('run_from_stand'), S = cast.meta('run_to_stand'), per = cast.dur('run_loop'), v = cast.speed('run_loop');       // 0.7667 s, 3.418 m/s
+const tauM = (k) => (per - F.loop_phase_t) + k * per;            // loop time from the hand-over phase to phase 0: 0.2267 + 0.7667 k
+const dK = (k) => F.run_z0 + v * tauM(k) + S.stand_xz[1];        // nominal distances: 6.38, 9.00, 11.62, 14.24, 16.86, 19.48 ... m (one stride = 2.62 m apart)
+const k = Math.max(0, Math.round((d - dK(0)) / (v * per))), sc = d / dK(k);          // sc = stretch of the ground covered (feet slide by |sc - 1|: at most 1.31 m / d)
+const t1 = t0 + F.run_from, t2 = t1 + tauM(k) / r, dir = [Math.sin(yaw), Math.cos(yaw)], at = (q) => [A[0] + dir[0] * q * sc, 0, A[1] + dir[1] * q * sc];
+t <  t1 : { track: 'run_from_stand', time: t - t0, yaw, pos: at(0) }                        // root motion is in the track (for sc != 1 add (sc - 1) * cast.root(track, time)[2] along dir)
+t <  t2 : { track: 'run_loop', time: F.loop_phase_t + (t - t1) * r, yaw, pos: at(F.run_z0 + v * r * (t - t1)) }
+t >= t2 : { track: 'run_to_stand', time: t - t2, yaw, pos: at(F.run_z0 + v * tauM(k)) }       // she stands on B = pos + rot(yaw, S.stand_xz); arrival (at rest) = t2 + 1.2
+t >= t2 + S.idle_from : optionally { track: 'idle', time: t - t2 - S.idle_t0, yaw, pos: pos + rot(yaw, S.stand_xz) }
+```
+Total time = 1.5 + (0.2267 + 0.7667 k) / r + 1.2 s. `K.loopFor` / `K.gait` are not needed: the loop is entered on a fixed phase and left on phase 0.
+
+**Why it is not wired into `actC_form.js`** (measured on the act's own assignment, 1,023 copies, runs mean 15.7 m / median 14.7 m / max 31.3 m):
+1. Speed. The run block gives everyone 5.2 s (b93 -> b96.1) and moves the far half on `sprint_loop` at up to 5.67 m/s. Stand -> run -> stand on `run_loop`
+   at rate 1.15 covers at most 14.2 m by b96.1 and 16.9 m by the `set` pose (166.42): only 501 copies (689 by `set`) can make their cell; the rest
+   would still be running at the fall. They need a sprint pair (`sprint_stop_look` frames 0-4.2 already is sprint_loop phase 0 -> stand; a
+   `sprint_from_stand` does not exist) or shorter runs (re-pair cells, or start before the b93 cut).
+2. Facing. `run_to_stand` stops facing the way she ran; `drop` on the cell faces EAST. The runs point every way: 816 of 1,023 are more than 45 deg off east,
+   594 more than 90, 334 more than 135. So the stand -> `drop` switch would still be a yaw pop unless the copies also turn (a baked turn per angle, curved
+   arrival paths, or turning the instance yaw during the brake, which slides the feet).
+3. Short runs. 44 copies run less than 5.6 m (the accelerate + brake distance) and 84 less than 8 m: they need a walk or a side-step instead.
+4. Quantised length. The loop must be left on phase 0, so legal lengths are 6.38 + 2.62 k m; other lengths need the stretch `sc` (or half strides with a
+   mirrored `run_to_stand_R`, not baked).
+5. The pose after the stand. On arrival the copies are put back into `drop` mid-phrase (snap kicks); from a stand that is a new pop until `set` (166.42,
+   attention, fists at the waist: 0.3 m in the hands from the idle stance).
+None of this is a small edit to the director's run block; the tracks are ready for a re-plan of it (e.g. nearer cells + curved arrivals facing east).
+- Sheets: `work_fable/out/reel/m3/run_from_stand.jpg` (0-1.9 s every 0.1 s, side), `run_to_stand.jpg` (0-2.85 s every 0.15 s, side).

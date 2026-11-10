@@ -128,3 +128,116 @@ def fork_go_L():
 def fork_go_R():
     """A fork, right half, that walks away (same idle start pose, mirrored step, same walk_loop). 12 s."""
     return _fork_go("R")
+
+
+# ----------------------------------------------------------------------------- run_from_stand / run_to_stand
+def _idle_at(times, at=(0.0, 0.0)):
+    """The idle loop sampled at `times` (wrapped), as an open clip standing on `at`."""
+    m = M.sample(U._idle(), np.asarray(times, dtype=np.float64), wrap=True)
+    m.loop, m.events, m.meta = False, [], {}
+    m.root[:, 0] += at[0]
+    m.root[:, 2] += at[1]
+    return m
+
+
+def _from_stand(cy, spec, t_a, k_foot, t_foot, dur, fade):
+    """Standing (idle at time 0) -> the capture's start (trimmed from t_a, its k_foot-th footfall warped
+    to track time t_foot) -> the in-place cycle `cy` driven along +Z at its own speed, entered on that
+    footfall (body cross-fade over `fade` = (t0, t1), feet in world space)."""
+    src = M.with_events(M.load_clip(spec), jumps=False, kicks=False)
+    ff = [e for e in src.events if e["name"].startswith("foot")][k_foot]
+    side = ff["name"][-1]
+    seg = M.place(M.trim(src, t_a, None), 0, 0.0, (0.0, 0.0))
+    seg = M.time_warp(seg, [(0.0, 0.0), (ff["t"] - t_a, t_foot), (seg.duration, t_foot + (seg.duration - (ff["t"] - t_a)))])
+    # the capture's direction of travel at the end = +Z
+    kf = int(round(t_foot * 60))
+    d = seg.root[-1] - seg.root[max(0, kf - 20)]
+    seg = M.transform(seg, -math.atan2(d[0], d[2]))
+    A = _ext(seg, dur)
+    per = cy.meta["period"]
+    ph_foot = cy.ev("foot" + side)[0] / per
+    B = M.drive(cy, dur, phase0=ph_foot - t_foot / per)
+    k = int(round(0.5 * (fade[0] + fade[1]) * 60))                # the two meet hips on hips in the middle of the fade
+    B.root[:, 0] += A.root[k, 0] - B.root[k, 0]
+    B.root[:, 2] += A.root[k, 2] - B.root[k, 2]
+    t = A.times
+    w = M.smootherstep((t - fade[0]) / (fade[1] - fade[0]))
+    wf = M.smootherstep((t - (fade[0] + 0.04)) / max(fade[1] - fade[0] - 0.10, 0.1))
+    m = C.blend(A, B, w, wf=wf, lift=0.0)
+    # the side drift of the capture is taken out while she accelerates: the run is on x = 0
+    xe = float(np.mean(B.root[int(fade[1] * 60):, 0]))
+    m.root[:, 0] -= xe * M.smoothstep(t / fade[1])
+    pre = _idle_at((np.arange(3) - 2) / 60.0)
+    m = M.trim(M.concat(pre, m, halflife=0.12, align=False, lock=False), 2.0 / 60.0, None)
+    m = M.ground_clamp(M.foot_lock(_hold_start_feet(m)), floor=0.0)
+    m = M.with_events(m, jumps=False, kicks=False)
+    t_run = fade[1] + 0.05
+    kr = int(round(t_run * 60))
+    z_run = float(B.root[kr, 2])
+    return m, {"source": spec.split(":")[1], "run_from": round(t_run, 4),
+               "loop_phase_t": round(float(((ph_foot + (t_run - t_foot) / per) % 1.0) * per), 4),
+               "loop_phase": round(float((ph_foot + (t_run - t_foot) / per) % 1.0), 4),
+               "run_z0": round(z_run, 4), "speed": round(float(cy.meta["speed"]), 4),
+               "travel_m": round(z_run, 3),
+               "root_z_every_quarter_s": [round(float(z), 3) for z in m.root[::15, 2]]}
+
+
+def _to_stand(cy, spec, t_a, mirror, t_stop, dur, settle=1.1):
+    """The in-place cycle `cy` at phase 0 (frame 0, moving along +Z at its own speed) -> the capture's
+    brake (trimmed from a footfall at t_a; mirrored if that footfall is the right foot's) -> at rest at
+    t_stop -> settles into the idle pose facing +Z."""
+    src = M.with_events(M.load_clip(spec), jumps=False, kicks=False)
+    stop = M.trim(src, t_a, None)
+    if mirror:
+        stop = M.mirror(stop)
+    stop = M.place(stop, 0, 0.0, (0.0, 0.0))
+    d = stop.root[12] - stop.root[0]
+    stop = M.transform(stop, -math.atan2(d[0], d[2]))            # it starts travelling along +Z
+    per = cy.meta["period"]
+    pre = M.drive(cy, 2.0 / 60.0, phase0=-(2.0 / 60.0) / per)    # 3 frames ending on phase 0
+    pre.root[:, 2] -= pre.root[-1, 2]
+    pre.root[:, 0] -= pre.root[-1, 0]
+    a = M.trim(M.concat(pre, stop, halflife=0.13), 2.0 / 60.0, None)
+    a.events = []
+    ts = U.stop_time(a, 0.4)
+    a = _ext(a, ts + 3.0)
+    a = M.time_warp(a, [(0.0, 0.0), (0.22, 0.22), (ts, t_stop), (a.duration, t_stop + (a.duration - ts))])
+    a = _ext(a, dur)
+    # she stops straight ahead of where she was running: the capture's sideways drift is sheared out along the way
+    kq = int(round((t_stop + 0.3) * 60))
+    a.root[:, 0] -= a.root[kq, 0] * np.clip(a.root[:, 2] / max(a.root[kq, 2], 1e-6), 0.0, 1.0)
+    a = M.ground_clamp(M.foot_lock(a), floor=0.0)
+    # settle: the last steps of the capture melt into the idle stance, facing +Z, over the place she stopped
+    ks = int(round((t_stop + 0.25) * 60))
+    P = a.fk()
+    mid = 0.5 * (P[ks, J["footL"]] + P[ks, J["footR"]])
+    i0 = U._idle()
+    Pi = i0.fk()[0]
+    imid = 0.5 * (Pi[J["footL"]] + Pi[J["footR"]])
+    at = (float(mid[0] - imid[0]), float(mid[2] - imid[2]))
+    t = a.times
+    B = _idle_at(t - t_stop, at)
+    w = M.smootherstep((t - (t_stop - 0.05)) / settle)
+    m = C.blend(a, B, w, lift=0.35, lift_max=0.06)
+    m = M.ground_clamp(m, floor=0.0)
+    m = M.with_events(m, jumps=False, kicks=False)
+    idle_from = t_stop - 0.05 + settle
+    return m, {"source": spec.split(":")[1] + (" (mirrored)" if mirror else ""), "stop_t": t_stop, "idle_from": round(idle_from, 4), "idle_t0": t_stop,
+               "stand_xz": [round(at[0], 4), round(at[1], 4)], "travel_m": round(at[1], 3), "speed_in": round(float(cy.meta["speed"]), 4),
+               "root_z_every_quarter_s": [round(float(z), 3) for z in m.root[::15, 2][:13]]}
+
+
+@recipe("run_from_stand")
+def run_from_stand():
+    """Standing (idle pose) -> run: accelerates over 1.5 s (ACCAD Male2 C1 StandToRun) into run_loop, along +Z. 3 s; pure run_loop from meta.run_from."""
+    m, meta = _from_stand(U._run(), "accad:Male2_C1_StandToRun", 1.80, 2, 1.36, 3.0, (1.05, 1.45))
+    m.meta = {}
+    return U.finish(m, None, [(meta["run_from"], "run")], **meta)
+
+
+@recipe("run_to_stand")
+def run_to_stand():
+    """run_loop phase 0 -> brakes and stops in 1.2 s (ACCAD Male2 C2 RunToStand) -> settles into the idle stance, facing +Z. 4 s."""
+    m, meta = _to_stand(U._run(), "accad:Male2_C2_RunToStand", 0.28, True, 1.2, 4.0)
+    m.meta = {}
+    return U.finish(m, None, [(1.2, "stop"), (meta["idle_from"], "idle")], **meta)
