@@ -311,8 +311,8 @@ def build():
     sup = ankle(S(mir(gongbu("R")), -X, g2), "R")
     kc = on_foot(S(mir(kick_front("chamber")), -X), "R", sup)
     ke = on_foot(S(mir(kick_front("ext")), -X), "R", sup)
-    tl.to(kc, bt(76, 1) - 0.13, 0.30, "soft")
-    tl.to(ke, bt(76, 1), 0.13, "hit", name="front_kick", free="L")
+    tl.to(kc, bt(76, 1) - 0.15, 0.30, "soft")
+    tl.to(ke, bt(76, 1), 0.15, "snap", name="front_kick", free="L")
     tl.to(kc, bt(76, 1) + 0.17, 0.17, "out", free="L")
     # b76.3 plant: feet together at the centre, fists at the waist, facing front
     tl.to(stand(), bt(76, 3), 0.36, "snap", name="plant")
@@ -398,6 +398,7 @@ def _fall(tl, t, c=(0.0, 0.0)):
     tl.to(up, t - 0.50, 0.20, "soft", name="fall_start")           # the breath in: up on the toes, arms float forward
     tl.to(dive, t - 0.16, 0.34, "in", lift=0.0)
     tl.to(flat, t, 0.16, "lin", name="fall", lift=0.0)
+    tl.still(t, t + C.BAR - 0.26)                    # completely still through the bar
     return flat
 
 
@@ -431,7 +432,7 @@ def drop():
     tl.to(coil, bt(88, 3), 0.62, "smooth", name="coil")
     t_first = bt(89) - k_apex
     t_load = t_first + (BF_LOAD - BF_T0)
-    tl.clip(bf, t_first, t_load + 1.0 / 60, blend_in=1.0 / 60)
+    tl.clip(bf, t_first, t_load + 0.10, blend_in=0.10)        # out of stillness: she catches the clip up in 6 frames
     tl.mark(bt(89), "butterfly_apex")
 
     def Sd(p, facing=0.0, at=(0.0, 0.0)):
@@ -459,8 +460,8 @@ def drop():
     supL = ankle(st, "L")
     sp = on_foot(S(slap_kick("prep"), -X), "L", supL)
     se = on_foot(S(slap_kick("ext"), -X), "L", supL)
-    tl.to(sp, bt(92, 2) + 0.12, 0.42, "smooth", name="turn")
-    tl.to(se, bt(92, 3), 0.20, "hit", name="slap_kick", free="R")
+    tl.to(sp, bt(92, 2) + 0.02, 0.42, "smooth", name="turn")
+    tl.to(se, bt(92, 3), 0.30, "snap", name="slap_kick", free="R")
     # b93.1 the kicking leg lands forward into the right bow stance toward -X, left punch
     g1 = on_foot(S(mir(gongbu("R")), -X), "L", supL)
     g1p = on_foot(S(mir(gongbu(twist=-22.0, depth=0.74)), -X), "L", supL)
@@ -484,7 +485,7 @@ def drop():
     load = C.mix(g2, on_foot(S(gongbu(twist=0.0, depth=0.60, armL=fist_waist(1), armR=fist_waist(-1)), -X), "R", supR), 1.0)
     ta = bt(94, 1)
     tl.to(load, ta - 0.25, 0.22, "soft")
-    tl.to(air, ta, 0.25, "out", name="jump", lift=0.0, free="LR")
+    tl.to(air, ta, 0.27, "launch", name="jump", lift=0.0, free="LR")
     tl.to(hi2, ta + 0.25, 0.25, "in", lift=0.0)
     tl.to(pb2, bt(94, 3), 0.28, "hit", name="pubu")
     # b95.1, b95.3, b96.1 three front snap kicks travelling toward +X (R, L, R)
@@ -498,8 +499,8 @@ def drop():
             base_c, base_e = mir(base_c), mir(base_e)
         kc = on_foot(S(base_c, X), sup_leg, spot)
         ke = on_foot(S(base_e, X), sup_leg, spot)
-        tl.to(kc, t - 0.13, 0.40 if i == 0 else 0.36, "soft", lift_max=0.10)
-        tl.to(ke, t, 0.13, "hit", name="snap_kick", free=kick_leg)
+        tl.to(kc, t - 0.15, 0.40 if i == 0 else 0.34, "soft", lift_max=0.10)
+        tl.to(ke, t, 0.15, "snap", name="snap_kick", free=kick_leg)
         tl.to(kc, t + 0.16, 0.16, "out", free=kick_leg)
         # the kicking foot steps down ahead; the weight follows
         nxt = (spot[0] + stride, spot[1])
@@ -588,7 +589,7 @@ def butterfly_only():
     bf, k_apex, D = butterfly_clip()
     tl = C.Timeline(0.0, 4.2, coil_pose())
     t_first = 1.5 - k_apex
-    tl.clip(bf, t_first, t_first + (BF_LOAD - BF_T0) + 1.0 / 60, blend_in=1.0 / 60)
+    tl.clip(bf, t_first, t_first + (BF_LOAD - BF_T0) + 0.10, blend_in=0.10)
     tl.mark(1.5, "butterfly_apex")
     tl.to(S(crouch("R", look=(0, 0.0, 1)), 0.0, (D[0] + 0.03, D[1] + 0.03)), 1.5 + 2 * C.BEAT, 0.24, "soft", name="land_low", lift=0.0)
     tl.to(S(stand(), 0.0, D), 3.6, 0.55, "smooth")

@@ -295,6 +295,7 @@ EASES = {
     "soft": lambda u, n: M.smoothstep(u),
     "out": lambda u, n: 1.0 - (1.0 - np.clip(u, 0, 1)) ** 2.2,          # fast start, soft landing
     "in": lambda u, n: np.clip(u, 0, 1) ** 2.0,
+    "launch": lambda u, n: 1.0 - (1.0 - np.clip(u, 0, 1) ** 1.4) ** 2.0,            # a take-off: quick but not instant
     "lin": lambda u, n: np.clip(u, 0, 1),
 }
 
@@ -310,6 +311,7 @@ class Timeline:
         self.m = rep(start_pose, self.n)
         self.events = []
         self.keys = []          # (song time, label) of arrivals, for the notes
+        self.stills = []        # (t_a, t_b) song-time windows with no breathing at all
 
     def times(self):
         return self.t0 + np.arange(self.n) / self.fps
@@ -381,6 +383,11 @@ class Timeline:
             self.mark(t_in, name)
         return self
 
+    def still(self, t_a, t_b):
+        """No breathing between song times t_a and t_b (a dead-still hold)."""
+        self.stills.append((t_a, t_b))
+        return self
+
     def pose_at(self, t):
         f = int(round((t - self.t0) * self.fps))
         return pose_of(self.m, min(max(f, 0), self.n - 1))
@@ -388,7 +395,14 @@ class Timeline:
     def result(self, breath=0.6, clamp=True):
         m = self.m.copy()
         if breath:      # breathing is a function of SONG time, so overlapping tracks agree
-            m = M.breathe(m, period=3.2, depth=breath, sway=0.0, phase=(self.t0 % 3.2) / 3.2)
+            mb = M.breathe(m, period=3.2, depth=breath, sway=0.0, phase=(self.t0 % 3.2) / 3.2)
+            if self.stills:
+                ts = self.times()
+                w = np.ones(self.n)
+                for a, b in self.stills:
+                    w = np.minimum(w, 1.0 - M.smoothstep((ts - (a - 0.15)) / 0.15) * (1.0 - M.smoothstep((ts - b) / 0.15)))
+                mb = blend(m, mb, w, legs=False)
+            m = mb
         if clamp:
             m = lift_feet(m)
         m.events = sorted(self.events, key=lambda e: e["t"])

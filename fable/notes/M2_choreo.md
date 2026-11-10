@@ -81,11 +81,37 @@ The kicks go front, back, front, back along Z (profile for a side camera); her b
 | 103.3 | final low pose (pubu on the landing foot) | authored |
 | 104.1 | bao quan salute, held to 180.995 | authored |
 
-## Status
-- All five tracks bake and pass `validate.py`.
-- In progress: look at the joins (movies/filmstrips) and polish.
+## Status (done)
+- All five tracks bake and pass `validate.py --tracks` (bone lengths, soles, quats, FK rebuild).
+- Accents: every authored accent arrives within one frame of its song time (measured -19..+4 ms; the pose is
+  reached on the first frame at or after the time); mocap accents (butterfly apex, the four kick apexes, the
+  high jump kick) are within 5 ms. The fall is flat on 167.083 and moves 0.0 mm until 168.56.
+- Footprint (hips, relative to each track's centre): build x[-0.62, +0.26] z[-0.57, +0.59]; drop
+  x[-1.66, +1.00] z[-0.43, +0.93]. Widest block is bars 93-96 (the travelling phrase): hips 2.0 m, limbs 3.1 m.
+- At the phrase starts she is on her centre facing front: b73 (0, -0.10), b81 (0, 0), b97 (0, 0) falling
+  along +Z, b100 (0, 0), b104 (0, 0). b77: she steps back 0.55 m into the fighting stance (kicks along Z).
+- Net drift: `build` ends on its origin; the butterfly carries her (+0.99, +0.98) m to `drop`'s `meta.center`;
+  `drop` ends exactly on that centre. Identical for every copy.
+
+## Things the show should know
+- `build` frame 0 is a landing crouch (one hand down). M1's `land` ends in a ready stance, so either cut
+  from `land`'s impact straight to `build` at b73.1, or play `build` alone from b73.1.
+- `build` -> `drop`: the two tracks are identical from 151.67 to 152.70 s; switch anywhere in that window.
+  She is still in the coil from b88.3 (152.30) and launches 2 frames before b88.4+ (152.70), because the
+  butterfly needs 0.45 s from loaded to apex.
+- Kicks in bars 77-80 go along +-Z (profile from a side camera); b73-76 strikes go along +-X (profile from
+  the front); the fall goes along +Z; the last jump travels along +X.
+- Holds are breathing-only (no sway); the fall hold has no breathing at all.
+
+## Known weaknesses
+- Authored transitions are pose-to-pose: clean and sharp, but there is no weight-shift overlap or
+  follow-through beyond a 2% recoil, so close up they read a little mechanical next to the mocap inserts.
+- Hands are rigid (no fists/palms); pubu and the palm strikes rely on the forearm line.
+- The roundhouse (cmu:135_07) is chest height, lower than the two side kicks.
+- Judged on stick figures only (filmstrips, movies); hair/trouser sim on the fast moves is untested.
 
 ## Library fixes worth upstreaming into motion.py (all live in choreo_lib.py)
-- `make_pose` (authoring poses), `blend` (world-space feet in cross-fades), `Timeline` (song-time layout),
-  `put` (place a clip by a foot / mid-feet / an aim between two joints), `lift_feet`.
-- `motion.breathe` now takes `phase`; Timeline passes song-time phase.
+- `make_pose` (authoring poses), `blend` (world-space feet in cross-fades, `free` legs), `Timeline`
+  (song-time layout, strike eases, still windows), `put` (place a clip by a foot / mid-feet / an aim
+  between two joints), `lift_feet`, `mix`.
+- motion.py private helper used: `M._limb_ik` (with `bend_axis`); worth making public.
