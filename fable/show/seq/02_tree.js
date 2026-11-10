@@ -18,7 +18,7 @@ export default function seq(K) {
   return { name: '02_tree', t0, t1, frame(t) {
     if (!swoop) { const e = K.shared.followA(t1), h = W.heroAt(t1); const s = top(bar(15));
       swoop = K.camPath([{ t: bar(15), pos: s.pos, target: [s.target[0] + 0.02 * B.h, 0, s.target[2]], fov: 35 }, { t: bar(15.55), pos: [lerp(s.pos[0], h.x, 0.25), B.h * 0.8, lerp(s.pos[2], h.z, 0.3)], target: [lerp(s.target[0], h.x, 0.5) + 0.12 * B.h, 0, lerp(s.target[2], h.z, 0.5)], fov: 35 },
-        { t: bar(16.25), pos: [h.x - 175, 92, h.z - 26], target: [h.x - 48, 0, h.z - 2], fov: 35 }, { t: bar(16.7), pos: [h.x - 19, 7, h.z - 4], target: [h.x + 2, 1, h.z], fov: 35 }, { t: t1, ...e }]); }
+        { t: bar(16.4), pos: [h.x - 150, 80, h.z - 24], target: [h.x - 40, 0, h.z - 2], fov: 35 }, { t: bar(16.75), pos: [h.x - 17, 6.5, h.z - 4], target: [h.x + 2, 1, h.z], fov: 35 }, { t: t1, ...e }]); }
     const sw = t >= bar(15); const c = sw ? swoop(t) : top(t); const camera = { ...c, far: 40000, near: sw ? 0.2 : 20, aperture: 0, topUp: [1, 0, 0] };
     const low = ss(t, bar(16.05), bar(16.85));                                     // 0 top-down .. 1 ground level
     const hero = W.heroAt(t); if (low > 0.002) K.cast.actor('hero').set({ pos: [hero.x, 0, hero.z], yaw: K.yawOf(hero), ...K.shared.heroRun(t), alpha: low, vary: 0 });

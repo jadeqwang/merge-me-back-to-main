@@ -238,7 +238,7 @@ export function makeWorld(E) {
   // ---- lights: every branch far away is a light on its road
   const LMAX = 6144; const L = E.lights(LMAX); const G = E.glows(4096);
   const artSeeds = [...Array(360)].map((_, i) => ({ r: artR.roads[Math.floor(hash1(i * 7 + 1) * artR.roads.length)], ph: hash1(i * 13 + 5), sp: 6 + 14 * hash1(i * 3 + 9), br: 0.4 + 0.9 * hash1(i * 11 + 2) }));
-  function lights(t, o = {}) {
+  function lights(t, o = {}) { if (o.t !== undefined) t = o.t;                 // (o.t: the far lights of another moment: the last frame shows frame 0's)
     const d = new Float32Array(LMAX * 7); let n = 0; const y = o.y ?? 1.25, gain = (o.gain ?? 1) * 0.6;
     const clr = o.clear || [], clrH = o.clearHeads || [];                   // [[x, z, r], ...]: no branch light within r metres of these points (a figure stands there instead); clearHeads: nor a light that writes ahead
     const put = (x, z, c, g, rad, w = 0.1, cl = clr) => { if (n >= LMAX) return; for (const q of cl) if ((x - q[0]) * (x - q[0]) + (z - q[1]) * (z - q[1]) < q[2] * q[2]) return; d.set([x, y, z, (c[0] + w) * g, (c[1] + w) * g, (c[2] + w) * g, rad], n * 7); n++; };

@@ -10,10 +10,12 @@ import { seg, ss, sm, lerp } from '../kit.js';
 
 // The frame-0 composition (also the film's last frame: seq 16 imports this, so the film loops). tau = seconds relative to frame 0 (may be negative).
 // She stands at the root (0, 0, 0) facing east (ROOT_YAW). The camera is 3.9 m away, behind her and on her RIGHT (south): she is in the right third.
-const C0 = { pos: [-3.31, 1.22, 2.07], target: [2.08, 1.0, -3.14] };
+const C0 = { pos: [-3.31, 1.3, 2.07], target: [2.08, 0.74, -3.14] };
 export function rootCam(tau) { const k = tau * 0.04, dx = C0.target[0] - C0.pos[0], dz = C0.target[2] - C0.pos[2], l = Math.hypot(dx, dz);
   return { pos: [C0.pos[0] + (k * dx) / l, C0.pos[1], C0.pos[2] + (k * dz) / l], target: [C0.target[0] + (k * dx) / l, C0.target[1], C0.target[2] + (k * dz) / l], fov: 35, focusDist: 3.9, aperture: 0.03 }; }
 export const ROOT_YAW = Math.PI / 2;
+// The world as frame 0 sees it (seq 16: `world: rootWorld(tau)` with the same tau makes the last frame the first, far lights included).
+export const rootWorld = (tau) => ({ head: tau, fork: { hide: true }, canopy: false, text: 0.85, flow: 0, gain: 2.4, halo: 0.3, lights: { t: tau, almond: false, gain: 1.7, minPx: 1.4, air: 900 }, art: { gain: 1.5 } });
 
 export default function seq(K) {
   const { bar, world: W, cast, E } = K; const t0 = 0, t1 = bar(9), tF = bar(3), TFK = [tF, bar(5), bar(7), t1];
@@ -59,7 +61,7 @@ export default function seq(K) {
       cast.actor(l.id, { lane: l.color }).set({ pos: [a.x, 0, a.z], yaw: K.yawOf(a), track: 'walk_loop', time: (t - tW) * RATE + ph0, vary: 0 }); }
     const glows = [{ x: 0, z: 0, t: tF, c: K.hex(K.LANE.main) }, ...NODES].filter((n) => t >= n.t && t < n.t + 2.5).map((n) => { const p = Math.exp(-(t - n.t) * 1.7); return { x: n.x, z: n.z, r: 0.9 + 1.5 * (1 - p), c: [n.c[0] * 0.9 * p + 0.25 * p, n.c[1] * 0.9 * p + 0.2 * p, n.c[2] * 0.9 * p + 0.15 * p] }; });
     const up = ss(t, bar(4), bar(8));
-    return { camera, world: { fork: { hide: true }, canopy: false, text: 0.85, flow: 0.1, gain: 2.4, halo: 0.3, lights: { almond: false, gain: 1.7, minPx: 1.4, air: 900 }, art: { gain: 1.5 } },
+    return { camera, world: rootWorld(t),
       extra: [R.drawable({ head: t, gain: 2.5, textGain: 0.8, minPx: lerp(1.5, 2.0, up), halo: 0.3, haloPx: 5, headGain: 2.2, headLen: 0.25, flow: 0.12, nodeMinPx: 1.6 }), ...(glows.length ? [W.glow(glows)] : [])],
       hud: K.hudMain(t, { count: W.count(t) }) };
   } };
