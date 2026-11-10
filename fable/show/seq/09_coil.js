@@ -8,6 +8,6 @@ export default function seq(K) {
     if (!path) { const e = K.shared.dropCam(t1); path = K.camPath([{ t: t0, pos: R(-74, 27, 0), target: R(-6, 0, 0), fov: 35 }, { t: bar(87), pos: R(-50, 12.5, 0), target: R(16, 0.5, 0), fov: 35 }, { t: bar(88), pos: R(-25, 4.4, 0), target: R(28, 1.6, 0), fov: 36 },
       { t: bar(88.6), pos: R(-12, 2.1, 0), target: R(12, 1.5, 0), fov: 37 }, { t: t1, ...e }]); }
     const n = C.thousand(t); const camera = { ...path(t), far: 30000, aperture: 0.02, focusDist: 8 };
-    return { camera, world: { text: 0.6, flow: 0.1, lights: { gain: 0.6 }, main: { head: C.mainHead(t) } }, extra: C.streakDraw(t, { rest: 0.14 * (1 - (t - t0) / (t1 - t0)) }), hud: K.hudMain(t, { count: n }) };
+    return { camera, world: { text: 0.6, flow: 0.1, lights: { gain: 0.6 }, main: { head: C.mainHead(t) } }, extra: C.streakDraw(t, { rest: 0.07 * (1 - (t - t0) / (t1 - t0)) }), hud: K.hudMain(t, { count: n }) };
   } };
 }

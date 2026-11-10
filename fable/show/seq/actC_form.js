@@ -65,10 +65,10 @@ export function makeActC(K) {
   const streaks = []; for (let k = 1; k <= 10; k++) { const defs = S.filter((s) => s.k === k).map((s) => { const len = Math.hypot(s.x - (hx + s.par.r * Math.cos(s.par.a)), s.z - (hz + s.par.r * Math.sin(s.par.a))) + (s.par.i === 0 ? 0 : Math.abs(dAng(s))) * s.r, n = Math.max(3, Math.min(40, Math.ceil(len / 2.5))); const pts = [];
       for (let q = 0; q <= n; q++) pts.push(peelAt(s, q / n)); return { pts, g: [0, 1], color: K.hex(K.LANE[laneOf(s.i)]), width: 0.028 }; });
     streaks.push(E.roads(defs, { step: k >= 9 ? 1.0 : 0.5 })); }
-  // drawables for the streaks at time t. o: { rest: residual gain once written (default 0.22), gain }
-  function streakDraw(t, o = {}) { const out = [], rest = o.rest ?? 0.22;
-    for (let k = 1; k <= 10; k++) { const age = t - tBorn(k); if (age < 0) break; const u = easeOut(age / TP), hot = Math.exp(-Math.max(0, age - TP * 0.6) / 0.45); const g = (o.gain ?? 1) * (rest + (2.6 - rest) * hot); if (g < 0.01) continue;
-      out.push(streaks[k - 1].drawable({ head: u * 1.001, gain: g, textGain: 0, minPx: 1.1 + 0.9 * hot, halo: 0.1 + 0.25 * hot, haloPx: 4, headGain: age < TP ? 3 : 0, headLen: 0.12, soft: 0.02, flow: 0 })); }
+  // drawables for the streaks at time t. o: { rest: residual gain once written (default 0.22; older stages fade further), gain }
+  function streakDraw(t, o = {}) { const out = [], rest0 = o.rest ?? 0.22, now = stageAt(t);
+    for (let k = 1; k <= 10; k++) { const age = t - tBorn(k); if (age < 0) break; const u = easeOut(age / TP), hot = Math.exp(-Math.max(0, age - TP * 0.6) / 0.45), rest = rest0 * Math.pow(0.6, Math.max(0, now - k - 1)); const g = (o.gain ?? 1) * (rest + (2.6 - rest) * hot); if (g < 0.01) continue;
+      out.push(streaks[k - 1].drawable({ head: u * 1.001, gain: g, textGain: 0, minPx: 0.9 + 1.1 * hot, halo: 0.1 + 0.25 * hot, haloPx: 4, headGain: age < TP ? 3 : 0, headLen: 0.12, soft: 0.02, flow: 0 })); }
     return out; }
 
   // ---------------------------------------------------------------- MAIN, made of bodies

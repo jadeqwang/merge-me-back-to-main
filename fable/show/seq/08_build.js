@@ -16,8 +16,8 @@ export default function seq(K) {
     { t: bar(74), pos: R(-4.0, 0.95, 0.0), target: R(0.4, 0.93, 0), fov: 35 }, { t: bar(75), pos: R(-4.9, 1.05, 0.0), target: R(2, 0.96, 0), fov: 35 },
     { t: bar(76), pos: R(-5.6, 1.15, 0.0), target: R(4, 1.0, 0), fov: 35 }, { t: bar(77), pos: R(-6.1, 1.22, 0.0), target: R(5, 1.0, 0), fov: 35 }]);
   const camC = K.camPath([
-    { t: bar(81), pos: R(-17, 7.5, 9), target: R(9, 0.5, 0), fov: 48 }, { t: bar(82), pos: R(-23, 11.5, 4.5), target: R(6, 0, 0), fov: 48 }, { t: bar(83), pos: R(-28, 15.5, 0), target: R(4, 0, 0), fov: 48 },
-    { t: bar(84.5), pos: R(-12, 12.5, 0), target: R(24, 0, 0), fov: 46 }, { t: bar(86), pos: R(8, 10, 0), target: R(52, 1.5, 0), fov: 44 }]);
+    { t: bar(81), pos: R(-7.5, 4.6, 3.6), target: R(10, 0.8, 0), fov: 50 }, { t: bar(82), pos: R(-13.5, 8.2, 2.0), target: R(8, 0.4, 0), fov: 50 }, { t: bar(83), pos: R(-21, 12.5, 0), target: R(5, 0, 0), fov: 50 },
+    { t: bar(84.5), pos: R(-9, 10, 0), target: R(22, 0, 0), fov: 48 }, { t: bar(86), pos: R(8, 8.5, 0), target: R(50, 1.5, 0), fov: 46 }]);
   const world = (t, o = {}) => ({ text: 0.7, flow: 0.1, main: { head: C.mainHead(t) }, ...o });
   return { name: '08_build', t0, t1, frame(t) {
     const hud = (n) => K.hudMain(t, { count: n });
@@ -29,7 +29,7 @@ export default function seq(K) {
         const camera = { pos: R(x, 1.05 + 0.15 * e, z), target: R(x + 6 * Math.sin(th), 1.0, z - 6 * Math.cos(th)), fov: 35, focusDist: 5.6, aperture: 0.03 };
         return { camera, world: world(t), extra: C.streakDraw(t, { rest: 0.1 }), hud: hud(n) }; } },
       { t0: bar(81), f: () => { const n = C.thousand(t); const camera = { ...camC(t), far: 30000 };
-        return { camera, world: world(t, { text: 0.5, lights: { gain: 0.6 } }), extra: C.streakDraw(t, { rest: lerp(0.3, 0.14, sm(seg(t, bar(84), bar(86)))) }), hud: hud(n) }; } },
+        return { camera, world: world(t, { text: 0.5, lights: { gain: 0.6 } }), extra: C.streakDraw(t, { rest: lerp(0.3, 0.07, sm(seg(t, bar(83.6), bar(85.5)))) }), hud: hud(n) }; } },
     ], t1);
   } };
 }
