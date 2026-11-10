@@ -1,6 +1,7 @@
 #!/bin/bash
 # anime look-dev: the four deliverable sheets (current figure on the left of every cell, anime on the right) -> work_fable/stills/anime/
-#   fable/engine/src/figure_anime/sheets_all.sh [A] [B] [C] [D]      (no argument = all)
+#   fable/engine/src/figure_anime/sheets_all.sh [A] [B] [C] [D] [E]      (no argument = A B C D)
+#   E = the likeness sheet: BEFORE rows are the look-dev face (commit dc7f714; kept as dev/E_before_{day,night}.jpg, rendered once before the likeness pass), AFTER rows are rendered now.
 set -e
 HERE=$(cd "$(dirname "$0")" && pwd); ROOT=$(cd "$HERE/../../../.." && pwd); cd "$ROOT"
 S="$HERE/sheet.sh"; O=work_fable/stills/anime; T=$O/tmp; mkdir -p $T
@@ -44,4 +45,10 @@ if [[ $WANT == *D* ]]; then
   PT=14 MB=4 $S $T/D4.jpg D both 960x480 16 240 "$CE" "cam=head"
   title "D · clip strips (the film itself: D_clip.mp4). Rows 1-3 free by day, 4-6 violet at night, every 1/8 s; below: heads, every frame for 1 s." 3872 30 D
   convert $T/title_D.png $T/D1.jpg $T/D2.jpg $T/D3.jpg $T/D4.jpg -append -quality 86 $O/D_clip_strip.jpg; echo "-> $O/D_clip_strip.jpg"
+fi
+if [[ $WANT == *E* ]]; then
+  for v in AFTER; do CE="0:${v}_front_neutral 1:${v}_three-quarter 2:${v}_profile 7:${v}_determined 8:${v}_joy 10:${v}_calm"
+    PT=18 $S $O/dev/E_after_day.jpg F anime 640x640 6 420 "$CE"; PT=18 $S $O/dev/E_after_night.jpg F anime 640x640 6 420 "$CE" "light=night"; done
+  title "E · likeness: BEFORE (generic look-dev face) and AFTER (tuned to Jade), by day and at night. Front, three-quarter, profile; determined, joy, calm." 2544 26 E
+  convert $T/title_E.png $O/dev/E_before_day.jpg $O/dev/E_after_day.jpg $O/dev/E_before_night.jpg $O/dev/E_after_night.jpg -append -quality 90 $O/E_likeness.jpg; echo "-> $O/E_likeness.jpg"
 fi

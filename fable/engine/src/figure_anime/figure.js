@@ -1,6 +1,7 @@
 // ANIME look-dev copy of ../figure/figure.js (same public API; see fable/notes/anime_lookdev.md). New per-instance options:
-//   face: { expr: 'neutral'|'determined'|'joy'|'back'|'calm', amt: 0..1, blink: 0..1 (omit = automatic), gaze: [x, y] (-1..1), lookAt: [x, y, z] (world) }
-//   hand: -1 splayed .. 0 relaxed .. 1 fist, or { L, R }.   fig.light adds: keyDir, ink (outline gain), face (catchlights at night).
+//   face: { expr: 'neutral'|'determined'|'joy' (eyes open)|'back'|'calm' (eyes closed)|'laugh' (eyes closed in arcs), amt: 0..1, blink: 0..1 (omit = automatic), gaze: [x, y] (-1..1), lookAt: [x, y, z] (world) }
+//   hand: -1 splayed .. 0 relaxed .. 1 fist, or { L, R }.   hair: 'strands' = the classic fine strand hair for the back mass (the float shot).
+//     fig.light adds: keyDir, ink (outline gain), face (catchlights at night).
 // The instanced figure renderer. One Figure = body (mesh LODs, fibres, decals, hair) + tracks with their baked secondary
 // motion on the GPU; it draws any number of instances per frame behind the Drawable contract (SPEC §5): draw(ctx).
 //
@@ -22,7 +23,7 @@ import { J, NJ, STRIDE, boneScales } from './skeleton.js';
 import { skyParams } from '../sky.js';
 
 const ATH = 4096, SEG_HAIR = 26, SEG_STRAP = 14, SEG_TRAIL = 56, INST_F = 32, CL_SEG = 18, CL_AR = 8;
-const KEY = [0.45, 0.78, 0.44], EXPR = { neutral: 0, determined: 1, joy: 2, back: 3, calm: 4 };
+const KEY = [0.45, 0.78, 0.44], EXPR = { neutral: 0, determined: 1, joy: 2, back: 3, calm: 4, laugh: 5 };
 export const LANES = { main: [1.0, 0.48, 0.10], rose: [1.0, 0.24, 0.50], violet: [0.61, 0.42, 1.0], blue: [0.24, 0.55, 1.0], cyan: [0.13, 0.83, 0.93], mint: [0.24, 0.86, 0.59], gold: [1.0, 0.82, 0.25], coral: [1.0, 0.42, 0.37], magenta: [0.89, 0.29, 0.84] };
 export const DEFAULT_STORIES = [
   'I SPLIT MYSELF A THOUSAND WAYS  DOWN EVERY ROAD THE NIGHT COULD HOLD  EACH ONE A LIGHT I SENT AHEAD  EACH ONE A STORY TO UNFOLD  AND EVERY BRANCH REMEMBERS WHERE I STARTED FROM  MERGE ME BACK TO MAIN  EVERY ROAD I RAN BECOMES THE ONE  FOLD ME IN AGAIN  NOTHING THAT I LIVED CAN COME UNDONE  ',
@@ -40,7 +41,7 @@ layout(location=8) in vec4 i_pos;    // xyz, yaw
 layout(location=9) in vec4 i_par;    // scale, time, density, solid
 layout(location=10) in vec4 i_col;   // lane rgb, gain
 layout(location=11) in vec4 i_misc;  // track, variant, story, cel (-1 auto)
-layout(location=12) in vec4 i_fx;    // alpha, seed, flow, eyes open
+layout(location=12) in vec4 i_fx;    // alpha, seed, flow, hair (0 clumps, 1 fine strands)
 layout(location=13) in vec4 i_trail; // len, gain, mask, hands (left + 64 * right, each 0..63)
 layout(location=14) in vec4 i_tcol;  // trail rgb, width
 layout(location=15) in vec4 i_face;  // expression id + 0.99 * amount, blink (-1 auto), gaze x, gaze y
@@ -187,6 +188,7 @@ layout(location=2) in vec4 a_r2; // weights w0 w1 w2, hair type (0 back, 1 bun w
 layout(location=3) in vec4 a_r3; // hair: fan, spread ; strap: width ; trail: emitter type, index, local y
 out vec4 v_col; out vec4 v_aux; out float v_side; out float v_alpha; out float v_cov;
 void cull(){ gl_Position = vec4(2.0, 2.0, 2.0, 1.0); }
+vec3 hairNode(TI ti, int n){ n = clamp(n, 0, NODES - 1); return a_r2.x * simNode(ti, int(a_r1.x) * NODES + n) + a_r2.y * simNode(ti, int(a_r1.y) * NODES + n) + a_r2.z * simNode(ti, int(a_r1.z) * NODES + n); }
 vec3 strapNode(TI ti, int id, int n){ return simNode(ti, STRAP + id * ${STRAP_N} + clamp(n, 0, ${STRAP_N - 1})); }
 vec3 emitter(float time){
   TI ti = trackInfo(i_misc.x, time); int ty = int(a_r3.x + 0.5), ix = int(a_r3.y + 0.5);
@@ -198,7 +200,29 @@ void main(){
   v_col = vec4(0.0); v_aux = vec4(0.0); v_side = side; v_alpha = i_fx.x; v_cov = 1.0;
   if (i_fx.x <= 0.0) { cull(); return; }
   vec3 P, T; float width; vec3 colOpaque = vec3(0.0), colAdd = vec3(0.0); float seed = a_r1.w;
-  if (kind == 0) { cull(); return;                       // hair is drawn by the clump program
+  if (kind == 0) {                                       // fine strand hair (hair: 'strands'; the classic figure's hair): the back mass only, the clump program draws the rest
+    if (i_fx.w < 0.5 || i_misc.y > 0.5) { cull(); return; }
+    TI ti = trackInfo(i_misc.x, i_par.y);
+    float sl = s * (0.90 + 0.07 * sin(a_r3.x * 7.0 + 1.3) + 0.03 * hash(seed * 23.0)) * (1.0 - 0.08 * hash(i_fx.y * 3.3 + 1.0));
+    float sn = sl * float(NODES - 1); int i = int(floor(sn)); float f = sn - float(i); if (i >= NODES - 1) { i = NODES - 2; f = 1.0; }
+    vec3 p0 = hairNode(ti, i - 1), p1 = hairNode(ti, i), p2 = hairNode(ti, i + 1), p3 = hairNode(ti, i + 2);
+    P = cr(p0, p1, p2, p3, f); T = crT(p0, p1, p2, p3, f);
+    vec3 rnd = vec3(hash(seed * 91.0), hash(seed * 57.0 + 2.0), hash(seed * 13.0 + 5.0)) - 0.5;
+    vec3 cx = qrot(jquat(ti, ${J.chest}), vec3(1.0, 0.0, 0.0));
+    float part = (a_r3.x + 0.02 * (hash(seed * 31.0) - 0.5) >= 0.0 ? 1.0 : -1.0) * (0.100 - 0.050 * abs(a_r3.x));       // the same parting as the clumps (closed when it floats)
+    P += jpos(ti, 0) + rnd * a_r3.y * (0.3 + 1.2 * sl) * smoothstep(0.0, 0.15, sl) + cx * (part * (1.0 - simNode(ti, LAG).y) * smoothstep(0.37, 0.58, sl));
+    float tip = 1.0 - smoothstep(0.50, 1.0, s);
+    width = 0.018 * u_lod * (0.08 + 0.92 * pow(tip, 0.7)) * smoothstep(0.0, 0.06, s + 0.02);
+    vec3 Wq = place(P), Vq = normalize(u_camPos - Wq), Tw = normalize(yaw(T)), lane = i_col.rgb;
+    vec3 Hh = normalize(Vq + normalize(u_rimDir + vec3(0.0, 0.9, 0.0))); float th = dot(Tw, Hh), kk = pow(max(0.0, 1.0 - th * th), 48.0);
+    vec3 sheen = kk * (0.35 + 0.65 * hash(seed * 7.0)) * (mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.5) / (1.0 + 1.5 * dot(u_rimCol, vec3(0.5))) * 0.9 + vec3(0.070, 0.075, 0.15) * u_sunAmt);
+    vec3 Nh = normalize((Wq - place(mix(jpos(ti, ${J.chest}), jpos(ti, ${J.head}), clamp(1.0 - sl * 1.6, 0.0, 1.0)))) * vec3(1.0, 0.2, 1.0) + vec3(0.0, 0.1 * (1.0 - sl), 0.0));
+    float rimMask = u_rimBoth + (1.0 - u_rimBoth) * smoothstep(-0.2, 0.7, dot(Nh, u_rimDir)), back = smoothstep(0.1, 0.9, dot(-Vq, u_sun));
+    vec3 rim = u_rimCol / (1.0 + 1.5 * dot(u_rimCol, vec3(0.5))) * 0.30 * pow(1.0 - abs(dot(Nh, Vq)), 5.0) * rimMask + vec3(1.0, 0.40, 0.09) * (back * step(0.7, hash(seed * 5.0)) * 0.10 * smoothstep(0.7, 1.0, s) * u_trans);
+    vec3 alb = celColor(${PART.HAIR}) * (0.85 + 0.3 * hash(seed * 3.0)), lightc = u_amb + (vec3(1.0) - u_amb) * (u_sunAmt * 0.9);
+    colOpaque = alb * lightc * solid + (sheen + rim) * (0.45 + 0.55 * solid);
+    v_cov = smoothstep(1.0, 0.86, s);
+    v_aux = vec4(celColor(${PART.HAIR}), u_sunAmt * solid);
   } else if (kind == 1) {
     TI ti = trackInfo(i_misc.x, i_par.y); int id = int(a_r0.y + 0.5);
     float sn = s * float(${STRAP_N - 1}); int i = int(floor(sn)); float f = sn - float(i); if (i >= ${STRAP_N - 1}) { i = ${STRAP_N - 2}; f = 1.0; }
@@ -227,6 +251,7 @@ void main(){
   if (u_pass == 0) {
     if (kind == 2) { cull(); return; }
     v_col = vec4(colOpaque, 1.0);
+    v_cov *= (kind == 0) ? mix(comp, 1.0, 0.3) : 1.0;
   } else {
     if (kind != 2) { cull(); return; }
     float coc = u_aperture * abs(1.0 / u_focus - 1.0 / dist) * u_H;
@@ -292,7 +317,7 @@ export class Figure {
   _buildRibbons(vao) {
     const body = this.body, V = [], I = [];
     const strip = (seg, r0, r1, r2, r3) => { const base = V.length / 16; for (let k = 0; k <= seg; k++) for (const side of [-1, 1]) V.push(r0[0], r0[1], k / seg, side, ...r1, ...r2, ...r3); for (let k = 0; k < seg; k++) { const a = base + k * 2; I.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); } };
-    const nBack = 0, nHair = 0;
+    this.body.strands.forEach((s, i) => strip(SEG_HAIR, [0, i], [s.g[0], s.g[1], s.g[2], s.seed], [s.w[0], s.w[1], s.w[2], s.type], [s.fan, s.spread, 0, 0])); const nBack = I.length, nHair = I.length;
     body.straps.forEach((s, i) => strip(SEG_STRAP, [1, i], [0, 0, 0, 0.5], [0, 0, 0, 0], [s.width, 0, 0, 0])); const nStrap = I.length;
     const G = HAIR.NODES;
     this.emitters = [
@@ -302,7 +327,7 @@ export class Figure {
       { name: 'hemL', r3: [1, SIM.leg + 7, 0, 0] }, { name: 'hemR', r3: [1, SIM.leg + 15, 0, 0] },
     ];
     this.emitters.forEach((e, i) => strip(SEG_TRAIL, [2, i], [0, 0, 0, 0], [0, 0, 0, 0], e.r3)); const nTrail = I.length;
-    this.rib = { back: [0, nBack], rest: [nBack, nHair - nBack], strap: [nHair, nStrap - nHair], trail: [nStrap, nTrail - nStrap], };
+    this.rib = { back: [0, nBack], rest: [nBack, nHair - nBack], strap: [nHair, nStrap - nHair], trail: [nStrap, nTrail - nStrap], perStrand: SEG_HAIR * 6, nBack: this.body.strands.length };
     this.vaoRib = vao(new Float32Array(V), 16, 4, new Uint32Array(I));
   }
   _buildClumps(vao) {      // every clump: (CL_SEG + 1) rings of CL_AR + 1 vertices; two index sets (full, and every 3rd ring / 2nd spoke for crowds)
@@ -414,7 +439,7 @@ export class Figure {
     for (let lvl = 0; lvl < NB; lvl++) {
       const list = buckets[lvl]; if (!list.length) continue;
       const frac = Math.pow(0.5, lvl), n = list.length;
-      let maxSolid = 0, minSolid = 1, anyTrail = false; for (const o of list) { const s = o.solid || 0; maxSolid = Math.max(maxSolid, s); minSolid = Math.min(minSolid, s); if (o.trail && o.trail.len > 0) anyTrail = true; }
+      let maxSolid = 0, minSolid = 1, anyTrail = false, anyStrand = false; for (const o of list) { const s = o.solid || 0; maxSolid = Math.max(maxSolid, s); minSolid = Math.min(minSolid, s); if (o.trail && o.trail.len > 0) anyTrail = true; if (o.hair === 'strands') anyStrand = true; }
       gl.bindBuffer(gl.ARRAY_BUFFER, this.instBuf); gl.bufferData(gl.ARRAY_BUFFER, this._instData(list), gl.DYNAMIC_DRAW);
       if (opaque) {
         this._uniforms(this.meshProg, ctx, camPos); const U = this.meshProg.u, M = this.meshes[lvl <= 1 ? 0 : lvl <= 3 ? 1 : 2];
@@ -428,6 +453,7 @@ export class Figure {
         this._uniforms(this.clumpProg, ctx, camPos); gl.bindVertexArray(this.vaoClump);
         if (this.debugNoClump) { /* look-dev: the cap alone */ } else if (lvl <= 3) gl.drawElementsInstanced(gl.TRIANGLES, this.clump.n, gl.UNSIGNED_INT, 0, n); else gl.drawElementsInstanced(gl.TRIANGLES, this.clump.n2, gl.UNSIGNED_INT, this.clump.off2, n);
         this._uniforms(this.ribProg, ctx, camPos); gl.bindVertexArray(this.vaoRib);
+        if (anyStrand) { const hf = Math.min(1, Math.max(0.05, Math.sqrt(frac) * 1.15)), ns = Math.max(10, Math.round(rib.nBack * hf)); gl.uniform1f(UR.u_lod, Math.sqrt(rib.nBack / ns)); gl.drawElementsInstanced(gl.TRIANGLES, ns * rib.perStrand, gl.UNSIGNED_INT, 0, n); }
         if (lvl <= 6) { gl.uniform1f(UR.u_lod, 1); gl.drawElementsInstanced(gl.TRIANGLES, rib.strap[1], gl.UNSIGNED_INT, rib.strap[0] * 4, n); }
       } else {
         if (L.fibres > 0.003) {
@@ -464,8 +490,8 @@ export class Figure {
       const gz = fc.lookAt ? this._gaze(o, fc.lookAt) : (fc.gaze || [0, 0]);
       // seeded per-instance variation: a few hundredths of a second, a little height (so a crowd reads as people)
       a.set([p[0], p[1], p[2], o.yaw || 0, (o.scale ?? 1) * (1 + vary * (h1(seed * 1.7) - 0.5) * 0.05), (o.time || 0) + vary * (h1(seed * 2.9) - 0.5) * 0.05, o.density ?? 1, o.solid ?? 1, lane[0], lane[1], lane[2], o.gain ?? 1,
-        this.trackId(o.track ?? 0), variant, Math.min(this.nStories - 1, o.story || 0), o.cel ?? -1, o.alpha ?? 1, seed, o.flow ?? 0, o.eyes ? 1 : 0,
-        tr.len || 0, tr.gain ?? 1, mask, hq(hL) + 64 * hq(hR), tc[0], tc[1], tc[2], tr.width || 0.03, eid + 0.99 * Math.min(1, Math.max(0, fc.amt ?? 1)), fc.blink ?? (eid === 2 || eid === 4 ? 0 : -1), gz[0], gz[1]], k);
+        this.trackId(o.track ?? 0), variant, Math.min(this.nStories - 1, o.story || 0), o.cel ?? -1, o.alpha ?? 1, seed, o.flow ?? 0, o.hair === 'strands' ? 1 : 0,
+        tr.len || 0, tr.gain ?? 1, mask, hq(hL) + 64 * hq(hR), tc[0], tc[1], tc[2], tr.width || 0.03, eid + 0.99 * Math.min(1, Math.max(0, fc.amt ?? 1)), fc.blink ?? (eid === 4 || eid === 5 ? 0 : -1), gz[0], gz[1]], k);
     });
     return a;
   }

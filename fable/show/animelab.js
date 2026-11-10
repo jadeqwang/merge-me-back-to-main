@@ -8,7 +8,8 @@
 //   mode=X  crowd of 64: cell 0 night, 1 sunrise        mode=P  perf: cell 0 = 1,024 far, 1 = hero + 255, 2 = one hero close (use with --bench)
 //   mode=D  clip, t in seconds: 0-3 `free` by day, 3-6 `violet` at night; --q "mode=D&cam=head" follows the head (face stability check)
 //   mode=M  medium / detail checks: 0 half body front, 1 back three-quarter (disc, RARE EARTH), 2 bun close, 3-5 right hand (fist, relaxed, splayed),
-//           6 the figure at 1/3 of frame height (crop to judge the face at film size), 7 float top-down, 8 violet seated close, 9 catch open half body
+//           6 the figure at 1/3 of frame height (crop to judge the face at film size), 7 float top-down (10: with hair: 'strands'), 8 violet seated close, 9 catch open half body,
+//           11-13 the bun variants (bun, bun_write, bun_one) at night, 14 bun by day from behind
 //   mode=Z  one custom cell: --q "mode=Z&track=idle&tt=3&turn=0.5&el=0&dist=5&light=day&expr=joy&hand=1&variant=bun&ty=0.95&fov=30"
 import { Figure as FigOld, LANES as FL } from '../engine/src/figure/figure.js';
 import { Figure as FigNew } from '../engine/src/figure_anime/figure.js';
@@ -66,7 +67,7 @@ function cell(c) {
     if (!figs[k] || (c.only && c.only !== k)) continue;
     const s = both ? (k === 'old' ? -sep / 2 : sep / 2) : 0, ctr = [right[0] * s, 0, right[2] * s], pos = [ctr[0] - o[0], 0, ctr[2] - o[1]];
     const dTrue = Math.hypot(cam.pos[0] - ctr[0], cam.pos[1] - 0.9, cam.pos[2] - ctr[2]), dPos = Math.hypot(cam.pos[0] - pos[0], cam.pos[1] - 0.9, cam.pos[2] - pos[2]);
-    inst[k] = [{ pos, yaw, track: name, time: T, lane: FL[c.lane || lt.lane], variant: c.variant ?? lt.variant, face: c.face, hand: c.hand, lodBias: Math.max(1, dPos / dTrue), seed: c.seed }];
+    inst[k] = [{ pos, yaw, track: name, time: T, lane: FL[c.lane || lt.lane], variant: c.variant ?? lt.variant, face: c.face, hand: c.hand, hair: c.hair, lodBias: Math.max(1, dPos / dTrue), seed: c.seed }];
   }
   return { cam, env: ENV[lt.env](), inst, road: lt.road, night: lt.env === 'night' || lt.env === 'blue', day: lt.env === 'day' };
 }
@@ -99,8 +100,10 @@ function cellsFor(i, t) {
     if (i === 2) return cell({ track: 'idle', T: 3, turn: 40 * DEG, light: 'day', dist: 1.5, fov: 22, head: true, variant: 'bun', only: 'anime' });
     if (i < 6) return cell({ track: 'idle', T: 3, turn: -40 * DEG, light: 'day', dist: 0.75, fov: 24, aim: 12, hand: [1, 0, -1][i - 3], only: 'anime' });
     if (i === 6) return cell({ track: 'idle', T: 3, turn: 20 * DEG, light: 'day', dist: 9.6, ty: 0.9, sep: 1.3 });
-    if (i === 7) return cell({ track: 'float', T: 6, turn: 0, az: 0.0, el: 89 * DEG, light: 'night', dist: 5.0, ty: 0, sep: 2.4 });
+    if (i === 7 || i === 10) return cell({ track: 'float', T: 6, turn: 0, az: 0.0, el: 89 * DEG, light: 'night', dist: 5.0, ty: 0, sep: 2.4, hair: i === 10 ? 'strands' : undefined, face: F('calm') });   // 10: the anime figure with hair: 'strands'
     if (i === 8) return cell({ track: 'violet', T: 27, turn: 40 * DEG, light: 'nightV', variant: 'bun_one', dist: 2.6, ty: 0.75, sep: 1.1, face: F('back', { gaze: [-0.5, 0.2] }) });
+    if (i >= 11 && i <= 13) return cell({ track: 'violet', T: [16.5, 18.5, 24][i - 11], turn: [40, 40, 150][i - 11] * DEG, light: 'nightV', variant: ['bun', 'bun_write', 'bun_one'][i - 11], dist: 2.6, ty: 1.2, sep: 1.2, face: F('calm', { amt: 0.3 }) });
+    if (i === 14) return cell({ track: 'idle', T: 3, turn: 150 * DEG, light: 'day', variant: 'bun', dist: 2.7, ty: 1.22, sep: 0.95 });
     return cell({ track: 'catch', T: 12.9, turn: 20 * DEG, light: 'day', dist: 2.9, ty: 1.25, sep: 1.5, hand: -1, face: F('joy') });
   }
   if (mode === 'Z') {

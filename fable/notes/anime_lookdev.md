@@ -1,4 +1,6 @@
-# Anime look-dev for the protagonist (experiment; NOT in the film)
+# Anime figure for the protagonist (look-dev, then ADOPTED for the film 2026-11-10; switch `fig=classic`)
+
+**Read the section "ADOPTION PASS" at the bottom first: it is the current state. Everything above it is the look-dev record.**
 
 Asked by Jade: "how do you feel about experimenting with anime styling for the protagonist and seeing if you like that?"
 This is that experiment, isolated from the film: nothing under `fable/engine/src/figure/`, `fable/show/seq/`, `main.js`, `cast.js`,
@@ -109,3 +111,25 @@ about 60 px (close and medium, day and night; the violet branch above all). It c
 in the float shot, and it spends the film's "you see her for the first time in daylight" reveal unless the face is held back until bar 129.
 The low-risk path: swap the import (one line), keep `face: { expr: 'calm' }` / backs / silhouettes through the night acts except the violet
 branch, open her eyes at the catch, and keep the current strand hair for the float.
+
+---
+# ADOPTION PASS (2026-11-10). Director's verdict: the face is adopted for the whole film, switchable (`fig=anime` default, `fig=classic`).
+Status line (kept current): **milestones 1 (likeness) and 2 (hair) done and committed; next 3 (switch in cast.js), 4 (defaults), 5 (check in the film).**
+
+## 1. Likeness (done). Sheet `work_fable/stills/anime/E_likeness.jpg` (`sheets_all.sh E`; the BEFORE rows are `dev/E_before_{day,night}.jpg`, rendered from dc7f714)
+References: her own selfie and the character sheet (looked at locally only). What a designer would take from them, and where it lives:
+- face outline: round-oval, full cheeks, soft short chin (head loft rings 1.441-1.520 in `body.js`; was a narrow V with a pointed chin)
+- forehead and hairline: high and open, drawn back from a CENTRE parting in one smooth arch, rounded at the temples (`hairD` in `body.js` and `shade.js`, keep in step; was off-centre curtain bangs)
+- eyes: long almond, a little wider apart, outer corners up (`FACE.TILT`), flat upper lid with a short level flick, bigger overall (EW 0.0262; her note: larger eyes read as her), iris very dark brown, rounder
+- brows: straight and full, rising a little outward, short tail, closer to the eye
+- nose: a softer, wider mark; mouth: full lips (rose lower lip, a hint of the upper one), which is what makes her an adult
+- expressions: `joy` now has OPEN eyes (lower lids rise with the smile); the old closed-eye arcs are `laugh`. `calm` = eyes closed (use `amt` 0.3 for lowered lids).
+Not done: her glasses (the character sheet has none; it would be the strongest single likeness cue: a decision for Jade).
+
+## 2. Hair (done)
+- (a) the cape: the two back curtains were pushed 10.5 cm sideways from the nape down, so from the front they flared past the shoulders. Now the hair falls straight
+  behind the shoulders and the parting opens only BELOW the shoulder line, behind the jacket (`clumpVS`: `smoothstep(0.37, 0.58, sl)`, outer clumps move less).
+  The disc and RARE EARTH still show from behind (the top of the disc is slightly covered). Checked on idle, run_loop, free.
+- (b) float: per-instance `hair: 'strands'` draws the classic figure's 1,000 fine strands (same guides, same sim) instead of the back clumps; side locks, cap, face
+  and body stay, so the character does not change at the cuts. Cost only in a LOD bucket that contains such an instance. Lab: `mode=M` cell 10.
+- (c) `bun`, `bun_write`, `bun_one` checked at night and by day (`mode=M` cells 11-14); `fig.body.pencilTip` unchanged.
