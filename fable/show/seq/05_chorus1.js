@@ -82,7 +82,7 @@ export default function seq(K) {
 
   return { name: '05_chorus1', t0, t1, frame(t) {
     return K.cut(t, [
-      { t0, f: () => {
+      { t0, f: () => {      // r3: the line is three rows (MERGE ME / BACK TO / MAIN): as two, the end of "BACK TO MAIN" reached the head of the sibling who runs in from the left at 75.0-75.5
         const a = HP.at(G.sA(t)), f = frA(t), u = seg(t, t0, tB), tau = G.tauA(t), d = lerp(3.1, 2.35, sm(u));
         const camera = { pos: K.rel(f, d, 0.05, 0.28), target: K.rel(f, 0, 0.72, 1.04), fov: 48, focusDist: d, aperture: 0.035 };
         let flash = 0; const glows = [], clear = [[a.x, a.z, 2.5]];
@@ -92,7 +92,7 @@ export default function seq(K) {
           cast.actor(R.id, { lane: R.color }).set({ pos: [q.x, 0, q.z], yaw: Math.atan2(q.tx, q.tz), track: 'sprint_loop', time: R.clock(t), alpha: 1 - ss(t, R.tEnd - 0.2, R.tEnd + 0.02), gain: 0.8 }); clear.push([q.x, q.z, 2.5]); }
         cast.actor('hero').set({ pos: [a.x, 0, a.z], yaw: K.yawOf(a), track: 'sprint_loop', time: G.clockA(t), gain: 1 + 1.3 * flash });
         return { camera, env: { figLight: FL }, world: false, extra: [...W.draw(tau, { text: 0.8, flow: 0.2, flowSpeed: 9, ...far(80, 70), lights: { clear, gain: 0.4, air: 160 }, merge: { headGain: 2, headLen: 0.12, fogDist: 80, nodeAir: 70 } }), W.glow(glows)],
-          type: [K.lyric(7, camera, { font: 'hook', x: -0.93, y: 0.40, rows: [2, 3], dist: 30, px: 72, reflGain: 0.04 })], hud: K.hudMain(t, { count: W.count(tau) }) }; } },
+          type: [K.lyric(7, camera, { font: 'hook', x: -0.93, y: 0.33, rows: [2, 2, 1], dist: 30, px: 72, reflGain: 0.04 })], hud: K.hudMain(t, { count: W.count(tau) }) }; } },
       { t0: tB, f: () => {
         const camera = { ...camB(t), far: 30000 }, one = t >= tOne, hx = G.mainX(t);
         const d = new Float32Array(64 * 7); let n = 0; const put = (x, z, c, g, rad) => { d.set([x, 0.6, z, c[0] * g, c[1] * g, c[2] * g, rad], n * 7); n++; };
