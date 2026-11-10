@@ -59,7 +59,7 @@ export function morning(K) {
     const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); const L = cum[cum.length - 1], Ld = cum[nd - 1];
     const gk = []; for (let i = 0; i < nd; i++) gk.push([cum[i] / L, tm[i]]); for (let d = 2; d <= NEAR; d += 2) gk.push([(Ld + d) / L, gAhead(d, NEAR + FAR)]);
     const nodes = TK.map((tk) => { let i = 0; while (i < nd - 1 && tm[i + 1] <= tk) i++; return { s: cum[i], r: 0.24, g: tk }; });
-    nearDefs.push({ pts, gk, color: K.hex(K.LANE.main), width: 0.045, text: 'main  back to main', textSize: 0.5, textSide: -1, textStart: Ld + 1.2, nodes, step: 0.2 });
+    nearDefs.push({ pts, gk, color: K.hex(K.LANE.main), width: 0.045, text: 'main  back to main', textSize: 0.5, textSide: 1, flip: true, textStart: 4.2, textGap: 6, nodes, step: 0.2 });     // reads from the east / north side: shot B's side of her dance
     const fp = [], fg = []; for (let d = NEAR; d <= NEAR + FAR; d += 10) { fp.push([e[0] + d, e[1]]); fg.push(gAhead(d, NEAR + FAR)); }
     farDefs.push({ pts: fp, gs: fg, color: K.hex(K.LANE.main), width: 0.045, smooth: false });
     J.push({ id: 0, hero: true, lane: 'main', mainLen: Ld, end: [e[0] + NEAR + FAR, e[1]] }); }

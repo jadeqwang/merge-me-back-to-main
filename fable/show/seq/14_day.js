@@ -16,17 +16,17 @@ export default function seq(K) {
   const tB = bar(139), tC = bar(142), tD = bar(144);
   // her light is the day key from the first frame (13_catch ends on it); the sky finishes turning blue during shot A
   const DAY = { ambient: [0.70, 0.73, 0.88], rimCol: [0, 0, 0], rimBoth: 0, sunAmt: 1, under: 0, emissive: 0, fibres: 0, trans: 0 };
-  const grad = (t) => lerp(1, 1.9, ss(t, t0, bar(139)));                                  // the blue comes down toward the horizon as the day settles
+  const grad = (t) => lerp(1, 1.55, ss(t, t0, bar(139)));                                  // the blue comes down toward the horizon as the day settles
   const env = (t, o = {}) => ({ figLight: DAY, outline: { strength: 1, width: 1.3 }, sun: { grad: grad(t) }, ground: { ripple: 0.016, reflGain: 0.8 }, ...o });
   const world = (o = {}) => ({ out: { hide: true }, lights: false, text: 0.9, minPx: 2.2, haloPx: 0, halo: 0, ...o });
   const hud = (t) => K.hudMain(t, { count: A.count(t) }), pop = (t) => { let f = 0; for (const tk of A.TK) if (t >= tk) f += 0.1 * Math.exp(-(t - tk) * 9); return f; };
   // B: keyed by hand round the leap. pos is absolute (relative to CATCH), the target rides on her (softened) with an offset
   const camB = curve([
-    [tB,        3.25, 0.5,  2.6,   -0.1, 1.05, 0.25],
-    [bar(140),  3.85, 0.5,  3.5,   0.0, 1.05, 0.4],
-    [bar(141),  4.75, 0.36, 6.6,   0.5, 1.42, 0.5],
-    [bar(141.5), 4.85, 0.42, 7.4,  0.6, 1.2, 0.6],
-    [tC,        4.75, 0.5,  8.7,   0.3, 1.15, 0.4]]), WH = A.jointAt(tB);                      // the camera's place is relative to where she whirls
+    [tB,        2.5,  0.5,  2.1,   -0.1, 1.05, 0.2],
+    [bar(140),  2.9,  0.5,  2.9,   0.0, 1.05, 0.3],
+    [bar(141),  3.5,  0.36, 6.1,   0.4, 1.42, 0.4],
+    [bar(141.5), 3.6, 0.42, 6.9,   0.5, 1.2, 0.5],
+    [tC,        3.5,  0.5,  8.2,   0.3, 1.15, 0.4]]), WH = A.jointAt(tB);                      // the camera's place is relative to where she whirls
   // C: the first new branch and everyone who comes from her: where they are (centroid) and the way they are going
   const c1 = A.J[1], fam = A.J.filter((j) => j.top === c1), grp = (t) => { let x = 0, z = 0, n = 0; for (const j of fam) if (t >= j.tb) { const a = A.runnerAt(j, t); x += a.x; z += a.z; n++; } return { x: x / n, z: z / n }; };
   const GD = (() => { const a = grp(tC + 0.05), b = grp(tD), l = Math.hypot(b.x - a.x, b.z - a.z); return [(b.x - a.x) / l, (b.z - a.z) / l]; })();
@@ -37,7 +37,7 @@ export default function seq(K) {
         return { camera, env: env(t), world: world(), extra: extra(), type: [K.lyric(24, camera, { font: 'hook', x: -0.93, y: 0.08, rows: [1, 2], px: 70, dist: 34, out: bar(138.7), fade: 0.3, ink: 1, reflect: false })], hud: hud(t), flash: 0.45 * Math.exp(-(t - t0) * 4.5) }; } },
       { t0: tB, f: () => { const k = camB(t), s = A.soft(t, 0.35), camera = { pos: [WH[0] + k[0], k[1], WH[2] + k[2]], target: [s.x + k[3], k[4], s.z + k[5]], fov: 38, far: 40000 };
         return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
-      { t0: tC, f: (tt, u) => { const g = grp(t), e = sm(u), d = 4.6 + 2.6 * e, camera = { pos: [g.x + GD[0] * d + GD[1] * 1.3, 0.75 + 1.25 * e, g.z + GD[1] * d - GD[0] * 1.3], target: [g.x - GD[0] * 0.8, 0.98 - 0.1 * e, g.z - GD[1] * 0.8], fov: 40, far: 40000 };
+      { t0: tC, f: (tt, u) => { const G = grp(t), a = A.runnerAt(c1, t), g = { x: lerp(a.x, G.x, 0.3), z: lerp(a.z, G.z, 0.3) }, e = sm(u), d = 4.3 + 1.5 * e, camera = { pos: [g.x + GD[0] * d + GD[1] * 1.2, 0.75 + 0.85 * e, g.z + GD[1] * d - GD[0] * 1.2], target: [g.x - GD[0] * 0.8, 0.98 - 0.06 * e, g.z - GD[1] * 0.8], fov: 40, far: 40000 };
         return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
       { t0: tD, f: () => { const camera = L.lift(t);
         return { camera, env: env(t), world: world({ minPx: 2.0 }), extra: extra(),

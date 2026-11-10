@@ -35,7 +35,7 @@ export default function seq(K) {
     const capM = (PX / 1080) * 2 * camera.R * Math.tan((camera.fov * Math.PI) / 360);     // a label's cap height in metres on the ground
     const lab = ([txt, x, z, align, tin, on, rows]) => { const p = K.project(camera, [x, 0, z + (on ? capM / 2 : 0)]); return K.label(txt, camera, { mode: 'ground', px: PX, x: p.x, y: p.y, ink: 1, align, rows, alpha: ss(t, tin, tin + 0.25) * (1 - ss(t, L.tHit - 0.55, L.tHit - 0.15)) }); };
     const far = { head: t, minPx: lerp(2.0, 2.2, m), nodeMinPx: 2.4, haloPx: 0, halo: 0 };
-    return { camera, env: { figLight: DAY, outline: { strength: 1 - m, width: 1.3 }, sun: { grad: 1.9 },
+    return { camera, env: { figLight: DAY, outline: { strength: 1 - m, width: 1.3 }, sun: { grad: 1.55 },
         ground: { fogAmt: 1 - m, ripple: lerp(0.016, 0, m), f0: lerp(0.25, 0.08, m), wet: 1 - m, reflGain: 0.75 * (1 - m) }, grade: { vignette: 0.1 } },
       world: { out: { hide: true }, lights: false, text: 0, minPx: lerp(2.0, 2.1, m), haloPx: 0, halo: 0, nodeMinPx: 2.2, conn: { minPx: 1.2 } },
       extra: [...A.roads(t, { ...far, textGain: 0 }), ...(m > 0.5 ? [marks.drawable({ head: 1e9, minPx: 1.6, haloPx: 0, halo: 0 }), arc.drawable({ head: 1e9, minPx: 0.01, widthScale: 0, nodeMinPx: 2.8, haloPx: 0 })] : [])],
