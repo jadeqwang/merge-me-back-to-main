@@ -39,3 +39,17 @@ Sheets (git-ignored): `work_fable/out/reel/m3/` (reel, real figure), `work_fable
   Removed: the nearest-pose phase search and the 2.15 s `fork_L/R` section. `fork_L` / `fork_R` are no longer used by the film (kept on disk).
   Dev track lists (`--q tracks=...` in actA.md) need `fork_go_L,fork_go_R` instead of `fork_L,fork_R`.
 - Sheets: `work_fable/out/reel/m3/fork_go_front.jpg` (pair, front), `fork_go_tq.jpg` (0.7-2.2 s every 0.1 s), `work_fable/stills/m3/fork_film.jpg` (film 2.5-7.75).
+
+## 3. Drop, crowd join at 153.4-154.0 (seq 10) — done: `drop_join` (`recipes_choreo.py`: `_drop(join=True)`; `drop` itself is bit-identical to before)
+- Same clock (`song_t0` 151.6695), same length (1,761 frames), same `meta.center` as `drop`. Identical to `drop` (and to the end of `build`, 0.07 mm)
+  up to 152.74; then, instead of the butterfly, the coil is HELD with breath only (max joint speed 18 mm/s) to b89.3 = 154.04. Then: sinks and loads
+  away from the direction of travel (0.24 s: hips -8.5 cm, -9 cm back, torso folds 14 deg), leaps the butterfly's travel (hips 1.5 m in 0.48 s, peak
+  hips 0.81 m, feet land 14 % early) into `drop`'s own bow-stance chamber at 154.758, and the b90.1 punch (154.908) is `drop`'s.
+- Measured: `drop_join` == `drop` frame for frame from track frame 186 = song 154.769 to the end (max difference 0.0); `meta.same_as_drop_from` = 3.089.
+  So a copy may stay on `drop_join` for the whole act or switch to `drop` anywhere after 154.77.
+- Wired (`actC_form.js`, `cast.js` TRACKS): copies play `drop_join` from b88.3 to b93 with their origin on their slot (as in the coil); the hero plays
+  `drop`. Removed: the one-frame coil -> crouch switch on the 11 ms/m ripple and the per-copy origin shift that kept the hips in place (`tSw`, the
+  `coil`/`low` offset). The join is now in UNISON (all copies leave the coil on b89.3); a ripple can be had again by delaying `time` per ring before
+  154.04 and catching up by 154.77, not done. Since every copy now travels the butterfly's (0.99, 0.98) m like the hero, the formation keeps its
+  shape round her and the run start points `P[i].A` moved by the same small offset.
+- Sheets: `work_fable/out/reel/m3/drop_join_front.jpg` (153.95-155.0 every 0.07 s), `work_fable/stills/m3/join_film.jpg` (film, 153.3-155.1).
