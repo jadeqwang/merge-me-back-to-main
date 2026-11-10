@@ -4,7 +4,18 @@ Branch `fable/merge`. A third, independent cut of "Merge", made end to end by Cl
 If you are a new session picking this up: read `fable/SPEC.md` (the direction, look, timeline, contracts), then this file, then the
 workstream notes in `fable/notes/`.
 
-## State (updated 2026-11-10, checkpoint 5)
+## State (updated 2026-11-10, checkpoint 6): READ THIS BLOCK FIRST, the older text below is history
+
+- All five act passes on v1 are done (notes per act in `fable/notes/act{A..E}.md`), plus motion fixes M3 (`fable/notes/M3_motionfix.md`).
+- v2 is rendered: `work_fable/out/v2.mp4` (1080p, 505 s to render). Command:
+  `node fable/tools/render.mjs --show /fable/show/main.js --from 0 --to 282.5 --res 1920x1080 --fps 30 --mb 4 --workers 4 --audio --mp4 work_fable/out/v2.mp4`
+- Review copies for Jade live in `review/fable_v1/` and `review/fable_v2/` (each file under 100 MB; two-pass x264 + AAC).
+- Director's notes on v2: `fable/NOTES_v2.md`. That file is the current task list (round 2 fix passes, one agent per act group:
+  A+B, C, D+E; each also checks its act in motion with dense strips).
+- After round 2: render v3 at 1080p, review, then master (consider 4K), encodes for X (2-pass x264 ~12M, maxrate 16M, High@4.1,
+  AAC 256k, faststart) and YouTube, and a `review/fable_v3/` copy.
+
+## State at checkpoint 5 (history)
 
 Done
 - Recon: both earlier cuts reviewed (v5a on `claude/wonderful-mccarthy-f90kll`, v6 "written in text" on `claude/v6-text`), shipped work in `~/Documents/1-music-shipped` surveyed.
