@@ -115,3 +115,8 @@ Against the classic figure at 172.5, interleaved at the end of the pass: anime 2
 - 200-202 at 720p: the strand lines on the cap are one pixel wide; they read at 1080p.
 - Front view at eye level: the lit strip of collarbone under the jaw's shadow is narrow; neck and neckline are mostly one shadow tone.
 - Not watched as video: everything above was judged on stills, 0.1 s strips and three 1/30 s strips (236.05-236.25, 236.55-236.75, 237.70-237.90).
+
+## Outputs (git-ignored)
+- `work_fable/out/r3_DE.mp4`: 181.0-282.5, 1280x720, 30 fps, mb 4, audio (3,045 frames, 108 s to render). `work_fable/stills/r3_DE/final_sheet.jpg`: one frame per 2 s from it.
+- Strips: `x1.jpg` (handover, fork, b145 at 0.1-0.2 s), `x2.jpg` (pull-up, the wait), `hx.jpg` (1/30 s at the two track switches and the cut), `v1..v4.jpg` (the re-check),
+  `lab/*.jpg` (figure lab before / after), `base/crops*.jpg`, `base/c1.jpg`, `base/c2.jpg` (film crops for the figure items and the other passes' requests).
