@@ -187,7 +187,7 @@ def sprint_stop_look():
     t_stop = 89.80 - S0
     a, cut = run_to_stand(_sprint(), 4.93, t_stop)
     m = M.concat(a, idle_seg(16.0), halflife=0.35, at=min(a.duration, t_stop + 1.6))
-    m = M.trim(m, 0.0, 14.4)
+    m = M.despike(M.trim(m, 0.0, 14.4), joints=("foreArmL", "foreArmR", "handL", "handR"))
     t = m.times
     # out of breath: big fast breaths that calm down
     env = M.ramp(t, t_stop - 0.2, t_stop + 0.5, t_stop + 3.0, t_stop + 8.0)
@@ -245,7 +245,7 @@ def violet():
     a, cut = run_to_stand(_sprint(), lambda t: np.interp(t, [0, 5.0, 8.0], [4.5, 4.25, 3.9]), t_stop)
     t_sit = 22.75                                             # the squat begins
     m = M.concat(a, idle_seg(20.0, 5.0), halflife=0.35, at=min(a.duration, t_stop + 1.5))
-    m = M.trim(m, 0.0, t_sit)
+    m = M.despike(M.trim(m, 0.0, t_sit), joints=("foreArmL", "foreArmR", "handL", "handR"))
     k_st = int((t_stop + 0.6) * 60)
     h0 = M.heading(m, k_st)
     Q = M.rot_y(h0)
@@ -428,7 +428,7 @@ def rise():
         Pk = k8.P()
         k7.leg(s, Pk[J["foot" + s]], "world")
         k7.R[J["foot" + s]], k7.R[J["toe" + s]] = k8.R[J["foot" + s]], k8.R[J["toe" + s]]
-    keys = [(0.0, p0), (1.0, k1, "in"), (1.75, k2, "lin"), (acc, k3, "out"), (acc + 1.1, k4, "io"),
+    keys = [(0.0, p0), (1.0, k1, "in"), (1.78, k2, "lin"), (acc + 0.045, k3, "out"), (acc + 1.1, k4, "io"),
             (5.7, k5, "io"), (7.75, k6, "io"), (8.45, k7, "out"), (9.0, k8, "io")]
     m = M.keyframes(keys, overlap=0.06, soften=5.0)
     m = M.drift(m, ["upArmL", "upArmR"], deg=2.5, period=4.0, seed=3, weight=M.ramp(m.times, 2.4, 3.2, 7.0, 8.2))
@@ -541,7 +541,7 @@ def fork_L():
     seg.root[:, 0] = seg.root[0, 0] + (seg.root[:, 0] - seg.root[0, 0]) * f
     seg.root[:, 2] = seg.root[0, 2] + (seg.root[:, 2] - seg.root[0, 2]) * 0.3      # no drift forward/back
     seg = M.ground_clamp(M.foot_lock(seg), floor=0.0)
-    m = M.time_warp(seg, [(0.0, 0.0), (0.45, 0.42), (1.05, 1.0), (seg.duration, 2.05)])
+    m = M.time_warp(seg, [(0.0, 0.0), (0.45, 0.40), (1.05, 0.967), (seg.duration, 2.05)])
     st = idle_seg(1.0)
     m = M.concat(m, st, halflife=0.22)
     m = M.trim(m, 0.0, 2.5)
@@ -646,3 +646,409 @@ def land():
     m = M.breathe(m, period=2.6, depth=1.3, sway=0.0)
     m = M.ground_clamp(m, floor=0.0)
     return finish(m, 125.343 - acc, [(acc, "impact"), (acc + 1.15, "head_up"), (acc + 1.739, "ready")])
+
+
+# ----------------------------------------------------------------------------- free (the outro, in daylight)
+def turn_in_place(m, t0, t1, ang, lift=0.05):
+    """Overlay on a standing motion: she turns by `ang` radians (+ = to her left) about the vertical
+    through her hips between t0 and t1, stepping round with two small steps (inside foot first)."""
+    t = m.times
+    P = m.fk()
+    k0 = int(t0 * m.fps)
+    piv = np.array([m.root[k0, 0], 0.0, m.root[k0, 2]])
+    u = M.smoothstep((t - t0) / (t1 - t0))
+    Q = M.rot_y(ang * u)
+    out = m.copy()
+    out.root = piv + np.einsum("fab,fb->fa", Q, m.root - piv)
+    out.R = Q[:, None] @ m.R
+    tm = 0.5 * (t0 + t1)
+    order = ("L", "R") if ang > 0 else ("R", "L")
+    for side, (a, b) in zip(order, ((t0, tm + 0.04), (tm - 0.04, t1))):
+        uf = M.smoothstep((t - a) / (b - a))
+        Qf = M.rot_y(ang * uf)
+        f, tj = J["foot" + side], J["toe" + side]
+        tgt = piv + np.einsum("fab,fb->fa", Qf, P[:, f] - piv)
+        tgt[:, 1] += lift * np.sin(np.pi * uf)
+        out.R[:, f] = Qf @ m.R[:, f]
+        out.R[:, tj] = Qf @ m.R[:, tj]
+        out = M.leg_ik(out, side, tgt)
+    return out
+
+
+@recipe("free")
+def free():
+    """The outro in daylight (song_t0 = 236.648, b137): skipping, a turn with her arms flung wide, a
+    leap (apex 243.6, b141), a jump for joy, a cartwheel, she stops and turns to face east on the second
+    'Back to main' (249.44), a large pencil flourish, and walks on. 21 s. East = +Z of the track's end:
+    the whole take is turned so that she ends walking along +Z."""
+    S0 = 236.648
+    BARS = lambda n, b=1.0: bar(n, b) - S0
+    joy = M.with_events(_clip("cmu:142_09"), kicks=False)
+    # b137-138: skipping (the first jump's apex on b138.1)
+    a = M.time_warp(M.trim(joy, 1.15, 4.35), [(0.0, 0.0), (2.38 - 1.15, BARS(138)), (3.2, BARS(139))])
+    # b139: a full turn, arms flung wide
+    wh = _clip("cmu:55_01")
+    b = M.trim(wh, 0.9, 2.9)
+    m = M.concat(a, b, halflife=0.22)
+    # b140: the run-up; b141.1 the leap
+    lp = M.with_events(_clip("cmu:49_04"), kicks=False)
+    t_ap = lp.ev("jump_apex")[0]
+    t_join = BARS(141) - t_ap
+    m = M.concat(m, lp, halflife=0.2, at=t_join)
+    # b141-142: a jump for joy (apex on b142.1)
+    t0j = 11.25
+    seg = M.trim(joy, t0j, 14.2)
+    t_cut = min(m.duration, BARS(142) - (12.88 - t0j))
+    m = M.concat(m, seg, halflife=0.22, at=t_cut)
+    # b143: the cartwheel, hands on the ground on the downbeat
+    cw = M.with_events(_clip("accad:Female1_D6_CartWheel"), kicks=False)
+    c = M.trim(cw, 0.75, 4.75)
+    inv = float(np.argmin(c.fk()[:, J["head"], 1])) / 60.0      # upside down: the head at its lowest
+    t_cut = min(m.duration, BARS(143) - inv)
+    m = M.concat(m, c, halflife=0.22, at=t_cut)
+    t_stand = BARS(143) + (4.0 - 0.75 - inv)                  # on her feet again, settling
+    m = M.concat(m, idle_seg(12.0, 2.0), halflife=0.35, at=min(m.duration, t_stand + 0.25))
+    m = M.trim(m, 0.0, BARS(147) + 0.0)
+    # 249.44: she stops and turns to face east. Turn the whole take so east is +Z and the turn is ~100 deg
+    t_turn = 249.44 - S0
+    k = int((t_turn - 0.1) * 60)
+    h = M.heading(m, k)
+    ang = math.radians(100.0)
+    m = M.transform(m, yaw=-h - ang, pivot=(m.root[k, 0], 0.0, m.root[k, 2]))
+    m = turn_in_place(m, t_turn, t_turn + 1.15, ang)
+    t = m.times
+    P = m.fk()
+    m = M.look_at(m, P[:, J["head"]] + np.array([0.0, 0.3, 8.0]), M.ramp(t, t_turn - 0.25, t_turn + 0.35, t_turn + 1.3, t_turn + 2.0), max_deg=80.0)
+    # b145-146: the pencil flourish: violet's writing gesture, once, large
+    f0, f1 = BARS(145), BARS(146)
+    k = int(f0 * 60)
+    org = np.array([m.root[k, 0], 0.0, m.root[k, 2]])
+    W = lambda p: org + np.asarray(p, dtype=np.float64)
+    Pf = m.fk()
+    keys = [(f0 - 0.75, tuple(Pf[int((f0 - 0.75) * 60), J["handR"]])), (f0 - 0.2, W([0.30, 1.02, 0.34])), (f0, W([0.36, 1.08, 0.36])),
+            (f0 + 0.55, W([0.16, 1.62, 0.44])), (f0 + 1.05, W([-0.22, 1.74, 0.36])), (f1, W([-0.58, 1.52, 0.16])),
+            (f1 + 0.22, W([-0.62, 1.60, 0.10])), (f1 + 0.9, W([-0.42, 1.2, 0.12])), (f1 + 1.6, tuple(Pf[int((f1 + 1.6) * 60), J["handR"]]))]
+    wR = M.ramp(t, f0 - 0.75, f0 - 0.25, f1 + 0.7, f1 + 1.6)
+    fing = [(f0 - 0.75, (0, -1, 0.2)), (f0, (0.3, 0.2, 1)), (f0 + 0.8, (0, 0.8, 0.6)), (f1, (-0.8, 0.5, 0.3)), (f1 + 1.6, (0, -1, 0.2))]
+    palm = [(f0 - 0.75, (1, 0, 0)), (f0, (0.8, -0.5, 0)), (f0 + 0.8, (0.3, -0.3, 1)), (f1, (0, -0.5, 1)), (f1 + 1.6, (1, 0, 0))]
+    pole = [(f0 - 0.75, (-0.5, -1, -0.3)), (f0 + 0.8, (-1, -0.3, -0.2)), (f1, (-0.3, -1, -0.4)), (f1 + 1.6, (-0.5, -1, -0.3))]
+    yw = PchipInterpolator([f0 - 0.6, f0, f1, f1 + 1.4], np.radians([0, 22.0, -30.0, 0.0]))(np.clip(t, f0 - 0.6, f1 + 1.4))
+    m = spine_turn(m, yaw=yw, pitch=-math.radians(8.0) * M.ramp(t, f0, f0 + 0.9, f1, f1 + 1.0))
+    up = 0.03 * M.ramp(t, f0 + 0.1, f0 + 0.8, f1, f1 + 0.6)
+    sx = PchipInterpolator([f0 - 0.6, f0, f1, f1 + 1.4], [0, 0.06, -0.09, 0.0])(np.clip(t, f0 - 0.6, f1 + 1.4))
+    m = M.shift_root(m, np.stack([sx, up, 0 * sx], 1), keep_feet=True)
+    m, tg = hand_path(m, "R", keys, wR, fingers=fing, palm=palm, pole=pole)
+    m = M.additive(m, "upArmL", np.stack([0 * t, 0 * t, -math.radians(28.0) * M.ramp(t, f0, f0 + 0.8, f1, f1 + 1.0)], 1))   # the other arm opens
+    m = M.look_at(m, tg, 0.8 * M.ramp(t, f0 - 0.2, f0 + 0.3, f1 + 0.2, f1 + 0.9), max_deg=70.0)
+    m = M.ground_clamp(m, floor=0.0)
+    # b147-148: walks on, east
+    wk = M.drive(_walk(), 3.6)
+    wk = M.ground_clamp(M.foot_lock(wk), floor=0.0)
+    m = M.concat(m, wk, halflife=0.3)
+    m = M.trim(m, 0.0, 21.0)
+    m = M.despike(M.plant_hands(m), joints=("upArmL", "upArmR", "foreArmL", "foreArmR", "handL", "handR"))
+    ev = [(BARS(138), "skip_apex"), (BARS(139), "whirl"), (BARS(141), "leap_apex"), (BARS(142), "joy_apex"),
+          (BARS(143), "cartwheel"), (t_turn, "turn_east"), (f0, "flourish_start"), (f1, "flourish_end"), (BARS(147), "walk")]
+    return finish(m, S0, ev, east="+Z at the end")
+
+
+# ----------------------------------------------------------------------------- the lives
+# 7 s each: 4.5 s of the activity, then the SAME look-back over the right shoulder (starts 4.5,
+# reaches its hold at 5.4, held to the end) so that a cut between lives lands on one shared move.
+LIFE_T, LOOK_T0, LOOK_T1 = 7.0, 4.5, 5.4
+
+
+def _still(p, dur=LIFE_T):
+    n = int(round(dur * 60)) + 1
+    return M.Motion(np.repeat(p.root[None], n, 0), np.repeat(p.R[None], n, 0))
+
+
+def _act(t):
+    """Activity envelope: full until just before the look-back, then the hands come to rest."""
+    return 1.0 - 0.85 * M.ramp(t, LOOK_T0 - 0.25, LOOK_T0 + 0.35)
+
+
+def _life(m, seated=False, twist=28.0, **meta):
+    m = M.trim(m, 0.0, LIFE_T)
+    m = lookback(m, LOOK_T0, LOOK_T1, seated=seated, twist=twist, arm=False)
+    if seated:
+        m = M.rest_on_ground(m)
+    m = M.ground_clamp(m, floor=0.0)
+    return finish(m, None, [(LOOK_T0, "look_start"), (LOOK_T1, "look")], **meta)
+
+
+def _hands(m, keysL=None, keysR=None, wL=None, wR=None, **kw):
+    for s, keys, w in (("L", keysL, wL), ("R", keysR, wR)):
+        if keys is None:
+            continue
+        if callable(keys):
+            tgt = keys(m.times)
+            hr = None
+            if kw.get("fingers" + s) is not None:
+                hr = np.stack([M.hand_frame(s, kw["fingers" + s], kw["palm" + s])] * m.frames)
+            pole = kw.get("pole" + s)
+            m = M.arm_ik(m, s, tgt, np.ones(m.frames) if w is None else w, pole=None if pole is None else np.asarray(pole, float)[None], hand_R=hr)
+        else:
+            m, _ = hand_path(m, s, keys, np.ones(m.frames) if w is None else w, fingers=kw.get("fingers" + s), palm=kw.get("palm" + s), pole=kw.get("pole" + s))
+    return m
+
+
+def _seat_pose(bench=0.47):
+    """Seated on a bench: thighs level, feet flat."""
+    p = M.Poser()
+    p.hips(pos=(0.0, bench + 0.085, 0.0))
+    for s, sg in (("L", 1.0), ("R", -1.0)):
+        p.foot(s, (sg * 0.13, 0.44), yaw=sg * 6.0, space="world", knee=(sg * 0.15, 0.3, 1.0))
+    return p
+
+
+@recipe("life_piano")
+def life_piano():
+    """jade/piano: seated at the keys (bench 0.47 m), playing, the body swaying with it. Upper body from
+    CMU 80_70 (a piano mime) on an authored seat; then the shared look-back."""
+    p = _seat_pose()
+    p.spine(pitch=7.0)
+    low = _still(p)
+    src = _clip("cmu:80_70")
+    up = M.trim(src, 9.0, 9.0 + LIFE_T)
+    m = M.graft_upper(low, up, joints=("spine",), hips=0.5)
+    t = m.times
+    # make sure the hands are at the keyboard (0.74 m, 0.38 m in front), whatever the mime's height was
+    P = m.fk()
+    for s in "LR":
+        h = P[:, J["hand" + s]].copy()
+        h[:, 1] = 0.76 + (h[:, 1] - h[:, 1].mean()) * 0.8
+        h[:, 2] = 0.36 + (h[:, 2] - h[:, 2].mean()) * 0.6
+        fr = M.hand_frame(s, (0.0, -0.25, 1.0), (0.0, -1.0, -0.2))
+        m = M.arm_ik(m, s, h, 0.9 * np.ones(m.frames), hand_R=np.stack([fr] * m.frames))
+    sway = math.radians(3.5) * np.sin(2 * np.pi * t / (2 * BAR)) * _act(t)
+    m = spine_turn(m, roll=sway, pitch=math.radians(3.0) * np.sin(2 * np.pi * t / BAR + 1.0) * _act(t))
+    return _life(m, seated=True, twist=24.0, prop="bench 0.47 m; keys at y 0.74, z 0.38", source="80_70")
+
+
+@recipe("life_violin")
+def life_violin():
+    """jade/violin: standing, bowing (CMU 80_36, a violin mime); then the shared look-back."""
+    src = _clip("cmu:80_36")
+    m = M.place(M.trim(src, 8.4, 8.4 + LIFE_T), 0, 0.0, (0.0, 0.0))
+    m = B._calm_head(m, 0.6)
+    return _life(m, twist=22.0, source="80_36")
+
+
+@recipe("life_wetlab")
+def life_wetlab():
+    """jade/wet-lab: standing at the bench: a tube held steady in the left hand, the right pipetting
+    into it, careful; a reach to the rack; then the shared look-back."""
+    m = idle_seg(LIFE_T, 1.0)
+    t = m.times
+    a = _act(t)
+    m = spine_turn(m, pitch=math.radians(9.0) * np.ones(m.frames))
+    tube = np.array([0.09, 1.13, 0.30])
+    kL = lambda tt: np.tile(tube, (len(tt), 1)) + 0.004 * np.stack([np.sin(1.3 * tt), np.sin(2.1 * tt + 1), np.sin(1.7 * tt + 2)], 1)
+    press = lambda c, w=0.16: np.exp(-0.5 * ((t - c) / w) ** 2)
+    dy = -0.045 * (press(1.0) + press(1.75) + press(4.05)) * 1.0
+    kR = [(0.0, (-0.02, 1.27, 0.31)), (2.15, (-0.02, 1.27, 0.31)), (2.75, (-0.34, 1.06, 0.40)), (2.95, (-0.34, 1.01, 0.40)),
+          (3.2, (-0.34, 1.08, 0.40)), (3.75, (-0.02, 1.27, 0.31)), (LIFE_T, (-0.02, 1.27, 0.31))]
+    m = _hands(m, keysL=kL, fingersL=(-0.3, 0.7, 0.6), palmL=(-1, 0, 0.3), poleL=(0.6, -1, -0.2))
+    m, tg = hand_path(m, "R", kR, np.ones(m.frames), fingers=(0.2, -0.8, 0.4), palm=(1, 0, 0), pole=np.array([-0.8, -0.6, -0.2])[None])
+    P = m.fk()
+    m = M.arm_ik(m, "R", P[:, J["handR"]] + np.stack([0 * dy, dy, 0 * dy], 1), hand_R=m.R[:, J["handR"]].copy())
+    m = M.look_at(m, np.tile(tube + [0, 0.04, 0], (m.frames, 1)) * (1 - M.ramp(t, 2.3, 2.7, 3.3, 3.7))[:, None]
+                  + np.array([-0.34, 1.0, 0.4]) * M.ramp(t, 2.3, 2.7, 3.3, 3.7)[:, None], 0.9 * a, max_deg=60.0)
+    return _life(m, prop="bench top about y 0.95; tube at (0.09, 1.13, 0.30); rack at (-0.34, 1.0, 0.40)")
+
+
+def _cross_legged():
+    p = M.Poser()
+    p.hips(pos=(0.0, 0.105, 0.0), pitch=-4.0)
+    p.spine(pitch=24.0)
+    p.head(pitch=14.0)
+    p.leg("L", (-0.10, 0.07, 0.33), "world", knee=(1.0, 0.25, 0.55), knee_space="world", toes=(-0.9, -0.1, 0.35), top=(0.2, 0.6, 0.8), dir_space="world")
+    p.leg("R", (0.13, 0.065, 0.42), "world", knee=(-1.0, 0.25, 0.55), knee_space="world", toes=(0.9, -0.1, 0.35), top=(-0.2, 0.6, 0.8), dir_space="world")
+    return p.unpin("legs")
+
+
+@recipe("life_poet")
+def life_poet():
+    """jade/poet: cross-legged on the ground, a notebook on her left knee, writing; she stops, looks
+    up for the word, writes again; then the shared look-back."""
+    p = _cross_legged()
+    m = _still(p)
+    t = m.times
+    a = _act(t)
+    P = m.fk()
+    knee = P[0, J["shinL"]]
+    book = knee + np.array([-0.07, 0.07, 0.03])
+    kL = lambda tt: np.tile(book + [0.05, 0.02, -0.03], (len(tt), 1)) + 0.003 * np.stack([np.sin(0.9 * tt), np.sin(1.4 * tt), 0 * tt], 1)
+    m = _hands(m, keysL=kL, fingersL=(-0.6, 0.0, 0.8), palmL=(0, -1, 0), poleL=(1, -0.3, -0.3))
+    think = M.ramp(t, 1.9, 2.3, 3.0, 3.4)
+    line = ((t * 0.55) % 1.0)                                  # a line of writing every 1.8 s
+    wx = book[0] + 0.05 - 0.11 * line
+    wig = 0.011 * np.sin(2 * np.pi * 4.2 * t) * a * (1 - think)
+    wr = np.stack([wx, book[1] + 0.035 + wig + 0.07 * think, book[2] + 0.02 + 0.5 * wig + 0.03 * think], 1)
+    wr = wr * a[:, None] + wr[int(LOOK_T0 * 60)] * (1 - a[:, None])
+    m = M.arm_ik(m, "R", wr, pole=np.array([-0.9, -0.5, -0.2])[None],
+                 hand_R=np.stack([M.hand_frame("R", (0.5, -0.5, 0.7), (0.7, -0.6, -0.2))] * m.frames))
+    m = M.drift(m, ["spine"], deg=1.5, period=6.0, seed=2)
+    m = M.breathe(m, period=3.8, depth=1.0, sway=0.0)
+    up = think
+    m = M.additive(m, "neck", np.stack([-math.radians(14.0) * up, math.radians(8.0) * up, 0 * up], 1))
+    m = M.additive(m, "head", np.stack([-math.radians(24.0) * up, math.radians(12.0) * up, 0 * up], 1))
+    return _life(m, seated=True, twist=24.0, prop="notebook on the left knee at (%.2f, %.2f, %.2f)" % tuple(book))
+
+
+@recipe("life_nasa")
+def life_nasa():
+    """jade/nasa-ames: braced in the wind of the tunnel (it blows from +Z): leaning in, one forearm up
+    shielding her eyes, the other arm back for balance, buffeted; a gust, a half step; then the look-back."""
+    p = M.Poser()
+    p.hips(pos=(0.0, 0.925, 0.02), pitch=13.0)
+    p.foot("L", (0.11, 0.24), yaw=8.0, space="world")
+    p.foot("R", (-0.13, -0.26), yaw=-32.0, space="world")
+    p.spine(pitch=7.0)
+    p.head(pitch=6.0)
+    p.arm_fk("L", raise_=42.0, fwd=-30.0, elbow=18.0)
+    p.arm("R", (0.03, 1.565, 0.335), "world", pole=(-1.0, 0.25, 0.25), pole_space="world", fingers=(1, 0.25, 0.15), palm=(0.0, -0.3, 1), dir_space="world")
+    m = _still(p)
+    t = m.times
+    a = _act(t)
+    g = M.ramp(t, 1.7, 2.0, 2.2, 2.9)                           # the gust shoves her back, she leans in again
+    P = m.fk()
+    m = M.shift_root(m, np.stack([0 * t, -0.01 * g, -0.07 * g + 0.03 * M.ramp(t, 2.9, 3.6)], 1), keep_feet=True,
+                     con=np.ones((m.frames, 2), dtype=bool))
+    m = spine_turn(m, pitch=-math.radians(8.0) * g + math.radians(5.0) * M.ramp(t, 2.6, 3.4) * a)
+    m = M.drift(m, ["spine", "chest"], deg=1.8, period=1.3, seed=21, weight=a)
+    m = M.drift(m, ["upArmL", "foreArmL"], deg=5.0, period=1.1, seed=22, weight=a)
+    m = M.drift(m, ["upArmR"], deg=2.0, period=1.5, seed=23, weight=a)
+    m = M.drift(m, ["head"], deg=2.0, period=1.7, seed=24, weight=a)
+    return _life(m, twist=20.0, wind="from +Z, strong (give the hair/trouser sim a wind of about -Z 9 m/s)")
+
+
+@recipe("life_band")
+def life_band():
+    """jade/robot-ninja-apocalypse: strumming a guitar, stepping to it (quarter notes at 138 BPM),
+    head nodding; then the shared look-back."""
+    m = idle_seg(LIFE_T, 9.0)
+    t = m.times
+    a = _act(t)
+    ph = 2 * np.pi * t / BEAT
+    bounce = -0.022 * (0.5 - 0.5 * np.cos(ph)) * a
+    sway = 0.055 * np.sin(ph / 2.0) * a
+    m = M.shift_root(m, np.stack([sway, bounce - 0.02, 0 * t], 1), keep_feet=True, con=np.ones((m.frames, 2), dtype=bool))
+    m = spine_turn(m, pitch=-math.radians(5.0) + math.radians(3.0) * np.cos(ph) * a, roll=math.radians(3.0) * np.sin(ph / 2.0) * a,
+                   yaw=math.radians(10.0) * np.ones(m.frames))
+    neck = np.array([0.43, 1.19, 0.17])
+    kL = lambda tt: np.tile(neck, (len(tt), 1)) + np.stack([0.03 * np.sin(2 * np.pi * tt / (2 * BAR)), 0.012 * np.sin(2 * np.pi * tt / BAR), 0 * tt], 1)
+    strum = np.sin(ph) * a                                      # down on the beat, up between
+    kR = lambda tt: np.stack([-0.07 + 0.015 * strum, 0.99 - 0.075 * strum, 0.235 + 0.01 * np.cos(ph)], 1)
+    m = _hands(m, keysL=kL, keysR=kR, fingersL=(0.2, 0.9, 0.3), palmL=(-0.3, 0.2, -1), poleL=(0.5, -1, 0.1),
+               fingersR=(0.75, -0.6, 0.2), palmR=(0.1, 0.2, -1), poleR=(-1, -0.2, -0.3))
+    nod = math.radians(6.0) * (0.5 - 0.5 * np.cos(ph)) * a
+    m = M.additive(m, "head", np.stack([nod, 0 * nod, 0 * nod], 1))
+    return _life(m, prop="guitar: neck hand at (0.43, 1.19, 0.17), strumming hand near (-0.07, 0.99, 0.235)", bpm=138)
+
+
+@recipe("life_wushu")
+def life_wushu():
+    """jade/wushu: ready, bow stance with a straight punch (gongbu chongquan), drop into the low
+    crouching stance (pubu) with the arm sweeping along the extended leg, rise; then the look-back."""
+    def fists(p, L=None, R=None):
+        for s, sg, tgt in (("L", 1.0, L), ("R", -1.0, R)):
+            if tgt is None:                                     # chambered at the hip
+                p.arm(s, (sg * 0.21, 1.0, -0.02), "body", pole=(sg * 0.2, -0.2, -1.0), fingers=(0, 0.1, 1), palm=(0, 1, 0))
+            else:
+                p.arm(s, tgt[0], "world", pole=tgt[1], pole_space="world", fingers=tgt[2], palm=tgt[3], dir_space="world")
+        return p
+    ready = M.Poser()
+    ready.foot("L", (0.06, 0.0), space="world").foot("R", (-0.06, 0.0), space="world")
+    fists(ready)
+    gong = M.Poser()                                            # bow stance to her front-left, punch with the right
+    gong.hips(pos=(0.10, 0.74, 0.16), yaw=18.0, pitch=6.0)
+    gong.foot("L", (0.24, 0.62), yaw=20.0, space="world").foot("R", (-0.10, -0.42), yaw=-40.0, space="world")
+    gong.spine(yaw=22.0)
+    fists(gong, R=((0.14, 1.19, 0.80), (-0.3, -1, 0), (0.25, 0, 1), (1, 0, 0)))
+    gong.look(direction=(0.25, 0.0, 1.0), space="world")
+    pu = M.Poser()                                              # pubu: sits on the right leg, the left leg long to the side
+    pu.hips(pos=(-0.22, 0.36, -0.02), yaw=30.0, pitch=22.0, roll=-8.0)
+    pu.foot("R", (-0.30, -0.02), yaw=-55.0, space="world", knee=(-0.9, 0.3, 0.5))
+    pu.foot("L", (0.70, 0.10), yaw=-10.0, space="world")
+    pu.spine(pitch=10.0, yaw=20.0)
+    fists(pu, L=((0.52, 0.30, 0.20), (0.2, 0.3, -1), (1, -0.2, 0.2), (0, -1, 0)),
+          R=((-0.52, 1.02, -0.30), (-0.3, -1, -0.2), (-0.8, 0.5, -0.3), (0, -0.4, -1)))
+    pu.look(direction=(1.0, -0.25, 0.25), space="world")
+    up = M.Poser()                                              # rises into a bow stance toward the extended leg
+    up.hips(pos=(0.30, 0.76, 0.04), yaw=62.0, pitch=5.0)
+    up.foot("R", (-0.30, -0.02), yaw=10.0, space="world").foot("L", (0.70, 0.10), yaw=70.0, space="world")
+    fists(up, L=((0.98, 1.22, 0.12), (0.2, -1, -0.3), (1, 0.1, 0.1), (0, 0, -1)))
+    up.look(direction=(1.0, 0.0, 0.15), space="world")
+    keys = [(0.0, ready), (0.45, ready), (0.92, gong, "out3"), (1.75, gong), (2.3, pu, "io"), (3.1, pu),
+            (3.62, up, "out"), (LIFE_T, up)]
+    m = M.keyframes(keys, overlap=0.02, soften=10.0)
+    m = M.breathe(m, period=2.9, depth=1.0, sway=0.0)
+    return _life(m, twist=18.0, events_note="punch 0.92, pubu 2.3, rise 3.62")
+
+
+@recipe("life_stage")
+def life_stage():
+    """jade/sandstorm: on stage, the live demo worked: both fists go up with a little jump, a second
+    pump, hands open to the room; then the shared look-back."""
+    st = idle_seg(0.5, 2.0)
+    base = M.Poser(st, 0)
+
+    def pose(dy=0.0, raise_=14.0, elbow=12.0, fwd=4.0, spine=0.0, head=0.0, air=False, toes=0.0):
+        p = base.copy()
+        Pk = p.P()
+        p.hips(dy=dy, legs=True)
+        p.spine(pitch=spine)
+        p.head(pitch=head)
+        for s in "LR":
+            p.arm_fk(s, raise_=raise_, fwd=fwd, elbow=elbow)
+            if air:
+                p.bend("foot" + s, pitch=toes)
+            else:
+                p.leg(s, Pk[J["foot" + s]], "world")
+                p.R[J["foot" + s]], p.R[J["toe" + s]] = base.R[J["foot" + s]], base.R[J["toe" + s]]
+        return p.unpin("legs") if air else p
+    keys = [(0.0, pose()), (0.55, pose()), (0.85, pose(dy=-0.13, raise_=24.0, elbow=70.0, spine=10.0, head=4.0), "io"),
+            (1.08, pose(dy=0.03, raise_=150.0, elbow=38.0, fwd=10.0, spine=-8.0, head=-12.0), "in"),
+            (1.26, pose(dy=0.16, raise_=158.0, elbow=30.0, fwd=6.0, spine=-10.0, head=-16.0, air=True, toes=-34.0), "out"),
+            (1.45, pose(dy=0.02, raise_=152.0, elbow=44.0, fwd=8.0, spine=-6.0, head=-10.0), "in"),
+            (1.62, pose(dy=-0.09, raise_=140.0, elbow=62.0, fwd=10.0, spine=2.0, head=-4.0), "out"),
+            (2.0, pose(dy=0.0, raise_=154.0, elbow=28.0, fwd=6.0, spine=-7.0, head=-12.0), "io"),
+            (2.35, pose(dy=-0.03, raise_=132.0, elbow=80.0, fwd=14.0, spine=0.0, head=-4.0), "io"),
+            (2.62, pose(dy=0.01, raise_=156.0, elbow=24.0, fwd=6.0, spine=-8.0, head=-12.0), "out"),
+            (3.3, pose(dy=0.0, raise_=150.0, elbow=30.0, fwd=6.0, spine=-6.0, head=-8.0)),
+            (4.3, pose(dy=0.0, raise_=62.0, elbow=30.0, fwd=30.0, spine=-2.0, head=0.0)),
+            (LIFE_T, pose(dy=0.0, raise_=46.0, elbow=34.0, fwd=32.0))]
+    m = M.keyframes(keys, overlap=0.05, soften=9.0)
+    m = M.breathe(m, period=2.4, depth=1.4, sway=0.004)
+    return _life(m, events_note="jump apex 1.26, second pump 2.62")
+
+
+@recipe("life_home")
+def life_home():
+    """jade/home: sitting on the ground at night, leaning back on one hand, pointing up at the sky and
+    tracing a circle with her arm (the planets go round); then the shared look-back."""
+    seat = _seated_src()
+    m = M.trim(M.concat(seat, seat, halflife=0.6, lock=False), 0.0, LIFE_T)
+    t = m.times
+    a = _act(t)
+    m = spine_turn(m, pitch=-math.radians(15.0) * np.ones(m.frames))
+    P = m.fk()
+    hp = P[0, J["hips"]]
+    kL = lambda tt: np.tile(hp + np.array([0.33, -hp[1] + 0.035, -0.30]), (len(tt), 1))
+    m = _hands(m, keysL=kL, fingersL=(0.5, 0.0, -0.85), palmL=(0, -1, 0), poleL=(0.6, 0.2, -1.0))
+    P = m.fk()
+    sh = P[:, J["upArmR"]]
+    ang = 2 * np.pi * (t - 0.9) / 2.5
+    rise = M.ramp(t, 0.25, 0.9)
+    axis = M.unit(np.array([-0.18, 0.80, 0.56]))                # where the sky is
+    e1 = M.unit(np.cross(axis, [0, 1, 0]))
+    e2 = np.cross(axis, e1)
+    cone = math.radians(17.0) * (0.25 + 0.75 * M.ramp(t, 0.9, 1.6)) * (0.35 + 0.65 * a)
+    d = (axis[None] * np.cos(cone)[:, None] + (e1[None] * np.cos(ang)[:, None] + e2[None] * np.sin(ang)[:, None]) * np.sin(cone)[:, None])
+    wr = sh + d * 0.49
+    hr = np.stack([M.hand_frame("R", d[i], np.cross(d[i], [1.0, 0, 0])) for i in range(m.frames)])
+    m = M.arm_ik(m, "R", wr, rise, pole=np.array([-1.0, -0.6, 0.0])[None], hand_R=hr)
+    m = M.look_at(m, sh + d * 6.0, 0.85 * rise, share=(("neck", 0.4), ("head", 0.6)), max_deg=60.0)
+    return _life(m, seated=True, twist=22.0, sky_dir=[-0.18, 0.80, 0.56], note="one circle every 2.5 s from t=0.9")

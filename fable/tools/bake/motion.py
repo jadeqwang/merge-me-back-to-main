@@ -1736,6 +1736,69 @@ def graft_upper(lower, upper, joints=("spine",), weight=1.0, hips=0.0):
     return out
 
 
+def plant_hands(m, clear=0.012, wrist_min=0.035):
+    """Hands are rigid: in floor work (cartwheel, a hand on the ground) the fingertips would spear the
+    floor. Where they would, raise the wrist to wrist_min (arm IK) and tip the hand up by the least
+    angle that keeps the fingertips above the ground."""
+    out = m.copy()
+    k = np.hanning(7)
+    k /= k.sum()
+    for s in "LR":
+        h = J["hand" + s]
+        P = out.fk()
+        wy = P[:, h, 1]
+        if (wy < wrist_min).any():
+            lift = np.maximum(wrist_min - wy, 0.0)
+            if m.frames > 8:
+                lift = np.maximum(lift, np.convolve(np.pad(lift, 3, mode="edge"), k, mode="valid"))
+            tgt = P[:, h] + np.stack([0 * lift, lift, 0 * lift], 1)
+            out = arm_ik(out, s, tgt, hand_R=out.R[:, h].copy())
+            P = out.fk()
+            wy = P[:, h, 1]
+        y = out.R[:, h, :, 1]                                   # finger direction
+        need = (clear - wy) / LEN["hand"]                       # required vertical component
+        bad = y[:, 1] < need
+        if not bad.any():
+            continue
+        need = np.clip(need, -0.999, 0.999)
+        horiz = unit(np.stack([y[:, 0], 0 * y[:, 0], y[:, 2]], 1) + 1e-9)
+        want = horiz * np.sqrt(1 - need ** 2)[:, None] + np.stack([0 * need, need, 0 * need], 1)
+        r = rotvec(rot_between(y, want)) * bad[:, None]
+        if m.frames > 8:
+            r = np.stack([np.convolve(np.pad(r[:, a], 3, mode="edge"), k, mode="valid") for a in range(3)], 1)
+        out.R[:, h] = expmap(r) @ out.R[:, h]
+    return out
+
+
+def despike(m, deg=30.0, radius=4, joints=None):
+    """Capture twist flips: where a joint turns more than `deg` degrees in ONE frame (a straight elbow
+    re-deciding its twist), spread that turn over +-radius frames (local rotations, quaternion blur)."""
+    L = to_local(m.R)
+    out = m.copy()
+    hit = 0
+    for j in range(1, NJ):
+        if joints is not None and JOINTS[j] not in joints:
+            continue
+        q = quat_continuous(L[:, j])
+        d = 2 * np.degrees(np.arccos(np.clip(np.abs(np.sum(q[1:] * q[:-1], 1)), 0, 1)))
+        sp = np.where(d > deg)[0]
+        if len(sp) == 0:
+            continue
+        w = np.zeros(m.frames)
+        for f in sp:
+            a, b = max(0, f - 2 * radius), min(m.frames, f + 2 * radius + 2)
+            w[a:b] = np.maximum(w[a:b], np.hanning(b - a + 2)[1:-1] ** 0.5)
+        kk = np.hanning(2 * radius + 3)[1:-1]
+        kk /= kk.sum()
+        qs = np.stack([np.convolve(np.pad(q[:, a], radius, mode="edge"), kk, mode="valid") for a in range(4)], 1)
+        qq = unit(q * (1 - w[:, None]) + qs * w[:, None])
+        L[:, j] = Rot.from_quat(qq).as_matrix()
+        hit += len(sp)
+    out.R = from_local(L)
+    out.meta["despiked"] = int(hit)
+    return out
+
+
 # ----------------------------------------------------------------------------- track files
 def bone_lengths():
     out = {}
