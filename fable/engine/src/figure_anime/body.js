@@ -28,7 +28,7 @@ export const hairD = (x, y, z) => {
   const tip = (c, wi, wo, hgt) => hgt * Math.pow(Math.max(0, 1 - (apx < c ? (c - apx) / wi : (apx - c) / wo)), 1.5);   // a swept strand tip: long inner slope, steep outer side
   const yh = 0.124 - 0.052 * Math.pow(apx / 0.068, 1.6) - tip(0.036, 0.020, 0.007, 0.007) - tip(0.060, 0.022, 0.007, 0.009);
   const xs = 0.0850 - 0.0060 * smooth(0.040, 0.085, y);
-  const zb = -0.030 + 0.062 * smooth(-0.075, 0.070, y);          // side view: the hair comes forward to the temple, runs behind the cheek, back to the nape
+  const zb = -0.045 + 0.050 * smooth(-0.075, 0.070, y);          // side view: the hair comes forward to the temple, runs behind the cheek, back to the nape
   return Math.max(y - yh, y > -0.06 ? ax - xs : -1, zb - z);
 };
 const gau = (v, s) => Math.exp(-(v * v) / (2 * s * s));
@@ -285,7 +285,7 @@ export function buildBody(opts = {}) {
     finish(path, yD - (1.005 - 0.02 * l) + 0.035 + 0.02 * R(), { kind: 0, fan: Math.sin(azD), col: c, layer: l });
   }
   for (const s of [1, -1]) for (let i = 0; i < 2; i++) {   // the side locks that frame the face: from the temple, in front of the ear, to the chest
-    const pts = [[s * 0.072, 1.590, 0.046], [s * 0.082, 1.566, 0.034], [s * 0.089, 1.536, 0.020 + 0.012 * i], [s * 0.090, 1.506, 0.010 + 0.014 * i]], path = [];
+    const pts = [[s * 0.078, 1.590, 0.026], [s * 0.086, 1.566, 0.016], [s * 0.090, 1.536, 0.006 + 0.012 * i], [s * 0.090, 1.506, 0.000 + 0.014 * i]], path = [];
     for (let k = 0; k < pts.length - 1; k++) for (let j = 0; j < 6; j++) path.push(onScalp(lerp3(pts[k], pts[k + 1], j / 6), 0.012)); path.push(onScalp(pts[pts.length - 1], 0.012));
     finish(path, 0.215 + 0.035 * i, { kind: 2, fan: 0 });
   }

@@ -88,7 +88,7 @@ function cellsFor(i, t) {
   if (mode === 'C') {
     const row = Math.floor(i / 6) % 5, k = i % 6;
     if (row === 0) return cell({ track: 'run_loop', T: k * 0.128, turn: 70 * DEG, light: 'night', hand: 1, face: F('determined'), dist: 5.2 });
-    if (row === 1) return cell({ track: 'drop', T: [0.63, 1.30, 1.42, 1.50, 1.75, 3.24][k], turn: 60 * DEG, light: 'riseQ', hand: k > 0 && k < 4 ? -0.6 : 1, face: F('determined'), dist: 7.6, ty: 1.05, sep: 2.3 });
+    if (row === 1) return cell({ track: 'drop', T: [0.63, 1.30, 1.42, 1.50, 1.75, 3.24][k], turn: 60 * DEG, light: 'riseQ', hand: k > 0 && k < 4 ? -0.6 : 1, face: F('determined'), dist: 6.6, ty: 1.05, sep: 2.3 });
     if (row === 2) return cell({ track: 'violet', T: [16.5, 17.5, 18.5, 19.5, 24, 27][k], turn: 40 * DEG, light: 'nightV', variant: k === 0 ? 'bun' : k < 4 ? 'bun_write' : 'bun_one', face: F(k < 4 ? 'determined' : 'back', { amt: 0.7 }), dist: 5.2, ty: k > 3 ? 0.7 : 0.95 });
     if (row === 3) return cell({ track: 'catch', T: [2.2, 2.74, 5, 9.6, 12.0, 12.9][k], turn: 25 * DEG, light: 'day', hand: k > 3 ? -1 : 0, face: F(k > 4 ? 'joy' : k > 2 ? 'back' : 'neutral'), dist: 5.6, sep: 1.6 });
     return cell({ track: 'free', T: [1.2, 1.74, 2.6, 3.48, 4.5, 5.9][k], turn: 35 * DEG, light: 'day', hand: -0.5, face: F(k === 1 || k === 3 ? 'joy' : 'neutral'), dist: 6.0, ty: 1.05, sep: 1.8 });
@@ -99,7 +99,7 @@ function cellsFor(i, t) {
     if (i === 2) return cell({ track: 'idle', T: 3, turn: 40 * DEG, light: 'day', dist: 1.5, fov: 22, head: true, variant: 'bun', only: 'anime' });
     if (i < 6) return cell({ track: 'idle', T: 3, turn: -40 * DEG, light: 'day', dist: 0.75, fov: 24, aim: 12, hand: [1, 0, -1][i - 3], only: 'anime' });
     if (i === 6) return cell({ track: 'idle', T: 3, turn: 20 * DEG, light: 'day', dist: 9.6, ty: 0.9, sep: 1.3 });
-    if (i === 7) return cell({ track: 'float', T: 6, turn: 0, el: 89 * DEG, light: 'night', dist: 6.2, ty: 0, sep: 2.6 });
+    if (i === 7) return cell({ track: 'float', T: 6, turn: 0, az: 0.0, el: 89 * DEG, light: 'night', dist: 5.0, ty: 0, sep: 2.4 });
     if (i === 8) return cell({ track: 'violet', T: 27, turn: 40 * DEG, light: 'nightV', variant: 'bun_one', dist: 2.6, ty: 0.75, sep: 1.1, face: F('back', { gaze: [-0.5, 0.2] }) });
     return cell({ track: 'catch', T: 12.9, turn: 20 * DEG, light: 'day', dist: 2.9, ty: 1.25, sep: 1.5, hand: -1, face: F('joy') });
   }
@@ -109,7 +109,8 @@ function cellsFor(i, t) {
       face: { expr, gaze: [E.param('gx', 0), E.param('gy', 0)] }, hand: E.param('hand', 0), variant: v ? String(v) : undefined, sep: E.param('sep', 1.25) });
   }
   if (mode === 'D') {
-    const violet = t >= 3, tl = violet ? t - 3 : t, name = violet ? 'violet' : 'free', T = violet ? 17.0 + tl : 1.0 + tl, head = camMode === 'head';
+    const violet = t >= 3 - 0.009, tl = violet ? Math.max(0, t - 3) : t;   // (the cut sits just before frame 90, so its motion-blur samples do not straddle it)
+    const name = violet ? 'violet' : 'free', T = violet ? 17.0 + tl : 1.0 + tl, head = camMode === 'head';
     return cell({ track: name, T, turn: (violet ? 40 : 35) * DEG, light: violet ? 'nightV' : 'day', variant: violet ? (T < 17.4 ? 'bun' : 'bun_write') : undefined, dist: head ? 1.5 : (violet ? 4.6 : 5.6), fov: head ? 22 : 30, head, ty: 1.0, sep: head ? 0.62 : (violet ? 1.3 : 1.7),
       hand: violet ? undefined : -0.4, face: violet ? F('determined', { amt: 0.6 }) : F('joy', { amt: Math.max(0, 1 - Math.abs(tl - 0.74) / 0.35), blink: undefined }) });
   }

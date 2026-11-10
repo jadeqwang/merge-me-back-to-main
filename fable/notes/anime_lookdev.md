@@ -55,3 +55,57 @@ Modes and cell numbers are listed at the top of `fable/show/animelab.js`. Output
 `fable/show/cast.js` line ~30: import `Figure, LANES` from `../engine/src/figure_anime/figure.js` (and `loadTrack` from either skeleton.js).
 Nothing else is required: old instance options still work (`eyes: false` maps to the `calm` closed-eye face; otherwise eyes are open and
 blink). To use the new controls, pass `face` and `hand` through `cast.js`'s `set()` (one line next to `eyes: s.eyes`).
+
+## Deliverables (git-ignored, rebuilt by `fable/engine/src/figure_anime/sheets_all.sh [A] [B] [C] [D]`, about 4 minutes)
+- `work_fable/stills/anime/A_turnaround_faces.jpg` — 8-angle turnaround (current left, anime right), face views, expressions, gaze, blink, night faces.
+- `work_fable/stills/anime/B_lighting_arc.jpg` — idle / run / catch x night (main), night (violet, bun), sunrise against the sun, sunrise three-quarter, day.
+- `work_fable/stills/anime/C_action_crowd.jpg` — 6 frames each of run_loop, drop, violet, catch, free; 64 at night and at sunrise (current, anime).
+- `work_fable/stills/anime/D_clip.mp4` (0-3 s `free` by day, 3-6 s `violet` at night) and `D_clip_strip.jpg` (every 1/8 s, plus heads on every frame for 1 s).
+
+## What works (judged on the sheets, harshly)
+- The face holds: front, three-quarter (far eye narrows against the contour), profile (wedge eye, small nose, lips, chin), above, below.
+  Neutral, joy, calm and the gaze read at once; `determined` is quieter than the others. No popping in the frame-by-frame head strips
+  (16 consecutive frames each of `free` with the neutral -> joy blend and of `violet` at night; no automatic blink fell inside those
+  windows, blink was only checked as a still at 0.55), and at 1/3 of frame height the eyes are still two clear marks.
+  Outline flicker was judged from those strips and the 1/8 s strips, not by watching `D_clip.mp4`.
+- Close and medium shots gain the most: she is a person instead of a mannequin head. The violet branch (bun, pencil, eyes down at night,
+  seated) is where the difference is largest; so are `catch` (joy, open hands) and any shot where she looks back.
+- Night: the face sits in lilac shadow tones with dark eyes, small catchlights and a thin rim on the profile: neither a hole nor a lantern.
+- Sunrise: it stays a silhouette; the two figures are indistinguishable against the sun. Crowds of 64: indistinguishable at night and at sunrise.
+- Day: ink with weight, tinted shadows and the drawn folds make the costume read as designed rather than lit; the disc and RARE EARTH still show.
+- Hair in motion: the clumps whip and separate into points on the same sim; no fringe, no dither, and it is cheaper than 1,092 strands.
+
+## What does not (yet)
+- The float shot (top-down, "her hair is the graph"): 18 blades do not make the fine radial fan the current strands do, and at night they are
+  nearly black on black. That shot would need the strand hair kept for it, or a dedicated fan (many thin blades, lit edges).
+- From the front the two back curtains flare wide behind the shoulders (the parting inherited from the current figure, now solid): it can
+  read as a cape. A real fix is a designed back-hair shape (one mass with a notch), which then hides part of the disc.
+- Hands are still mittens with three drawn finger lines; the fist reads, splay barely differs from relaxed. Real fingers would be the next step.
+- The ring highlight is two or three soft spikes: correct, but it is the least "designed" element. Ears do not exist (the side lock covers the spot).
+- Identity: this is a generic appealing anime face on her silhouette, not yet a likeness of Jade (it follows the character sheet: centre part,
+  dark brown eyes, calm mouth; her note "larger eyes read as her" is honoured). Likeness would be a pass on eye shape / brow / face width with her.
+- Not checked: depth of field on close-ups (opaque surfaces have none, as before), the 1,024 formation in daylight, blue hour (dawn 0.35).
+
+## Rules that adopting it would change
+- SPEC header "no faces in close-up" and §5 "Face: no features except ... two calm eye marks; never a mouth" -> she has a face (and a mouth).
+- SPEC §1 fidelity law "in daylight, for the first time, you see *her*": the face is now readable at night too (in shadow tones). To keep the
+  reveal, hold `face: { expr: 'calm' }` or back-three-quarter framings until bar 129, or drive a new `fig.light.faceVis` to fade features in at dawn.
+- F3 note "Face ... only appear with sunAmt (day). No face at night" and the `eyes` option (now: open by default, `eyes: false` = calm).
+- Per shot work: every close and medium shot wants a `face` (expression, `lookAt`) and `hand` choice; the float shot needs its own hair.
+
+## Performance (1080p, RTX 3090 SHARED with three other agents' renders, so noisy: min of 5 interleaved `--bench` runs, ms per sub-sample)
+| case | current | anime | ratio | second run (busier GPU) |
+|---|---|---|---|---|
+| 1,024 far, top-down, sunrise (`mode=P` cell 0) | 11.8 | 8.1 | 0.7x | 13.1 / 13.2 |
+| hero + 255, sunrise (cell 1) | 5.2 | 6.2 | 1.2x | 10.5 / 11.3 |
+| hero + 255, day (cell 1, `light=day`; the hull pass runs) | 3.5 | 5.0 | 1.4x | 11.6 / 9.0 |
+| one hero, close, day (cell 2) | 3.7 | 4.7 | 1.3x | 6.4 / 5.8 |
+Inside the 1.5x budget in every run; the worst case is daylight with many near figures (hull pass, levels 0-4). The clumps are cheaper than the
+strands (about 4k vertices instead of 59k per near figure), which pays for the face and the hull. Re-measure on an idle GPU before trusting a ratio.
+
+## Verdict (mine)
+Adopt for SOME shots, not everywhere, and not before Jade has seen sheets A and B. It is clearly better wherever her head is larger than
+about 60 px (close and medium, day and night; the violet branch above all). It changes nothing in silhouette shots and crowds. It is worse
+in the float shot, and it spends the film's "you see her for the first time in daylight" reveal unless the face is held back until bar 129.
+The low-risk path: swap the import (one line), keep `face: { expr: 'calm' }` / backs / silhouettes through the night acts except the violet
+branch, open her eyes at the catch, and keep the current strand hair for the float.
