@@ -14,21 +14,22 @@ export const J = Object.fromEntries(JOINTS.map((n, i) => [n, i]));
 export const PARENT = [-1, 0, 1, 2, 3, 2, 5, 6, 7, 2, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19];
 export const NJ = 21, STRIDE = 147, FPS = 60;
 
-// A-pose: arms 52 degrees below horizontal.
-const A = 52 * DEG, ARM = [Math.cos(A), -Math.sin(A), 0];
-const SH = [0.166, 1.366, -0.004], UA = 0.262, FA = 0.236, HAND = 0.165;
+// The canonical rest pose is the motion library's (fable/tools/bake/skeleton.json): the same numbers, so every
+// baked track attaches to this template without retargeting. A-pose, arms 35 degrees from the body.
+const A = 55 * DEG, ARM = [Math.cos(A), -Math.sin(A), 0];
+const SH = [0.155, 1.3701, 0], UA = 0.27, FA = 0.235, HAND = 0.17;
 const mirror = (p) => [-p[0], p[1], p[2]];
 const elbowL = add(SH, mul(ARM, UA)), wristL = add(elbowL, mul(ARM, FA));
 export const REST_POS = [
-  [0, 0.930, 0], [0, 1.035, 0], [0, 1.170, 0], [0, 1.385, 0], [0, 1.460, 0.008],
-  [0.025, 1.356, 0], SH, elbowL, wristL,
-  [-0.025, 1.356, 0], mirror(SH), mirror(elbowL), mirror(wristL),
-  [0.085, 0.895, 0], [0.092, 0.487, 0.004], [0.097, 0.078, -0.012], [0.103, 0.022, 0.118],
-  [-0.085, 0.895, 0], [-0.092, 0.487, 0.004], [-0.097, 0.078, -0.012], [-0.103, 0.022, 0.118],
+  [0, 1.005, 0], [0, 1.095, 0], [0, 1.225, 0], [0, 1.415, 0], [0, 1.505, 0],
+  [0.023, 1.342, 0], SH, elbowL, wristL,
+  [-0.023, 1.342, 0], mirror(SH), mirror(elbowL), mirror(wristL),
+  [0.085, 0.930, 0], [0.085, 0.495, 0], [0.085, 0.085, 0], [0.085, 0.025, 0.1209],
+  [-0.085, 0.930, 0], [-0.085, 0.495, 0], [-0.085, 0.085, 0], [-0.085, 0.025, 0.1209],
 ];
 // Where each joint's +Y points (child joint index, or an explicit tip for end joints).
 const CHILD = [1, 2, 3, 4, -1, 6, 7, 8, -1, 10, 11, 12, -1, 14, 15, 16, -1, 18, 19, 20, -1];
-const TIP = { 4: [0, 0.192, 0], 8: mul(ARM, HAND), 12: mul(mirror(ARM), HAND), 16: [0, -0.004, 0.075], 20: [0, -0.004, 0.075] };
+const TIP = { 4: [0, 0.15, 0], 8: mul(ARM, HAND), 12: mul(mirror(ARM), HAND), 16: [0, 0, 0.07], 20: [0, 0, 0.07] };
 const ZHINT = (j) => (j === 15 || j === 16 || j === 19 || j === 20) ? [0, 1, 0] : [0, 0, 1];
 export const REST_Q = [], BONE_LEN = [];
 for (let j = 0; j < NJ; j++) {
@@ -85,7 +86,7 @@ function localDelta(j, e) {
   const fx = e[0] * DEG, ab = (c ? -e[1] : e[1] * s) * DEG, tw = (c ? e[2] : e[2] * s) * DEG;
   return qmul(qX(fx), qmul(qZ(ab), qY(tw)));
 }
-const SOLE = { 15: 0.078, 16: 0.022, 19: 0.078, 20: 0.022 };
+const SOLE = { 15: 0.085, 16: 0.025, 19: 0.085, 20: 0.025 };
 export function fkFrame(pose, out, o, ground = true) {
   const r = pose.root || {}; const Q = new Array(NJ), P = new Array(NJ);
   const rootQ = qmul(qY((r.yaw || 0) * DEG), qmul(qX((r.pitch || 0) * DEG), qZ((r.roll || 0) * DEG)));
@@ -96,7 +97,7 @@ export function fkFrame(pose, out, o, ground = true) {
   }
   if (ground) {
     let lo = 1e9;
-    for (const j of [15, 16, 19, 20]) { lo = Math.min(lo, P[j][1] - SOLE[j]); const tip = add(P[j], qrot(Q[j], [0, BONE_LEN[j], 0])); if (j === 16 || j === 20) lo = Math.min(lo, tip[1] - 0.018); }
+    for (const j of [15, 16, 19, 20]) { lo = Math.min(lo, P[j][1] - SOLE[j]); const tip = add(P[j], qrot(Q[j], [0, BONE_LEN[j], 0])); if (j === 16 || j === 20) lo = Math.min(lo, tip[1] - 0.02); }
     const lift = r.air || 0;
     for (let j = 0; j < NJ; j++) P[j][1] += lift - lo;
   }

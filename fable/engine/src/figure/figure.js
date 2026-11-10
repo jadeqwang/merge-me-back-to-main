@@ -256,10 +256,10 @@ void main(){
     vec3 rootW = jpos(ti, ${J.head}) + qrot(jquat(ti, ${J.head}), a_r3.xyz) - hips;
     vec3 off = rootW - hairNode(ti, 0);
     vec3 rnd = vec3(hash(seed * 91.0), hash(seed * 57.0 + 2.0), hash(seed * 13.0 + 5.0)) - 0.5;
-    P += hips + off * (1.0 - 0.25 * s) + rnd * (0.006 + 0.020 * s) * smoothstep(0.0, 0.25, s);
+    P += hips + off * (1.0 - 0.25 * s) + rnd * (0.008 + 0.016 * s) * smoothstep(0.0, 0.25, s);
     float vis = smoothstep(dens * 1.15 + 0.02, dens * 1.15 - 0.02, seed);   // thin hair on a thin branch
     float tip = 1.0 - smoothstep(0.90, 1.0, s);
-    width = mix(0.0019, 0.0125 * u_lod, smoothstep(0.0, 0.6, solid)) * (0.35 + 0.65 * tip);
+    width = mix(0.0019 * (0.35 + 0.65 * tip), 0.0145 * u_lod * (0.7 + 0.3 * tip), smoothstep(0.0, 0.6, solid));
     // light: fine luminous strands with a sheen band that slides with the view
     vec3 Wq = place(P), Vq = normalize(u_camPos - Wq), Tw = normalize(yaw(T));
     float sheen = pow(clamp(1.0 - abs(dot(Tw, normalize(Vq + normalize(KEY)))), 0.0, 1.0), 9.0);
@@ -345,7 +345,7 @@ async function ensureFont(family, url, desc) {
 
 export class Figure {
   constructor(gl, opts = {}) {
-    this.gl = gl; this.opts = { fontBase: '/engine/fonts/', stories: DEFAULT_STORIES, strands: 900, ...opts };
+    this.gl = gl; this.opts = { fontBase: '/engine/fonts/', stories: DEFAULT_STORIES, strands: 1300, ...opts };
     this.tracks = []; this.byName = {}; this.inst = []; this.dirty = true; this.sun = [1, 0.06, 0]; this.dustGain = 1; this.quality = 1;
   }
   async init() {

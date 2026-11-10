@@ -116,10 +116,10 @@ export function buildBody(opts = {}) {
     { c: [0, 1.14, 0.006], rx: 0.119, rz: 0.089 }, { c: [0, 1.215, 0.012], rx: 0.129, rz: 0.100 }, { c: [0, 1.275, 0.016], rx: 0.134, rz: 0.108 },
     { c: [0, 1.335, 0.006], rx: 0.140, rz: 0.090 }, { c: [0, 1.378, 0.0], rx: 0.112, rz: 0.070 }, { c: [0, 1.40, 0.0], rx: 0.06, rz: 0.052 },
   ]);
-  const torsoBones = (P) => { const y = P[1]; if (y < 1.035) return two(J.hips, J.spine, 1.02, 0.035)(y); return two(J.spine, J.chest, 1.15, 0.055)(y); };
+  const torsoBones = (P) => { const y = P[1]; if (y < 1.16) return two(J.hips, J.spine, 1.095, 0.04)(y); return two(J.spine, J.chest, 1.225, 0.05)(y); };
   sample(torso, { region: 0, part: (u, v, P) => (P[1] < 1.196 ? PART.SKIN : PART.TOP), bones: torsoBones, glyph: { skip: (P, N, part) => part === PART.SKIN } });
-  const neck = new Loft([{ c: [0, 1.36, -0.004], rx: 0.052, rz: 0.05 }, { c: [0, 1.40, 0.0], rx: 0.047, rz: 0.046 }, { c: [0, 1.44, 0.006], rx: 0.044, rz: 0.044 }, { c: [0, 1.485, 0.01], rx: 0.046, rz: 0.046 }]);
-  sample(neck, { region: 5, part: (u, v, P) => (P[1] < 1.425 ? PART.TOP : PART.SKIN), bones: (P) => (P[1] < 1.40 ? two(J.chest, J.neck, 1.385, 0.02)(P[1]) : two(J.neck, J.head, 1.455, 0.02)(P[1])), fill: 1.6 });
+  const neck = new Loft([{ c: [0, 1.36, -0.004], rx: 0.052, rz: 0.05 }, { c: [0, 1.40, 0.0], rx: 0.047, rz: 0.046 }, { c: [0, 1.44, 0.006], rx: 0.044, rz: 0.044 }, { c: [0, 1.50, 0.01], rx: 0.046, rz: 0.046 }]);
+  sample(neck, { region: 5, part: (u, v, P) => (P[1] < 1.425 ? PART.TOP : PART.SKIN), bones: (P) => (P[1] < 1.45 ? two(J.chest, J.neck, 1.412, 0.022)(P[1]) : two(J.neck, J.head, 1.488, 0.02)(P[1])), fill: 1.6 });
 
   // head: small and neat, tall forehead; hair cap = the same loft pushed out a little
   const head = new Loft([
@@ -138,7 +138,7 @@ export function buildBody(opts = {}) {
   const hairRootsCand = [];
   sample(head, {
     region: 5, fill: 2.4, part: (u, v, P, N) => (isHair(P, N) ? PART.HAIR : PART.SKIN), bones: one(J.head),
-    push: (part, P, N) => { if (part === PART.HAIR) { if (P[1] > 1.50) hairRootsCand.push({ P: add(P, mul(N, 0.006)), N }); return 0.008; } return 0; },
+    push: (part, P, N) => { if (part === PART.HAIR) { if (P[1] > 1.50) hairRootsCand.push({ P: add(P, mul(N, 0.006)), N }); return 0.008 + 0.008 * smooth(1.50, 1.58, P[1]) * smooth(0.035, -0.02, P[2] - 0.03 * (P[1] - 1.58) / 0.07); } return 0; },
   });
   // eyes: two calm marks (soft tall almonds). Shown only when the head is large on screen.
   const facePoint = (x, y) => { const v = head.vAt((g) => g.c[1], y), g = head.ring(v); const u = Math.acos(clamp((x - g.c[0]) / g.rx, -1, 1)); return head.pn(u, v); };
@@ -176,7 +176,7 @@ export function buildBody(opts = {}) {
   };
   const inBackArt = (P, N, m) => N[2] < 0 && (Math.hypot(P[0] - BACK.dot[0], P[1] - BACK.dot[1]) < BACK.dot[2] + m || (Math.abs(P[0]) < BACK.text.w / 2 + m && Math.abs(P[1] - BACK.text.y) < BACK.text.h / 2 + m));
   const CHEST_DOT = [0.092, 1.338, 0.021];
-  const jacketBones = (P) => { const y = P[1]; const b = two(J.spine, J.chest, 1.17, 0.03)(y); return b; };
+  const jacketBones = (P) => two(J.spine, J.chest, 1.185, 0.04)(P[1]);
   const jLag = (P) => ({ lagW: smooth(1.27, 1.15, P[1]) * 0.6, lagNode: 2 });
   sample(jacket, {
     region: 0, part: jacketPart, bones: jacketBones, extra: jLag,
@@ -249,7 +249,7 @@ export function buildBody(opts = {}) {
           const u = (k / n) * Math.PI * 2; const { P, N } = sleeve.pn(u, v); if (outward(N) < 0.2) continue;
           const q = patchUV(P), rr = Math.hypot(q[0], q[1]); if (rr > PATCH.r) continue;
           if (R() > 0.35) continue; // v step is finer than sp: thin to an even density
-          const dark = cov(0.5 + q[0] / (2 * PATCH.r), 0.5 - q[1] / (2 * PATCH.r)) > 0.5;
+          const dark = cov(0.5 - q[0] / (2 * PATCH.r), 0.5 - q[1] / (2 * PATCH.r)) > 0.5;   // seen from her left, the viewer's right is -Z
           emit(2, add(P, mul(N, 0.003)), N, sleeveBones(P), dark ? PART.PTEXT : PART.PATCH, { rad: sp * 1.25 });
         }
       }
@@ -268,7 +268,7 @@ export function buildBody(opts = {}) {
     { c: [0, 0.79, 0.004], rx: 0.224, rz: 0.138 }, { c: [0, 0.85, 0.004], rx: 0.206, rz: 0.136 }, { c: [0, 0.915, 0.003], rx: 0.176, rz: 0.124 },
     { c: [0, 0.965, 0.002], rx: 0.150, rz: 0.109 }, { c: [0, 0.985, 0.002], rx: 0.141, rz: 0.104 }, { c: [0, 1.012, 0.002], rx: 0.137, rz: 0.101 },
   ]);
-  const pelvisBones = (P) => { const w = smooth(0.90, 0.79, P[1]) * 0.62; return w > 0 ? { a: J.hips, b: P[0] > 0 ? J.thighL : J.thighR, w } : { a: J.hips }; };
+  const pelvisBones = (P) => { const w = smooth(0.93, 0.80, P[1]) * 0.60; return w > 0 ? { a: J.hips, b: P[0] > 0 ? J.thighL : J.thighR, w } : { a: J.hips }; };
   sample(pelvis, { region: 6, part: (u, v, P) => (P[1] > 0.972 ? PART.BELT : PART.TROUSER), bones: pelvisBones, glyph: { skip: (P, N, part) => part === PART.BELT } });
   for (const side of [1, -1]) {
     const th = side > 0 ? J.thighL : J.thighR, sn = side > 0 ? J.shinL : J.shinR;
@@ -280,12 +280,12 @@ export function buildBody(opts = {}) {
     sample(leg, {
       region: side > 0 ? 3 : 4, part: (u, v, P, N) => (P[1] > 0.80 && Math.abs(P[0]) < 0.11 ? -1 : pocket(P, N) ? PART.POCKET : PART.TROUSER),
       push: (part, P, N) => { const k = pocket(P, N); return k === 1 ? 0.022 : k === 2 ? 0.017 : 0; },
-      bones: (P) => { const y = P[1]; if (y > 0.76) { const w = smooth(0.78, 0.90, y) * 0.5; return w > 0 ? { a: th, b: J.hips, w } : { a: th }; } return two(sn, th, 0.487, 0.09)(y); },
+      bones: (P) => { const y = P[1]; if (y > 0.78) { const w = smooth(0.80, 0.93, y) * 0.5; return w > 0 ? { a: th, b: J.hips, w } : { a: th }; } return two(sn, th, REST_POS[sn][1], 0.09)(y); },
       extra: (P) => ({ lagW: Math.pow(smooth(0.56, 0.05, P[1]), 1.25), lagNode: side > 0 ? 0 : 1 }),
       glyph: {},
     });
     // inner leg (dark), so an open hem is not hollow
-    const core = new Loft([{ c: REST_POS[side > 0 ? J.footL : J.footR], rx: 0.036, rz: 0.040 }, { c: lerp3(REST_POS[sn], REST_POS[side > 0 ? J.footL : J.footR], 0.5), rx: 0.05, rz: 0.055 }, { c: REST_POS[sn], rx: 0.055, rz: 0.06 }]);
+    const core = new Loft([{ c: REST_POS[side > 0 ? J.footL : J.footR], rx: 0.034, rz: 0.038 }, { c: lerp3(REST_POS[sn], REST_POS[side > 0 ? J.footL : J.footR], 0.75), rx: 0.040, rz: 0.044 }, { c: lerp3(REST_POS[sn], REST_POS[side > 0 ? J.footL : J.footR], 0.5), rx: 0.042, rz: 0.046 }]);
     sample(core, { region: side > 0 ? 3 : 4, fill: 0.6, part: () => PART.TOP, bones: one(sn) });
 
     // chunky trainer: upper + thick sole. Built along +Z from heel to toe.
@@ -343,9 +343,9 @@ export function buildBody(opts = {}) {
     const pins = [root]; let P = root; const sx = root[0] >= 0 ? 1 : -1, isFront = root[2] > 0.050;
     for (let k = 0; k < HAIR.NODES - 6; k++) {
       const ax = Math.abs(P[0]), front = smooth(-0.03, 0.03, P[2]), lat = 1 - smooth(0.050, 0.072, ax);
-      if (P[1] < 1.512 && lat < 0.5) break;
-      if (P[1] < 1.47) break;
-      const d = norm([sx * (0.10 + 0.95 * lat), -(1.0 - 0.80 * lat * front), isFront ? (-0.30 * lat + 0.10 * (1 - lat)) : (-0.42 - 0.2 * lat)]);
+      if (P[1] < 1.505 && lat < 0.5 && P[2] < -0.02) break;
+      if (P[1] < 1.462) break;
+      const d = norm([sx * (0.10 + 0.95 * lat), -(1.0 - 0.80 * lat * front), (P[2] > -0.034 ? -0.62 : -0.12) - 0.15 * lat]);   // tuck behind the ear
       P = onScalp(add(P, mul(d, seg)), off); pins.push(P);
     }
     return pins;
@@ -360,7 +360,7 @@ export function buildBody(opts = {}) {
     const root = add(P, mul(N, 0.006)); guides.push({ root, n: N, length: 0.17 + 0.05 * R(), pins: [root], short: true });
   }
   // render strands: root + up to 3 nearest guides on the same side
-  const strands = [], NS = opts.strands || 900;
+  const strands = [], NS = opts.strands || 1300;
   const weight = (c) => 0.35 + smooth(1.50, 1.62, c.P[1]);
   for (let i = 0; i < NS * 40 && strands.length < NS; i++) {
     const c = hairRootsCand[Math.floor(R() * hairRootsCand.length)]; if (R() > weight(c) / 1.35) continue;

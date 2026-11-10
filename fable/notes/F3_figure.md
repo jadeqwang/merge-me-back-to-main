@@ -56,7 +56,21 @@ fig.draw(ctx);                                 // engine calls once per pass; ct
   aux = flat part colour varied per region (arm / leg / torso ...) with alpha = cel amount, so an outline pass can ink part and limb borders.
 - Hair: all long hair combed over the scalp and falling behind the shoulders (front locks covered the jacket and looked like a barcode).
 
+## Status at the second checkpoint
+- Rest pose now equals the motion library's `fable/tools/bake/skeleton.json` (A-pose, arms 35 deg from the body, hips 1.005 m), so baked
+  tracks attach without retargeting. Verified with real tracks `idle`, `butterfly` (CMU 88_06), `run_fwd`, `lookback`, `form_test`:
+  `node fable/tools/figlab.mjs --tracks idle,butterfly,run_fwd,lookback,form_test --custom '{...,"inst":[{"track":"butterfly","time":1.3}]}' --out x`.
+  In the lab the procedural tracks are named `t_idle`, `t_walk`, `t_run`, `t_turn`, `t_kick`, `t_lunge`, `t_stress`.
+- Particle counts: 167,564 fill surfels, 8,604 glyphs, 5,288 decal points, 920 eye points, 1,300 hair strands (27 segments each).
+- Performance (RTX 3090, 1080p, lab incl. reflection pass + bloom): 1 hero 2.4 ms/frame; 1,024 instances 11-16 ms/frame.
+  Sim at load: ~1 ms per track frame (a 20 s track = 1.8 s). Template build ~1.5 s.
+- Stills: `work_fable/stills/f3/` (all `SHOTS` + `sheet_light.jpg`, `sheet_solid.jpg`, `sheet_mocap.jpg`, `close_trio.jpg`, `cel_pair.jpg`).
+
 ## Known problems / next
+- Bun variant: the short temple strands hang across the face in light mode; move their roots further back / shorten.
+- Light mode close-up: jacket glyph rows and the crop-top rows under the open jacket can overlap visually near the opening.
+- Cel close-up: a few dark specks on the forehead (hair strands' scalp path poking through the skin near the parting).
+- In the lab's side-on sunrise shots the sun reflection is drawn by the lab sky, not physically; the real engine owns sky and ground.
 - Silhouette identity is weak when hair is at rest (head reads bald, sleeves read as biceps): add hair volume (cap offset, thicker mass),
   check with real mocap where the hair flies.
 - Cel edges are slightly scalloped (surfel discs); raise `fillDensity` for hero shots if needed.

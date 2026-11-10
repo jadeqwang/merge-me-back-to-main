@@ -30,7 +30,7 @@ const STRAP_COL = [
 ];
 
 export function simulate(track, body, opts = {}) {
-  const o = { wind: [-0.22, 0, 0.05], gust: 0.6, gravity: 9.8, substeps: 3, iters: 5, drag: 0.012, preroll: 150, ...(track.simOpts || {}), ...opts };
+  const o = { wind: [-0.22, 0, 0.05], gust: 0.6, gravity: 9.8, substeps: 3, iters: 5, drag: 0.02, preroll: 150, ...(track.simOpts || {}), ...opts };
   const F = track.frames, D = track.data, G = SIM.G, N = HAIR.NODES, W = SIM.W;
   const out = new Float32Array(F * W * 4);
   const guides = body.guides, straps = body.straps;
