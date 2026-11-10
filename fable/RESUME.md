@@ -4,16 +4,24 @@ Branch `fable/merge`. A third, independent cut of "Merge", made end to end by Cl
 If you are a new session picking this up: read `fable/SPEC.md` (the direction, look, timeline, contracts), then this file, then the
 workstream notes in `fable/notes/`.
 
-## State (updated 2026-11-10, checkpoint 6): READ THIS BLOCK FIRST, the older text below is history
+## State (updated 2026-11-10 15:45, checkpoint 7): READ THIS BLOCK FIRST, the older text below is history
 
-- All five act passes on v1 are done (notes per act in `fable/notes/act{A..E}.md`), plus motion fixes M3 (`fable/notes/M3_motionfix.md`).
-- v2 is rendered: `work_fable/out/v2.mp4` (1080p, 505 s to render). Command:
-  `node fable/tools/render.mjs --show /fable/show/main.js --from 0 --to 282.5 --res 1920x1080 --fps 30 --mb 4 --workers 4 --audio --mp4 work_fable/out/v2.mp4`
-- Review copies for Jade live in `review/fable_v1/` and `review/fable_v2/` (each file under 100 MB; two-pass x264 + AAC).
-- Director's notes on v2: `fable/NOTES_v2.md`. That file is the current task list (round 2 fix passes, one agent per act group:
-  A+B, C, D+E; each also checks its act in motion with dense strips).
-- After round 2: render v3 at 1080p, review, then master (consider 4K), encodes for X (2-pass x264 ~12M, maxrate 16M, High@4.1,
-  AAC 256k, faststart) and YouTube, and a `review/fable_v3/` copy.
+- Round 2 fix passes are done for all acts (notes: `fable/notes/r2_AB.md`, `r2_C.md`, `r2_DE.md`; task list was `fable/NOTES_v2.md`).
+  Includes the Banach-Tarski Easter egg (`fable/show/seq/bt.js`: split at 28.62, fold at 87.08; quoted from Jade's "Rewind").
+- v3 is rendered: `work_fable/out/v3.mp4` (1080p), sheets `work_fable/stills/v3/`, review copy `review/fable_v3/` (pushed).
+  One command does render + sheets + 720p review encode: see "Cut script" below.
+- Running: anime look-dev for the protagonist (Jade asked to try it). Isolated copy of the figure in `fable/engine/src/figure_anime/`,
+  test show `fable/show/animelab.js`, notes `fable/notes/anime_lookdev.md`, sheets in `work_fable/stills/anime/`. The film is unchanged
+  until the director and Jade have compared sheets; if adopted it is swapped in by one import in `fable/show/cast.js`.
+- Next: (1) judge the anime sheets, show Jade the comparison, decide; (2) round 3, small: 2:44-2:46 cropped letters and dash bodies
+  before the fall, 4:16 specks before the map, 3:56.6 handover, plus each r2 note file's "still weak" list; (3) v4, then master
+  (consider 4K), encodes for X (2-pass x264 ~12M, maxrate 16M, High@4.1, AAC 256k, faststart) and YouTube.
+- Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
+  scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
+
+Cut script (render 1080p, sheets every 2 s, two-pass 720p review encode at 2450k + AAC 160k):
+`node fable/tools/gitlog.mjs; node fable/tools/render.mjs --show /fable/show/main.js --from 0 --to 282.5 --res 1920x1080 --fps 30 --mb 4 --workers 4 --audio --mp4 work_fable/out/vN.mp4`
+then ffmpeg `fps=1/2,scale=480:270,tile=7x7` per 98 s for sheets, and `-vf scale=1280:720 -c:v libx264 -preset slow -b:v 2450k` two-pass.
 
 ## State at checkpoint 5 (history)
 
