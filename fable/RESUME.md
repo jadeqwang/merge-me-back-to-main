@@ -10,16 +10,14 @@ workstream notes in `fable/notes/`.
   Includes the Banach-Tarski Easter egg (`fable/show/seq/bt.js`: split at 28.62, fold at 87.08; quoted from Jade's "Rewind").
 - v3 is rendered: `work_fable/out/v3.mp4` (1080p), sheets `work_fable/stills/v3/`, review copy `review/fable_v3/` (pushed).
   One command does render + sheets + 720p review encode: see "Cut script" below.
-- Anime look-dev is done (sheets `work_fable/stills/anime/A_turnaround_faces.jpg`, `B_lighting_arc.jpg`; notes
-  `fable/notes/anime_lookdev.md`). Director's decision (15:50): ADOPT for the whole film behind a switch (`fig=anime` default,
-  `fig=classic` = the film as in v3). Jade has been shown the sheets and may veto.
-- Running (one agent): anime integration: likeness pass against her selfie/character sheet, hair fixes (no cape flare; strand hair
-  kept for the float), the switch in `fable/show/cast.js`, default expressions/gaze/blink (night calm in shadow, first lit open-eyed
-  look at the catch 229.6-236, day joyful), check sheet `work_fable/stills/anime/F_in_film.jpg`. It keeps `fable/notes/anime_lookdev.md`.
-- Next: (1) judge sheets E/F; (2) round 3, one fresh agent per act group, doing the "still weak" lists in `fable/notes/r2_*.md` plus
-  2:44-2:46 (cropped letters, dash bodies before the fall), 4:16 (specks before the map), 3:56.6 handover, and per-shot expression/gaze
-  choices; (3) v4 (anime), review copy to `review/fable_v4/`; then master (consider 4K), encodes for X (2-pass x264 ~12M, maxrate 16M,
-  High@4.1, AAC 256k, faststart) and YouTube.
+- The anime figure (face, expressions, gaze, clump hair) is ADOPTED and is the default (`fig=anime`); `--q "fig=classic"` renders the
+  film as in v3. Notes `fable/notes/anime_lookdev.md` (section "ADOPTION PASS"); sheets `work_fable/stills/anime/E_likeness.jpg`,
+  `F_in_film.jpg`. Jade has seen the first sheets and may still veto.
+- Running (since 16:50): round 3, three agents working from `fable/NOTES_v3.md`: Acts A+B (`fable/notes/r3_AB.md`), Act C
+  (`r3_C.md`), Acts D+E plus sole ownership of `fable/engine/src/figure_anime/` (`r3_DE.md`). If one died, start a fresh agent with:
+  "continue the round-3 pass for <acts> from fable/NOTES_v3.md and your notes file fable/notes/r3_<X>.md".
+- Next: render v4 (cut script below), review sheets, review copy to `review/fable_v4/`; then master (consider 4K), encodes for X
+  (2-pass x264 ~12M, maxrate 16M, High@4.1, AAC 256k, faststart) and YouTube.
 - Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
   scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
 
