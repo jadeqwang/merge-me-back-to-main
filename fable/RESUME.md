@@ -4,7 +4,7 @@ Branch `fable/merge`. A third, independent cut of "Merge", made end to end by Cl
 If you are a new session picking this up: read `fable/SPEC.md` (the direction, look, timeline, contracts), then this file, then the
 workstream notes in `fable/notes/`.
 
-## State (updated 2026-11-10, checkpoint 4)
+## State (updated 2026-11-10, checkpoint 5)
 
 Done
 - Recon: both earlier cuts reviewed (v5a on `claude/wonderful-mccarthy-f90kll`, v6 "written in text" on `claude/v6-text`), shipped work in `~/Documents/1-music-shipped` surveyed.
@@ -33,11 +33,14 @@ Director's notes on it (to apply per act AFTER v1 with the real figure exists):
 Usage note: the Claude 5-hour limit was hit once (about 1.5 h of 5-6 parallel image-heavy agents). From here: 2-3 agents at a time, fresh
 general-purpose agents with tight briefs that read the notes on disk (cheaper than forks of the main session), fewer image reads.
 
-In progress (fresh agents; each keeps a note in `fable/notes/` and commits its own paths)
-- I1: swap cast.js stand-ins for the real Figure in every sequence, render `work_fable/out/v1.mp4` + sheets `work_fable/stills/v1/` -> `I1_integration.md`.
-- P1: performance QA on the real figure (`fable/show/reel.js`), fixes in figure + bake recipes -> `P1_qa.md`.
+v1 exists: `work_fable/out/v1.mp4` (first full cut with the real figure; `fable/notes/I1_integration.md`), sheets `work_fable/stills/v1/`.
+Performance QA done (`fable/notes/P1_qa.md`). Director's notes on v1, act by act: `fable/NOTES_v1.md` (the task list for the act passes).
 
-Then: director reviews v1 sheets, dispatches per-act fix passes (notes above), re-render, repeat; encodes; review page.
+In progress (fresh agents, one per act; each keeps `fable/notes/act<X>.md` and commits its own paths)
+- Act C (seq 08-10, build + drop), Act A (seq 01-04 + the Global fixes + life props), Act D (seq 11-13, violet/flight/catch).
+- Not started yet: Act B (seq 05-07: chorus 1, float, rise), Act E (seq 14-16: day, map, terminal). Launch when a slot frees up, with the same brief shape (see NOTES_v1).
+
+Then: render v2 (1080p), director reviews in motion-dense sheets, second round of notes; encodes for X + YouTube; review page for Jade.
 
 Next, in order
 1. Review F1/F3 stills against SPEC section 2; iterate until the look is right. Integrate the figure into the engine.
