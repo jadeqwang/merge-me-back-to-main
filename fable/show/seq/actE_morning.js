@@ -139,21 +139,22 @@ export function makeLift(K) {
   const tMain = K.T.words(25)[2].end, tMap = bar(150), tRiser = bb(152, 2), tHit = bar(153);
   // r2: lower and closer for longer. To the end of "Back to main" (tMain, 255.885) the stick stays on HER (a point a little ahead of her on main, following her softened):
   // 4.5 m behind her shoulder on b144, 14 m by tMain, so she and the nearest branches are people for the whole line. Then one continuous pull-up, two bars, to the map:
-  // the ground point slides along main from her to the map's centre in proportion to the distance, so main's orange stays under the centre all the way up.
+  // the ground point stays on main all the way up (main's orange under the centre): first it runs out east ahead of her with the distance (0.22 R, so the fan, not
+  // its apex, fills the frame while nothing else is in sight), and from 600 m it slides back west along main to the map's centre as the rest of the film comes in.
   //            t         lead  Gy    side  ln R             pitch  az   fov
   const LK = curve([
     [bar(144),    0.9,  1.22, 1.0,  ln(4.5),         2.5,   -14, 42],
     [bar(145),    1.5,  1.16, 0.8,  ln(5.6),         5,     -12, 42],
     [bar(146),    2.3,  1.08, 0.5,  ln(7.2),         7.5,   -12, 42],
     [bar(147),    3.2,  0.98, 0.2,  ln(9.5),         10,    -15, 42],
-    [tMain,       4.5,  0.8,  0,    ln(14),          14.5,  -21, 42],
+    [tMain,       4.5,  0.8,  0,    ln(14),          12.5,  -21, 42],
     [bar(149),    4.5,  0,    0,    ln(300),         55,    -56, 39],
     [tMap,        4.5,  0,    0,    ln(B.h),         90,    -90, 35],
     [tRiser,      4.5,  0,    0,    ln(B.h * 0.955), 90,    -90, 35],
   ]);
   const R1 = 14, DIVE = [lerp(mc[0], 0, 0.86), lerp(mc[1], 0, 0.86)];
-  function lift(t) { let [lead, gy, side, lr, p, a, fov] = LK(t); const h = A.soft(Math.min(t, A.tFr + A.DUR - 0.7), 0.6), w = clamp01((Math.exp(lr) - R1) / (B.h * 0.955 - R1));
-    let gx = lerp(h.x + lead, mc[0], w), gz = lerp(h.z + side, mc[1], w);
+  function lift(t) { let [lead, gy, side, lr, p, a, fov] = LK(t); const h = A.soft(Math.min(t, A.tFr + A.DUR - 0.7), 0.6), w = sm((lr - ln(600)) / (ln(B.h * 0.955) - ln(600)));
+    let gx = lerp(h.x + lead + 0.22 * Math.max(0, Math.min(Math.exp(lr), 600) - R1), mc[0], w), gz = lerp(h.z + side, mc[1], w);
     if (t > tRiser) { const e = Math.pow(seg(t, tRiser, tHit), 2.4); gx = lerp(gx, DIVE[0], e); gz = lerp(gz, DIVE[1], e); lr = lerp(lr, ln(B.h / 7), e); }
     const R = Math.exp(lr), cp = Math.cos(p * rad), sp = Math.sin(p * rad), ca = Math.cos(a * rad), sa = Math.sin(a * rad), f = [cp * ca, -sp, cp * sa];
     return { pos: [gx - f[0] * R, gy - f[1] * R, gz - f[2] * R], target: [gx, gy, gz], up: [sp * ca, cp, sp * sa], fov, near: Math.max(0.1, R * 0.03), far: R * 8 + 40000, R, pitch: p, horizon: Math.tan(p * rad) / Math.tan((fov * rad) / 2) }; }   // horizon: its NDC y

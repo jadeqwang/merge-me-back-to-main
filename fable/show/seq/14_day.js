@@ -17,7 +17,7 @@ export default function seq(K) {
   // her light is the day key from the first frame (13_catch ends on it); the sky finishes turning blue during shot A
   const DAY = { ambient: [0.70, 0.73, 0.88], rimCol: [0, 0, 0], rimBoth: 0, sunAmt: 1, under: 0, emissive: 0, fibres: 0, trans: 0 };
   const grad = (t) => lerp(1, 1.55, ss(t, t0, bar(139)));                                  // the blue comes down toward the horizon as the day settles
-  const env = (t, o = {}) => ({ figLight: DAY, outline: { strength: 1, width: 1.3 }, sun: { grad: grad(t) }, ground: { ripple: 0.016, reflGain: 0.8 }, ...o });
+  const env = (t, o = {}) => ({ figLight: DAY, outline: { strength: 1, width: 1.3 }, sun: { grad: grad(t), gain: 1 - 0.7 * ss(t, L.tMain - 1, L.tMain + 0.6) }, /* r2: the sun's disc is dimmed for the pull-up (in the mirror it was a peach smudge at the frame edge; it is never in the sky of these frames) */ ground: { ripple: 0.016, reflGain: 0.8 }, ...o });
   const world = (o = {}) => ({ out: { hide: true }, lights: false, text: 0.9, minPx: 2.2, haloPx: 0, halo: 0, ...o });
   const hud = (t) => K.hudMain(t, { count: A.count(t) }), pop = (t) => { let f = 0; for (const tk of A.TK) if (t >= tk) f += 0.1 * Math.exp(-(t - tk) * 9); return f; };
   // B: keyed by hand round the leap. pos is absolute (relative to CATCH), the target rides on her (softened) with an offset
@@ -44,7 +44,7 @@ export default function seq(K) {
     return K.cut(t, [
       // A (r2): the cut from 13 lands on her feet and the first written metre of main (her arms come down out of frame: `catch` ends with them wide, `free` begins with
       // them at her sides), and the camera rises to her and backs away in the first bar, in time for the skip on b138.
-      { t0, f: (tt, u) => { const e = sm(u), r = sm(seg(t, t0 + 0.12, t0 + 1.5)), camera = { pos: [c.x - lerp(1.15, 3.3 + 0.4 * e, r), lerp(0.22, 0.42 + 0.16 * e, r), c.z + lerp(0.3, 0.8, r)], target: [c.x + 0.1 * r, lerp(0.2, 1.02 + 0.04 * e, r), c.z - lerp(0.04, 0.6, r)], fov: 38, far: 40000 };
+      { t0, f: (tt, u) => { const e = sm(u), r = sm(seg(t, t0 + 0.12, t0 + 1.5)), camera = { pos: [c.x - lerp(1.15, 3.3 + 0.4 * e, r), lerp(0.22, 0.42 + 0.16 * e, r), c.z + lerp(0.42, 0.8, r)], target: [c.x + 0.1 * r, lerp(0.2, 1.02 + 0.04 * e, r), c.z - lerp(0.22, 0.6, r)], fov: 38, far: 40000 };
         return { camera, env: env(t), world: world(), extra: extra(), type: [K.lyric(24, camera, { font: 'hook', x: -0.93, y: 0.08, rows: [1, 2], px: 70, dist: 34, out: bar(138.7), fade: 0.3, ink: 1, reflect: false })], hud: hud(t), flash: 0.45 * Math.exp(-(t - t0) * 4.5) }; } },
       { t0: tB, f: () => { const k = camB(t), s = A.soft(t, 0.35), camera = { pos: [WH[0] + k[0], k[1], WH[2] + k[2]], target: [s.x + k[3], k[4], s.z + k[5]], fov: 38, far: 40000 };
         return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
@@ -54,7 +54,7 @@ export default function seq(K) {
         return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
       { t0: tD, f: () => { const camera = L.lift(t);
         return { camera, env: env(t), world: world({ minPx: 2.0 }), extra: extra(),
-          type: [K.lyric(25, camera, { font: 'hook', x: 0.93, y: Math.max(0.5, camera.horizon + 0.07), align: 'right', px: 78, dist: 60, out: L.tMain + 0.35, fade: 0.5, ink: 1, reflect: false })], hud: hud(t), flash: pop(t) }; } },
+          type: [K.lyric(25, camera, { font: 'hook', x: 0.93, y: Math.min(0.68, Math.max(0.5, camera.horizon + 0.07)), align: 'right', px: 78, dist: 60, out: L.tMain + 0.15, fade: 0.4, ink: 1, reflect: false })], hud: hud(t), flash: pop(t) }; } },
     ], t1);
   } };
 }

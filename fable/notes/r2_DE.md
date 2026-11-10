@@ -42,6 +42,35 @@ node fable/tools/render.mjs --show /fable/show/main.js --from 181 --to 282.5 --r
 - No new tracks baked. The handover pop is covered by the camera, not removed (a `free` that began arms-open would remove it).
 - "Children at full stride: stride scaled to their size" was read as: they must not appear at full stride beside a standing her; they accelerate from a stand.
 - `(HEAD -> main)` sits over main's east end (not after it): after it, it ran to 30 px from the frame edge at this label size.
+- The pull-up keeps the FAN centred (ground point 0.22 R east of her, on main) until 600 m, then slides west to the map centre: with the point sliding west from the
+  start, 256.4-258.0 was a half-empty frame with the fan at its right edge.
+- Lyric 25 (`BACK TO MAIN`, shot D) is capped at y 0.68 so it clears the HUD; it leaves 0.15 s after the word ends (255.885) as the horizon rises through it.
+- The sun's disc is dimmed (gain 0.3) from 254.9 through the map: its reflection was a peach smudge in the lower right of the pull-up. Still faintly there 256.4-256.9.
+- Ground glows (`W.glow`, `canopy`) are multiplied by (1 - ink) in the engine, so they draw nothing at full day. The map lowers `env.dawn` to 0.88 (glows at 20 %),
+  passes the day grade and `ink: 1` for every road set explicitly. No engine change.
 
-## Next / open
-- motion strips of every cut 3:01-4:42, final clip, composition strip.
+## Motion check (dense strips, `work_fable/stills/r2_DE/`)
+- `m3_cuts.jpg`: every cut 3:01-4:42 (b109, b113, b118, 210.96, b128, b130.3, b132.2, b137, b139, b140, b142, b144, b153), 6 frames each (-0.2 .. +0.2 s).
+  No pose pop left in view: 236.648 goes arms-wide -> feet; the others are the same take across the cut.
+- `m2_whirl.jpg` (240.15-242.45, every 0.1 s, cropped on her): the half turn; feet stay on the road's marks through the pivot (numbers above).
+- `m4_leapC.jpg` (242.0-248.65): the gather from the front, the leap, the fork at the apex (two bodies overlap 243.69-243.82, as before), shot C.
+- `m1.jpg` (248.55-253.2, every 0.15 s): the three standing starts (b144 to the right, b145 behind her right shoulder along main, b146 to the right).
+- `m5_lift.jpg`, `m6_lift.jpg`, `m7.jpg`: the lift, the pull-up, the map's labels arriving, the dive.
+- `d1.jpg`, `d2.jpg`, `d3.jpg`: the comets, the held sun and its break on 222.735, the new C3.
+- Map at 1920x1080: `map2.png` (263.0). Label cap height 33 px; nearest road to any label >= 20 px.
+
+## Still weak (times)
+- 3:41.0-3:42.7 with the sun held under, the thousand are lit grey-violet, not silhouettes; they turn to silhouettes on the hit.
+- 3:56.65-3:57.4 the feet shot is a still body (the take stands still for its first second); only the camera, the road's ring and the flash move.
+- 4:03.7-4:03.8 two bodies overlap in the air at the fork (unchanged).
+- 4:05.3-4:08.8 shot C: the runners are about 35-40 % of frame height, and the wider family crosses the frame edges (unchanged from v2).
+- 4:10.6-4:12 the b145 branch leaves along main straight away from the lens, half hidden by her for its first second.
+- 4:16.4-4:18.0 the pull-up: people are specks from 4:16.6; the frame is the fan's rays with main under the centre, the sun's reflection a faint smudge lower right.
+- 4:17.6 the hero's take ends (she stops walking) when she is under two pixels tall.
+- Map: `formation` is 150 px from its rings (leader line); the violet road is still the world's version of its last 500 m (see actD.md).
+
+## Outputs
+- `work_fable/out/r2_DE.mp4`: 181.0-282.5, 1280x720, 30 fps, mb 4, audio (3,045 frames, 140 s to render). `work_fable/stills/r2_DE/final_sheet.jpg`: one frame per 2 s from it.
+- Loop seam re-measured after this pass (720p stills): frame 0 vs frame 1 MSE 21.35, frame 0 vs last frame (282.4667) 22.44: unchanged. `16_terminal.js`, `11_violet.js`
+  and `gitlog.json` are untouched.
+- Dev track list: other acts' sequences now need their own tracks at set-up (`05_chorus1.js` fails without `sprint_stop_look`): add it to `Q`, or render without `--q`.
