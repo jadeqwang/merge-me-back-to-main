@@ -25,7 +25,7 @@ The harness drops any page console line that contains "404" (its favicon filter)
 | 0:56 home | camera 3.0 m (was 4.5): seated she is about half the frame with her arm; the orrery hangs 0.72 m from her shoulder (was 1.2; `props.orrery` new option `reach`) so it still fits | `03_verse1.js` `LIFE`, `props.js` |
 | 1:04 "from" upside down | the ground line leaves before the dive turns over it (out 64.17, gone by 64.52). It was held to 66.2 while the camera flipped 180 degrees at 64.6. Costs rule 3 the last 1.5 s of the held "from" | `04_prechorus.js` |
 
-## Act B: done (motion check pending)
+## Act B: done
 | note | what changed | where |
 |---|---|---|
 | 1:29.5-1:37 "Nothing that I lived can come undone" | one slow push straight at her on a fixed bearing, 7.5 m -> 4.8 m, eye height 1.25-1.3 m: whole body, 37 % -> 55 % of frame height, she in the right third, her road's vanishing point left of centre. Locks on eighth notes from 90.78, toward us; the LAST under her feet on b55.1 = 94.039 = the "d" of un-DONE (measured in `analysis_v2/stems/vocals_roformer.wav`: nasal 93.80-93.96, burst 93.98-94.04); ring + pool + accent flash there; through the held note the locked road breathes on the beat. The gaze pulse (it ran the other way) is gone. Lyric is four rows (NOTHING THAT / I LIVED / CAN COME / UNDONE, cap 66 px): the three-row block reached her head | `05_chorus1.js` `camD`, `locks` |
@@ -51,3 +51,22 @@ The harness drops any page console line that contains "404" (its favicon filter)
   (written under her feet, 87.2-88.7).
 - Checked on 30 fps strips (`bt1..3.jpg`, `eggs.jpg`). Weak: the seated lattice keeps the seat pose while she runs on, so in the last 0.2 s of the fade her
   legs leave it.
+
+## Motion check (strips in `work_fable/stills/r2_AB/`)
+- `m1.jpg` fork step 3.4-5.0 (0.1 s), the b9 cut, the fall 26.6-28.0 (0.1 s): no pops; the fall hands over to the verse camera with no jump.
+- `a3.jpg` b5 / b7 hand-overs (the vanish is gone), orb, home, the dive. `a2.jpg` verse A 29.4-36.5 and the cut to the side truck.
+- `m2.jpg` verse run 31.0-31.6 (1/15 s) and every cut of Act A (36.65, 41.87, 45.34, 47.08, the life bars, the roll call beats, 60.13, 64.47, 69.69).
+- `m3.jpg` 5A 70.0-70.9 (0.1 s), cuts 75.77 / 83.60 / 89.46 / 97.515 / 125.343, the brake 88.3-89.4, the locks 93.6-94.25. `b2.jpg` the sit-up from above
+  116.6-117.9 (0.2 s), the cut on b68.4, the roll. `sk1.jpg` her feet at 30 fps in 5A.
+- Skating: every runner's loop phase is tied to the ground she covers (03 `K.loopClock`, 05 `clockA`, rates 0.885-1.08 x sprint_loop); nothing slides at
+  strip scale, but from a 0.28 m lens (5A) the ground text is too foreshortened to measure a planted foot against a glyph.
+- `final_sheet.jpg`: one frame per 2 s of `work_fable/out/r2_AB.mp4` (0-125.4 s, 1280x720, 30 fps, mb 4, audio; 151 s to render).
+
+## Still weak
+- 26.0-26.6: the middle of the fall is her marker and one road on dark mirror (a focal point, little else).
+- 60.0-60.13: "Where" appears on the last roll-call frame and jumps to the ground line at the cut (as in v2).
+- 64.5-66.0: "Where I started from" is gone while "from" is still held (the price of never showing it upside down).
+- 108-113: at the widest point of the float she is under 15 % of frame height for about 5 s (v2: about 10 s).
+- 116.6-117.95: main's road text lies upside down in the lower right corner of the top-down frame.
+- 29.25-29.47 and 87.2-87.42: the seated triangle lattice keeps its seat pose while her legs run on.
+- 43.0-43.7: the orb's warm light is the frame's `figLight`, so jade/piano beside her warms equally (true to "each one", but not directional per body).
