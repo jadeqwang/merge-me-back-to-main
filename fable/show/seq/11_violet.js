@@ -9,6 +9,7 @@
 // Everything the act shares (her light's path, the hand, the road's end) is built here and handed on in K.shared.actD.
 import { seg, ss, sm, lerp, clamp01 } from '../kit.js';
 import { write } from './actd_hand.js';
+import { zoomOn } from './actE_morning.js';
 
 export default function seq(K) {
   const { bar, world: W, cast, T, VIOLET, E } = K; const t0 = bar(105), t1 = bar(121), tGo = bar(117), D2R = Math.PI / 180;
@@ -125,12 +126,12 @@ export default function seq(K) {
     who(t);
     const type = [K.lyric(19, camera, { x: 0.12, y: 0.4, rows: [3, 4], dist: 30, px: 80, out: 207.45, fade: 0.5, reflGain: 0.1 })];
     if (t > tLift - 0.1) type.push(K.lyric(20, camera, { font: 'hook', px: 120, x: 0, y: 0.52, align: 'center', dist: 200, words: T.words(20).slice(0, 1), out: tEnd + 1, reflGain: 0 }));
-    return { camera, env: env(t, dim, { exposure: 1.6 + 0.15 * dim }), world: world(t, { violet: violetWorld, text: 0.85 + 0.4 * lift, minPx: 1.3 + 0.9 * lift }), extra: [roadDraw(t, { head: headAt(t), textGain: 0.85 + 0.3 * lift, minPx: 1.3 + 0.5 * lift, gain: 2.4 - 0.9 * lift }), lightDraw(t, { size: 0.012 + 0.0022 * Math.hypot(lightAt(t)[0] - fr.x, lightAt(t)[2] - fr.z), gain: 1 - 0.8 * ss(t, 206.5, 209.5), tail: 0.35 }), farLights(t), eastGlow(t), selfLight(t, dim * (0.3 + 1.0 * lift), 1 + 1.4 * l2)], type, hud: hud(t) }; };
+    return zoomOn(K, { camera, env: env(t, dim, { exposure: 1.6 + 0.15 * dim }), world: world(t, { violet: violetWorld, text: 0.85 + 0.4 * lift, minPx: 1.3 + 0.9 * lift }), extra: [roadDraw(t, { head: headAt(t), textGain: 0.85 + 0.3 * lift, minPx: 1.3 + 0.5 * lift, gain: 2.4 - 0.9 * lift }), lightDraw(t, { size: 0.012 + 0.0022 * Math.hypot(lightAt(t)[0] - fr.x, lightAt(t)[2] - fr.z), gain: 1 - 0.8 * ss(t, 206.5, 209.5), tail: 0.35 }), farLights(t), eastGlow(t), selfLight(t, dim * (0.3 + 1.0 * lift), 1 + 1.4 * l2)], type, hud: hud(t) }, jw(t, JH, [0, 0.06, 0])); };
 
-  K.shared.actD = { held, lightAt, lightDraw, roadDraw, violetWorld, shotD, tEnd, hudViolet: hud, P, fr, dawnAt }; K.shared.lightAt = lightAt;                    // (15_map draws the flight from K.shared.lightAt)
+  K.shared.actD = { cj, held, lightAt, lightDraw, roadDraw, violetWorld, shotD, tEnd, hudViolet: hud, P, fr, dawnAt }; K.shared.lightAt = lightAt;                    // (15_map draws the flight from K.shared.lightAt)
   return { name: '11_violet', t0, t1, frame(t) {
     const a = posAt(t);
-    return K.cut(t, [
+    return zoomOn(K, K.cut(t, [
       // A · the run. From her right: she crosses left to right and the lens stays with her.
       { t0, f: (tt, u) => { const camera = { pos: K.rel(a, 1.7 - 1.5 * sm(u), 4.3, 1.15), target: K.rel(a, 0.75 - 0.5 * sm(u), 0, 0.98), fov: 35, focusDist: 4.4, aperture: 0.04 };
         who(t);
@@ -149,6 +150,6 @@ export default function seq(K) {
         const extra = [roadDraw(t, { head: headAt(t) }), farLights(t), eastGlow(t), rb.draw]; if (t > tGo) extra.push(lightDraw(t, { gain: 0.2 + 0.8 * rb.got, size: 0.005 + 0.007 * rb.got, tail: 0.3 }));
         return { camera, env: env(t), world: world(t), extra, type, hud: hud(t) }; } },
       { t0: tD, f: () => shotD(t) },
-    ], t1);
+    ], t1), t < tD ? jw(t, JH, [0, 0.06, 0]) : null);
   } };
 }

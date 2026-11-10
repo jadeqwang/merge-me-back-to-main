@@ -9,7 +9,7 @@
 //   D  b144-b149  behind her shoulder as she stops and turns east ("Back to main" 249.44), then up and back: 16, 32, 64 roads fanning east with their
 //                 runners; BACK TO MAIN stands on the horizon; b147 the lights go ahead; the camera keeps lifting (no cut into 15)
 import { seg, ss, sm, lerp, clamp01 } from '../kit.js';
-import { morning, makeLift, curve } from './actE_morning.js';
+import { morning, makeLift, curve, zoomOn } from './actE_morning.js';
 
 export default function seq(K) {
   const { bar, bb, world: W, cast } = K; const t0 = bar(137), t1 = bar(149), A = morning(K), L = (K.shared.actE.L = makeLift(K)), C = A.C, H = A.HUB;
@@ -41,20 +41,22 @@ export default function seq(K) {
   const GD = (() => { const a = grp(tC + 0.05), b = grp(tD), l = Math.hypot(b.x - a.x, b.z - a.z); return [(b.x - a.x) / l, (b.z - a.z) / l]; })();
   return { name: '14_day', t0, t1, frame(t) {
     A.people(t); const c = A.soft(t, 0.5), extra = (o) => A.roads(t, o);
-    return K.cut(t, [
+    return zoomOn(K, K.cut(t, [
       // A (r2): the cut from 13 lands on her feet and the first written metre of main (her arms come down out of frame: `catch` ends with them wide, `free` begins with
       // them at her sides), and the camera rises to her and backs away in the first bar, in time for the skip on b138.
-      { t0, f: (tt, u) => { const e = sm(u), r = sm(seg(t, t0 + 0.12, t0 + 1.5)), camera = { pos: [c.x - lerp(1.15, 3.3 + 0.4 * e, r), lerp(0.22, 0.42 + 0.16 * e, r), c.z + lerp(0.42, 0.8, r)], target: [c.x + 0.1 * r, lerp(0.2, 1.02 + 0.04 * e, r), c.z - lerp(0.22, 0.6, r)], fov: 38, far: 40000 };
+      // (r3: the pop is gone, not hidden: she plays `handover` across the cut (actE_morning.js), her arms coming down from the catch's wide hold and her back foot
+      // coming up, so the cut lands on her WHOLE, face lit, low and closer on the same axis; no more feet shot.)
+      { t0, f: (tt, u) => { const e = sm(u), camera = { pos: [c.x - (3.3 + 0.4 * e), 0.42 + 0.16 * e, c.z + 0.8], target: [c.x + 0.1, 1.02 + 0.04 * e, c.z - 0.6], fov: 38, far: 40000 };
         return { camera, env: env(t), world: world(), extra: extra(), type: [K.lyric(24, camera, { font: 'hook', x: -0.93, y: 0.08, rows: [1, 2], px: 70, dist: 34, out: bar(138.7), fade: 0.3, ink: 1, reflect: false })], hud: hud(t), flash: 0.45 * Math.exp(-(t - t0) * 4.5) }; } },
       { t0: tB, f: () => { const k = camB(t), s = A.soft(t, 0.35), camera = { pos: [WH[0] + k[0], k[1], WH[2] + k[2]], target: [s.x + k[3], k[4], s.z + k[5]], fov: 38, far: 40000 };
         return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
-      { t0: tB2, f: () => { const k = camB2(t), s = A.soft(t, 0.35), camera = { pos: [C[0] - 4.7, k[1], C[1] + k[0]], target: [s.x + k[3], k[2], s.z], fov: 38, far: 40000 };
+      { t0: tB2, f: () => { const k = camB2(t), s = A.soft(t, 0.35), camera = { pos: [C[0] - 3.1, k[1], C[1] + k[0]], target: [s.x + k[3], k[2], s.z], fov: 38, far: 40000 };      // r3: due south of her (was 1.6 m further west): the branch that leaves her at the apex runs east, ACROSS the frame, and is clear of her in three frames (it ran away behind her for a quarter of a second: two bodies in one)
         return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
       { t0: tC, f: (tt, u) => { const G = grp(t), a = A.runnerAt(c1, t), g = { x: lerp(a.x, G.x, 0.3), z: lerp(a.z, G.z, 0.3) }, e = sm(u), d = 4.3 + 1.5 * e, camera = { pos: [g.x + GD[0] * d + GD[1] * 1.2, 0.75 + 0.85 * e, g.z + GD[1] * d - GD[0] * 1.2], target: [g.x - GD[0] * 0.8, 0.98 - 0.06 * e, g.z - GD[1] * 0.8], fov: 40, far: 40000 };
         return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
       { t0: tD, f: () => { const camera = L.lift(t);
         return { camera, env: env(t), world: world({ minPx: 2.0 }), extra: extra(),
           type: [K.lyric(25, camera, { font: 'hook', x: 0.93, y: Math.min(0.68, Math.max(0.5, camera.horizon + 0.07)), align: 'right', px: 78, dist: 60, out: L.tMain + 0.15, fade: 0.4, ink: 1, reflect: false })], hud: hud(t), flash: pop(t) }; } },
-    ], t1);
+    ], t1), A.headAt(t));
   } };
 }

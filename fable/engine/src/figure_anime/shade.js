@@ -73,7 +73,7 @@ void main(){
   }
   if (u_hull > 0.0) {                        // inverted hull: the ink line. Heavier on big forms and on the shadow side, never more than ~3 px
     float dist = distance(u_camPos, W), wt = (reg == 5.0 || reg == 10.0 || reg == 11.0 || reg == 14.0) ? 0.55 : (reg == 13.0 ? 0.3 : (reg == 9.0 ? 0.6 : 1.0));
-    wt *= 1.0 - 0.45 * dot(Nw, u_key);
+    wt *= 1.0 - 0.45 * dot(Nw, u_key); if (reg == 5.0) wt *= smoothstep(-0.0650, -0.0630, a_la.y);      // (no hull at the closed tip of the chin)
     W += Nw * min(u_hull * i_par.x * wt, 3.2 * wt * dist / u_px);
   }
   v_w = W; v_flags.w = (W.y - i_pos.y) / i_par.x; gl_Position = u_viewProj * vec4(W, 1.0);
@@ -111,8 +111,9 @@ vec3 hairLit(vec3 h, vec3 N, vec3 Nt, vec3 Nm, float wet, vec3 V, vec3 hv, vec3 
   float band = smoothstep(-wl - ay, -wl + ay, dy) * (1.0 - smoothstep(wu - ay, wu + ay, dy)) * step(0.22, max(hu, hd2));
   vec2 hd = normalize(hv.xz + 0.45 * hl.xz + vec2(1e-4)), dd = normalize(d.xz + vec2(1e-4));
   float ring = band * smoothstep(0.45, 0.85, dot(dd, hd)) * onHead * smoothstep(0.165, 0.140, length(h - c0)) * (h.z > -0.02 ? smoothstep(0.0025, 0.0090, apx) : 1.0) * (1.0 - silh);
-  float fres = 1.0 - abs(dot(Nt, V)), fm = 1.0 - abs(dot(Nm, V)), dirM = smoothstep(-0.2, 0.6, dot(Nm, u_rimDir)), ar = fwidth(fres) * 0.8 + 0.01, thr = mix(0.80, 0.69, capK);   // a thin edge, and only where the whole mass turns away (the cap and the bun: a band)
+  float fres = 1.0 - abs(dot(Nt, V)), fm = 1.0 - abs(dot(Nm, V)), dirM = smoothstep(-0.2, 0.6, dot(Nm, u_rimDir)), ar = fwidth(fres) * 0.8 + 0.01, thr = mix(0.80, 0.69, capK * (kind > 1.5 ? 1.0 : smoothstep(0.030, -0.010, h.z)));   // a thin edge, and only where the whole mass turns away (the bun and the BACK of the cap: a band; in front of the ears it stays thin, or from below the whole fringe was rim)
   vec3 rim = mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.35) * (mix(0.26, 0.32, capK) * smoothstep(thr - ar, thr + ar, fres) * max(smoothstep(0.50, 0.72, fm), wet) * (u_rimBoth + (1.0 - u_rimBoth) * dirM));
+  if (kind > 0.5 && kind < 1.5) { vec3 ng = normalize(cross(dFdx(h), dFdy(h)) + vec3(0.0, 0.0, 1e-12)); rim *= smoothstep(0.30, 0.55, 1.0 - abs(dot(ng, normalize(hv)))); }      // the cap's rim needs the REAL surface to turn away too (its shading normals are a sphere's: seen from below, the whole underside of the fringe was rim)
   glow = rim + ring * (vec3(0.060, 0.068, 0.135) * u_sunAmt + u_rimCol * mix(0.045, 0.105, capK * nightK) * (1.0 - u_sunAmt));
   if (kind > 0.5) {
     float ndn = dot(Nm, normalize(u_rimDir + vec3(0.0, 0.7, 0.0))) - 0.30, an = fwidth(ndn) * 0.8 + 0.004, px = max(length(dFdx(h)), length(dFdy(h))) + 1e-6;
@@ -211,9 +212,9 @@ void main(){
     vec2 bq = vec2((abs(h.x) - 0.047) / 0.017, (h.y + 0.006) / 0.0085);
     base = mix(base, S(0.965, 0.640, 0.640), (0.20 + 0.22 * joy) * exp(-dot(bq, bq)) * visD);
     vec3 lineC = S(0.52, 0.25, 0.25), darkC = S(0.105, 0.085, 0.115);
-    vec2 nq = vec2((h.x - 0.0006) / 0.0048, (h.y - F_NY) / 0.0016); base = mix(base, S(0.84, 0.56, 0.54), aa((1.0 - length(nq)) * 0.0015, px) * 0.85 * vis * (1.0 - smoothstep(0.0012, 0.0030, px)));
+    vec2 nq = vec2((h.x - 0.0006) / 0.0048, (h.y - F_NY) / 0.0016); base = mix(base, S(0.84, 0.56, 0.54), aa((1.0 - length(nq)) * 0.0015, px) * 0.85 * vis * (1.0 - smoothstep(0.0012, 0.0030, v_fpx)));
     float mw = 0.0112 + 0.0038 * max(smile, 0.0), mx = h.x / mw, mq = max(0.0, 1.0 - mx * mx), ym = F_MY + smile * 0.0040 * (mx * mx - 0.45), ms = smile * 0.0080 * mx / mw;
-    float mo = v_fb.x, inM = step(abs(mx), 1.0), lipV = 1.0 - smoothstep(0.0016, 0.0036, px);
+    float mo = v_fb.x, inM = step(abs(mx), 1.0), lipV = 1.0 - smoothstep(0.0016, 0.0036, v_fpx);
     { float yl0 = ym - mo * 0.0090 * mq; vec2 lq = vec2(h.x / (mw * 0.70), (h.y - (yl0 - 0.0034)) / 0.0036), uq = vec2(h.x / (mw * 0.62), (h.y - (ym + 0.0016)) / 0.0022);
       base = mix(base, S(0.905, 0.560, 0.545), 0.62 * aa((1.0 - length(lq)) * 0.0036, px) * step(h.y, yl0) * vis * lipV);                     // lower lip
       base = mix(base, S(0.880, 0.540, 0.530), 0.40 * aa((1.0 - length(uq)) * 0.0022, px) * step(ym, h.y) * (1.0 - mo) * vis * lipV); }             // upper lip
@@ -248,7 +249,8 @@ void main(){
     float fold = (u_points == 0) ? folds(region, fract(v_uv * u_tiles), v_la) : 0.0;
     float ndl = dot(N, u_key) + (skin ? 0.30 : 0.08), aw = fwidth(ndl) * 0.8 + 0.004;
     float sh = smoothstep(-aw, aw, ndl) * (1.0 - fold) * (1.0 - forceSh), jaw = 0.0;
-    if (u_points == 0 && (region == 14.0 || region == 0.0)) { float e = v_la.y + 0.110 - 0.30 * v_la.x, ae = fwidth(e) * 0.8 + 0.0008; jaw = smoothstep(-ae, ae, e); sh *= 1.0 - jaw; }      // r3: the jaw's shadow is a SHAPE in the head's frame (it turns with her head; deeper on the side away from the key): the neck sits in it, the collarbone below is lit, so chin, neck and collar separate
+    if (u_points == 0 && (region == 14.0 || region == 0.0)) { float e = v_la.y + 0.110 - 0.30 * v_la.x, ae = fwidth(e) * 0.8 + 0.0008; jaw = smoothstep(-ae, ae, e) * (1.0 - smoothstep(0.062, 0.090, v_la.z)); sh *= 1.0 - jaw; }
+    if (head) { vec3 ng = cross(dFdx(v_la), dFdy(v_la)); ng = normalize(ng + vec3(0.0, 0.0, 1e-12)) * (dot(ng, v_hv) < 0.0 ? -1.0 : 1.0); jaw = smoothstep(0.55, 0.75, -ng.y) * smoothstep(-0.030, -0.040, v_la.y) * (1.0 - hairM); sh *= 1.0 - jaw; }      // ... and the underside of the jaw is in it too (seen from below the face was one pale shape); it leaves the neck when her head tips back (the neck is then in front of the jaw, in the light)      // r3: the jaw's shadow is a SHAPE in the head's frame (it turns with her head; deeper on the side away from the key): the neck sits in it, the collarbone below is lit, so chin, neck and collar separate
     vec3 nightAmb = u_amb * (skin ? 1.6 : 1.0) * (1.0 - 0.30 * fold) * (1.0 - 0.38 * jaw);       // skin holds a little more of the night's light: a face in shadow tones, not a hole
     vec3 lightc = mix(mix(nightAmb, shadeTint(skin ? ${PART.SKIN} : part) * mix(vec3(1.0), vec3(0.86, 0.75, 0.80), jaw), u_sunAmt), u_keyCol, u_sunAmt * sh);
     diff = base * lightc * (1.0 - 0.55 * inside * step(2.5, region) * step(region, 4.5)) * (1.0 - 0.92 * silh);
@@ -287,7 +289,7 @@ vec3 gnode(TI ti, int g, int n){ return simNode(ti, g * NODES + clamp(n, 0, NODE
 void main(){
   int ty = int(a_c0.w + 0.5); bool bun = i_misc.y > 0.5;
   v_inst = vec4(i_par.w, bun ? 1.0 : 0.0, i_par.z, i_fx.x); v_lane = i_col;
-  if (i_fx.x <= 0.0 || (ty == 0 && (bun || i_fx.w > 0.5)) || (ty == 1 && !bun)) { cull(); return; }
+  if (i_fx.x <= 0.0 || (ty == 0 && (bun || i_fx.w > 0.5)) || (ty == 1 && !bun) || (ty == 2 && a_c1.w != 0.0 && i_fx.w > 0.5)) { cull(); return; }      // (r3: with hair 'strands' (the float, the rise) the loose strands by the ears are not drawn: lying on the water they were two dark hooks)
   TI ti = trackInfo(i_misc.x, i_par.y); float s = a_c1.x, seed = a_c1.z;
   float sl = s * a_c2.z * (ty == 0 ? 1.0 - 0.08 * hash(i_fx.y * 3.3 + 1.0) : (bun && ty == 2 ? 0.62 : 1.0));
   float sn = sl * float(NODES - 1); int i = int(floor(sn)); float fr = sn - float(i); if (i >= NODES - 1) { i = NODES - 2; fr = 1.0; }

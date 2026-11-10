@@ -108,7 +108,8 @@ export function buildBody(opts = {}) {
   const PARTX = FACE.PARTX, HY = REST_POS[J.head][1];
   const hl = (P) => [P[0], P[1] - HY, P[2]];
   const isHair = (P) => hairD(P[0], P[1] - HY, P[2]) > 0;
-  const head = loft(new Loft([R3(1.441, 0.0170, 0.012, 0.064), R3(1.4475, 0.0315, 0.030, 0.052), R3(1.464, 0.0495, 0.055, 0.034), R3(1.489, 0.0685, 0.078, 0.018), R3(1.520, 0.0840, 0.091, 0.008), R3(1.555, 0.089, 0.098, 0.003), R3(1.600, 0.090, 0.102, -0.002), R3(1.640, 0.082, 0.095, -0.005), R3(1.664, 0.060, 0.070, -0.007), R3(1.676, 0.028, 0.034, -0.008), R3(1.679, 0.005, 0.006, -0.008)]),
+  const head = loft(new Loft([R3(1.4398, 0.0012, 0.0010, 0.0635), R3(1.441, 0.0170, 0.012, 0.064),      /* r3: the first ring closes the chin (the loft was open underneath: from below, head tipped back, a black hole under the chin: 55.8-57.5) */
+    R3(1.4475, 0.0315, 0.030, 0.052), R3(1.464, 0.0495, 0.055, 0.034), R3(1.489, 0.0685, 0.078, 0.018), R3(1.520, 0.0840, 0.091, 0.008), R3(1.555, 0.089, 0.098, 0.003), R3(1.600, 0.090, 0.102, -0.002), R3(1.640, 0.082, 0.095, -0.005), R3(1.664, 0.060, 0.070, -0.007), R3(1.676, 0.028, 0.034, -0.008), R3(1.679, 0.005, 0.006, -0.008)]),
     { nu: 88, nv: 68, region: 5, tileSize: 64, warp: (P, g) => (P[2] > g.c[2] ? [P[0], P[1], g.c[2] + (P[2] - g.c[2]) * 0.86] : P),   // a flatter face plane: both eyes hold in three-quarter view
       part: (u, v, P) => (isHair(P) ? PART.HAIR : PART.SKIN), bones: one(J.head),
       push: (part, P) => { const h = hl(P), hd = smooth(-0.004, 0.020, hairD(h[0], h[1], h[2])); return (0.006 + 0.020 * smooth(0.03, 0.13, h[1]) - 0.0085 * gau(h[0] - PARTX, 0.0075) * smooth(0.10, 0.14, h[1]) * smooth(-0.075, -0.035, h[2])) * hd + faceBump(h[0], h[1], h[2]); } });

@@ -23,6 +23,14 @@ export function curve(keys) {
     return M.map(({ y, m }) => (2 * u3 - 3 * u2 + 1) * y[i] + (u3 - 2 * u2 + u) * h * m[i] + (-2 * u3 + 3 * u2) * y[i + 1] + (u3 - u2) * h * m[i + 1]); };
 }
 
+// dev (r3): --q "zf=1" magnifies the film's own lens on her head (same camera position, aimed at the head, 0.7 m of frame height; lyrics off), so a strip
+// of any shot shows the face as the film lights and poses it:  node fable/tools/render.mjs --show /fable/show/main.js --q "zf=1" --sheet 229:236.5:0.25:faces.jpg:8
+export function zoomOn(K, F, head) {
+  if (!+K.E.Q.get('zf') || !F || !F.camera || !head) return F;
+  const c = F.camera, d = Math.hypot(head[0] - c.pos[0], head[1] - c.pos[1], head[2] - c.pos[2]);
+  return { ...F, camera: { ...c, target: head, fov: Math.min(c.fov || 35, (2 * Math.atan(0.35 / d) * 180) / Math.PI), roll: 0, aperture: 0 }, type: [] };
+}
+
 const NAMES = ['next', 'what-if', 'try-this', 'one-more', 'another-road', 'unfold', 'tomorrow', 'again', 'begin', 'wander', 'listen', 'learn', 'build', 'play', 'sing', 'write', 'teach', 'dance', 'garden', 'orbit', 'signal',
   'hydrogen', 'sunrise', 'morning', 'open', 'yes', 'and-then', 'maybe', 'almost', 'further', 'home', 'away', 'north', 'east', 'river', 'tide', 'kite', 'seed', 'spark', 'thread', 'braid', 'echo', 'chorus', 'verse', 'bridge',
   'key-change', 'coda', 'da-capo', 'rehearse', 'improvise', 'refactor', 'rebase', 'cherry-pick', 'stash-pop', 'hotfix', 'release', 'v2', 'draft', 'sketch', 'prototype', 'demo', 'ship-it', 'hello-world', 'start-here'];
@@ -36,7 +44,11 @@ export function morning(K) {
   // The extra half turn pivots on the foot she is standing on (r2: it used to turn about her hips, which swept the planted foot over the ground at up to 0.5 m/s;
   // now 0.1 m/s, the track's own). The track's origin is tabulated once at 120 Hz: at every step the added yaw turns it about the supporting foot (the foot that is
   // down and still in the track; between two, their weighted mean; in the air, her hips), so that foot stays where it is in the world.
-  const HN = Math.ceil(DUR * 120), OT = new Float64Array((HN + 1) * 2); { const r0 = cast.root(FREE, 0), o0 = cast.rot(yawAt(tFr), r0[0], r0[2]); OT[0] = C[0] - o0[0]; OT[1] = C[1] - o0[1];
+  // r3: `free` is placed so that its first frame's LEFT foot (the front, supporting one) stands where `catch` leaves hers (ST = the shift in track space, about 1 x 5 cm;
+  // without `catch` it is 0): the handover (below) then only has to bring the back foot up.
+  const D13 = K.shared.actD || {}, CA = 'catch', tCa = cast.songT0(CA) || 220, hasHO = cast.has(CA) && cast.has(FREE) && !!D13.cT, ST = [0, 0];
+  if (hasHO) { const a = cast.root(CA, cast.dur(CA) - 0.02, 15), b = cast.root(FREE, 0, 15), r = cast.root(FREE, 0); ST[0] = a[0] - (b[0] - r[0]); ST[1] = a[2] - (b[2] - r[2]); }
+  const HN = Math.ceil(DUR * 120), OT = new Float64Array((HN + 1) * 2); { const r0 = cast.root(FREE, 0), o0 = cast.rot(yawAt(tFr), r0[0] - ST[0], r0[2] - ST[1]); OT[0] = C[0] - o0[0]; OT[1] = C[1] - o0[1];
     for (let i = 0; i < HN; i++) { const ta = i / 120, tb = (i + 1) / 120, ya = yawAt(tFr + ta), yb = yawAt(tFr + tb); OT[i * 2 + 2] = OT[i * 2]; OT[i * 2 + 3] = OT[i * 2 + 1]; if (ya === yb) continue;
       const h = cast.root(FREE, (ta + tb) / 2); let wx = 0.02 * h[0], wz = 0.02 * h[2], ws = 0.02;
       for (const j of [15, 19]) { const a = cast.root(FREE, ta, j), b = cast.root(FREE, tb, j), v = Math.hypot(b[0] - a[0], b[2] - a[2]) * 120, w = Math.exp(-((v / 0.2) ** 2)) * sm((0.2 - (a[1] + b[1]) / 2) / 0.08); wx += w * (a[0] + b[0]) / 2; wz += w * (a[2] + b[2]) / 2; ws += w; }
@@ -50,6 +62,31 @@ export function morning(K) {
   // a joint of the hero in the world at song time t (0 = hips, 4 = head)
   const jointAt = (t, j = 0) => { const pl = placeAt(t), r = cast.root(FREE, t - tFr, j), o = cast.rot(pl.yaw, r[0], r[2]); return [pl.pos[0] + o[0], r[1], pl.pos[2] + o[1]]; };
   const soft = (t, w = 0.3) => { let x = 0, z = 0; for (let j = -4; j <= 4; j++) { const p = jointAt(t + (j / 4) * w); x += p[0]; z += p[2]; } return { x: x / 9, z: z / 9 }; };
+  // ---- r3: THE HANDOVER (3:56.6). `catch` ends with her arms wide and her right foot a step back; `free` begins standing square, arms down. The cut used to hide
+  // the pop on her feet. Now there is no pop: a third performance, `handover`, is made here from the two (235.9 .. 238.0, 60 fps): the pose of `catch` (on its slowed
+  // clock, 12_flight cT) blended into the pose of `free` (from its frame 0 at b137) joint by joint in the skeleton's own rotations (parent-relative quaternions
+  // slerped, bone offsets kept, positions rebuilt from the hips: no limb changes length). Arms, spine and head go over 236.20 -> 237.35 (she lets her arms come down
+  // through the cut); hips and legs over 236.55 -> 237.05 (the back foot comes up beside the front one, which stays where it is). Both 13_catch and 14_day play it
+  // (HO.set), so the cut on b137 is a cut on one continuous action, and she is seen whole.
+  let HO = null;
+  if (hasHO) { const PAR = [-1, 0, 1, 2, 3, 2, 5, 6, 7, 2, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19], NJ = 21, fps = 60, tH0 = 235.9, tH1 = 238.0, NF = Math.round((tH1 - tH0) * fps) + 1, data = new Float32Array(NF * 147);
+    const qmul = (a, b) => [a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0], a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]];
+    const qcon = (q) => [-q[0], -q[1], -q[2], q[3]], qrot = (q, v) => { const x = q[0], y = q[1], z = q[2], w = q[3], cx = y * v[2] - z * v[1] + w * v[0], cy = z * v[0] - x * v[2] + w * v[1], cz = x * v[1] - y * v[0] + w * v[2]; return [v[0] + 2 * (y * cz - z * cy), v[1] + 2 * (z * cx - x * cz), v[2] + 2 * (x * cy - y * cx)]; };
+    const qnorm = (q) => { const l = Math.hypot(q[0], q[1], q[2], q[3]) || 1; return [q[0] / l, q[1] / l, q[2] / l, q[3] / l]; };
+    const slerp = (a, b, u) => { let d = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3], s = 1; if (d < 0) { d = -d; s = -1; } let ka = 1 - u, kb = u; if (d < 0.9995) { const th = Math.acos(d), sn = Math.sin(th); ka = Math.sin((1 - u) * th) / sn; kb = Math.sin(u * th) / sn; } return qnorm([0, 1, 2, 3].map((i) => ka * a[i] + s * kb * b[i])); };
+    // a pose of a track at track time tt: world (track-space) position and orientation per joint, then parent-relative
+    const pose = (name, tt, sh) => { const tr = cast.tracks[name], D = tr.data, f = Math.min(tr.frames - 1.001, Math.max(0, tt * tr.fps)), i = Math.floor(f), u = f - i, P = [], Q = [];
+      for (let j = 0; j < NJ; j++) { const a = i * 147 + j * 7, b = a + 147; P.push([D[a] + (D[b] - D[a]) * u + sh[0], D[a + 1] + (D[b + 1] - D[a + 1]) * u, D[a + 2] + (D[b + 2] - D[a + 2]) * u + sh[1]]); Q.push(slerp([D[a + 3], D[a + 4], D[a + 5], D[a + 6]], [D[b + 3], D[b + 4], D[b + 5], D[b + 6]], u)); }
+      const lq = [Q[0]], lo = [P[0]]; for (let j = 1; j < NJ; j++) { const c = qcon(Q[PAR[j]]); lq.push(qmul(c, Q[j])); lo.push(qrot(c, [P[j][0] - P[PAR[j]][0], P[j][1] - P[PAR[j]][1], P[j][2] - P[PAR[j]][2]])); } return { lq, lo }; };
+    const r0 = cast.root(FREE, 0), shF = [ST[0] - r0[0], ST[1] - r0[2]], mix3 = (a, b, u) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u];
+    for (let k = 0; k < NF; k++) { const t = tH0 + k / fps, wu = ss(t, 236.20, 237.35), wl = ss(t, 236.55, 237.05), A = pose(CA, Math.min(cast.dur(CA) - 0.02, D13.cT(t)), [0, 0]), B = pose(FREE, Math.max(0, t - tFr), shF), P = [], Q = [];
+      for (let j = 0; j < NJ; j++) { const w = j === 0 || j >= 13 ? wl : wu, q = slerp(A.lq[j], B.lq[j], w), o = mix3(A.lo[j], B.lo[j], w);
+        if (j === 0) { P.push(o); Q.push(q); } else { const pq = Q[PAR[j]], r = qrot(pq, o); P.push([P[PAR[j]][0] + r[0], P[PAR[j]][1] + r[1], P[PAR[j]][2] + r[2]]); Q.push(qnorm(qmul(pq, q))); }
+        data.set([P[j][0], P[j][1], P[j][2], Q[j][0], Q[j][1], Q[j][2], Q[j][3]], k * 147 + j * 7); } }
+    const src = cast.tracks[FREE], track = { name: 'handover', fps, frames: NF, loop: false, events: [], boneLengths: src.boneLengths, data, simOpts: {}, meta: { song_t0: tH0, made_by: 'actE_morning.js (catch -> free)' } };
+    cast.tracks.handover = track; if (cast.fig) cast.fig.addTrack(track);
+    const tIn = tH0 + 0.25, tOut = 237.8;                                     // played from 236.15 (still `catch`'s own pose) to 237.8 (`free`'s own motion, 1.15 s in)
+    HO = { t0: tH0, tIn, tOut, on: (t) => t >= tIn && t < tOut, set: (t) => { const w = ss(t, 236.2, 237.35); return { pos: [C[0], 0, C[1]], yaw: WEST, track: 'handover', time: t - tH0, face: { expr: 'joy', amt: 0.9 - 0.25 * w }, hand: -0.6 + 0.35 * w }; } }; }
   const TK = [141, 142, 143, 144, 145, 146].map(bar), tAhead = bar(147), tSpan = bar(152.5) - tAhead, TAU = 4.5, T_NEAR = bar(149) + 4;
   const count = (t) => { let c = 1; for (const tk of TK) if (t >= tk) c *= 2; return c; };
   const HUB = soft(bar(145), 0.2);
@@ -110,7 +147,7 @@ export function morning(K) {
 
   // ---- the people at song time t
   function people(t, o = {}) {
-    if (o.hero !== false) cast.actor('hero').set({ ...placeAt(t), track: FREE, time: t - tFr });
+    if (o.hero !== false) cast.actor('hero').set(HO && HO.on(t) ? HO.set(t) : { ...placeAt(t), track: FREE, time: t - tFr });
     const cr = cast.crowd('morning', 64); let n = 0; const list = [];
     for (const j of J) { if (j.hero || t < j.tb) continue; const s = j.sOf(t); if (s > j.Ln - 1) continue; const a = j.near.at(s); let alpha = 1, y = 0;
       if (j.rfs && t - j.tb < RF.run_from) { list.push({ j, x: a.x, z: a.z, tx: a.tx, tz: a.tz }); cr.put(n++, { ...K.ride(RFS, t - j.tb, a), track: RFS, time: t - j.tb, lane: j.lane, alpha, vary: 0, seed: j.id + 2 }); continue; }
@@ -124,7 +161,8 @@ export function morning(K) {
   const runnerAt = (j, t) => j.near.at(Math.min(j.Ln - 1, Math.max(0, j.sOf(t))));
   // the roads of the morning: near (human scale, with names) and far (after b147)
   const roads = (t, o = {}) => [nearR.drawable({ head: t, gain: 2.4, textGain: 0.9, minPx: 2.0, haloPx: 0, halo: 0, nodeMinPx: 2.0, ...o, ...(o.near || {}) }), farR.drawable({ head: t, gain: 2.4, textGain: 0, minPx: 2.0, haloPx: 0, halo: 0, ...o, ...(o.far || {}) })];
-  const A = { C, EAST, FREE, tFr, DUR, placeAt, yawAt, faceAt, jointAt, soft, HUB, TK, tAhead, count, J, people, runnerAt, roads, box: { x0, x1, z0, z1 }, nearR, farR, curve };
+  const headAt = (t) => { if (HO && HO.on(t)) { const r = cast.root('handover', t - HO.t0, 4), o = cast.rot(WEST, r[0], r[2]); return [C[0] + o[0], r[1] + 0.06, C[1] + o[1]]; } const p = jointAt(t, 4); return [p[0], p[1] + 0.06, p[2]]; };
+  const A = { HO, headAt, C, EAST, FREE, tFr, DUR, placeAt, yawAt, faceAt, jointAt, soft, HUB, TK, tAhead, count, J, people, runnerAt, roads, box: { x0, x1, z0, z1 }, nearR, farR, curve };
   K.shared.actE = A; return A;
 }
 
@@ -141,14 +179,18 @@ export function makeLift(K) {
   // 4.5 m behind her shoulder on b144, 14 m by tMain, so she and the nearest branches are people for the whole line. Then one continuous pull-up, two bars, to the map:
   // the ground point stays on main all the way up (main's orange under the centre): first it runs out east ahead of her with the distance (0.22 R, so the fan, not
   // its apex, fills the frame while nothing else is in sight), and from 600 m it slides back west along main to the map's centre as the rest of the film comes in.
+  // r3: (a) the lens swings 12 degrees further to her south side for b145-b147 (az -24 .. -26, was -12): the branch that leaves her on b145 runs east along main, which
+  // was the lens's own axis, so she hid it for a second; now it is clear of her in under half a second. (b) the pull-up waits for b149 (the drums go out there): to the
+  // end of the bar after "Back to main" the stick stays low (14 -> 24 m, she is still 13 % of the frame and the nearest runners are bodies), and the whole climb to the
+  // map is ONE bar, b149 -> b150, starting from a frame that still has people in it (it was 2.9 s of specks on white).
   //            t         lead  Gy    side  ln R             pitch  az   fov
   const LK = curve([
     [bar(144),    0.9,  1.22, 1.0,  ln(4.5),         2.5,   -14, 42],
-    [bar(145),    1.5,  1.16, 0.8,  ln(5.6),         5,     -12, 42],
-    [bar(146),    2.3,  1.08, 0.5,  ln(7.2),         7.5,   -12, 42],
-    [bar(147),    3.2,  0.98, 0.2,  ln(9.5),         10,    -15, 42],
-    [tMain,       4.5,  0.8,  0,    ln(14),          12.5,  -21, 42],
-    [bar(149),    4.5,  0,    0,    ln(300),         55,    -56, 39],
+    [bar(145),    1.5,  1.16, 0.8,  ln(5.6),         5,     -24, 42],
+    [bar(146),    2.3,  1.08, 0.5,  ln(7.2),         7.5,   -26, 42],
+    [bar(147),    3.2,  0.98, 0.2,  ln(9.5),         10,    -24, 42],
+    [tMain,       4.5,  0.8,  0,    ln(14),          12.5,  -22, 42],
+    [bar(149),    10,   0.5,  0,    ln(24),          22,    -25, 42],
     [tMap,        4.5,  0,    0,    ln(B.h),         90,    -90, 35],
     [tRiser,      4.5,  0,    0,    ln(B.h * 0.955), 90,    -90, 35],
   ]);

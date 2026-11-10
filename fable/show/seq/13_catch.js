@@ -7,6 +7,7 @@
 // C3  b133    "Every life I've lived I have become"  frontal, she is half the frame: her head lifts ("life", 229.6), her arms open ("become", 232.71), and for the first
 //                                                    time she is in full colour; the day comes up behind her
 import { seg, ss, sm, lerp, clamp01 } from '../kit.js';
+import { zoomOn } from './actE_morning.js';
 
 export default function seq(K) {
   const { bar, bb, world: W, cast, T, E } = K; const t0 = bar(129), t1 = bar(137), tC2 = bb(130, 3), tC3 = bb(132, 2), tDay = bar(133), D = K.shared.actD, C = D.C;      // (r2) C3 begins on b132.2, the beat the last of them come home
@@ -33,10 +34,10 @@ export default function seq(K) {
       const extra = [W.glow(glow), heldLight(t, hi ? 0.6 : 1)]; if (cw.lights) extra.push(cw.lights);
       const type = hi ? [K.lyric(22, camera, { font: 'hook', px: 100, x: -0.93, y: 0.6, rows: [4], dist: 60, reflect: false, out: 228.75, fade: 0.2 }), K.lyric(23, camera, { font: 'hook', px: 100, x: -0.93, y: 0.6, rows: [2, 2, 2, 1], anchor: 'first', dist: 60, reflect: false })]
         : [K.lyric(22, camera, { font: 'hook', px: 96, x: -0.93, y: 0.36, rows: [1, 3], dist: 34, reflect: false })];
-      return { camera, env: { dawn: dawnAt(t), sun: sunAt(t) }, world: { text: 0.5, flow: 0.1, lights: { gain: 0.35 } }, extra, type, hud: K.hudMain(t, { count: cw.n }), flash: 0.7 * Math.exp(-(t - t0) * 5) + (hi ? 0.05 * cw.pulse : 0.03 * cw.pulse) }; }
+      return zoomOn(K, { camera, env: { dawn: dawnAt(t), sun: sunAt(t), figLight: D.SIL }, world: { text: 0.5, flow: 0.1, lights: { gain: 0.35 } }, extra, type, hud: K.hudMain(t, { count: cw.n }), flash: 0.7 * Math.exp(-(t - t0) * 5) + (hi ? 0.05 * cw.pulse : 0.03 * cw.pulse) }, D.headOf(t)); }
     const w = ss(t, tLife, tBecome), camera = camC3(t), cw = D.crowd(t, { fold: true });
     D.hero(t, { gain: 1 + 1.2 * cw.pulse });
-    return { camera, env: { dawn: dawnAt(t), figLight: figLight(w), outline: { strength: w, width: 1.3 } }, world: { text: 0.6, flow: 0.1, lights: { gain: 0.3 } }, extra: [W.glow([{ x: C[0], z: 0, r: 3.5 + 2 * cw.pulse, c: [1.2, 0.8, 0.5].map((q) => q * 0.9 * cw.pulse) }]), heldLight(t), ...(cw.lights ? [cw.lights] : [])], flash: 0.05 * cw.pulse,
-      type: [K.lyric(23, camera, { font: 'hook', px: 70, x: -0.93, y: 0.08, rows: [2, 2, 2, 1], dist: 34, out: 235.6, fade: 0.14, reflect: false, ink: ss(t, 234.0, 234.7) }), K.lyric(24, camera, { font: 'hook', px: 70, x: -0.93, y: 0.08, rows: [1, 2], dist: 34, out: t1 + 1, fade: 0.01, reflect: false, ink: 1 })], hud: K.hudMain(t, { count: 1 }) };
+    return zoomOn(K, { camera, env: { dawn: dawnAt(t), figLight: figLight(w), outline: { strength: w, width: 1.3 } }, world: { text: 0.6, flow: 0.1, lights: { gain: 0.3 } }, extra: [W.glow([{ x: C[0], z: 0, r: 3.5 + 2 * cw.pulse, c: [1.2, 0.8, 0.5].map((q) => q * 0.9 * cw.pulse) }]), heldLight(t), ...(cw.lights ? [cw.lights] : [])], flash: 0.05 * cw.pulse,
+      type: [K.lyric(23, camera, { font: 'hook', px: 70, x: -0.93, y: 0.08, rows: [2, 2, 2, 1], dist: 34, out: 235.6, fade: 0.14, reflect: false, ink: ss(t, 234.0, 234.7) }), K.lyric(24, camera, { font: 'hook', px: 70, x: -0.93, y: 0.08, rows: [1, 2], dist: 34, out: t1 + 1, fade: 0.01, reflect: false, ink: 1 })], hud: K.hudMain(t, { count: 1 }) }, D.headOf(t));
   } };
 }

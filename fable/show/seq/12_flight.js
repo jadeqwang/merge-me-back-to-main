@@ -7,6 +7,7 @@
 // The thousand at the catch, and how they fold home (13_catch), are built here: K.shared.actD.crowd.
 import { seg, ss, sm, lerp, clamp01 } from '../kit.js';
 import { N } from '../formation.js';
+import { zoomOn } from './actE_morning.js';
 
 export default function seq(K) {
   const { bar, bb, world: W, cast, T, E } = K; const t0 = bar(121), t1 = bar(129), tHit = t1, tF2 = T.line(21).start, tF3 = bar(128), C = W.CATCH, D = K.shared.actD, tF1 = D.tEnd;
@@ -37,7 +38,8 @@ export default function seq(K) {
   // main-Jade: `idle`, then `catch` (song_t0 220.0: the light lands in her hands on b129, her head lifts on "life", her arms are open on "become")
   // (r2: `catch` is 16 s and the shot needs 16.65: after "become" (arms open, 232.71) the take is played at 0.84 x so that she is still breathing at the cut to the day; it used to clamp and freeze from 236.0)
   const tC = cast.songT0('catch') || 220.0, tOpen = tC + (cast.event('catch', 'open') ?? 12.71), cT = (t) => (t <= tOpen ? t - tC : tOpen - tC + (t - tOpen) * (cast.dur('catch') - 0.02 - (tOpen - tC)) / (bar(137) - tOpen));
-  const hero = (t, o = {}) => cast.actor('hero').set({ pos: [C[0], 0, 0], yaw: WEST, track: t < tC ? 'idle' : 'catch', time: cT(t), ...o });
+  // (r3: from 236.15 she plays `handover`, the blend of `catch` into `free` made in actE_morning.js, so the cut to the day on b137 is one continuous action)
+  const hero = (t, o = {}) => { const HO = K.shared.actE && K.shared.actE.HO; return cast.actor('hero').set(HO && HO.on(t) ? { ...HO.set(t), ...o } : { pos: [C[0], 0, 0], yaw: WEST, track: t < tC ? 'idle' : 'catch', time: cT(t), ...o }); };
   // the frontal camera of the catch (F3, and 13's first shot): low, on main, the sun dead behind her
   const front = (t) => { const u = sm(seg(t, tF3, tHit + 2.6)); return { pos: [C[0] - 7.4 + 1.5 * u, 1.12 + 0.08 * u, 0.42], target: [C[0] + 4, 1.34, -0.1], fov: 35, focusDist: 6.6 - 1.4 * u, aperture: 0.015, far: 30000 }; };
   const dawnAt = (t) => (t < tF2 ? lerp(D.dawnAt(tF1), 0.2, seg(t, tF1, tF2)) : t < tF3 ? lerp(0.2, 0.42, sm(seg(t, tF2, tF3))) : lerp(0.42, 0.5, seg(t, tF3, tHit)));
@@ -56,7 +58,11 @@ export default function seq(K) {
       for (let j = 0; j < NTL; j++) { const p = cometAt(c, t - 0.004 * j), u = j / NTL, dc = Math.hypot(p[0] - cam.pos[0], p[1] - cam.pos[1], p[2] - cam.pos[2]), g = on * live * (j ? 1.3 * Math.pow(1 - u, 1.6) : 8), w = j ? 0.12 : 0.6;
         d.set([p[0], p[1], p[2], (col[0] + w) * g, (col[1] + w) * g, (col[2] + w) * g, j ? Math.max(0.0018 * dc, 0.3) * (1 - 0.6 * u) : 0.0055 * dc], n * 7); n++; } }
     return n ? LCM.drawable(d, n, { minPx: 1.5, reflGain: 0.8 }) : null; };
-  Object.assign(D, { crowd, hero, front, tHit, C, sunElev, sunHeld, SUN_HELD });
+  // r3: the wait (220.99-222.7) and the fold (to 228.4) are true silhouettes with accents: no fibre shimmer in the cloth (that was the grey-violet), no ambient to speak
+  // of, and the figure's silhouette rule on (`sil`: black against the glow, the face included). Rim, band and straps stay.
+  const SIL = { sil: 1, sunAmt: 0, ambient: [0.03, 0.02, 0.03], under: 0.12, fibres: 0.06 };
+  const headOf = (t) => { const HO = K.shared.actE && K.shared.actE.HO; if (HO && HO.on(t)) return K.shared.actE.headAt(t); const p = t < tC ? [C[0], 1.5, 0] : D.cj(t, 4); return [p[0], p[1] + 0.06, p[2]]; };
+  Object.assign(D, { headOf, crowd, hero, front, tHit, C, sunElev, sunHeld, SUN_HELD, cT, SIL });
 
   // ---- the flight camera: behind and above where the light was a moment ago, looking where it will be. It banks with the turn.
   const hdg = (t) => { const a = D.lightAt(t - 0.25), b = D.lightAt(t + 0.25); return Math.atan2(b[0] - a[0], b[2] - a[2]); };
@@ -80,8 +86,8 @@ export default function seq(K) {
     // F3: she is waiting. The light's own glow runs up the road ahead of it.
     const camera = front(t), L = D.lightAt(t), cw = crowd(t), near = ss(t, tF3, tHit);
     hero(t);
-    return { camera, env: { dawn: dawnAt(t), sun: sunHeld(dawnAt(t)) }, world: { text: 0.5, flow: 0.1, lights: { gain: 0.4 }, violet: D.violetWorld },
+    return zoomOn(K, { camera, env: { dawn: dawnAt(t), sun: sunHeld(dawnAt(t)), figLight: SIL }, world: { text: 0.5, flow: 0.1, lights: { gain: 0.4 }, violet: D.violetWorld },
       extra: [W.glow([{ x: L[0], z: L[2], r: 5 + 0.25 * Math.abs(C[0] - L[0]), c: [0.5, 0.36, 0.95].map((q) => q * (0.25 + 0.9 * near)) }]), D.lightDraw(t, { size: 0.035, gain: 1.2, tail: 0.3, minPx: 2 })],
-      type: [K.lyric(21, camera, { font: 'hook', px: 70, x: -0.93, y: 0.3, rows: [2, 3, 2], dist: 34, out: 221.6, fade: 0.4, reflect: false }), K.lyric(22, camera, { font: 'hook', px: 96, x: -0.93, y: 0.36, rows: [1, 3], dist: 34, reflect: false })], hud: K.hudMain(t, { count: cw.n }) };
+      type: [K.lyric(21, camera, { font: 'hook', px: 70, x: -0.93, y: 0.3, rows: [2, 3, 2], dist: 34, out: 221.6, fade: 0.4, reflect: false }), K.lyric(22, camera, { font: 'hook', px: 96, x: -0.93, y: 0.36, rows: [1, 3], dist: 34, reflect: false })], hud: K.hudMain(t, { count: cw.n }) }, headOf(t));
   } };
 }

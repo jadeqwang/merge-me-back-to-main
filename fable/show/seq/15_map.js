@@ -18,7 +18,7 @@ export default function seq(K) {
   // the formation ground (three rings on main: the arcs the thousand stood on) and a ring round the root
   const ring = (c, r) => [...Array(49)].map((_, i) => [c[0] + r * Math.cos((i / 48) * 6.2832), c[1] + r * Math.sin((i / 48) * 6.2832)]);
   const marks = E.roads([...[18, 36, 54].map((r) => ({ pts: ring(F, r), color: K.hex(K.LANE.main), width: 0.3, g: [0, 0] })), { pts: ring([0, 0], 30), color: K.hex(K.LANE.main), width: 0.3, g: [0, 0] }], { step: 3 });
-  const leader = E.roads([{ pts: [[F[0], -78], [F[0], -250], [F[0], -428]], smooth: false, color: K.hex('#3A3550'), width: 0.2, g: [bb(150, 4), bb(150, 4) + 0.3] }], { step: 3 });     // (r2) a leader from the rings to their label, drawn as the label arrives
+  const leader = E.roads([{ pts: [[F[0], -70], [F[0], -200], [F[0], -330]], smooth: false, color: K.hex('#3A3550'), width: 0.2, g: [bb(150, 4), bb(150, 4) + 0.3] }], { step: 3 });     // (r2) a leader from the rings to their label, drawn as the label arrives
   // labels: [text, world x, z of the baseline's start (or centre / end), align, time in, on a line (centred on it)?, rows]
   // r2: every label is 33 px cap height at 1080p (45 px mono) and sits in clear ground: none is crossed by a road at any time of the hold (the camera
   // pushes in 4.5 %, the labels keep their pixel size). Positions were read off a 1080p still (work_fable/stills/r2_DE/map*.png).
@@ -26,7 +26,7 @@ export default function seq(K) {
     ['main', -1440, 0, 'right', bb(150, 1), 1],
     ['1,024 branches', -244, 857, 'right', bb(150, 2)],                       // south-west of the first tree, left of the southern arterial
     ['merge 1,024 → 1', M[0] + 95, 507, 'left', bb(150, 3), 0, [1, 3]],       // in the gap south of main between the arterial's return and the morning's fan
-    ['formation', F[0], -470, 'center', bb(150, 4)],                          // north of the rings (a leader joins them), between the northern arterial and the fan
+    ['formation', F[0], -370, 'center', bb(150, 4)],                          // north of the rings (a leader joins them), between the northern arterial and the fan. r3: 100 m (36 px) nearer its rings: the lowest place where the word still clears the arterial (left) and the fan's first ray (right) by 16-19 px
     [K.VIOLET.name, V[0] + 413, V[1] + 303, 'left', bb(151, 1)],              // right of her road's end and of the dotted line's first bend
     [K.VIOLET.last, pts[id][0] + 90, pts[id][1] + 35, 'left', bb(151, 2)],
     ['64 new branches', C[0] + 455, 753, 'center', bb(151, 3)],               // under the fan
