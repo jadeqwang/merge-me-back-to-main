@@ -10,12 +10,16 @@ workstream notes in `fable/notes/`.
   Includes the Banach-Tarski Easter egg (`fable/show/seq/bt.js`: split at 28.62, fold at 87.08; quoted from Jade's "Rewind").
 - v3 is rendered: `work_fable/out/v3.mp4` (1080p), sheets `work_fable/stills/v3/`, review copy `review/fable_v3/` (pushed).
   One command does render + sheets + 720p review encode: see "Cut script" below.
-- Running: anime look-dev for the protagonist (Jade asked to try it). Isolated copy of the figure in `fable/engine/src/figure_anime/`,
-  test show `fable/show/animelab.js`, notes `fable/notes/anime_lookdev.md`, sheets in `work_fable/stills/anime/`. The film is unchanged
-  until the director and Jade have compared sheets; if adopted it is swapped in by one import in `fable/show/cast.js`.
-- Next: (1) judge the anime sheets, show Jade the comparison, decide; (2) round 3, small: 2:44-2:46 cropped letters and dash bodies
-  before the fall, 4:16 specks before the map, 3:56.6 handover, plus each r2 note file's "still weak" list; (3) v4, then master
-  (consider 4K), encodes for X (2-pass x264 ~12M, maxrate 16M, High@4.1, AAC 256k, faststart) and YouTube.
+- Anime look-dev is done (sheets `work_fable/stills/anime/A_turnaround_faces.jpg`, `B_lighting_arc.jpg`; notes
+  `fable/notes/anime_lookdev.md`). Director's decision (15:50): ADOPT for the whole film behind a switch (`fig=anime` default,
+  `fig=classic` = the film as in v3). Jade has been shown the sheets and may veto.
+- Running (one agent): anime integration: likeness pass against her selfie/character sheet, hair fixes (no cape flare; strand hair
+  kept for the float), the switch in `fable/show/cast.js`, default expressions/gaze/blink (night calm in shadow, first lit open-eyed
+  look at the catch 229.6-236, day joyful), check sheet `work_fable/stills/anime/F_in_film.jpg`. It keeps `fable/notes/anime_lookdev.md`.
+- Next: (1) judge sheets E/F; (2) round 3, one fresh agent per act group, doing the "still weak" lists in `fable/notes/r2_*.md` plus
+  2:44-2:46 (cropped letters, dash bodies before the fall), 4:16 (specks before the map), 3:56.6 handover, and per-shot expression/gaze
+  choices; (3) v4 (anime), review copy to `review/fable_v4/`; then master (consider 4K), encodes for X (2-pass x264 ~12M, maxrate 16M,
+  High@4.1, AAC 256k, faststart) and YouTube.
 - Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
   scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
 

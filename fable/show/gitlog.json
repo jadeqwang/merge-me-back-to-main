@@ -1,22 +1,22 @@
 {
  "branch": "fable/merge",
- "total": 88,
- "head": "f72b3b3",
+ "total": 97,
+ "head": "834761c",
  "generated": "2026-11-10",
  "lines": [
-  "* f72b3b3 (HEAD -> fable/merge) fable actE: closer leap shot, the fork shot stays with the first branch, softer blue, terminal set above the far lights with credits clear of her, exact one-frame loop seam, notes (shot list, known problems, outputs)",
-  "* 3f924f8 (origin/fable/merge) fable actB: notes current (engine option nodeAir, shot list, decisions, known problems, outputs)",
+  "* 834761c (HEAD -> fable/merge) fable r2 C: MAIN restaged east of the rings with the hero as a cell (A's right leg, on main); true runs on run_from_stand / run_loop / run_to_stand (planner actC_runs.js: whole-stride paths ending east, Hungarian assignment, unison brake on b95.2, unseen copies leave early); top-down fall on a gold-rose mirror with a glitter path, one move down to a low front shot for the rise and arms wide, troupe behind her to the kick; sun-side light and western sky for the salute; notes",
+  "* fdc13e6 (origin/fable/merge) fable r2 DE: the pull-up keeps the fan centred, lyric clear of the HUD, sun glint dimmed, map leader timed with its label, feet frame clear of the type, notes (motion check, still weak, outputs)",
+  "* 40a8679 fable r2 AB: softer seam flash, notes complete (motion check, outputs, what is still weak)",
+  "* dfc6b40 fable r2 AB: Act B notes (5D push-in and locks to un-DONE, float comes home with the pulses, sit-up from above with the cut on b68.4, silhouette burst); the Banach-Tarski split and fold (bt.js) with their commit messages",
+  "* 49f60f1 fable r2 DE: comets converge in the flight, sun held to the hit, waist-up C3, feet-first day cut, front-quarter leap, pivot-foot half turn, standing starts, lower lift, bigger map labels and a lit map",
+  "* 991a11a fable r2 AB: Act A notes (walkers stay people, heir pop at b5/b7, one-move swoop, low three-quarter verse, orb halo and light, home closer, 'from' upright)",
+  "* 244b473 review: Fable cut v2 (720p, 92 MB) for Jade",
+  "* e6fb3f3 fable: director's notes on v2, resume file at checkpoint 6",
+  "* 308f472 fable: refresh gitlog.json for the terminal card",
+  "* f72b3b3 fable actE: closer leap shot, the fork shot stays with the first branch, softer blue, terminal set above the far lights with credits clear of her, exact one-frame loop seam, notes (shot list, known problems, outputs)",
+  "* 3f924f8 fable actB: notes current (engine option nodeAir, shot list, decisions, known problems, outputs)",
   "* 9fc1de2 fable M3: free, the dragged support foot after the skip -> whirl join is pinned (240.2-241.3 only); notes (drop heel pivot left, files)",
   "* 9c3f4e7 fable actE: she starts facing west on 13's axis (the half turn rides her whirl), type in the sky over the fan, map labels re-set (few, true, in order), notes",
-  "* feade17 fable actB: 5A closer on her, 5C pushes in as the fan folds, the rise as one arc on the water (sit-up in profile, arms open against the dawn and the horizon of roads), float crane lower",
-  "* c90079d fable M3: run_from_stand / run_to_stand (ACCAD Male2 C1 / C2 into and out of run_loop), usage and why the MAIN-cell runs are not rewired; notes",
-  "* 1d7485f fable actB: calm horizon in the chorus (roads: nodeAir option, default off), 5B follows the merging front, ragged filaments out of the hair, debug show removed",
-  "* 67680d8 fable actB: notes (idea of the act, shot list, known problems, state)",
-  "* 08cf32c fable M3: drop_join (the thousand hold the coil through the solo butterfly, load, leap, punch on b90.1; identical to drop from 154.77) wired into actC_form; notes",
-  "* 2877d1e fable: WIP checkpoint at the usage limit (act B, act E, motion fixes in progress; renders across all acts)",
-  "* 9469c65 fable M3: fork_go_L/R (idle -> side step -> walking away, one track) wired into seq 01; notes",
-  "* 356267b fable M3: violet sit re-authored (controlled descent, hand to the ground, knees up, arms round the knees, chin to the sky, breath); shot D frame follows the seat back 0.5 m; notes",
-  "* 30d4ef2 fable actA: frame 0 reframed (her right side, larger, feet and ring in frame), rootWorld for the loop, swoop, piano/stage/orrery props, lyric and counter placement, shot list and notes; debug show removed",
-  "* 6553295 fable actA: first pass of the reworked act (forks at human scale with the people kept, counter, split/thousand on the words, side truck, release orb, comet fan, six life vignettes with props, roll call, root rings); world fork clock + hero neighbourhood; notes"
+  "* feade17 fable actB: 5A closer on her, 5C pushes in as the fan folds, the rise as one arc on the water (sit-up in profile, arms open against the dawn and the horizon of roads), float crane lower"
  ]
 }
