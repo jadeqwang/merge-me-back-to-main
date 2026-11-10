@@ -24,7 +24,8 @@ export default function seq(K) {
     // r2: in the roll she goes to SILHOUETTE as the burst comes up behind her (ambient, emissive and fibres down, the band still glowing, the rim kept):
     // a dark body against the white holds its shape until the cut, where a lit body dissolved in the glare.
     const sil = sm(seg(roll, 0.1, 0.75));
-    F.body(t, { gain: lerp(2.3 + 0.8 * leap + 0.3 * kick, 0.9, sil) });
+    // r3 (face law: a silhouette stays a silhouette): her eyes close as the burst comes up behind her. Open, their whites stayed lit on the dark face.
+    F.body(t, { gain: lerp(2.3 + 0.8 * leap + 0.3 * kick, 0.9, sil), ...(t > tRoll - 0.3 ? { face: { expr: 'calm', amt: ss(t, tRoll - 0.3, tRoll + 0.25) } } : {}) });
     // pulses come home on every beat; in the roll they come faster and faster
     const pulses = roll > 0 ? [0, 1, 2, 3].map((j) => ({ g: lerp(108.6, 97.4, (roll * (2 + 6 * roll) + j / 4) % 1), width: 0.6, gain: 8 }))
       : [0, 1, 2, 3].map((j) => { const a = T.beatTime(Math.ceil(beat - 1e-6) + j); return { g: lerp(108.6, 97.4, Math.pow(Math.min(1, Math.max(0, 1 - (a - t) / 1.74)), 0.8)), width: 0.45, gain: 6 }; });

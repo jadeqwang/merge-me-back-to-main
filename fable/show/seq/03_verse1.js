@@ -15,14 +15,18 @@ import { makeProps } from '../props.js';
 import { makeBT } from './bt.js';
 
 // The lives' vignettes (also used by seq 4). face: degrees she is turned from her road toward the camera; start: track time at the cut (own clock).
+// rface (r3, the roll call only): with a face, the look-back has to end where we can see it. Every life's head ends about 152 degrees round to her right
+// (wushu: 90), so with `face` five of the six ended with the back of her head to the lens. rface = 130 - that angle: in every beat of the roll call the
+// look-back now ends 40 degrees past the lens, a three-quarter face looking back down her road (screen left), as jade/wushu's always did.
+// jade/nasa-ames keeps `face`: both her arms are up against the wind and hide her face from every side (tried -23 and -48).
 export const LIFE = {
-  'jade/piano': { track: 'life_piano', prop: 'piano', dist: 4.5, camY: 1.0, tgtY: 0.76, face: 42, ts: 0.17, start: 0.45 },
-  'jade/violin': { track: 'life_violin', prop: 'violin', dist: 5.3, camY: 1.2, tgtY: 0.98, face: 48, ts: 0.19, start: 0.1 },
-  'jade/poet': { track: 'life_poet', prop: 'notebook', dist: 3.3, camY: 0.62, tgtY: 0.46, face: 50, ts: 0.13, start: 1.7 },
+  'jade/piano': { track: 'life_piano', prop: 'piano', dist: 4.5, camY: 1.0, tgtY: 0.76, face: 42, rface: -22, ts: 0.17, start: 0.45 },
+  'jade/violin': { track: 'life_violin', prop: 'violin', dist: 5.3, camY: 1.2, tgtY: 0.98, face: 48, rface: -26, ts: 0.19, start: 0.1 },
+  'jade/poet': { track: 'life_poet', prop: 'notebook', dist: 3.3, camY: 0.62, tgtY: 0.46, face: 50, rface: -23, ts: 0.13, start: 1.7 },
   'jade/nasa-ames': { track: 'life_nasa', prop: 'wind', dist: 5.5, camY: 1.15, tgtY: 0.98, face: 8, ts: 0.19, start: 0.6 },
   'jade/robot-ninja-apocalypse': { track: 'life_band', prop: 'guitar', dist: 5.2, camY: 1.15, tgtY: 0.98, face: 62, ts: 0.19, start: 0 },
   'jade/wushu': { track: 'life_wushu', prop: null, dist: 5.4, camY: 1.15, tgtY: 0.95, face: 40, ts: 0.19, start: 0 },
-  'jade/sandstorm': { track: 'life_stage', prop: 'stage', dist: 5.6, camY: 1.15, tgtY: 1.0, face: 55, ts: 0.19, start: 0 },
+  'jade/sandstorm': { track: 'life_stage', prop: 'stage', dist: 5.6, camY: 1.15, tgtY: 1.0, face: 55, rface: -22, ts: 0.19, start: 0 },
   'jade/home': { track: 'life_home', prop: 'orrery', dist: 3.0, camY: 0.66, tgtY: 0.79, face: 35, ts: 0.12, start: 0, reach: 0.72 },      // r2: closer (she is half the frame); the model hangs 0.72 m from her shoulder (was 1.2) so it still fits
 };
 
@@ -45,7 +49,7 @@ export default function seq(K) {
   // who is a body at time t: the new branch appears as she steps out of the one she was
   const present = (i, t) => (i === VIOLIN ? t >= tSplit && sep(lives[VIOLIN], hero, t) > 0.03 : i === POET ? t >= tThou && sep(lives[POET], lives[VIOLIN], t) > 0.03 : i === PIANO ? t >= tThou && sep(lives[PIANO], hero, t) > 0.03 : t >= tB && sep(lives[i], hero, t) > 7);    // (a branch that runs within arm's reach of her stays a light)
   // draw the hero and the lives near her; returns the list of spots where a figure stands (no bokeh light there)
-  const bodies = (t, cam, range = 60) => { const h = hero.perf(t); cast.actor('hero').set({ ...h, vary: 0 }); const clr = [[h.pos[0], h.pos[2], 16]];
+  const bodies = (t, cam, range = 60) => { const h = hero.perf(t); cast.actor('hero').set({ ...h, vary: 0, face: h.track === SSL ? K.shared.eyesLead(SSL, h.time, 6.0) : undefined }); const clr = [[h.pos[0], h.pos[2], 16]];
     W.lives.forEach((L, i) => { if (!present(i, t)) return; const p = lives[i].perf(t); if (Math.hypot(p.pos[0] - cam.pos[0], p.pos[2] - cam.pos[2]) > range) return; cast.actor(L.name, { lane: L.lane }).set({ ...p, vary: 0 }); clr.push([p.pos[0], p.pos[2], 2.2]); });
     return clr; };
   const node = (path, i) => path.at(path.sOfRoad(i)); const N9 = node(W.heroPath, 8), N10 = node(W.heroPath, 9), N10c = node(W.lives[VIOLIN].path, 9);
@@ -65,9 +69,9 @@ export default function seq(K) {
   // ---- the Banach-Tarski split (bt.js), on "split": her lattice lifts ON the word, the point-up cells go to jade/violin in gold, the point-down cells stay
   // with main in orange, both seat as whole lattices half a second later, the seams flash gold. The commit message beside her road says what happened.
   const BT = (K.shared.bt = K.shared.bt || makeBT(K, props)), xzOf = (p) => (t) => { const a = p.at(t); return [a.x, a.z]; };
-  const btS = BT.event({ seed: 9, a: 0.09, tPre: tSplit - 0.13, tLift: tSplit, tSeat: tSplit + 0.5, tEnd: tSplit + 0.85, cam0: followA(tSplit), cam1: followA(tSplit + 0.5), swing: 0.5, groups: [
-    { cls: 0, color: K.hex(W.lives[VIOLIN].color), src: hero.perf(tSplit), dst: lives[VIOLIN].perf(tSplit + 0.5), srcAt: xzOf(hero), dstAt: xzOf(lives[VIOLIN]) },
-    { cls: 1, color: K.hex(K.LANE.main), src: hero.perf(tSplit), dst: hero.perf(tSplit + 0.5), srcAt: xzOf(hero), dstAt: xzOf(hero) }] });
+  const btS = BT.event({ seed: 9, a: 0.075, tPre: tSplit - 0.13, tLift: tSplit, tSeat: tSplit + 0.5, tEnd: tSplit + 0.85, cam0: followA(tSplit), cam1: followA(tSplit + 0.5), swing: 0.5, groups: [
+    { cls: 0, color: K.hex(W.lives[VIOLIN].color), src: hero.perf(tSplit), dst: lives[VIOLIN].perf(tSplit + 0.5), srcAt: xzOf(hero), dstAt: xzOf(lives[VIOLIN]), srcBody: hero.perf, dstBody: lives[VIOLIN].perf },
+    { cls: 1, color: K.hex(K.LANE.main), src: hero.perf(tSplit), dst: hero.perf(tSplit + 0.5), srcAt: xzOf(hero), dstAt: xzOf(hero), srcBody: hero.perf, dstBody: hero.perf }] });
   const eggS = (() => { const s0 = hero.s(tSplit) + 0.5, pts = [], L = 9.0; for (let k = 0; k <= 36; k++) { const q = W.heroPath.at(s0 + (k / 36) * L); pts.push([q.x, q.z]); }
     const v = hero.s(tSplit + 1) - hero.s(tSplit); return E.roads([{ pts, smooth: false, g: [tSplit + 0.5 / v, tSplit + (0.5 + L) / v], color: K.hex(K.LANE.main), width: 0.001, text: 'split: 5 pieces, nothing left over', textSize: 0.36, textSide: -1, textOff: -(0.04 + 0.36 * 0.72), textStart: 0.15, repeat: false }], { step: 0.25 }); })();
 
@@ -94,12 +98,18 @@ export default function seq(K) {
     return { R, sV, a: R.roads[0].at(sV), shift }; });
   const tLook = T.words(5)[3].start, lifeClock = (t) => (t <= tLook ? t - tLook + 4.5 : 4.5 + (t - tLook) * 0.8);       // the shared clock: every life's look-back (track 4.5) begins on "remembers"
   // lifeShot(i, t, opts): opts.time (track time), opts.u (0..1 through the shot), opts.head (roll call: anchor the frame on her head)
-  function lifeShot(i, t, o = {}) { const L = W.lives[i], cfg = LIFE[L.name], lr = lifeRoads[i], a = lr.a, time = o.time, yaw = K.yawOf(a) - (cfg.face * Math.PI) / 180, pos = [a.x, 0, a.z], u = o.u ?? 0;
+  // r3: the eyes lead the look-back. From just before it begins (track 4.35) her gaze is where her head WILL be, relative to her chest, 0.22 s from now
+  // (the film default turns the eyes with the head, in step): the eyes reach the corner about four frames before the head starts to follow.
+  const headTurn = (n, time) => { const tr = cast.tracks[n]; if (!tr) return 0; const f = Math.min(tr.frames - 1, Math.max(0, Math.round(time * tr.fps))), D = tr.data;
+    const yw = (j) => { const b = f * 147 + j * 7 + 3, x = D[b], y = D[b + 1], z = D[b + 2], w = D[b + 3]; return Math.atan2(2 * (x * z + w * y), 1 - 2 * (x * x + y * y)); }, d = yw(4) - yw(2); return Math.atan2(Math.sin(d), Math.cos(d)); };
+  const eyesLead = (n, time, from = 4.35) => { if (time < from) return undefined; const h = headTurn(n, time + 0.22); return { gaze: [Math.max(-0.9, Math.min(0.9, Math.sign(h) * Math.max(0, Math.abs(h) - 0.12) * 1.6)), 0] }; };
+  K.shared.eyesLead = eyesLead;                                                    // also the hero's two look-backs (sprint_stop_look from 6.0: here in B, and 05 D)
+  function lifeShot(i, t, o = {}) { const L = W.lives[i], cfg = LIFE[L.name], lr = lifeRoads[i], a = lr.a, time = o.time, yaw = K.yawOf(a) - (((o.head ? cfg.rface ?? cfg.face : cfg.face)) * Math.PI) / 180, pos = [a.x, 0, a.z], u = o.u ?? 0;
     let camera;
     if (o.head) { const h = cast.root(cfg.track, 5.6, 4), w = cast.rot(yaw, h[0], h[2]), hx = a.x + w[0], hz = a.z + w[1], f = { ...a, x: hx, z: hz };
       camera = { pos: K.rel(f, 0.15, 4.1 - 0.12 * u, h[1] + 0.02), target: K.rel(f, -0.85, 0, h[1] - 0.2), fov: 35, focusDist: 4.2, aperture: 0.018 }; }
     else camera = { pos: K.rel(a, 0.75 - lr.shift, cfg.dist * (1 - 0.035 * u), cfg.camY), target: K.rel(a, -lr.shift, 0, cfg.tgtY), fov: 35, focusDist: cfg.dist, aperture: 0.018 };
-    cast.actor(L.name, { lane: L.lane }).set({ pos, yaw, track: cfg.track, time, vary: 0 });
+    cast.actor(L.name, { lane: L.lane }).set({ pos, yaw, track: cfg.track, time, vary: 0, face: eyesLead(cfg.track, time) });
     const col = K.hex(L.color), b = props.begin(); if (cfg.prop) props[cfg.prop](b, { pos, yaw, color: col, track: cfg.track, time, clock: t, reach: cfg.reach });
     return { camera, env: { grade: { exposure: 1.6, vignette: 0.42 }, ground: { fogAmt: 0.6 } },
       world: { named: { hide: true }, conn: { gain: 0.16 }, fork: { gain: 0.4 }, merge: { gain: 0.4 }, text: 0, flow: 0.08, lights: { gain: 0.55, minPx: 1.3, clear: [[a.x, a.z, 24]], clearHeads: [[a.x, a.z, 24]] } },
@@ -129,7 +139,7 @@ export default function seq(K) {
       if (ol) cast.actor('hero').set({ ...hero.perf(t), vary: 0, gain: 1 + 1.6 * ol.k });
       return { camera, env: ol ? { figLight: ol.fig } : {}, world: { text: 0.9, flow: 0.1, headGain: sent ? 5 : 0, headLen: 0.4, lights: { gain: 0.6, clear: clr, clearHeads: [[hp[0], hp[2], 5]] }, conn: { gain: 0.4 }, named: { widthScale: 1.3, gain: 1.7 } },
         extra: [...(o ? [o] : []), ...(ol ? [W.glow([{ x: hp[0], z: hp[2], r: 1.1, c: [0.5 * ol.k, 0.26 * ol.k, 0.1 * ol.k] }, ...(pop > 0.01 ? [{ x: hp[0], z: hp[2], r: 1.5 + 4 * (1 - pop), c: [1.3 * pop, 0.7 * pop, 0.35 * pop] }] : [])])] : [])],
-        type: [K.lyric(3, camera, { x: -0.2, y: 0.3, rows: [4, 3], dist: 24, reflGain: 0 })], hud: K.hudMain(t, { count: 1024 }) }; }
+        type: [K.lyric(3, camera, { x: -0.11, y: 0.44, rows: [4, 3], dist: 24, reflGain: 0 })], hud: K.hudMain(t, { count: 1024 }) }; }
     if (t < tE) { // D: with the comets
       const fr = (tt) => { const sc = Math.max(8, conn.sAtG(tt) - 44), p = conn.at(sc), q0 = conn.at(Math.max(0, sc - 12)), q1 = conn.at(Math.min(conn.len - 0.1, sc + 50)), l = Math.hypot(q1.x - q0.x, q1.z - q0.z); return { x: p.x, z: p.z, tx: (q1.x - q0.x) / l, tz: (q1.z - q0.z) / l }; };
       const a = fr(t), u = seg(t, tD, tE); const camera = { pos: K.rel(a, 0, 0, 13 - 2 * u), target: K.rel(a, 70, 0, 2), fov: 35, far: 30000 };

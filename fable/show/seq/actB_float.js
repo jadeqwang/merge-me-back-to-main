@@ -35,8 +35,11 @@ export function actBFloat(K) {
   // ---- the top-down shot. Keys: [t, height, turn (deg: where east points on screen, counter-clockwise from screen-right), centre (m east of H)]
   // r2 (NOTES_v2): the widest point (24 m) is held for about a bar round "return"; from the hats (111.43) the camera comes home WITH the pulses, one a beat:
   // 7 m by b66.3, close on her (she is 3/4 of the frame) for the last bar and the hand-over to the rise. (v2: 26 m at 111.43, still 12 m at 115.3.)
-  const CK = [[97.515, 2.75, 28, -0.5], [100.0, 3.1, 44, -0.42], [102.65, 5.6, 78, -0.1], [104.9, 7.0, 100, 0.5], [107.2, 9.5, 110, 1.2], [109.43, 20, 116, 3.2], [110.6, 24, 119, 4.2], [111.43, 23, 121, 4.2],
-    [112.3, 16.5, 124, 3.1], [113.17, 10.5, 127, 1.9], [114.04, 7.0, 130, 1.1], [115.3, 4.6, 136, 0.4], [116.0, 3.7, 139, 0.15], [116.64, 3.3, 141, 0.0],
+  // r3 (NOTES_v3: at 24 m she was 11 % of the frame's height for five seconds): the height is capped at 12.6 m, where her body is 20.8 % of the frame's
+  // height (1.65 m of 7.95 m). The frame at the widest point still holds her, the hair and the first two forks of every strand (4.2-5.1 m out); the third
+  // forks (10-12 m) are at its corners. Centre offsets scaled with the height.
+  const CK = [[97.515, 2.75, 28, -0.5], [100.0, 3.1, 44, -0.42], [102.65, 5.6, 78, -0.1], [104.9, 7.0, 100, 0.5], [107.2, 9.5, 110, 1.2], [109.43, 11.9, 116, 2.05], [110.6, 12.6, 119, 2.2], [111.43, 12.5, 121, 2.2],
+    [112.3, 11.2, 124, 1.95], [113.17, 9.3, 127, 1.6], [114.04, 7.0, 130, 1.1], [115.3, 4.6, 136, 0.4], [116.0, 3.7, 139, 0.15], [116.64, 3.3, 141, 0.0],
     // r2: the shot now runs on to b68.4 (117.952): the sit-up is seen from straight above (she rises toward the lens and the lens rises with her), never side-on
     [117.3, 3.9, 145, -0.45], [117.952, 4.9, 149, -0.8]];
   const path = K.camPath(CK.map(([t, h, th, e]) => ({ t, pos: [h, th, e], target: [0, 0, 0] })));
@@ -64,9 +67,9 @@ export function actBFloat(K) {
     const inward = ss(t, 109.2, 110.4);
     return { camera, env: { dawn: 0.03 * dl, ground: { ripple: 0.016 + 0.05 * imp, fogAmt: 0.2, base: K.hex('#081038'), f0: 0.2 }, grade: { exposure: 1.5, vignette: 0.4, bloom: 0.6 },
         figLight: { under: 0.25 + 0.5 * lit, ambient: [0.06 + 0.13 * lit, 0.07 + 0.09 * lit, 0.19 + 0.02 * lit], emissive: 2 + 1.6 * lit + 0.8 * kick * lit, fibres: 1.6 + 2.2 * lit } },
-      world: { only: ['main'], lights: false, text: 0.45, flow: 0.12, flowSpeed: 6, main: { head: G.headAtX(feetX), gain: 2.6 } },
+      world: { only: ['main'], lights: false, text: 0.45, flow: 0.12, flowSpeed: 6, main: { head: G.headAtX(feetX), gain: 2.6, textGain: 0.45 * (1 - ss(t, 115.0, 116.0)) } },      // r3: main's text leaves before the close frame turns it upside down (116.6-117.95); the road stays
       extra: [W.glow(glows), drawFil(t, { pulses, gain: 0.8 + 1.0 * lit }), draw(t, { pulses, gain: 2.0 - 0.7 * inward, flow: 0.05 + 0.3 * inward, flowSpeed: -(4 + 8 * dl) * inward, textGain: 0.3 + 0.9 * dl, halo: 0.25 - 0.13 * inward })],
-      type: [K.lyric(11, refL11, { mode: 'ground', x: 0.306, y: -0.91, rows: [1, 2], px: 87 }), K.lyric(12, refL12, { mode: 'ground', x: 0.33, y: -0.79, rows: [1, 2], px: 70 })],
+      type: [K.lyric(11, refL11, { mode: 'ground', x: 0.306, y: -0.91, rows: [1, 2], px: 87 }), K.lyric(12, refL12, { mode: 'ground', x: 0.40, y: -0.79, rows: [1, 2], px: 70 })],
       hud: K.hudMain(t, { count: 1 }) };
   };
   return (K.shared.actBFloat = { hair, fil, draw, drawFil, cam, body, gOfR, feetX, H, top });

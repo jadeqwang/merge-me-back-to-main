@@ -20,6 +20,12 @@ export default function seq(K) {
       props.poly(b, pts, c, 0.05 + 0.004 * r, g, true); }
     return props.drawable(b, { gain: 1.4, minPx: 1.6, haloPx: 6, halo: 0.3, reflect: false }); };
   const LY = { x: -0.9, y: 0.3, dist: 26 };
+  // r3 (NOTES_v3): "Where I started from" keeps ONE place in the frame (lower left, 110 px) from the word "Where" (59.93, a fifth of a second before the cut
+  // on b35.3) to the end of the held "from" (65.99). Before the cut and through the dive it is hung square to the lens at that place (LINE6 + bill); between
+  // them it lies on the ground under the top-down camera, which is the same picture. So the word no longer jumps at the cut, and the line stays upright and
+  // legible while the camera turns over it (r2 took it out at 64.17 so that it was never seen upside down).
+  const LINE6 = { x: -0.93, y: -0.80, rows: [2, 2], px: 110 }, tFrom = T.words(6)[3].end;
+  const bill = (cam, dist, o = {}) => { const d = K.lyric(6, cam, { ...LINE6, dist, reflGain: 0, ...o }), b = K.basis(cam); d.pos = K.at(cam, LINE6.x, LINE6.y, dist); d.right = b.r; d.up = b.u; d.reflect = false; return d; };
   return { name: '04_prechorus', t0, t1, frame(t) {
     if (!dive) { const c = top(tC), k = []; k.push({ t: tC, pos: c.pos, target: c.target, fov: 35 });
       for (const [tt, s, h] of [[bar(38.7), sTop * 0.95, 210], [bar(39.4), sTop * 0.66, 120], [bar(40.0), sTop * 0.36, 50], [bar(40.6), sTop * 0.1, 10], [t1, 5.5, 1.6]]) { const a = P.at(s); k.push({ t: tt, pos: [a.x, h, a.z], target: [0, 2 + h * 0.05, 0], fov: 35 }); }       // always looking at the root
@@ -28,7 +34,7 @@ export default function seq(K) {
       const time = K.shared.lifeClock(t); let F;
       if (t < tR) F = K.shared.lifeShot(10, t, { time, u: seg(t, t0, tR) });
       else { const k = Math.min(ROLL.length - 1, Math.floor((t - tR) / beat + 1e-6)); F = K.shared.lifeShot(ROLL[k], t, { time, head: true, u: seg(t, tR, tB) }); }
-      F.type = [K.lyric(5, F.camera, { ...LY, rows: [2, 2], reflGain: 0 }), K.lyric(6, F.camera, { ...LY, rows: [2, 2], reflGain: 0 })];
+      F.type = [K.lyric(5, F.camera, { ...LY, rows: [2, 2], reflGain: 0 }), bill(F.camera, 3)];
       return F; }
     const B2 = t < tC; const c = B2 ? top(t) : dive(t); const low = B2 ? 0 : ss(t, bar(39.6), bar(40.8));
     // the pulse: every tip remembers. It runs back down the graph in g (= the time each point was written) and reaches the root (g = TF[0]) on the kick.
@@ -39,6 +45,6 @@ export default function seq(K) {
       world: { text: 0.6 * low, minPx: lerp(1.9, 1.3, low), halo: 0.3, haloPx: 4, nodeMinPx: lerp(1.5, 1.4, low), flow: 0.25, flowSpeed: -9, canopy: { gain: (0.8 + 2.5 * hit) * (1 - 0.6 * low) }, lights: { gain: lerp(0.5, 1, low), minPx: lerp(1.3, 1, low) }, conn: { gain: lerp(0.3, 0.8, low), halo: 0.0 },
         pulses: t < tHit + 0.1 ? [{ g: pg, width: 2.2, gain: 6 }] : [{ g: W.TF[0] + (t - tHit) * 14, width: 3, gain: 3 * hit }] },
       extra: [beacon(t), ...(rg ? [rg] : []), W.glow([{ x: 0, z: 0, r: 30 + 300 * (1 - hit) * (t >= tHit ? 1 : 0) + 8 * low + 40 * grow, c: [1.6 * hit + 0.5 * grow + 2.5 * flash, 0.75 * hit + 0.26 * grow + 1.4 * flash, 0.3 * hit + 0.1 * grow + 0.8 * flash] }])],
-      type: [K.lyric(6, B2 ? top(t) : top(tC), { mode: 'ground', x: -0.93, y: -0.80, rows: [2, 2], px: 110, out: tC - 0.3, fade: 0.35 })], hud: K.hudMain(t, { count: 1024 }), flash: flash * 0.9 };
+      type: [B2 ? K.lyric(6, top(t), { mode: 'ground', ...LINE6 }) : bill(camera, 30, { out: tFrom, fade: 0.4 })], hud: K.hudMain(t, { count: 1024 }), flash: flash * 0.9 };
   } };
 }

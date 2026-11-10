@@ -59,9 +59,9 @@ export default function seq(K) {
   const IB = 7, tSeatF = T.beatTime(Math.round(beatC) + IB + 1), tLiftF = T.beatTime(Math.round(beatC) + IB);
   const copyS = (t) => Math.max(0, IB + 1 - foldQ(t)), copyBody = (t) => { const sC = copyS(t), b = G.body(t - sC * DT); return { ...b, pos: [b.pos[0], 0, -0.16 * sC] }; };
   const props = (K.shared.props = K.shared.props || makeProps(K)), BT = (K.shared.bt = K.shared.bt || makeBT(K, props));
-  const btF = BT.event({ seed: 23, a: 0.09, tPre: tLiftF - 0.1, tLift: tLiftF, tSeat: tSeatF, tEnd: tSeatF + 0.34, cam0: camC(tLiftF), cam1: camC(tSeatF), swing: 0.42, groups: [
-    { cls: 0, color: W.col(lives[IB].lane), src: copyBody(tLiftF), dst: G.body(tSeatF), srcAt: (t) => { const sC = copyS(t); return [G.heroX(t - sC * DT), -0.16 * sC]; }, dstAt: (t) => [G.heroX(t), 0] },
-    { cls: 1, color: W.col('main'), src: G.body(tLiftF), dst: G.body(tSeatF), srcAt: (t) => [G.heroX(t), 0], dstAt: (t) => [G.heroX(t), 0] }] });
+  const btF = BT.event({ seed: 23, a: 0.075, tPre: tLiftF - 0.1, tLift: tLiftF, tSeat: tSeatF, tEnd: tSeatF + 0.34, cam0: camC(tLiftF), cam1: camC(tSeatF), swing: 0.42, groups: [
+    { cls: 0, color: W.col(lives[IB].lane), src: copyBody(tLiftF), dst: G.body(tSeatF), srcAt: (t) => { const sC = copyS(t); return [G.heroX(t - sC * DT), -0.16 * sC]; }, dstAt: (t) => [G.heroX(t), 0], srcBody: copyBody, dstBody: G.body },
+    { cls: 1, color: W.col('main'), src: G.body(tLiftF), dst: G.body(tSeatF), srcAt: (t) => [G.heroX(t), 0], dstAt: (t) => [G.heroX(t), 0], srcBody: G.body, dstBody: G.body }] });
   const eggF = (() => { const x0 = G.heroX(tSeatF) + 0.45, L = 7.4, gk = []; let pu = -1; for (let q = tSeatF; q <= tSeatF + 3.0; q += 0.05) { const u = Math.max(pu + 1e-5, Math.min(1, (G.heroX(q) - x0) / L)); if (u > 0) gk.push([u, q]); pu = u; if (u >= 1) break; } gk.unshift([0, gk[0][1] - 0.09]); gk[gk.length - 1][0] = 1;
     return E.roads([{ pts: [[x0, 0], [x0 + L / 2, 0], [x0 + L, 0]], smooth: false, gk, color: W.col('main'), width: 0.001, text: 'merge: banach-tarski, inverted', textSize: 0.36, textSide: -1, textOff: -(0.045 + 0.36 * 0.72), textStart: 0.1, repeat: false }], { step: 0.25 }); })();
 
@@ -121,7 +121,7 @@ export default function seq(K) {
       { t0: tD, f: () => {
         const camera = camD(t), hx = G.heroX(t);
         const done = t >= tDone ? Math.exp(-(t - tDone) * 2.2) : 0, bt = T.beatAt(t), held = t > tDone + 0.5 ? 0.35 * Math.exp(-(bt % 1) * 2.5) : 0;      // through the held "undone" the locked road breathes on the beat
-        cast.actor('hero').set({ ...G.body(t), gain: 1 + 1.2 * done + 0.5 * held });                    // at rest on the hit; the look-back over her right shoulder begins at 91.8
+        cast.actor('hero').set({ ...G.body(t), gain: 1 + 1.2 * done + 0.5 * held, face: K.shared.eyesLead && K.shared.eyesLead(G.SSL, t - G.tS, 6.0) });      // at rest on the hit; the look-back over her right shoulder begins at 91.8 (r3: her eyes go first)
         const glows = []; for (const q of locks) if (t >= q.t) { const k = Math.exp(-(t - q.t) * 3.5), dist = Math.hypot(q.x - camera.pos[0], q.z - camera.pos[2]); glows.push({ x: q.x, z: q.z, r: Math.max(0.8, dist * 0.022) * (1 + 0.6 * k), c: mul([1.0, 0.5, 0.16], 0.5 + 1.6 * k + held) }); }
         const hit = Math.exp(-Math.max(0, t - tHit) * 3.5) * (t >= tHit ? 1 : 0);
         if (hit > 0.02) glows.push({ x: hx, z: 0, r: 1 + 5 * (1 - hit), c: mul([1.0, 0.55, 0.25], 1.2 * hit) });
