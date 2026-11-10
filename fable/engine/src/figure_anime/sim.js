@@ -101,8 +101,20 @@ export function simulate(track, body, opts = {}) {
   let wNow = 0;
   const gseed = guides.map((g, i) => (i * 12.9898) % 6.283), frontG = guides.map((g) => (g.kind === 0 ? -1 : 0));   // back hair is nudged behind the shoulders; locks and wisps just hang
 
+  // r3: the face-framing locks and wisps (kind 2, 1) keep to their own side of the face. In the head's frame, in front of the ear line and between chin and brow, a node
+  // may not come nearer the middle than the cheek (7.8 cm): it is pushed back out sideways, with friction. (In a punch or a turn the lock whipped across nose and mouth
+  // for a few frames: a moustache, 126.2, 133.4.) With her head bowed they still hang forward, either side of the face.
+  const hXv = [1, 0, 0], hYv = [0, 1, 0], hZv = [0, 0, 1], sideG = guides.map((g, i) => (g.kind === 0 ? 0 : (pinL[i][0][0] >= 0 ? 1 : -1))), FACE_X = 0.078, FACE_Z = 0.045;
+  function offFace(i, sd) {
+    const rx = hx[i] - jp[J.head * 3], ry = hx[i + 1] - jp[J.head * 3 + 1], rz = hx[i + 2] - jp[J.head * 3 + 2], zl = rx * hZv[0] + ry * hZv[1] + rz * hZv[2]; if (zl < 0.022) return;
+    const yl = rx * hYv[0] + ry * hYv[1] + rz * hYv[2]; if (yl < -0.10 || yl > 0.125) return;
+    const xl = (rx * hXv[0] + ry * hXv[1] + rz * hXv[2]) * sd, need = FACE_X - xl, over = zl - FACE_Z - 0.6 * Math.max(0, -hZv[1] - 0.12);      /* (a bowed head: its front points down, and the locks may hang there) */ if (need <= 0 && over <= 0) return;
+    if (need > 0) { const k = need * Math.min(1, (zl - 0.022) / 0.02) * 0.8 * sd; hx[i] += hXv[0] * k; hx[i + 1] += hXv[1] * k; hx[i + 2] += hXv[2] * k; }
+    if (over > 0) { const k = -over * 0.8; hx[i] += hZv[0] * k; hx[i + 1] += hZv[1] * k; hx[i + 2] += hZv[2] * k; }      // ... nor further forward than 4.5 cm in front of the ear line: seen in profile a lock blown forward along the cheek was the same moustache
+    hp[i] += (hx[i] - hp[i]) * 0.35; hp[i + 1] += (hx[i + 1] - hp[i + 1]) * 0.35; hp[i + 2] += (hx[i + 2] - hp[i + 2]) * 0.35;
+  }
   function step(ff, time) {
-    pose(ff); updCol(HC); updCol(SC);
+    pose(ff); updCol(HC); updCol(SC); rotq(J.head, [1, 0, 0], hXv); rotq(J.head, [0, 1, 0], hYv); rotq(J.head, [0, 0, 1], hZv);
     const cq = J.chest * 4, cy = jp[J.chest * 3 + 1], qx = jq[cq], qy = jq[cq + 1], qz = jq[cq + 2], qw = jq[cq + 3];
     const fwx = 2 * (qx * qz + qw * qy), fwy = 2 * (qy * qz - qw * qx), fwz = 1 - 2 * (qx * qx + qy * qy), lfx = 1 - 2 * (qy * qy + qz * qz), lfy = 2 * (qx * qy + qw * qz), lfz = 2 * (qx * qz - qw * qy);
     // ---- hair ----
@@ -148,6 +160,7 @@ export function simulate(track, body, opts = {}) {
         const b = g * N * 3, k0 = guides[g].kind === 0, pad = k0 ? 0.004 + 0.005 * (guides[g].layer || 0) : -0.013, fl = 0.012 + 0.004 * (guides[g].layer || 0), wet = wW > 0.5 && k0;
         for (let n = pinN[g]; n < N; n++) {
           const i = b + n * 3; collide(HC, hx, hp, i, pad, 0.2, wet ? 2 : 0);                             // floating hair passes under the head
+          if (!k0) offFace(i, sideG[g]);
           if (k0 && wW < 0.5) { // the back hair stays behind her shoulders: a frontal plane in the chest frame, open above the neck and beyond the arms
             const rx = hx[i] - ccx, ry = hx[i + 1] - cy, rz = hx[i + 2] - ccz, yl = rx * upx + ry * upy + rz * upz, zl = rx * fwx + ry * fwy + rz * fwz, xl = Math.abs(rx * lfx + ry * lfy + rz * lfz);
             const zmax = -0.105 + Math.max(0, yl - 0.20) * 2.0 + Math.max(0, xl - 0.30) * 4.0;   // just in front of the jacket's back: on a bow the hair slides down her back instead of shedding round her sides

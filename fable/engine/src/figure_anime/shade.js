@@ -252,7 +252,8 @@ void main(){
     if (u_points == 0 && (region == 14.0 || region == 0.0)) { float e = v_la.y + 0.110 - 0.30 * v_la.x, ae = fwidth(e) * 0.8 + 0.0008; jaw = smoothstep(-ae, ae, e) * (1.0 - smoothstep(0.062, 0.090, v_la.z)); sh *= 1.0 - jaw; }
     if (head) { vec3 ng = cross(dFdx(v_la), dFdy(v_la)); ng = normalize(ng + vec3(0.0, 0.0, 1e-12)) * (dot(ng, v_hv) < 0.0 ? -1.0 : 1.0); jaw = smoothstep(0.55, 0.75, -ng.y) * smoothstep(-0.030, -0.040, v_la.y) * (1.0 - hairM); sh *= 1.0 - jaw; }      // ... and the underside of the jaw is in it too (seen from below the face was one pale shape); it leaves the neck when her head tips back (the neck is then in front of the jaw, in the light)      // r3: the jaw's shadow is a SHAPE in the head's frame (it turns with her head; deeper on the side away from the key): the neck sits in it, the collarbone below is lit, so chin, neck and collar separate
     vec3 nightAmb = u_amb * (skin ? 1.6 : 1.0) * (1.0 - 0.30 * fold) * (1.0 - 0.38 * jaw);       // skin holds a little more of the night's light: a face in shadow tones, not a hole
-    vec3 lightc = mix(mix(nightAmb, shadeTint(skin ? ${PART.SKIN} : part) * mix(vec3(1.0), vec3(0.86, 0.75, 0.80), jaw), u_sunAmt), u_keyCol, u_sunAmt * sh);
+    float kT = max(max(u_keyCol.r, u_keyCol.g), u_keyCol.b) - min(min(u_keyCol.r, u_keyCol.g), u_keyCol.b), kW = max(u_sunAmt, min(0.85, 2.0 * kT));      // r3: a COLOURED key (keyCol) counts by its own saturation, not only by sunAmt (at sunAmt 0.1-0.3 it barely tinted the jacket); white: as before. Skin takes half the tint
+    vec3 lightc = mix(mix(nightAmb, shadeTint(skin ? ${PART.SKIN} : part) * mix(vec3(1.0), vec3(0.86, 0.75, 0.80), jaw), u_sunAmt), skin ? mix(vec3(1.0), u_keyCol, 0.5) : u_keyCol, kW * sh);
     diff = base * lightc * (1.0 - 0.55 * inside * step(2.5, region) * step(region, 4.5)) * (1.0 - 0.92 * silh);
     float dirM = smoothstep(-0.2, 0.6, dot(N, u_rimDir)), thr = head ? mix(0.92, 0.84, dirM) : (skin ? mix(0.86, 0.72, dirM) : mix(0.80, 0.60, dirM)), ar = fwidth(fres) * 0.8 + 0.01;
     glow = mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.35) * ((head ? 0.30 : 0.50) * smoothstep(thr - ar, thr + ar, fres) * (u_rimBoth + (1.0 - u_rimBoth) * dirM));
@@ -281,7 +282,7 @@ export const clumpVS = (COMMON, PARTS) => COMMON + PARTS + `
 layout(location=0) in vec4 a_c0; // guide L, guide R, mix, type (0 back, 1 bun wisps, 2 side locks)
 layout(location=1) in vec4 a_c1; // s along, angle round, seed, fan
 layout(location=2) in vec4 a_c2; // half width, half thickness, length, -
-out vec3 v_n; out vec3 v_nm; out vec3 v_nt; out vec3 v_w; out vec3 v_h; out vec2 v_s;
+out vec3 v_n; out vec3 v_nm; out vec3 v_nt; out vec3 v_w; out vec3 v_h; out vec2 v_s; out float v_fly;
 flat out vec4 v_inst; flat out vec4 v_lane; flat out vec3 v_hv; flat out vec3 v_hl;
 void cull(){ gl_Position = vec4(2.0, 2.0, 2.0, 1.0); }
 vec3 unyaw(vec3 p){ float c = cos(i_pos.w), s = sin(i_pos.w); return vec3(c * p.x - s * p.z, p.y, s * p.x + c * p.z); }
@@ -315,11 +316,12 @@ void main(){
   vec3 hn = qrot(hq, normalize(v_h - vec3(0.0, 0.066, -0.004))), ax = mix(jpos(ti, ${J.chest}), hj + qrot(hq, vec3(0.0, 0.066, 0.0)), clamp(1.0 - sl * 1.6, 0.0, 1.0));
   v_nm = yaw(normalize((P - ax) * vec3(1.0, 0.2, 1.0) + vec3(0.0, 0.1 * (1.0 - sl), 0.0)));                  // the mass: round the head, then round the spine
   vec3 W = place(P); v_w = W; v_n = yaw(normalize(mix(hn, N, smoothstep(0.22, 0.50, sl)))); v_nt = yaw(N); v_s = vec2(s, ty == 0 ? simNode(ti, LAG).y : 0.0); gl_Position = u_viewProj * vec4(W, 1.0);
+  v_fly = ty == 0 ? smoothstep(0.30, 0.50, length((P - jpos(ti, ${J.chest})).xz)) * smoothstep(0.35, 0.55, sl) : 0.0;      // r3: back hair flung far out from her spine (a spin, a kick) loses its rim: on a whipping clump it drew a grey loop (177.4)
 }`;
 export const clumpFS = (PARTS) => `#version 300 es
 precision highp float; precision highp int;
 uniform vec3 u_camPos, u_sun; uniform vec3 u_amb, u_rimCol, u_rimDir, u_key, u_keyCol; uniform float u_rimBoth, u_sunAmt, u_trans, u_sil;
-in vec3 v_n; in vec3 v_nm; in vec3 v_nt; in vec3 v_w; in vec3 v_h; in vec2 v_s;
+in vec3 v_n; in vec3 v_nm; in vec3 v_nt; in vec3 v_w; in vec3 v_h; in vec2 v_s; in float v_fly;
 flat in vec4 v_inst; flat in vec4 v_lane; flat in vec3 v_hv; flat in vec3 v_hl;
 layout(location=0) out vec4 o_col; layout(location=1) out vec4 o_aux;
 ${PARTS}
@@ -329,8 +331,8 @@ float ign(vec2 p){ return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.005
 void main(){
   float solid = v_inst.x, alpha = v_inst.w; if (alpha < 0.999 && ign(gl_FragCoord.xy) > alpha) discard;
   vec3 V = normalize(u_camPos - v_w), N = normalize(v_n); if (dot(N, V) < 0.0) N = -N;
-  vec3 glow, c = hairLit(v_h, N, normalize(v_nt), normalize(v_nm), v_s.y, V, v_hv, v_hl, v_lane.rgb, 1.0, 0.0, glow);
+  vec3 glow, c = hairLit(v_h, N, normalize(v_nt), normalize(v_nm), v_s.y, V, v_hv, v_hl, v_lane.rgb, 1.0 - smoothstep(0.30, 0.42, v_s.x), 0.0, glow);      // (r3: the ring only on the part of a clump that lies on the head: a clump whipping past the head in a spin drew a grey loop, 177.4)
   float back = smoothstep(0.1, 0.9, dot(-V, u_sun));
   vec3 tr = vec3(1.0, 0.40, 0.09) * (back * 0.05 * smoothstep(0.75, 1.0, v_s.x) * u_trans);        // the sun through the tips
-  o_col = vec4((c + tr) * solid + glow * (0.45 + 0.55 * solid), 1.0); o_aux = vec4(celColor(${PART.HAIR}), u_sunAmt * solid);
+  o_col = vec4((c + tr) * solid + glow * (1.0 - 0.9 * v_fly) * (0.45 + 0.55 * solid), 1.0); o_aux = vec4(celColor(${PART.HAIR}), u_sunAmt * solid);
 }`;
