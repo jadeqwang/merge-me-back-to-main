@@ -4,17 +4,23 @@ Branch `fable/merge`. A third, independent cut of "Merge", made end to end by Cl
 If you are a new session picking this up: read `fable/SPEC.md` (the direction, look, timeline, contracts), then this file, then the
 workstream notes in `fable/notes/`.
 
-## State (updated 2026-11-10, checkpoint 1)
+## State (updated 2026-11-10, checkpoint 2)
 
 Done
 - Recon: both earlier cuts reviewed (v5a on `claude/wonderful-mccarthy-f90kll`, v6 "written in text" on `claude/v6-text`), shipped work in `~/Documents/1-music-shipped` surveyed.
 - `fable/SPEC.md`: concept, rules, look, bar-by-bar timeline, figure spec, track + drawable contracts.
 - Mocap: CMU (free for all uses) + ACCAD (CC BY 3.0) downloaded to `work_fable/mocap/` (git-ignored), catalogue in `work_fable/mocap/CATALOG.md`, tools in `fable/tools/mocap/`.
 
-In progress (three parallel builds; each keeps its own note and commits its own paths)
-- F1 engine + world: `fable/engine/`, `fable/tools/render.mjs`, `fable/show/lookdev_world.js` -> `fable/notes/F1_engine.md`
-- F3 figure (Jade as bone-attached particles, 3 modes): `fable/engine/src/figure/`, figlab -> `fable/notes/F3_figure.md`
-- F2 motion library (BVH -> canonical tracks, editing ops): `fable/tools/bake/` -> `fable/notes/F2_motion.md`
+Built since checkpoint 1
+- F1 engine + world done (`fable/notes/F1_engine.md`): harness `fable/tools/render.mjs`, sky/mirror/roads/lights/type/HUD, look-dev stills in `work_fable/stills/f1/` (look approved). ~10 min for a full-film render.
+- F2 motion library done (`fable/notes/F2_motion.md`): retarget + edit ops + IK; phase-1 tracks baked and validated. (Its agent died at a login error; work recovered and committed.)
+- F3 figure v1 (`fable/notes/F3_figure.md`): API, tracks, sim, LOD work; LOOK rejected by the director (mannequin/doll). Redesign brief sent: skinned mesh for opaque modes, cloth-lite trousers, hair mass, light mode woven of fibres like the roads.
+
+In progress (four agents; each keeps a note in `fable/notes/` and commits its own paths)
+- F1 phase 2: show kit (`fable/show/world.js`, `cast.js`, `main.js`, `seq/*`) + full-length animatic with stand-in figures -> `work_fable/out/animatic_v1.mp4`.
+- F3 phase 2: the figure redesign (above).
+- M1: utility performances, `fable/CHOREO.md` section A -> `fable/tools/bake/recipes_util.py`, note `M1_util.md`.
+- M2: build + drop choreography, `fable/CHOREO.md` section B -> `recipes_choreo.py`, note `M2_choreo.md`.
 
 Next, in order
 1. Review F1/F3 stills against SPEC section 2; iterate until the look is right. Integrate the figure into the engine.
