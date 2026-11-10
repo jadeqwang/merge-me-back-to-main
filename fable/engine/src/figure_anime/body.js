@@ -100,9 +100,9 @@ export function buildBody(opts = {}) {
 
   // ================= forms (rest pose: hips 1.005, chest 1.225, neck 1.415, head joint 1.505, crown 1.655) =================
   const torso = loft(new Loft([R3(1.05, 0.125, 0.092), R3(1.10, 0.112, 0.084), R3(1.15, 0.108, 0.082), R3(1.21, 0.117, 0.090, 0.004), R3(1.27, 0.126, 0.101, 0.010), R3(1.32, 0.130, 0.098, 0.008), R3(1.365, 0.124, 0.080, 0.002), R3(1.40, 0.082, 0.060), R3(1.42, 0.048, 0.046)]),
-    { nu: 36, nv: 20, region: 0, part: (u, v, P) => (P[1] < 1.205 ? PART.SKIN : PART.TOP), bones: (P) => (P[1] < 1.16 ? two(J.hips, J.spine, 1.095, 0.04)(P[1]) : two(J.spine, J.chest, 1.225, 0.05)(P[1])) });
+    { nu: 36, nv: 20, region: 0, tileSize: 256, part: (u, v, P) => (P[1] < 1.205 || P[1] > 1.406 - (P[2] > 0 ? 0.030 * gau(P[0], 0.036) : 0) ? PART.SKIN : PART.TOP),      /* r3: a neckline (a shallow scoop at the front): the neck is skin down to it */ bones: (P) => (P[1] < 1.16 ? two(J.hips, J.spine, 1.095, 0.04)(P[1]) : two(J.spine, J.chest, 1.225, 0.05)(P[1])) });
   loft(new Loft([R3(1.38, 0.050, 0.050, -0.004), R3(1.41, 0.044, 0.045), R3(1.45, 0.041, 0.042, 0.004), R3(1.495, 0.043, 0.044, 0.008)]),
-    { nu: 20, nv: 8, region: 14, part: (u, v, P) => (P[1] < 1.436 ? PART.TOP : PART.SKIN), bones: (P) => (P[1] < 1.45 ? two(J.chest, J.neck, 1.415, 0.02)(P[1]) : two(J.neck, J.head, 1.50, 0.02)(P[1])) });
+    { nu: 20, nv: 8, region: 14, tileSize: 128, part: (u, v, P) => (P[1] < 1.404 ? PART.TOP : PART.SKIN), bones: (P) => (P[1] < 1.45 ? two(J.chest, J.neck, 1.415, 0.02)(P[1]) : two(J.neck, J.head, 1.50, 0.02)(P[1])) });
 
   // head: anime proportions (about 6.8 heads with the hair). Full at eye level, a small soft-pointed chin under the lips.
   const PARTX = FACE.PARTX, HY = REST_POS[J.head][1];
@@ -116,12 +116,12 @@ export function buildBody(opts = {}) {
   // jacket: cropped under the ribs, drop shoulders, soft boxy body, stand collar, worn open
   const STRIPE = [1.272, 1.314];
   const BACK = { dot: [0, 1.322, 0.056], text: { y: 1.214, h: 0.025, w: 0.196 } }, CHEST_DOT = [0.082, 1.348, 0.019];
-  const gap = (y) => 0.020 + 0.030 * clamp((1.40 - y) / 0.22, 0, 1);
+  const gap = (y) => 0.020 + 0.030 * clamp((1.40 - y) / 0.22, 0, 1) + 0.022 * smooth(1.388, 1.426, y);      // r3: the stand collar is open at the throat (it used to close under the chin, and its outline merged with the jaw's)
   const jacketBones = (P) => two(J.spine, J.chest, 1.20, 0.04)(P[1]);
   const jLag = (P) => smooth(1.28, 1.17, P[1]) * 0.6;
-  const jacket = loft(new Loft([R3(1.165, 0.146, 0.116, 0.008), R3(1.178, 0.160, 0.128, 0.009), R3(1.215, 0.174, 0.139, 0.010), R3(1.275, 0.177, 0.140, 0.010), R3(1.328, 0.171, 0.128, 0.006), R3(1.365, 0.150, 0.100, 0.002), R3(1.395, 0.086, 0.074), R3(1.420, 0.065, 0.066, 0.002), R3(1.446, 0.061, 0.063, 0.003)]),
+  const jacket = loft(new Loft([R3(1.165, 0.146, 0.116, 0.008), R3(1.178, 0.160, 0.128, 0.009), R3(1.215, 0.174, 0.139, 0.010), R3(1.275, 0.177, 0.140, 0.010), R3(1.328, 0.171, 0.128, 0.006), R3(1.365, 0.150, 0.100, 0.002), R3(1.395, 0.086, 0.074), R3(1.414, 0.068, 0.067, 0.002), R3(1.430, 0.064, 0.064, 0.003)]),      /* r3: collar 1.6 cm lower (it stood above the chin's underside) */
     { nu: 64, nv: 26, region: 15, tileSize: TILE, bones: jacketBones, lag: jLag, fibres: 0.0033,
-      part: (u, v, P, N) => { const x = P[0], y = P[1]; if (N[2] > 0 && Math.abs(x) < gap(y) && y < 1.415) return -1; if (y > STRIPE[0] && y < STRIPE[1] && !(N[2] < -0.15 && Math.abs(x) < 0.125)) return PART.STRIPE; return PART.JACKET; } });
+      part: (u, v, P, N) => { const x = P[0], y = P[1]; if (N[2] > 0 && Math.abs(x) < gap(y)) return -1; if (y > STRIPE[0] && y < STRIPE[1] && !(N[2] < -0.15 && Math.abs(x) < 0.125)) return PART.STRIPE; return PART.JACKET; } });
   const sleeves = [];
   for (const side of [1, -1]) {
     const up = side > 0 ? J.upArmL : J.upArmR, fo = side > 0 ? J.foreArmL : J.foreArmR, ha = side > 0 ? J.handL : J.handR;
@@ -178,7 +178,7 @@ export function buildBody(opts = {}) {
 
   // the violet branch: a bun and two crossed pencils (variant 2)
   const BUN = [0, 1.716, -0.060];
-  loft(new Loft([R3(BUN[1] - 0.050, 0.004, 0.004, BUN[2]), R3(BUN[1] - 0.040, 0.034, 0.034, BUN[2]), R3(BUN[1] - 0.012, 0.054, 0.054, BUN[2]), R3(BUN[1] + 0.014, 0.053, 0.053, BUN[2]), R3(BUN[1] + 0.038, 0.034, 0.034, BUN[2]), R3(BUN[1] + 0.046, 0.004, 0.004, BUN[2])]), { nu: 16, nv: 10, region: 12, variant: 2, partConst: PART.BUN, bones: one(J.head) });
+  loft(new Loft([R3(BUN[1] - 0.050, 0.004, 0.004, BUN[2]), R3(BUN[1] - 0.040, 0.034, 0.034, BUN[2]), R3(BUN[1] - 0.012, 0.054, 0.054, BUN[2]), R3(BUN[1] + 0.014, 0.053, 0.053, BUN[2]), R3(BUN[1] + 0.038, 0.034, 0.034, BUN[2]), R3(BUN[1] + 0.046, 0.004, 0.004, BUN[2])]), { nu: 30, nv: 14, region: 12, variant: 2, partConst: PART.BUN, bones: one(J.head) });      /* r3: rounder (it was a 16-gon in the film's closest shot) */
   const pencilPart = (u, v) => (v < 2 ? PART.ERASER : v < 4 ? PART.PENCIL : v < 5 ? PART.SKIN : PART.LEAD);
   for (const side of [1, -1]) {
     const ax = norm([side * 0.80, 0.52, -0.30]), t1 = norm(cross(ax, [0, 0, 1])), t2 = cross(ax, t1), c0 = add(BUN, mul(ax, -0.105)), C = (h, r) => ({ c: add(c0, mul(ax, h)), rx: r, rz: r });
@@ -302,7 +302,7 @@ export function buildBody(opts = {}) {
   [1.0, 2.1, 3.2, 4.4, 5.6, 7.4, 8.6, 9.8, 10.9, 12.0].forEach((cf) => back(cf, 3, { w: 0.029, th: 0.012, len: 0.93 + 0.07 * R() }));
   [1.6, 2.7, 3.8, 5.0, 8.0, 9.2, 10.3, 11.4].forEach((cf) => back(cf, 1, { w: 0.026, th: 0.011, len: 0.80 + 0.10 * R() }));
   for (let k = 0; k < 2; k++) { const g0 = HAIR.G_BACK + k * 2; clumps.push({ g: [g0, g0 + 1], a: 0.35, type: 2, seed: R(), fan: 0, w: 0.017, th: 0.011, len: 1 }, { g: [g0, g0 + 1], a: 1.0, type: 2, seed: R(), fan: 0, w: 0.009, th: 0.007, len: 0.86 }); }
-  for (let k = 0; k < 2; k++) { const g0 = HAIR.G_BACK + k * 2; clumps.push({ g: [g0, g0 + 1], a: 1.0, type: 2, seed: R(), fan: 0.017, w: 0.0046, th: 0.0034, len: 0.58 - 0.09 * k }); if (k === 0) clumps.push({ g: [g0, g0 + 1], a: 0.6, type: 2, seed: R(), fan: 0.027, w: 0.0034, th: 0.0028, len: 0.44 }); }   // (fan of a side lock = metres forward of the lock: a loose strand that hangs with it, never across the face)
+  for (let k = 0; k < 2; k++) { const g0 = HAIR.G_BACK + k * 2; clumps.push({ g: [g0, g0 + 1], a: 1.0, type: 2, seed: R(), fan: 0.011, w: 0.0050, th: 0.0036, len: 0.56 - 0.09 * k }); }      // r3: one per side, close to the lock (the second, 2.7 cm forward, crossed the cheek in profile like a scratch: 125.3-127)   // (fan of a side lock = metres forward of the lock: a loose strand that hangs with it, never across the face)
   for (let k = 0; k < 2; k++) { const g0 = HAIR.G_BACK + HAIR.G_LOCK + k * 2; clumps.push({ g: [g0, g0 + 1], a: 0.5, type: 1, seed: R(), fan: 0, w: 0.008, th: 0.006, len: 1 }); }
   // STRANDS: the fine hair of the classic figure, on the same guides. Drawn instead of the back clumps for instances with hair: 'strands'
   // (the float shot: her hair fans on the water and its strands become the roads). Generated after everything else, so nothing above changes.

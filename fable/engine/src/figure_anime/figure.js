@@ -1,7 +1,7 @@
 // ANIME look-dev copy of ../figure/figure.js (same public API; see fable/notes/anime_lookdev.md). New per-instance options:
 //   face: { expr: 'neutral'|'determined'|'joy' (eyes open)|'back'|'calm' (eyes closed)|'laugh' (eyes closed in arcs), amt: 0..1, blink: 0..1 (omit = automatic), gaze: [x, y] (-1..1), lookAt: [x, y, z] (world) }
 //   hand: -1 splayed .. 0 relaxed .. 1 fist, or { L, R }.   hair: 'strands' = the classic fine strand hair for the back mass (the float shot).
-//     fig.light adds: keyDir, ink (outline gain), face (catchlights at night).
+//     fig.light / env.figLight add: keyDir, ink (outline gain), face (catchlights at night), sil (0..1: silhouette against the sun; default by dawn), keyCol ([r,g,b] of the sun-lit tone; default white).
 // The instanced figure renderer. One Figure = body (mesh LODs, fibres, decals, hair) + tracks with their baked secondary
 // motion on the GPU; it draws any number of instances per frame behind the Drawable contract (SPEC §5): draw(ctx).
 //
@@ -401,6 +401,11 @@ export class Figure {
     const o = { ...((ctx.env && ctx.env.figLight) || {}), ...(this.light || {}) };
     for (const k in o) { if (k === 'under' && Array.isArray(o.under)) L.under = Math.max(...o.under); else if (k === 'sunDir') this.sun = o.sunDir; else if (k !== 'sunCol') L[k] = o[k]; }
     if (L.ink === undefined) L.ink = Math.min(1, Math.max(0, (L.sunAmt - 0.15) / 0.5));          // the ink line comes with the daylight
+    // r3: the silhouette rule. Round sunrise, whatever the lens sees AGAINST the sun is a silhouette, the face included (shade.js `silh`). `sil` 0..1: default by dawn
+    // (0 below 0.42, 1 at 0.56-0.64, 0 above 0.86) times (1 - sunAmt), so a shot that lights her by its own sunAmt takes it away by the same move. keyCol: the colour of
+    // the sun-lit tone (default white: nothing changes).
+    if (L.sil === undefined) { const s1 = Math.min(1, Math.max(0, (d - 0.42) / 0.14)), s2 = Math.min(1, Math.max(0, (d - 0.64) / 0.22)); L.sil = s1 * s1 * (3 - 2 * s1) * (1 - s2 * s2 * (3 - 2 * s2)) * (1 - Math.min(1, Math.max(0, L.sunAmt))); }
+    if (!L.keyCol) L.keyCol = [1, 1, 1];
     { const k = L.keyDir, l = Math.hypot(k[0], k[1], k[2]) || 1; L.keyDir = [k[0] / l, k[1] / l, k[2] / l]; }
     return L;
   }
@@ -418,7 +423,7 @@ export class Figure {
     tex(0, this.texJoint, u.u_joint); tex(1, this.texSim, u.u_sim); tex(2, this.texTracks, u.u_tracks); tex(3, this.texAtlas, u.u_atlas); tex(4, this.texText, u.u_text); tex(5, this.texParts, u.u_parts);
     if (u.u_psize) gl.uniform1f(u.u_psize, this.body.atlas.size);
     const L = this._L; if (u.u_amb) gl.uniform3fv(u.u_amb, L.ambient); if (u.u_rimCol) gl.uniform3fv(u.u_rimCol, L.rimCol); if (u.u_rimDir) gl.uniform3fv(u.u_rimDir, L.rimDir);
-    const f1 = (loc, x) => { if (loc) gl.uniform1f(loc, x); }; f1(u.u_rimBoth, L.rimBoth); f1(u.u_sunAmt, L.sunAmt); f1(u.u_under, L.under); f1(u.u_emis, L.emissive); f1(u.u_trans, L.trans); f1(u.u_fibG, L.fibres); f1(u.u_faceG, L.face); f1(u.u_tiles, this.body.tiles); if (u.u_key) gl.uniform3fv(u.u_key, L.keyDir);
+    const f1 = (loc, x) => { if (loc) gl.uniform1f(loc, x); }; f1(u.u_rimBoth, L.rimBoth); f1(u.u_sunAmt, L.sunAmt); f1(u.u_under, L.under); f1(u.u_emis, L.emissive); f1(u.u_trans, L.trans); f1(u.u_fibG, L.fibres); f1(u.u_faceG, L.face); f1(u.u_tiles, this.body.tiles); f1(u.u_sil, L.sil); if (u.u_key) gl.uniform3fv(u.u_key, L.keyDir); if (u.u_keyCol) gl.uniform3fv(u.u_keyCol, L.keyCol);
   }
   draw(ctx) {
     const gl = this.gl; if (!this.inst.length || !this.tracks.length) return;
