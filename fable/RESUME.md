@@ -16,11 +16,14 @@ workstream notes in `fable/notes/`.
 - Round 3 is done (notes `fable/notes/r3_AB.md`, `r3_C.md`, `r3_DE.md`; task list was `fable/NOTES_v3.md`).
 - v4 is rendered with the anime figure: `work_fable/out/v4.mp4`, sheets `work_fable/stills/v4/`, review copy `review/fable_v4/` (pushed).
   Scene-change check against `fable/show/cuts.json`: no unplanned jumps (only flashes on hits at 80.13, 118.4, 153.2, 222.73).
-- Running (since 17:50): motion QA of v4 by three Sonnet agents on 6 fps strips (`work_fable/stills/v4/qa/qa_SSS.jpg`, 5 s per sheet);
-  they write `work_fable/stills/v4/qa/report_1..3.md` (0-95 s, 95-190 s, 190-282 s).
-- Next: turn the QA reports into round 4 (confirm each high/medium item on a strip before fixing; small, exact), render v5, review
-  copy; then master (consider 4K: test one 3840x2160 still first), encodes for X (2-pass x264 ~12M, maxrate 16M, High@4.1, AAC 256k,
-  faststart) and YouTube.
+- Motion QA of v4 is done (6 fps strips `work_fable/stills/v4/qa/`, reports there); no pops or broken faces. Round-4 task list:
+  `fable/NOTES_v4.md`.
+- Running (since 18:15): round 4, two agents. Pass X (tracks, figure, seq 13/14/16; notes `fable/notes/r4_X.md`): the T-pose at
+  "I have become" 232.7-236.5 re-authored as a living gesture (the most important item left), hair spikes at 125.33, terminal not
+  frozen, handover foot slide. Pass Y (seq 01-12; notes `fable/notes/r4_Y.md`): leave the float before the sit-up (117.0), hero
+  findable in the 1,024 shots, framing items to verify. If one died, start a fresh agent on its pass from NOTES_v4 + its notes file.
+- Next: render v5 (cut script below), review sheets, review copy to `review/fable_v5/`; then master (consider 4K: test one
+  3840x2160 still first), encodes for X (2-pass x264 ~12M, maxrate 16M, High@4.1, AAC 256k, faststart) and YouTube.
 - Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
   scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
 
