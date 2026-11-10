@@ -4,7 +4,7 @@ Branch `fable/merge`. A third, independent cut of "Merge", made end to end by Cl
 If you are a new session picking this up: read `fable/SPEC.md` (the direction, look, timeline, contracts), then this file, then the
 workstream notes in `fable/notes/`.
 
-## State (updated 2026-11-10, checkpoint 3)
+## State (updated 2026-11-10, checkpoint 4)
 
 Done
 - Recon: both earlier cuts reviewed (v5a on `claude/wonderful-mccarthy-f90kll`, v6 "written in text" on `claude/v6-text`), shipped work in `~/Documents/1-music-shipped` surveyed.
@@ -20,11 +20,24 @@ Built since checkpoint 2
 - Figure (F3, `fable/notes/F3_figure.md`): skinned mesh, cloth-lite trousers, hair mass, ONE lit-cel shading model (night rim + lane underlight + emissive accents; sunrise silhouette; day full colour). Runs in the real engine as a plain drawable; test show `fable/show/figtest.js`, stills `work_fable/stills/figtest/sheet_a.jpg`, `sheet_b.jpg` (approved direction).
 - M1 utility performances (22 tracks; `fable/notes/M1_util.md`) and M2 build + drop choreography (5 tracks; `fable/notes/M2_choreo.md`) baked and validated; judged on stick figures only so far.
 
-In progress (each keeps a note in `fable/notes/` and commits its own paths)
-- F1 phase 2: show kit + full-length animatic with stand-ins (`fable/show/main.js`, `seq/*`), WIP sheet `work_fable/stills/animatic_v0/`.
-- P1: performance QA on the real figure in the engine (`fable/show/reel.js`, reels in `work_fable/out/reel/`), fixing figure sim/skinning and motion; note `P1_qa.md`.
+Animatic (stand-ins): the whole film is blocked out, 16 sequences in `fable/show/seq/`, sheets in `work_fable/stills/animatic_v0/s1-3.jpg`.
+Director's notes on it (to apply per act AFTER v1 with the real figure exists):
+- Figures are too small in verse 1, chorus 1, verse 2 and the day outro (rule: subject >= 1/3 of frame height). Bring the camera in.
+- Verse 1 / pre-chorus (0:34-1:00): the white horizon band and long light streaks overpower the frame; distant branches should be bokeh dots, horizon subtle.
+- Breakdown hair-roads top-down (1:38-1:58) is the right image but static for 20 s: it needs evolution (slow rotation / pull-out, pulses coming home).
+- Build (2:14-2:26): top-down for too long with tiny figures; needs the frontal symmetric shot with the hero large in front.
+- Day outro (4:02-4:16): near-empty white frames; needs the hero large, dancing (`free`), then the forks.
+- Whole-film map (4:18) is right; labels too small. Terminal card text too small (rule: >= 24 px); fewer, larger lines.
+- Keep: the tree + MERGE title, MAIN spelled by the fallen bodies, the catch against the sun, the map, the terminal ending.
 
-Then: swap cast.js's stand-in backend for the real Figure (snippet at the end of F3's report in `F3_figure.md`), render v1, review, iterate per sequence.
+Usage note: the Claude 5-hour limit was hit once (about 1.5 h of 5-6 parallel image-heavy agents). From here: 2-3 agents at a time, fresh
+general-purpose agents with tight briefs that read the notes on disk (cheaper than forks of the main session), fewer image reads.
+
+In progress (fresh agents; each keeps a note in `fable/notes/` and commits its own paths)
+- I1: swap cast.js stand-ins for the real Figure in every sequence, render `work_fable/out/v1.mp4` + sheets `work_fable/stills/v1/` -> `I1_integration.md`.
+- P1: performance QA on the real figure (`fable/show/reel.js`), fixes in figure + bake recipes -> `P1_qa.md`.
+
+Then: director reviews v1 sheets, dispatches per-act fix passes (notes above), re-render, repeat; encodes; review page.
 
 Next, in order
 1. Review F1/F3 stills against SPEC section 2; iterate until the look is right. Integrate the figure into the engine.
