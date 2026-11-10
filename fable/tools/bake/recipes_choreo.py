@@ -564,7 +564,7 @@ def drop():
 # Degrees, added to the yaw at which her track +Z faces the camera: fig.yaw = yaw_facing_camera + best_yaw * pi / 180
 # (camera looking east at the sun: fig.yaw = -pi/2 + best_yaw). At 165 she performs TOWARD the sun, her back to the lens:
 # the legs open as a V before the apex (153.02-153.10), the apex is a clean horizontal body inside the sun disc.
-BEST_YAW = {"best_yaw": 165.0, "best_yaw_alt": 0.0,
+BEST_YAW = {"best_yaw": 165.0, "best_yaw_alt": 0.0, "salute_yaw": 60.0,   # the salute is hidden from behind (hair, body): show it 3/4 front (60 or 300) or frontal
             "best_yaw_note": "deg from facing the camera; 165 = performs toward the sun (camera behind her); alt 0 = facing the lens (wider V at 153.05, weaker apex frame)"}
 
 

@@ -68,7 +68,7 @@ $R --q "track=drop&cam=front&dawn=0.6&crowd=64&yaw=165&ripple=0.04&lift=1.2" --f
   (`lift=1.2` in the reel). In perfect unison the wall of silhouettes becomes a carpet in 3 frames; with a canon of 0.03-0.04 s per row
   (hero and front row ON 167.082, back rows up to 0.3 s later) it reads as a WAVE breaking away from the camera: `v_w3.jpg`. Recommended.
 - (c) Salute: crisp (snap ease, 0.15 s) and still (breath only); hands at chest height, face clear, hair settles behind the arms within
-  ~1 s of the stand-up. `v_b.jpg` row 2 left.
+  ~1 s of the stand-up. `v_b.jpg` row 2 left. As a silhouette it reads frontal or 3/4 (`meta.salute_yaw` 60), not from behind.
 - (d) Crowd unison reads as a troupe (per-instance +-25 ms / +-2.5 % height keep it human): `v_w.jpg`, `drop_crowd_a.jpg`.
 
 ## Numbers (frozen / skate / pops)
@@ -78,7 +78,41 @@ $R --q "track=drop&cam=front&dawn=0.6&crowd=64&yaw=165&ripple=0.04&lift=1.2" --f
   `drop` 163.1-163.4 the support foot turns out 15 cm on the heel during the travelling snap kick (visible only close up); `free`
   240.3-240.6 a skip where the trailing toe drags 35 cm (reads as a skip). Not fixed.
 
-## Grades on the real figure (A/B/C) — see the final table at the end of this file
+## Grades on the real figure (A = ship, B = reads, minor flaw, C = needs work)
+| track | grade | on the real figure |
+|---|---|---|
+| drop | A- | silhouettes read in every phrase; butterfly, fall, arms-wide, salute fixed as above. Left: the crouch after the fall is a ball of trouser (2:49.7-2:50.4); support foot turns on the heel at 163.2 |
+| build | A- | stances, the four kicks (long clean leg lines now), fan, spin with hair, coil all read. Blue-hour underlight tints the trousers orange-brown (look, not motion) |
+| violet | B+ | run, stop, look: A. Pencil draw + writing now read (pencil in hand; needs the show's line of light). Sit reads from 3/4 and behind; at night the lavender wash hides it (figLight) |
+| float | A- | hair is a full fan on the surface, limbs loose, straps along the legs |
+| rise | B+ | fan lets go as she is drawn up, hair hangs long, arms open on 118.387; the 3.5 s hover is calm (arm / leg drift only) |
+| catch | A- | receive, half step, bow (hair stays down her back), slow open to a wide T; reads in two seconds |
+| sprint_stop_look | A- | brake and look-back read; hair follows through |
+| free | A | best track in daylight: skip, leap, whirl, cartwheel, flourish, walk |
+| release | B+ | cup, lift, open, follow; needs the light to finish the idea |
+| fork_L / fork_R | A | two coincident instances part cleanly, hair and hems swing |
+| land | B+ | drop, crouch with a hand down, rise to ready; hair lifts on impact |
+| run_loop / sprint_loop / walk_loop | A- / A / B+ | hems sail, hair streams; walk at rest width reads a little gown-like from the front |
+| idle / sit_idle | B+ | alive (never below 4 mm/s), not looked at beyond single frames |
+| life_wushu, life_stage, life_home | A- | read without props |
+| life_nasa | B+ | reads now that the wind blows the hair and hems |
+| life_violin, life_piano, life_band | B | mimes: read once the prop is drawn |
+| life_wetlab, life_poet | B | hair no longer covers the hands; still need their props |
+
+## Yaw / camera notes for the film
+- Drop b89 butterfly: `meta.best_yaw` 165 (toward the sun), camera low (0.9 m), 5-5.5 m. From behind the back disc and RARE EARTH glow.
+- Drop b90-96, b101-102: strikes go along track +-X: frontal or from behind both give profile stances. Any yaw near 0 or 180.
+- Fall b97: camera >= 3 m high or top-down; canon 0.03-0.04 s per row.
+- Salute b104: `meta.salute_yaw` 60 (or 300, or 0). From behind (yaw 150-210) it is hidden by hair and body: `salute_yaw.jpg`. If the
+  troupe faces the sun for the whole drop, cut to a camera on the sun side or to a profile for the salute.
+- Build b77-80 kicks go along track +-Z: side camera (reel `cam=side`). b81-84: top or 3/4.
+- Violet writing: from the front (reel `cam=front`, she faces the lens) the line runs across the frame, right to left on screen.
+- Float: top-down, the fan needs 1.3 m of clear frame beyond the crown.
+
+## What remains
+- Hands are mittens (no fists / palms). Deep crouches read as a ball of trouser. Hair tips are stippled in close day shots.
+- `fork_walk_L/R`, `walk_fwd`, `run_fwd`, `lookback`, `turn_around`, `walk_lookback` were not watched (not in the film's key list).
+- F3_figure.md does not yet describe: variants `bun_write` / `bun_one`, `fig.body.pencilTip`, `meta.water = [t0, t1]`, `meta.sim`.
 
 ## Notes for the film (not my files)
 - Night with the violet lane: the default underlight + fibres wash the whole figure lavender and the seated pose goes murky. Pass
