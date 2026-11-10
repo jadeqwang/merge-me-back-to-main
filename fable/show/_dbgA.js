@@ -1,12 +1,4 @@
-// scratch: prints world geometry facts for Act A (not part of the film)
-import { makeKit } from './kit.js';
-export async function setup(E) { const K = await makeKit(E); const W = K.world, P = W.heroPath; const out = [];
-  for (let i = 5; i <= 11; i++) { const r = P.roads[i]; const a = r.at(0), b = r.at(r.len - 0.01); out.push(`road ${i} kind ${r.def.kind} depth ${r.def.depth} len ${r.len.toFixed(1)} g ${r.g0().toFixed(2)}..${r.g1().toFixed(2)} from (${a.x.toFixed(1)},${a.z.toFixed(1)}) dir (${a.tx.toFixed(2)},${a.tz.toFixed(2)}) to (${b.x.toFixed(1)},${b.z.toFixed(1)}) dir (${b.tx.toFixed(2)},${b.tz.toFixed(2)})`); }
-  const A = W.almond, F = A.F; const hc = A.chains[A.km];
-  for (const d of [7, 8, 9]) { const idx = hc.fork[d]; const tree = A.defs[idx].tree; const par = F.roads[tree].parent; const sibs = F.roads.map((r, i) => i).filter((i) => i > 0 && F.roads[i].parent === par && i !== tree);
-    for (const sIdx of sibs) { const r = W.sets.fork.roads[sIdx - 1]; const a = r.at(0), b = r.at(Math.min(r.len - 0.01, 8)), e = r.at(r.len - 0.01); out.push(`sibling at depth ${d + 1}: len ${r.len.toFixed(1)} lane ${F.roads[sIdx].lane} start dir (${a.tx.toFixed(2)},${a.tz.toFixed(2)}) at 8m (${b.x.toFixed(1)},${b.z.toFixed(1)}) end (${e.x.toFixed(1)},${e.z.toFixed(1)})`); } }
-  for (const L of W.lives) { const p = L.path, c = p.roads[10]; const a = c.at(0), m = c.at(c.len * 0.25); out.push(`${L.name} tip ${L.tip} (km ${A.km}) conn len ${c.len.toFixed(0)} start (${a.x.toFixed(1)},${a.z.toFixed(1)}) dir (${a.tx.toFixed(2)},${a.tz.toFixed(2)}) at 25% (${m.x.toFixed(1)},${m.z.toFixed(1)}) dir (${m.tx.toFixed(2)},${m.tz.toFixed(2)})`); }
-  const hcn = P.roads[10]; for (const u of [0, 0.1, 0.2, 0.25, 0.3, 0.5, 1]) { const a = hcn.at(hcn.len * u); out.push(`hero conn u ${u}: (${a.x.toFixed(1)},${a.z.toFixed(1)}) dir (${a.tx.toFixed(2)},${a.tz.toFixed(2)})`); }
-  for (const n of ['fork_walk_L', 'life_violin', 'life_band', 'life_home', 'life_piano', 'life_poet', 'life_stage', 'release', 'sprint_stop_look', 'fork_L']) { const c = K.cast; if (!c.has(n)) continue; const row = []; for (const tt of [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5.4, 6.5]) { const h = c.root(n, tt, 0), hl = c.root(n, tt, 8), hr = c.root(n, tt, 12), hd = c.root(n, tt, 4); row.push(`t${tt} hips(${h.map((v) => v.toFixed(2))}) head(${hd.map((v) => v.toFixed(2))}) hL(${hl.map((v) => v.toFixed(2))}) hR(${hr.map((v) => v.toFixed(2))})`); } out.push(n + '\n  ' + row.join('\n  ')); }
-  console.log('DBG\n' + out.join('\n')); }
-export function frame(t) { return { camera: { pos: [0, 2, -5], target: [0, 1, 0] }, env: { dawn: 0 }, drawables: [], hud: null }; }
+// scratch (not part of the film): prints Act A numbers
+import * as M from './main.js';
+export async function setup(E) { await M.setup(E); const out = []; for (const t of [28.2, 30.3, 31.5, 33, 36]) { const F = M.frame(t); const c = F.camera; out.push(t + ' pos ' + c.pos.map((v) => v.toFixed(2)) + ' tgt ' + c.target.map((v) => v.toFixed(2))); } console.log('DBG\n' + out.join('\n')); }
+export function frame(t) { return M.frame(t); }

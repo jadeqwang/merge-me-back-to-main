@@ -167,8 +167,10 @@ export function makeWorld(E) {
 
   // ---- main: the trunk (before the film) and main east of M1
   const xm = M1[0]; const eastLen = CATCH[0] - xm; const U = (x) => (x - xm) / eastLen;
+  // the trunk's message is set so that it ENDS at the root: frame 0 (and the last frame) reads "... where I started from" running in to her feet
+  const TRUNK_TEXT = 'one repo per agent per session per life  main  where I started from'; const trunkStart = (() => { const adv = 0.36 * 0.62, tot = TRUNK_TEXT.length + 8, end = 1400 - 0.75 - (TRUNK_TEXT.length - 1) * adv; return end - Math.floor(end / (tot * adv)) * tot * adv; })();
   const mainDefs = [
-    { pts: [[-1400, 0], [-700, 0], [0, 0]], smooth: false, g: [-1000, -900], color: col('main'), width: 0.045, text: 'main  where I started from  one repo per agent per session per life', textSize: 0.36, textSide: -1, nodes: [{ u: 1, r: 0.15, g: -900 }] },
+    { pts: [[-1400, 0], [-700, 0], [0, 0]], smooth: false, g: [-1000, -900], color: col('main'), width: 0.045, text: TRUNK_TEXT, textStart: trunkStart, textSize: 0.36, textSide: -1, nodes: [{ u: 1, r: 0.15, g: -900 }] },
     { pts: [[xm, 0], [xm + eastLen / 2, 0], [CATCH[0], 0]], smooth: false, color: col('main'), width: 0.045, textSize: 0.36, textSide: -1,
       gk: [[0, TM[0]], [U(xm + 48), bar(51.5)], [U(xm + 56), bar(53)], [U(FLOAT[0]), bar(69)], [U(FORM[0] - 10), bar(73)], [U(FORM[0] + 40), bar(105)], [1, bar(129)]],
       text: 'main  fold me in again  nothing that I lived can come undone  every life I have lived I have become', nodes: [{ u: 0, r: 0.35, g: TM[0] }, { u: 1, r: 0.25, g: bar(129) }] },
@@ -238,13 +240,13 @@ export function makeWorld(E) {
   const artSeeds = [...Array(360)].map((_, i) => ({ r: artR.roads[Math.floor(hash1(i * 7 + 1) * artR.roads.length)], ph: hash1(i * 13 + 5), sp: 6 + 14 * hash1(i * 3 + 9), br: 0.4 + 0.9 * hash1(i * 11 + 2) }));
   function lights(t, o = {}) {
     const d = new Float32Array(LMAX * 7); let n = 0; const y = o.y ?? 1.25, gain = (o.gain ?? 1) * 0.6;
-    const clr = o.clear || [];                                              // [[x, z, r], ...]: no light within r metres of these points (a figure stands there instead)
-    const put = (x, z, c, g, rad, w = 0.1) => { if (n >= LMAX) return; for (const q of clr) if ((x - q[0]) * (x - q[0]) + (z - q[1]) * (z - q[1]) < q[2] * q[2]) return; d.set([x, y, z, (c[0] + w) * g, (c[1] + w) * g, (c[2] + w) * g, rad], n * 7); n++; };
+    const clr = o.clear || [], clrH = o.clearHeads || [];                   // [[x, z, r], ...]: no branch light within r metres of these points (a figure stands there instead); clearHeads: nor a light that writes ahead
+    const put = (x, z, c, g, rad, w = 0.1, cl = clr) => { if (n >= LMAX) return; for (const q of cl) if ((x - q[0]) * (x - q[0]) + (z - q[1]) * (z - q[1]) < q[2] * q[2]) return; d.set([x, y, z, (c[0] + w) * g, (c[1] + w) * g, (c[2] + w) * g, rad], n * 7); n++; };
     const tw = (i) => 0.75 + 0.25 * Math.sin(t * (2 + 3 * hash1(i)) + i);
     if (t < TM[0] + 0.3 && o.almond !== false) for (let i = 0; i < almond.roads.length; i++) { const r = almond.roads[i], df = r.def;
       if (df.kind === 'conn') {
         if (t >= TF[10] && t < TM[10]) { const a = r.at(Math.min(r.len - 0.01, connS(r.len, t))); put(a.x, a.z, df.color, 4.2 * gain * tw(i), 0.085); }                  // the Jade
-        if (t >= TF[10] && t < tSentEnd) { const a = r.at(Math.min(r.len - 0.01, r.sAtG(t))); put(a.x, a.z, df.color, (t > tSent ? 9 : 2) * gain, 0.07, 0.45); }             // her light, writing ahead
+        if (t >= TF[10] && t < tSentEnd) { const a = r.at(Math.min(r.len - 0.01, r.sAtG(t))); put(a.x, a.z, df.color, (t > tSent ? 9 : 2) * gain, 0.07, 0.45, t > tSent ? clrH : clr); }             // her light, writing ahead
         else if (t >= tSentEnd && t < TM[10]) { const a = r.at(r.len - 0.01); put(a.x, a.z, df.color, 2.2 * gain * tw(i + 7), 0.06, 0.45); }                                   // waiting at the merge
       } else if (t >= r.g0() && t < r.g1()) { const a = r.at(Math.min(r.len - 0.01, r.sAtG(t))); put(a.x, a.z, df.color, 6.5 * gain, 0.09, 0.3); }
     }

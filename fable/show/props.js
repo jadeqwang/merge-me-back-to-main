@@ -79,16 +79,15 @@ export function makeProps(K) {
     poly(b, [[-bx, by, bz0], [bx, by, bz0], [bx, by, bz1], [-bx, by, bz1]].map(M), c, 0.006, g * 0.9, true);
     for (const x of [-bx + 0.04, bx - 0.04]) { for (const z of [bz0 + 0.03, bz1 - 0.03]) L([x, by, z], [x, 0, z], 0.005, 0.55); L([x, 0.16, bz0 + 0.03], [x, 0.16, bz1 - 0.03], 0.003, 0.35); }
     const ky = 0.725, z0 = 0.285, z1 = 0.44, hw = 0.615, kw = (2 * hw) / 52;  // keybed (hands at y 0.76, z 0.36)
-    poly(b, [[-hw, ky, z0], [hw, ky, z0], [hw, ky, z1], [-hw, ky, z1]].map(M), c, 0.005, g * 1.0, true);
+    poly(b, [[-hw, ky, z0], [hw, ky, z0], [hw, ky, z1], [-hw, ky, z1]].map(M), c, 0.006, g * 1.2, true);
     const hl = o.track ? J(o, JN.handL) : null, hr = o.track ? J(o, JN.handR) : null;
     const press = (x) => { if (!hl) return 0; let v = 0; for (const h of [hl, hr]) { const q = (x - h[0]) / 0.045; v += Math.exp(-q * q) * sm((0.83 - h[1]) / 0.09); } return v; };
-    for (let i = 1; i < 52; i++) { const x = -hw + i * kw, p = press(x); L([x, ky, z0], [x, ky, z1], 0.0016, 0.42 + 1.6 * p);
+    for (let i = 1; i < 52; i++) { const x = -hw + i * kw, p = press(x); L([x, ky, z0], [x, ky, z1], 0.0022, 0.6 + 1.8 * p);
       const note = (i - 1) % 7; if (note === 0 || note === 2 || note === 3 || note === 5 || note === 6) L([x, ky + 0.012, z0 + 0.062], [x, ky + 0.012, z1], 0.0052, 0.85 + 1.2 * p); }
-    L([-hw, ky + 0.085, z1 + 0.01], [hw, ky + 0.085, z1 + 0.01], 0.004, 0.6);                                                    // fallboard
-    for (const s of [-1, 1]) { L([s * (hw + 0.05), ky - 0.02, z0 + 0.01], [s * (hw + 0.05), 0, z0 + 0.01], 0.005, 0.5);          // legs: it stands on the mirror
-      poly(b, [[s * (hw + 0.05), ky - 0.02, z0 + 0.01], [s * (hw + 0.05), ky + 0.085, z0 + 0.01], [s * (hw + 0.05), ky + 0.085, z1 + 0.01]].map(M), c, 0.004, g * 0.6);
-      L([s * (hw + 0.05), ky + 0.085, z1 + 0.03], [s * (hw + 0.05), 1.16, z1 + 0.03], 0.004, 0.32); L([s * (hw + 0.05), 0, z1 + 0.03], [s * (hw + 0.05), ky + 0.085, z1 + 0.03], 0.004, 0.32); }
-    L([-hw - 0.05, 1.16, z1 + 0.03], [hw + 0.05, 1.16, z1 + 0.03], 0.004, 0.32);                                                 // the upright's case, faint
+    L([-hw, ky + 0.07, z1 + 0.012], [hw, ky + 0.07, z1 + 0.012], 0.004, 0.7);                                                    // fallboard
+    for (const s of [-1, 1]) { const x = s * (hw + 0.045); L([x, ky - 0.03, z0 + 0.02], [x, 0, z0 + 0.02], 0.006, 0.6);            // it stands on the mirror: two legs, two cheeks
+      poly(b, [[x, ky - 0.03, z0 - 0.005], [x, ky + 0.07, z0 - 0.005], [x, ky + 0.07, z1 + 0.012], [x, ky - 0.03, z1 + 0.012]].map(M), c, 0.004, g * 0.7, true); }
+    L([-hw - 0.045, ky - 0.03, z0 - 0.005], [hw + 0.045, ky - 0.03, z0 - 0.005], 0.004, 0.7);                                    // key slip
   }
 
   // ---- jade/violin: violin under the chin, scroll in the left hand; the bow in the right hand crosses the strings and slides as she bows
@@ -125,7 +124,7 @@ export function makeProps(K) {
 
   // ---- jade/nasa-ames: the wind of the giant tunnel. Streamlines come from +Z, part round her and close behind her
   function wind(b, o) { const M = placer(o), c = tint(o, 0.45), g = (o.gain ?? 1) * G0, t = o.clock ?? o.time ?? 0, R = 0.36, n = o.n ?? 44, span = 15;
-    for (let i = 0; i < n; i++) { const psi = (hash(i, 1) * 2 - 1) * 2.4, y = 0.12 + 2.25 * Math.pow(hash(i, 2), 0.85), v = 9 + 7 * hash(i, 3), ln = 0.7 + 1.5 * hash(i, 4), z0 = span / 2 - ((t * v + hash(i, 5) * span) % span);
+    for (let i = 0; i < n; i++) { const psi = (hash(i, 1) * 2 - 1) * 2.4, y = 0.1 + 1.52 * Math.pow(hash(i, 2), 0.8), v = 9 + 7 * hash(i, 3), ln = 0.7 + 1.5 * hash(i, 4), z0 = span / 2 - ((t * v + hash(i, 5) * span) % span);
       const body = y < 1.72 ? 1 : 0; const pts = [], N = 7;
       for (let k = 0; k <= N; k++) { const z = z0 + (ln * k) / N; let x = Math.abs(psi) < 1e-3 ? 1e-3 : psi; if (body) { let xx = Math.sign(x) * Math.max(Math.abs(x), R * 1.02); for (let it = 0; it < 4; it++) { const r2 = xx * xx + z * z; xx = x / Math.max(0.12, 1 - (R * R) / Math.max(r2, R * R * 1.0001)); } x = xx; }
         pts.push([x, y + 0.03 * Math.sin(z * 0.9 + i), z]); }
@@ -141,17 +140,18 @@ export function makeProps(K) {
     const hole = []; for (let k = 0; k < 20; k++) { const a = (k / 20) * 6.2832; hole.push(at(0.05 + 0.046 * Math.cos(a), 0.046 * Math.sin(a), 0.004)); } poly(b, hole, c, 0.0022, g * 0.7, true);
     const nut = 0.66; for (const s of [-1, 1]) seg(b, at(0.212, s * 0.027, 0.01), at(nut, s * 0.021, 0.01), c, 0.003, g * 0.9);
     poly(b, [at(nut, 0.021, 0.01), at(nut + 0.03, 0.036, 0.0), at(nut + 0.13, 0.03, -0.012), at(nut + 0.13, -0.03, -0.012), at(nut + 0.03, -0.036, 0.0), at(nut, -0.021, 0.01)], c, 0.003, g * 0.9);
-    for (let k = 1; k <= 6; k++) { const u = nut - (nut - 0.212) * (1 - Math.pow(0.84, k)) * 1.55; if (u > 0.23) seg(b, at(u, 0.024, 0.012), at(u, -0.024, 0.012), c, 0.0012, g * 0.5); }
+    for (const k of [1, 3, 5, 7, 9, 12]) { const u = nut - 0.8 * (1 - Math.pow(2, -k / 12)); if (u > 0.23) seg(b, at(u, 0.024, 0.012), at(u, -0.024, 0.012), c, 0.0012, g * 0.5); }
     const strum = Math.exp(-(((o.time ?? 0) * (138 / 60)) % 1) * 5);                                           // the strings ring on the beat she strums
     for (const s of [-1, 0, 1]) seg(b, at(-0.13, s * 0.016, 0.014), at(nut, s * 0.012, 0.014), [1, 0.96, 0.9], 0.0011, g * (0.5 + 1.1 * strum));
     seg(b, at(-0.13, 0.04, 0.012), at(-0.13, -0.04, 0.012), c, 0.0026, g * 0.8);                               // bridge
   }
 
   // ---- jade/sandstorm: the live demo worked. A cone of stage light from the rig, and the mic stand she stepped back from
-  function stage(b, o) { const M = placer(o), c = tint(o, 0.4), g = (o.gain ?? 1) * G0; const apex = [-1.6, 7.5, 2.6], ctr = [0, 0, 0.1], rad = 1.5, n = 56, ring = [];
+  function stage(b, o) { const M = placer(o), c = tint(o, 0.4), g = (o.gain ?? 1) * G0; const apex = [1.3, 3.9, 0.9], ctr = [0, 0, 0.1], rad = 1.5, n = 56, ring = [];      // the lamp hangs ahead of her, to her left
     for (let k = 0; k < n; k++) { const a = (k / n) * 6.2832; ring.push([ctr[0] + rad * Math.cos(a), 0.012, ctr[2] + rad * Math.sin(a)]); }
     poly(b, ring.map(M), c, 0.006, g * 0.8, true);
-    for (let k = 0; k < 18; k++) { const p = ring[Math.floor((k / 18) * n)]; seg(b, M(mix3(apex, p, 0.25)), M(p), c, 0.004, 0, g * 0.3); }
+    for (let k = 0; k < 12; k++) { const p = ring[Math.floor((k / 12) * n)]; seg(b, M(mix3(apex, p, 0.06)), M(p), c, 0.003, g * 0.16, g * 0.05); }
+    dot(b, M(apex), [1, 0.96, 0.9], 0.05, g * 1.2);
     const m = [0.2, 0, 0.72], top = [m[0], 1.33, m[2]], cap = [m[0] - 0.045, 1.47, m[2] - 0.11];
     seg(b, M(m), M(top), c, 0.007, g * 1.0); for (let k = 0; k < 3; k++) { const a = k * 2.094 + 0.5; seg(b, M([m[0], 0.11, m[2]]), M([m[0] + 0.24 * Math.cos(a), 0.012, m[2] + 0.24 * Math.sin(a)]), c, 0.005, g * 0.8); }
     seg(b, M(top), M(cap), c, 0.011, g * 1.2); dot(b, M(add(cap, [-0.012, 0.03, -0.028])), [1, 0.96, 0.9], 0.03, g * 0.9);
@@ -159,7 +159,7 @@ export function makeProps(K) {
 
   // ---- jade/home: the Copernican model at 10:30 pm. A sun and two planets where she points; the outer one rides her fingertip as she traces its orbit
   const orr = new Map();
-  function orreryOf(track) { let q = orr.get(track); if (q) return q; const D = 1.75, S = [0, 0, 0], n = 60, t0 = 0.9, T = 2.5; let cn = [0, 0, 0];
+  function orreryOf(track) { let q = orr.get(track); if (q) return q; const D = 1.2, S = [0, 0, 0], n = 60, t0 = 0.9, T = 2.5; let cn = [0, 0, 0];
     for (let k = 0; k < n; k++) { const s = cast.root(track, t0 + (k / n) * T, JN.upArmR); S[0] += s[0] / n; S[1] += s[1] / n; S[2] += s[2] / n; }
     const P = (tt) => add(S, mul(norm(sub(cast.root(track, tt, JN.handR), cast.root(track, tt, JN.upArmR))), D));
     for (let k = 0; k < n; k++) cn = add(cn, mul(P(t0 + (k / n) * T), 1 / n));
@@ -169,7 +169,7 @@ export function makeProps(K) {
     const tab = [], ta = 0.9, tb = 4.3, dt = 1 / 30; let prev = ang(ta), acc = prev; for (let tt = ta; tt <= tb + 1e-6; tt += dt) { const a = ang(tt); let d = a - prev; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; acc += d; prev = a; tab.push(acc); }
     const w = (tab[tab.length - 1] - tab[0]) / (tb - ta);
     const theta = (tt) => (tt <= ta ? tab[0] + w * (tt - ta) : tt >= tb ? tab[tab.length - 1] + w * (tt - tb) : (() => { const x = (tt - ta) / dt, i = Math.min(tab.length - 2, Math.floor(x)); return tab[i] + (tab[i + 1] - tab[i]) * (x - i); })());
-    q = { cn, u, v, r: Math.max(0.3, r), theta, w }; orr.set(track, q); return q; }
+    q = { cn, u, v, r: Math.max(0.24, r), theta, w }; orr.set(track, q); return q; }
   function orrery(b, o) { const M = placer(o), c = tint(o), g = (o.gain ?? 1) * G0, q = orreryOf(o.track), th = q.theta(o.time ?? 0);
     const at = (rr, a) => M(add(q.cn, add(mul(q.u, rr * Math.cos(a)), mul(q.v, rr * Math.sin(a)))));
     for (const [rr, k] of [[q.r, 0.75], [q.r * 0.56, 0.55]]) { const ring = []; for (let i = 0; i < 64; i++) ring.push(at(rr, (i / 64) * 6.2832)); poly(b, ring, c, 0.0022, g * k, true); }

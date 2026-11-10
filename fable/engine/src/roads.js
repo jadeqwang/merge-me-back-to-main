@@ -3,7 +3,7 @@
 // So "the road is written under her feet and never fades" is just head = t.
 //
 //   const R = engine.roads([{ pts:[[x,z],...], color:'#FF7A1A'|[r,g,b] linear, text:'COMMIT MESSAGE', g:[g0,g1] | gs:[equally spaced in arc length] | gk:[[u,g],...],
-//                             width: 0.07 (m, half-width of the core), textSize: 0.42 (em, m), textSide: 1|-1, flip: false, repeat: true,
+//                             width: 0.07 (m, half-width of the core), textSize: 0.42 (em, m), textSide: 1|-1, flip: false, repeat: true, textStart, textOff, textGap,
 //                             nodes:[{u:0..1 | s:metres, r:0.35}], smooth: true }], { step, maxGlyphs });
 //   R.drawable({ head, ink, gain, textGain, minPx, widthScale, halo, haloPx, headGain, headLen, pulses:[{g, width, gain}], flow, flowSpeed (negative = toward s=0) })  -> drawable for the 'ground' pass
 //   R.roads[i].at(s) -> {x,z,tx,tz};  .len;  .gAt(s);  .sAtG(g)   (place a runner where the road is being written)
@@ -161,7 +161,7 @@ export class Roads {
     // --- text along the road
     const atlas = glyphAtlas(gl); this.atlas = atlas; const maxG = opts.maxGlyphs || 1500000; const G = []; let ng = 0;
     for (const r of this.roads) { const d = r.def; if (!d.text || ng >= maxG) continue; const em = d.textSize ?? 0.42, adv = em * 0.62, side = d.textSide ?? 1, flip = d.flip ? -1 : 1; const c = col(d.color);
-      const txt = String(d.text).toUpperCase(); const gap = 8; const off = (d.width ?? 0.07) + em * 0.72; let s = d.textStart ?? em * 2; let k = 0; const total = txt.length + gap;
+      const txt = String(d.text).toUpperCase(); const gap = d.textGap ?? 8; const off = d.textOff ?? (d.width ?? 0.07) + em * 0.72;   /* textOff < 0: the text lies on the reader's side of the line */ let s = d.textStart ?? em * 2; let k = 0; const total = txt.length + gap;
       const rep = d.repeat !== false;
       while (s < r.len - em && ng < maxG) { const ci = k % total; if (!rep && k >= txt.length) break;
         if (ci < txt.length) { const code = txt.charCodeAt(flip > 0 ? ci : txt.length - 1 - ci); if (code > 32 && code < 127) { const a = r.at(s); const px = -a.tz * side, pz = a.tx * side;
