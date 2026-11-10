@@ -25,6 +25,7 @@ Spec: `fable/SPEC.md`. Raw WebGL2, no three.js. `ENGINE.render(t)` is a pure fun
 
 ## Measured
 - Scene render ~1.5 ms per sub-sample at 1080p; readPixels 4 ms; transfer 50 ms. One worker: ~8.5 fps at mb 4 (99 ms/frame, encode not the limit).
+- 3 workers: 12.7 fps over a 6 s clip (incl. ~3 s start-up each); 4 workers: 14.6 fps over 12 s (workers contend; 197 ms/frame each). Full film (8,478 frames, mb 4) is about 10 minutes.
 - Determinism: same frame rendered twice is byte-identical (`--verify`), at mb 1 and mb 8.
 
 ## Gotchas learned
@@ -36,6 +37,6 @@ Spec: `fable/SPEC.md`. Raw WebGL2, no three.js. `ENGINE.render(t)` is a pure fun
 - `work_fable/` is NOT matched by .gitignore (`work/` only matches a dir named work). Never `git add` it.
 
 ## In the middle of / next
-- Final AA stills of the five shots and a 4-worker timing run were in flight when this note was written.
+- F1's deliverables are done and reported; final AA stills (mb 8, shutter 0) are in `work_fable/stills/f1/`.
 - Not yet exercised by a real figure: the outline pass and opaque reflections with part-id aux (only the capsule has used them).
 - Possible later work: DoF for type/roads (none now), a cheaper sky for reflection taps if a show gets slow, HUD position/size options.
