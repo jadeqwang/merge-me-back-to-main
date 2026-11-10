@@ -18,8 +18,10 @@
 //   b93      THE RUNS (actC_runs.js): stand -> run -> stand on `run_from_stand` / `run_loop` / `run_to_stand`, each on a path of a whole number of strides that ends facing
 //            east on her cell. Everyone brakes together on b95.2 and stands by b96.1, so the far ones leave first: a wave. The hero and the copies that are in shot
 //            until the b93 cut leave on or after the cut (they stand, `idle`, until their turn); copies that are out of every frame leave earlier (from b87.7,
-//            behind the camera) and stay out of frame until the cut. b96.3 fists to the waist (`drop`'s set pose).
-//   b97      the fall. Hero flat on 167.082; the others hold the standing `set` pose a moment longer: a ripple outward from her, last body 0.4 s later.
+//            behind the camera) and stay out of frame until the cut. b96.3 fists to the waist: `actC_set`, a track made here (run_to_stand, then 0.2 s of
+//            FK blend into `drop`'s set pose, arriving on the beat).
+//   b97      the fall. Everyone is flat BY 167.082: the wave runs inward, the far ends of the word go down first (up to 0.35 s early), the hero last, on the downbeat
+//            (each copy's clock runs ahead of the song by its lead from the braking to the floor, and comes back to it while it lies still).
 //   b98-104  rise, arms wide, last phrase, jump kick, bao quan: unison, facing the sun (no procedural turn).
 import { setFont } from '../../engine/src/type.js';
 import { hash1 } from '../../engine/src/rng.js';
@@ -105,7 +107,8 @@ export function makeActC(K) {
     wordInfo = `MAIN ${cells.length} cells ${C.Wm.toFixed(0)} x ${C.Hm.toFixed(0)} m (x +${(xb - hx).toFixed(1)}..+${(xb + C.Hm - hx).toFixed(1)}, z ${(box.z0 - hz).toFixed(0)}..${(box.z1 - hz).toFixed(0)}), hero cell row ${hc.a} of ${C.nx}`; }
   const standOf = (c) => [c.x - CL / 2 + 0.12, c.z];                                             // where a body stands in its cell (its feet at the west end: it falls forward, east, into the cell)
   const head = standOf(cells[heroCell]);                                                         // the hero's feet in the word
-  const view = { x0: box.x0, x1: box.x1, z0: box.z0, z1: box.z1 };                               // what the top-down shot must hold
+  const view = { x0: box.x0, x1: box.x1, z0: box.z0, z1: box.z1 };
+  if (E.Q.get('cgeo')) console.log('actC geo: head', head.map((v) => v.toFixed(2)).join(','), 'box', JSON.stringify(box), 'near cells (dx,dz rel. to her feet): ' + cells.map((c) => standOf(c)).filter((b) => Math.abs(b[0] - head[0]) < 9 && Math.abs(b[1] - head[1]) < 9).map((b) => `${(b[0] - head[0]).toFixed(1)},${(b[1] - head[1]).toFixed(1)}`).join(' '));   // dev: --q "cgeo=1"                               // what the top-down shot must hold
 
   // ---------------------------------------------------------------- the tracks
   const tBuild = cast.songT0('build') || bar(73), tLand = cast.songT0('land') || bar(73) - 0.495, tCoil = bb(88, 3);
@@ -118,6 +121,30 @@ export function makeActC(K) {
   // the earlier performance (build, then the drop phrase) of copy i at song time t: what it plays, and where its hips are on the ground
   const before = (i, t) => (t < tCoil ? { track: 'build', time: t - tBuild, yaw: yawBuild(t) } : { track: i === 0 ? 'drop' : JOIN, time: t - tDrop, yaw: YD });
   const startOf = (i, t) => { const b = before(i, t), r = rootXZ(b.track, b.time), o = cast.rot(b.yaw, r[0], r[1]); return [P[i].o2[0] + o[0], P[i].o2[1] + o[1]]; };
+
+  // ---------------------------------------------------------------- the set (b96.3): `run_to_stand` leaves her standing with her arms down, `drop`'s set pose has the fists
+  // at the waist (0.29 m apart in the forearm). `actC_set` = run_to_stand's first 121 frames as they are, then 12 frames (0.2 s) easing into `drop` at the same song time:
+  // world orientations nlerp'd joint by joint, positions rebuilt down the skeleton (bone offsets in the parent's frame), so no bone changes length. Its last frame IS
+  // `drop`'s pose at tSet2 (laid on run_to_stand's hips), and `drop` takes over there. Made once, at start-up; deterministic.
+  const SETN = 'actC_set', NB0 = 121, NB1 = 133, tSet2 = T2 + NB1 / 60, LEAD = 0.35, tFS = tDrop + (cast.event('drop', 'fall_start') ?? 14.913);
+  const setOK = (() => { const A = cast.tracks && cast.tracks.run_to_stand, B = cast.tracks && cast.tracks.drop; if (E.Q.get('cnoset') || !A || !B || A.frames <= NB1 + 1 || A.fps !== 60 || B.fps !== 60) return false; if (cast.tracks[SETN]) return true;
+    const PAR = [-1, 0, 1, 2, 3, 2, 5, 6, 7, 2, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19];
+    const nl = (a, ao, b, bo, w, o, oo) => { let d = 0, n = 0; for (let c = 0; c < 4; c++) d += a[ao + c] * b[bo + c]; const sg = d < 0 ? -1 : 1; for (let c = 0; c < 4; c++) { o[oo + c] = a[ao + c] + (sg * b[bo + c] - a[ao + c]) * w; n += o[oo + c] * o[oo + c]; } n = Math.sqrt(n) || 1; for (let c = 0; c < 4; c++) o[oo + c] /= n; };
+    const smp = (T, time) => { const ft = Math.min(T.frames - 1, Math.max(0, time * 60)), f0 = Math.min(T.frames - 2, Math.floor(ft)), u = ft - f0, D = T.data, o = new Float32Array(147);
+      for (let j = 0; j < 21; j++) { const a = f0 * 147 + j * 7; for (let c = 0; c < 3; c++) o[j * 7 + c] = D[a + c] + (D[a + 147 + c] - D[a + c]) * u; nl(D, a + 3, D, a + 150, u, o, j * 7 + 3); } return o; };
+    const qr = (q, o, v, inv) => { const k = inv ? -1 : 1, x = k * q[o], y = k * q[o + 1], z = k * q[o + 2], w = q[o + 3], tx = 2 * (y * v[2] - z * v[1]), ty = 2 * (z * v[0] - x * v[2]), tz = 2 * (x * v[1] - y * v[0]); return [v[0] + w * tx + (y * tz - z * ty), v[1] + w * ty + (z * tx - x * tz), v[2] + w * tz + (x * ty - y * tx)]; };
+    const data = new Float32Array((NB1 + 1) * 147); data.set(A.data.subarray(0, NB0 * 147));
+    const hJ = smp(A, tJoin - T2), dJ = smp(B, tJoin - tDrop), off = [hJ[0] - dJ[0], 0, hJ[2] - dJ[2]];                                  // `drop` laid on run_to_stand's hips, exactly as oF does it in the world
+    for (let k = NB0; k <= NB1; k++) { const w = sm((k - NB0) / (NB1 - NB0)), a = smp(A, k / 60), b = smp(B, T2 + k / 60 - tDrop), o = k * 147;
+      for (let j = 0; j < 21; j++) nl(a, j * 7 + 3, b, j * 7 + 3, w, data, o + j * 7 + 3);
+      for (let j = 0; j < 21; j++) { const p = PAR[j]; if (p < 0) { for (let c = 0; c < 3; c++) data[o + c] = a[c] + (b[c] + off[c] - a[c]) * w; continue; }
+        const la = qr(a, p * 7 + 3, [a[j * 7] - a[p * 7], a[j * 7 + 1] - a[p * 7 + 1], a[j * 7 + 2] - a[p * 7 + 2]], true), lb = qr(b, p * 7 + 3, [b[j * 7] - b[p * 7], b[j * 7 + 1] - b[p * 7 + 1], b[j * 7 + 2] - b[p * 7 + 2]], true);
+        const r = qr(data, o + p * 7 + 3, [la[0] + (lb[0] - la[0]) * w, la[1] + (lb[1] - la[1]) * w, la[2] + (lb[2] - la[2]) * w]); for (let c = 0; c < 3; c++) data[o + j * 7 + c] = data[o + p * 7 + c] + r[c]; } }
+    const tr = { name: SETN, fps: 60, frames: NB1 + 1, loop: false, events: [], boneLengths: A.boneLengths || null, data, simOpts: A.simOpts || {}, meta: { made: 'actC_form.js: run_to_stand -> drop set pose' } };
+    cast.tracks[SETN] = tr; if (cast.fig && cast.fig.addTrack) cast.fig.addTrack(tr); return true; })();
+  const tJ = setOK ? tSet2 : tJoin, BRAKE = setOK ? SETN : 'run_to_stand';
+  // a copy's own clock from the braking to the floor: ahead of the song by its lead (0 for the hero, LEAD at the far ends of the word), back on it by 167.85 while it lies still
+  const clock = (p, t) => (p.lead ? t + p.lead * sm(seg(t, T2 + 0.1, 165.9)) * (1 - sm(seg(t, 167.2, 167.85))) : t);
 
   // ---------------------------------------------------------------- the cameras of bars 86-92 (seq 9 and shot 10A use them; the run plan needs them to know who is in shot)
   // 10A stays on main behind her; it leans a little after her as the phrase carries her off the axis (her hips, averaged over a second)
@@ -143,8 +170,8 @@ export function makeActC(K) {
       p.run = q; q.yaw0 = Math.PI / 2 - q.phi; q.dir0 = [Math.cos(q.phi), Math.sin(q.phi)]; q.t1 = q.tDep + TACC; q.O2 = [q.B[0] - SZ * q.sc, q.B[1]];
       // `drop` takes over on the set pose with its hips where `run_to_stand` has them
       p.oF = [q.O2[0] + eJ[0] + (q.sc - 1) * hJ[1] - fJ[0], q.O2[1] + eJ[1] - fJ[1]]; }
-    // the fall: a ripple outward from the hero, last body 0.4 s after her
-    { let m = 0; for (let i = 1; i < N; i++) { P[i].rf = Math.hypot(P[i].B[0] - head[0], P[i].B[1] - head[1]); m = Math.max(m, P[i].rf); } for (let i = 1; i < N; i++) P[i].tau = (0.4 * P[i].rf) / m; P[0].tau = 0; P[0].rf = 0; }
+    // the fall: a wave that runs INWARD and ends on her, on the downbeat: the farthest body is down LEAD s before her (see `clock`)
+    { let m = 0; for (let i = 1; i < N; i++) { P[i].rf = Math.hypot(P[i].B[0] - head[0], P[i].B[1] - head[1]); m = Math.max(m, P[i].rf); } for (let i = 1; i < N; i++) P[i].lead = (LEAD * P[i].rf) / m; P[0].lead = 0; P[0].rf = 0; }
     const st = R.stats, nVis = [...tHid].filter((t) => t >= tRun - 1e-6).length;
     console.log(`actC runs: ${N - st.failed}/${N} on legal paths (${st.relaxed} of them with the looser stride, ${slid} without a path), mean ${st.meanL.toFixed(1)} m max ${st.maxL.toFixed(1)} m, strides k ${JSON.stringify(st.kHist)}; leave ${st.minDep.toFixed(2)}..${st.maxDep.toFixed(2)} (${st.early} before the b93 cut, all out of frame; ${nVis} in shot wait for the cut), brake ${T2.toFixed(3)}; loop rate <= ${st.maxRate.toFixed(3)} (${st.onBeat} on the beat at ${R.rBeat.toFixed(3)}), speed <= ${st.maxSpeed.toFixed(2)} m/s, stride stretch <= ${(100 * st.maxStretch).toFixed(1)} %, hooks ${st.hooks}; hero ${R.runs[0] ? R.runs[0].L.toFixed(2) : '?'} m; ${(performance.now() - t00).toFixed(0)} ms`);
     plan = R; if (E.Q.get('ccheck')) selfCheck(); return plan; }
@@ -161,15 +188,25 @@ export function makeActC(K) {
         if (!hero) { const age = t - tBorn(s.k); if (age < TP) { const w = peelAt(s, easeOut(age / TP)); out.pos = [w[0], 0, w[1]]; out.alpha = 0.35 + 0.65 * sm(age / TP); } if (age < 0.9) out.gain = 1 + 1.6 * Math.exp(-age / 0.25); } }
       else { out.track = hero ? 'drop' : JOIN; out.yaw = YD; out.time = t - tDrop; out.pos = [p.o2[0], 0, p.o2[1]]; }      // the copies: coil (breathing) to b89.3, load, leap, punch on b90.1; from 154.77 `drop_join` IS `drop`
       return out; }
-    if (t < tJoin) {                                                                             // the run: wait (standing) -> run_from_stand -> run_loop along the path -> run_to_stand
+    const tc = q ? clock(p, t) : t;
+    if (tc < tJ) {                                                                               // the run: wait (standing) -> run_from_stand -> run_loop along the path -> run_to_stand (-> the set)
       if (t < q.tDep) { out.track = 'idle'; out.time = t - q.tDep; out.yaw = q.yaw0; out.pos = [q.A[0], 0, q.A[1]]; }
       else if (t < q.t1) { const z = (q.sc - 1) * cast.root('run_from_stand', t - q.tDep)[2]; out.track = 'run_from_stand'; out.time = t - q.tDep; out.yaw = q.yaw0; out.pos = [q.A[0] + q.dir0[0] * z, 0, q.A[1] + q.dir0[1] * z]; }
       else if (t < T2) { const w = plan.along(q, (FZ + vRun * q.r * (t - q.t1)) * q.sc); out.track = 'run_loop'; out.time = PH0 + (t - q.t1) * q.r; out.yaw = Math.PI / 2 - w.h; out.pos = [w.x, 0, w.z]; }
-      else { const z = (q.sc - 1) * cast.root('run_to_stand', t - T2)[2]; out.track = 'run_to_stand'; out.time = t - T2; out.yaw = EAST; out.pos = [q.O2[0] + z, 0, q.O2[1]]; }
+      else { const z = (q.sc - 1) * cast.root('run_to_stand', Math.min(tc, tJoin) - T2)[2], w = sm(seg(tc, tSet2 - 0.2, tSet2)); out.track = BRAKE; out.time = tc - T2; out.yaw = EAST; out.pos = [q.O2[0] + z, 0, q.O2[1]];
+        if (setOK) { out.hand = 0.4 + 0.6 * w; out.face = { expr: 'determined', amt: 0.5 + 0.35 * w }; } }                                  // the made track has no name the film defaults know: a runner's face and hands, closing to fists
       return out; }
-    let tt = t; if (t >= tSet && t < tUnison) tt = Math.max(tSet, t - p.tau);
-    out.track = 'drop'; out.time = tt - tDrop; out.yaw = EAST; out.pos = [p.oF[0], 0, p.oF[1]];
+    out.track = 'drop'; out.time = tc - tDrop; out.yaw = EAST; out.pos = [p.oF[0], 0, p.oF[1]];
+    if (tc < tFall + 1.0) out.hand = (1 - 1.3 * sm(seg(tc, tFS, tFS + 0.25))) * (1 - sm(seg(tc, tFall + 0.4, tFall + 1.0)));               // fists at the waist in the set, open hands to break the fall
+    else acting(i, t, out);
     return out; }
+  // faces the choreography asks for where the film default (determined) is not it. Arms wide (172.300, held; the "ooh" enters 173.08): joy with open eyes, for the hero
+  // only; the copies close theirs (arms open to the sun: and at 5-8 m an open eye is a dark oval without a white, a doll's). The salute: composed, eyes forward
+  // and still (no saccades), all 1,024.
+  function acting(i, t, out) {
+    { const w = sm(seg(t, 171.9, 172.3)) * (1 - sm(seg(t, 173.3, 173.75))); if (w > 0) out.face = w < 0.5 ? { expr: 'determined', amt: 0.85 * (1 - 2 * w) } : { expr: i === 0 ? 'joy' : 'calm', amt: 2 * w - 1 }; }
+    const s = sm(seg(t, 178.7, 179.2)); if (s > 0) out.face = s < 0.5 ? { expr: 'determined', amt: 0.85 * (1 - 2 * s), gaze: [0, 0] } : { ...SALUTE, amt: SALUTE.amt * (2 * s - 1), gaze: [0, 0] }; }
+  const SALUTE = { expr: 'calm', amt: 0.3 };      // lowered lids, eyes open and forward (checked against neutral: wide dark ovals, startled; and calm 0.5: sleepy)
   // dev: --q "ccheck=1" measures the runs on the tracks themselves (60 Hz, every copy, from its departure to the set pose): the largest jump of the hips between two
   // samples, the largest turn, and how fast a foot that is on the ground moves over the ground (0 = no slide)
   function selfCheck() { const dt = 1 / 60, J = [15, 19], wj = (d, j) => { const r = cast.root(d.track, d.time, j), o = cast.rot(d.yaw, r[0], r[2]); return [d.pos[0] + o[0], r[1], d.pos[2] + o[1]]; };
@@ -191,11 +228,11 @@ export function makeActC(K) {
   const mainHead = (t) => headAt(heroHips(t)[0] - 0.1);
   // pools of light under the fallen bodies (the letters glow as they are laid down), and the same list for any other moment
   function fallGlow(t, o = {}) { const list = [], c0 = o.color || [1.0, 0.55, 0.22];
-    ensure(); for (let i = 0; i < N; i++) { const p = P[i], age = t - (tFall + p.tau); if (age < 0) continue; const hit = Math.exp(-age / 0.35), up = 1 - 0.4 * sm(seg(t, bar(98.2), bar(99.2))), k = (0.20 + 0.45 * hit) * up * (o.gain ?? 1); if (k < 0.004) continue;
+    ensure(); for (let i = 0; i < N; i++) { const p = P[i], age = t - (tFall - (p.lead || 0)); if (age < 0) continue; const hit = Math.exp(-age / 0.35), up = 1 - 0.4 * sm(seg(t, bar(98.2), bar(99.2))), k = (0.20 + 0.45 * hit) * up * (o.gain ?? 1); if (k < 0.004) continue;
       const c = i === 0 ? [1.6, 0.62, 0.16] : c0; list.push({ x: p.B[0] + 0.95, z: p.B[1], r: 1.7 + 0.5 * hit, c: [c[0] * k, c[1] * k, c[2] * k] }); }
     return list.length ? [W.glow(list)] : []; }
 
   K.shared.dropCam = dropCam;
   return { N, S, P, hx, hz, box, head, view, cells, heroCell, CW, CL, WEST, EAST, YD, TP, tBorn, stageAt, peelAt, streakDraw, dancer, thousand, heroHips, mainHead, headAt, fallGlow, laneOf, dropCam, coilCam, ensure,
-    times: { tBuild, tDrop, tLand, tCoil, tHeroLands, tLow, tRun, T2, tJoin, tSet, tFall, tUnison, tEarly } };
+    times: { tBuild, tDrop, tLand, tCoil, tHeroLands, tLow, tRun, T2, tJoin: tJ, tSet, tFall, tUnison, tEarly } };
 }

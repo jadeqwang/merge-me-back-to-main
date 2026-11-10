@@ -12,7 +12,7 @@ export default function seq(K) {
   const { bar, world: W } = K; const t0 = bar(73), t1 = bar(86); const C = (K.shared.actC = makeActC(K)); const { hx, hz } = C;
   const R = (x, y, z) => [hx + x, y, hz + z];
   const camA = K.camPath([
-    { t: t0, pos: R(-3.5, 0.66, 0.0), target: R(0, 0.95, 0), fov: 35 }, { t: t0 + 0.28, pos: R(-2.6, 0.40, 0.0), target: R(0, 0.50, 0), fov: 35, stop: true }, { t: t0 + 0.62, pos: R(-2.64, 0.41, 0.0), target: R(0, 0.54, 0), fov: 35 },
+    { t: t0, pos: R(-3.5, 0.66, 0.0), target: R(0, 0.95, 0), fov: 35 }, { t: t0 + 0.28, pos: R(-2.6, 0.40, 0.0), target: R(0, 0.50, 0), fov: 35, stop: true }, { t: t0 + 0.62, pos: R(-2.8, 0.5, 0.0), target: R(0.05, 0.84, 0), fov: 35 }, { t: t0 + 0.82, pos: R(-3.0, 0.56, 0.0), target: R(0.1, 0.88, 0), fov: 35 },      // r3: she is up by 125.95 and has a face now: head room (her crown was on the frame's edge, under the HUD line, 125.9-126.3)
     { t: bar(74), pos: R(-4.0, 0.95, 0.0), target: R(0.4, 0.93, 0), fov: 35 }, { t: bar(75), pos: R(-4.9, 1.05, 0.0), target: R(2, 0.96, 0), fov: 35 },
     { t: bar(76), pos: R(-5.6, 1.15, 0.0), target: R(4, 1.0, 0), fov: 35 }, { t: bar(77), pos: R(-6.1, 1.22, 0.0), target: R(5, 1.0, 0), fov: 35 }]);
   const camC = K.camPath([
