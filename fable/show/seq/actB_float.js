@@ -33,7 +33,7 @@ export function actBFloat(K) {
   const draw = (t, o = {}) => hair.drawable({ head: t, gain: 2.0, textGain: 0.3, minPx: 1.2, haloPx: 3, halo: 0.25, headGain: 3, headLen: 0.3, nodeMinPx: 1.1, soft: 0.12, ...o });
   const drawFil = (t, o = {}) => fil.drawable({ head: t, gain: 0.8, minPx: 0.7, haloPx: 1.5, halo: 0.1, headGain: 2.5, headLen: 0.3, soft: 0.25, ...o });
   // ---- the top-down shot. Keys: [t, height, turn (deg: where east points on screen, counter-clockwise from screen-right), centre (m east of H)]
-  const CK = [[97.515, 2.75, 28, -0.5], [100.0, 3.1, 44, -0.42], [102.65, 5.6, 78, -0.1], [104.9, 7.0, 100, 0.5], [107.2, 9.5, 110, 1.2], [109.43, 22, 116, 3.5], [111.43, 32, 121, 6.0], [113.4, 27, 127, 5.4], [115.3, 13, 135, 2.2], [116.64, 6.6, 141, 0.7]];
+  const CK = [[97.515, 2.75, 28, -0.5], [100.0, 3.1, 44, -0.42], [102.65, 5.6, 78, -0.1], [104.9, 7.0, 100, 0.5], [107.2, 9.5, 110, 1.2], [109.43, 20, 116, 3.2], [111.43, 26, 121, 4.8], [113.4, 22, 127, 4.2], [115.3, 12, 135, 2.0], [116.64, 6.6, 141, 0.7]];
   const path = K.camPath(CK.map(([t, h, th, e]) => ({ t, pos: [h, th, e], target: [0, 0, 0] })));
   const cam = (t) => { const [h, thd, e] = path(t).pos, th = (thd * Math.PI) / 180, cx = H[0] + e * Math.cos(0); return { pos: [cx, h, 0], target: [cx, 0, 0], topUp: [Math.sin(th), 0, -Math.cos(th)], fov: 35, near: 0.2, far: 20000, h }; };
   // `float` (song_t0 97.513; supine, head toward its -Z) until 116.0, then `rise` (song_t0 116.0; its frame 0 is the float's pose there, she stands up facing west)

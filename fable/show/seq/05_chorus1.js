@@ -42,7 +42,7 @@ export default function seq(K) {
   const camB = K.camPath([{ t: tB, pos: [M[0] + 120, 150, 50], target: [M[0] - 150, 0, 34], fov: 35 }, { t: tOne, pos: [M[0] + 196, 150, 46], target: [M[0] - 56, 0, 26], fov: 35 }, { t: tC, pos: [M[0] + 182, 135, 42], target: [M[0] - 34, 0, 22], fov: 35 }]);
 
   // ================= C: the fan. Copy i is her, a moment ago (the same footprints), in the lane colour of life i; on beat i+1 it has caught her up.
-  const beatC = T.beatAt(tC), DT = 0.118, lives = W.lives, NF = lives.length;
+  const beatC = T.beatAt(tC), DT = 0.108, lives = W.lives, NF = lives.length;
   const foldQ = (t) => { const b = T.beatAt(t) - beatC; if (b <= 0) return 0; const k = Math.floor(b), f = b - k; return Math.min(NF, k + Math.pow(sm(seg(f, 0.3, 1)), 1.6)); };
   // commits on main east of M1: one per bar line she ran (the HUD's hash ticks on the bar line), written as she passes
   const barX = [48, 49, 50, 51].map((b) => ({ x: G.mainX(bar(b)), g: bar(b) }));
@@ -62,8 +62,8 @@ export default function seq(K) {
   return { name: '05_chorus1', t0, t1, frame(t) {
     return K.cut(t, [
       { t0, f: () => {
-        const a = HP.at(G.sA(t)), f = frA(t), u = seg(t, t0, tB), tau = G.tauA(t), d = lerp(3.5, 2.9, sm(u));
-        const camera = { pos: K.rel(f, d, 0.05, 0.3), target: K.rel(f, 0, 0.84, 1.06), fov: 48, focusDist: d, aperture: 0.035 };
+        const a = HP.at(G.sA(t)), f = frA(t), u = seg(t, t0, tB), tau = G.tauA(t), d = lerp(3.1, 2.35, sm(u));
+        const camera = { pos: K.rel(f, d, 0.05, 0.28), target: K.rel(f, 0, 0.72, 1.04), fov: 48, focusDist: d, aperture: 0.035 };
         let flash = 0; const glows = [], clear = [[a.x, a.z, 2.5]];
         for (const R of runners) { const dt = t - R.tEnd;
           if (dt > 0) { if (dt < 1.5) { const k = Math.exp(-dt * 4), e = R.P.at(R.P.len - 0.01); glows.push({ x: e.x, z: e.z, r: 1.2 + 3.5 * (1 - k), c: mul(mixc(R.color, white, 0.4), 1.6 * k) }); if (!R.into) flash += k; } continue; }
@@ -86,7 +86,7 @@ export default function seq(K) {
           type: [K.lyric(8, camera, { font: 'hook', mode: 'ground', x: -0.9, y: -0.86, rows: [2, 2, 3], px: 72 })], hud: K.hudMain(t, { count: W.count(t) }), flash: one ? 0.22 * Math.exp(-(t - tOne) * 5) : 0 }; } },
       { t0: tC, f: () => {
         const hx = G.heroX(t), u = seg(t, tC, tD), q = foldQ(t), bt = T.beatAt(t) - beatC;
-        const camera = { pos: [hx + 1.7 - 0.5 * u, 1.0, 5.4 - 0.4 * u], target: [hx - 1.25 + 0.35 * u, 1.22, 0], fov: 35, aperture: 0.03 };
+        const pu = sm(seg(t, tC + 0.4, tD)), camera = { pos: [hx + 1.7 - 0.9 * pu, 1.0 - 0.1 * pu, 5.5 - 1.9 * pu], target: [hx - 1.3 + 0.75 * pu, 1.22 - 0.14 * pu, 0], fov: 35, aperture: 0.03 };   // the fan shortens as it folds: the camera closes in on her
         const glows = []; let flash = 0, last = -1;
         for (let i = 0; i < NF; i++) { const s = i + 1 - q, ln = lives[i].lane, c = W.col(ln);
           if (s <= 0) { const k = Math.exp(-(bt - (i + 1)) * 2.6); if (k > 0.02) { glows.push({ x: hx, z: 0, r: 1.3 + 2.2 * (1 - k), c: mul(c, 1.3 * k) }); flash += k; } last = i; continue; }

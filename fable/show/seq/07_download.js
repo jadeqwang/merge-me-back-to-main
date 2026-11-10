@@ -11,10 +11,11 @@ import { actBFloat } from './actB_float.js';
 export default function seq(K) {
   const { bar, world: W, cast, T } = K; const G = actBGeo(K), F = actBFloat(K), t0 = bar(65), t1 = bar(73), tCut = 116.64, tLeap = bar(69), tRoll = 123.49, sx = G.stopX;
   const camR = K.camPath([
-    { t: tCut, pos: [sx - 2.9, 0.24, 0.8], target: [sx + 0.2, 0.3, 0], fov: 40 }, { t: 117.6, pos: [sx - 3.2, 0.3, 0.85], target: [sx, 0.95, 0], fov: 40 },
-    { t: tLeap, pos: [sx - 3.7, 0.4, 0.9], target: [sx, 1.7, 0], fov: 40 }, { t: 121.0, pos: [sx - 3.55, 0.48, 0.2], target: [sx, 1.72, 0], fov: 40 },
-    { t: tRoll, pos: [sx - 3.5, 0.6, -0.4], target: [sx, 1.55, 0], fov: 40 }, { t: 124.5, pos: [sx - 9.5, 5.2, -1.1], target: [sx + 2.5, 1.1, 0], fov: 40 }, { t: t1, pos: [sx - 21, 15, -2], target: [sx + 7, 0.4, 0], fov: 40 }]);
-  const dawnAt = (t) => (t < tLeap ? lerp(0.03, 0.07, ss(t, tCut, tLeap)) : lerp(0.07, 0.2, ss(t, tLeap, tLeap + 0.8)));
+    // one arc round her, on the water: from her right side (the sit-up in 3/4 profile) to the front as she opens (the dawn behind her), on to her left; then it lifts away
+    { t: tCut, pos: [sx - 1.9, 0.28, 3.0], target: [sx + 0.1, 0.35, 0], fov: 36 }, { t: 117.6, pos: [sx - 3.3, 0.3, 2.5], target: [sx, 0.9, 0], fov: 36 },
+    { t: tLeap, pos: [sx - 4.9, 0.38, 1.7], target: [sx, 1.45, 0], fov: 36 }, { t: 121.0, pos: [sx - 5.2, 0.42, 0], target: [sx, 1.45, 0], fov: 36 },
+    { t: tRoll, pos: [sx - 4.9, 0.5, -1.7], target: [sx, 1.4, 0], fov: 36 }, { t: 124.5, pos: [sx - 10, 5.2, -2.4], target: [sx + 2.5, 1.1, 0], fov: 38 }, { t: t1, pos: [sx - 21, 15, -3], target: [sx + 7, 0.4, 0], fov: 40 }]);
+  const dawnAt = (t) => (t < tLeap ? lerp(0.03, 0.07, ss(t, tCut, tLeap)) : lerp(0.07, 0.17, ss(t, tLeap, tLeap + 0.8)) + 0.03 * seg(t, tLeap + 0.8, t1));
   return { name: '07_download', t0, t1, frame(t) {
     if (t < tCut) return F.top(t);
     const camera = camR(t), leap = t >= tLeap ? Math.exp(-(t - tLeap) * 1.8) : 0, up = ss(t, tCut, tLeap), roll = seg(t, tRoll, t1), flash = 0.75 * easeIn(seg(t, t1 - 0.45, t1));
