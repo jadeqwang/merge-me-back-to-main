@@ -87,7 +87,7 @@ def check_track(name):
 if __name__ == "__main__":
     allok = True
     if len(sys.argv) > 1 and sys.argv[1] == "--tracks":
-        names = sys.argv[2:] or sorted(p.stem for p in M.TRACKS.glob("*.json") if not p.stem.startswith("_"))
+        names = [a for a in sys.argv[2:] if not a.startswith("-")] or sorted(p.stem for p in M.TRACKS.glob("*.json") if not p.stem.startswith("_"))
         for n in names:
             ok, lines = check_track(n)
             allok &= ok

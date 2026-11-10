@@ -504,16 +504,25 @@ def two_bone(H, K, T, a, b, pole=None):
     return H + n * x + unit(pv) * h, Te
 
 
-def _limb_ik(m, top, mid, end, target, weight=None, pole=None, keep_end=True):
+def _limb_ik(m, top, mid, end, target, weight=None, pole=None, keep_end=True, bend_axis=None):
     """Re-pose the two bones top->mid->end so that joint `end` sits at target (F,3). weight (F,)
     blends from the current end position. The end joint (and its children) keep their world
-    orientation when keep_end."""
+    orientation when keep_end. bend_axis = +1/-1: the mid joint leans toward +Z/-Z of the top bone's
+    frame (knees forward, elbows back); it takes over from the current mid-joint position when the
+    limb is nearly straight, where that position says nothing reliable (prevents knee flips)."""
     P = m.fk()
     H, K, E = P[:, top], P[:, mid], P[:, end]
     T = np.asarray(target, dtype=np.float64)
     if weight is not None:
         T = E + (T - E) * np.asarray(weight, dtype=np.float64)[:, None]
     a, b = bone_len(JOINTS[top]), bone_len(JOINTS[mid])
+    if pole is None and bend_axis is not None:
+        n = unit(E - H)
+        pv = (K - H) - np.sum((K - H) * n, -1, keepdims=True) * n          # where the mid joint is now
+        ax = bend_axis * m.R[:, top, :, 2]
+        ax = unit(ax - np.sum(ax * n, -1, keepdims=True) * n)
+        need = smoothstep(np.linalg.norm(T - E, axis=-1) / 0.004)[:, None]  # no correction -> no change
+        pole = pv + 0.03 * need * ax
     Kn, Te = two_bone(H, K, T, a, b, pole)
     out = m.copy()
     Q1 = rot_between(K - H, Kn - H)
@@ -528,7 +537,7 @@ def _limb_ik(m, top, mid, end, target, weight=None, pole=None, keep_end=True):
 
 def leg_ik(m, side, target, weight=None):
     """Move an ankle to target (F,3) with the hip fixed; foot keeps its world orientation."""
-    return _limb_ik(m, J["thigh" + side], J["shin" + side], J["foot" + side], target, weight)
+    return _limb_ik(m, J["thigh" + side], J["shin" + side], J["foot" + side], target, weight, bend_axis=+1.0)
 
 
 def arm_ik(m, side, target, weight=None, pole=None, hand_R=None):
@@ -536,7 +545,7 @@ def arm_ik(m, side, target, weight=None, pole=None, hand_R=None):
     direction the elbow should lean to (default: where it already is). hand_R (F,3,3) optionally
     sets the hand's world orientation, blended by the same weight."""
     out = _limb_ik(m, J["upArm" + side], J["foreArm" + side], J["hand" + side], target, weight, pole,
-                   keep_end=(hand_R is not None))
+                   keep_end=(hand_R is not None), bend_axis=-1.0)
     if hand_R is not None:
         h = J["hand" + side]
         w = np.ones(m.frames) if weight is None else np.asarray(weight, dtype=np.float64)

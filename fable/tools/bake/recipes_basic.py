@@ -69,7 +69,20 @@ def _idle_base():
     cy = M.make_cycle(src, t0, t1, blend=1.2, in_place=True, frames=1200, align_travel=False)
     cy = M.place(cy, 0, 0.0, (0.0, 0.0))
     cy.meta["cycle_cost"] = round(cost, 4)
-    return cy
+    return _calm_head(cy, 0.4)
+
+
+def _calm_head(m, keep=0.4):
+    """The source actress keeps glancing about; scale neck/head motion toward its mean so she is calm."""
+    L = M.to_local(m.R)
+    for n in ("neck", "head"):
+        j = M.J[n]
+        mean = M.Rot.from_matrix(L[:, j]).mean().as_matrix()
+        d = M.rotvec(L[:, j] @ mean.T)
+        L[:, j] = M.expmap(d * keep) @ mean
+    out = m.copy()
+    out.R = M.from_local(L)
+    return out
 
 
 @recipe("idle")
@@ -131,6 +144,18 @@ def turn_around():
     yaw = np.unwrap(M.yaw_of(m.R[:, 0]))
     k = int(np.argmin(np.abs(yaw - (yaw[0] + np.sign(yaw[-1] - yaw[0]) * math.pi / 2))))
     return m.add_event(k / m.fps, "turn")
+
+
+@recipe("walk_turn")
+def walk_turn():
+    """Walk, turn 180 on the spot, walk back (ACCAD Female1 WalkTurnAround180, 3 s either side of the turn)."""
+    src = M.with_events(M.load_clip("accad:Female1_B15_WalkTurnAround180"), jumps=False, kicks=False)
+    yaw = np.unwrap(M.yaw_of(src.R[:, 0]))
+    k = int(np.argmin(np.abs(yaw - (yaw[0] + np.sign(yaw[-1] - yaw[0]) * math.pi / 2))))
+    tk = k / src.fps
+    m = M.trim(src, max(0.0, tk - 3.0), min(src.duration, tk + 3.0))
+    m = M.place(m, 0, 0.0, (0.0, 0.0))
+    return m.add_event(tk - max(0.0, tk - 3.0), "turn")
 
 
 @recipe("butterfly")
