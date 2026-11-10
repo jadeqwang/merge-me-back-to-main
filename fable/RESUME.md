@@ -4,7 +4,7 @@ Branch `fable/merge`. A third, independent cut of "Merge", made end to end by Cl
 If you are a new session picking this up: read `fable/SPEC.md` (the direction, look, timeline, contracts), then this file, then the
 workstream notes in `fable/notes/`.
 
-## State (updated 2026-11-10, checkpoint 2)
+## State (updated 2026-11-10, checkpoint 3)
 
 Done
 - Recon: both earlier cuts reviewed (v5a on `claude/wonderful-mccarthy-f90kll`, v6 "written in text" on `claude/v6-text`), shipped work in `~/Documents/1-music-shipped` surveyed.
@@ -16,11 +16,15 @@ Built since checkpoint 1
 - F2 motion library done (`fable/notes/F2_motion.md`): retarget + edit ops + IK; phase-1 tracks baked and validated. (Its agent died at a login error; work recovered and committed.)
 - F3 figure v1 (`fable/notes/F3_figure.md`): API, tracks, sim, LOD work; LOOK rejected by the director (mannequin/doll). Redesign brief sent: skinned mesh for opaque modes, cloth-lite trousers, hair mass, light mode woven of fibres like the roads.
 
-In progress (four agents; each keeps a note in `fable/notes/` and commits its own paths)
-- F1 phase 2: show kit (`fable/show/world.js`, `cast.js`, `main.js`, `seq/*`) + full-length animatic with stand-in figures -> `work_fable/out/animatic_v1.mp4`.
-- F3 phase 2: the figure redesign (above).
-- M1: utility performances, `fable/CHOREO.md` section A -> `fable/tools/bake/recipes_util.py`, note `M1_util.md`.
-- M2: build + drop choreography, `fable/CHOREO.md` section B -> `recipes_choreo.py`, note `M2_choreo.md`.
+Built since checkpoint 2
+- Figure (F3, `fable/notes/F3_figure.md`): skinned mesh, cloth-lite trousers, hair mass, ONE lit-cel shading model (night rim + lane underlight + emissive accents; sunrise silhouette; day full colour). Runs in the real engine as a plain drawable; test show `fable/show/figtest.js`, stills `work_fable/stills/figtest/sheet_a.jpg`, `sheet_b.jpg` (approved direction).
+- M1 utility performances (22 tracks; `fable/notes/M1_util.md`) and M2 build + drop choreography (5 tracks; `fable/notes/M2_choreo.md`) baked and validated; judged on stick figures only so far.
+
+In progress (each keeps a note in `fable/notes/` and commits its own paths)
+- F1 phase 2: show kit + full-length animatic with stand-ins (`fable/show/main.js`, `seq/*`), WIP sheet `work_fable/stills/animatic_v0/`.
+- P1: performance QA on the real figure in the engine (`fable/show/reel.js`, reels in `work_fable/out/reel/`), fixing figure sim/skinning and motion; note `P1_qa.md`.
+
+Then: swap cast.js's stand-in backend for the real Figure (snippet at the end of F3's report in `F3_figure.md`), render v1, review, iterate per sequence.
 
 Next, in order
 1. Review F1/F3 stills against SPEC section 2; iterate until the look is right. Integrate the figure into the engine.
