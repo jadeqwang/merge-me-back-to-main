@@ -1,22 +1,22 @@
 {
  "branch": "fable/merge",
- "total": 97,
- "head": "834761c",
+ "total": 115,
+ "head": "bae7cf5",
  "generated": "2026-11-10",
  "lines": [
-  "* 834761c (HEAD -> fable/merge) fable r2 C: MAIN restaged east of the rings with the hero as a cell (A's right leg, on main); true runs on run_from_stand / run_loop / run_to_stand (planner actC_runs.js: whole-stride paths ending east, Hungarian assignment, unison brake on b95.2, unseen copies leave early); top-down fall on a gold-rose mirror with a glitter path, one move down to a low front shot for the rise and arms wide, troupe behind her to the kick; sun-side light and western sky for the salute; notes",
-  "* fdc13e6 (origin/fable/merge) fable r2 DE: the pull-up keeps the fan centred, lyric clear of the HUD, sun glint dimmed, map leader timed with its label, feet frame clear of the type, notes (motion check, still weak, outputs)",
-  "* 40a8679 fable r2 AB: softer seam flash, notes complete (motion check, outputs, what is still weak)",
-  "* dfc6b40 fable r2 AB: Act B notes (5D push-in and locks to un-DONE, float comes home with the pulses, sit-up from above with the cut on b68.4, silhouette burst); the Banach-Tarski split and fold (bt.js) with their commit messages",
-  "* 49f60f1 fable r2 DE: comets converge in the flight, sun held to the hit, waist-up C3, feet-first day cut, front-quarter leap, pivot-foot half turn, standing starts, lower lift, bigger map labels and a lit map",
-  "* 991a11a fable r2 AB: Act A notes (walkers stay people, heir pop at b5/b7, one-move swoop, low three-quarter verse, orb halo and light, home closer, 'from' upright)",
-  "* 244b473 review: Fable cut v2 (720p, 92 MB) for Jade",
-  "* e6fb3f3 fable: director's notes on v2, resume file at checkpoint 6",
-  "* 308f472 fable: refresh gitlog.json for the terminal card",
-  "* f72b3b3 fable actE: closer leap shot, the fork shot stays with the first branch, softer blue, terminal set above the far lights with credits clear of her, exact one-frame loop seam, notes (shot list, known problems, outputs)",
-  "* 3f924f8 fable actB: notes current (engine option nodeAir, shot list, decisions, known problems, outputs)",
-  "* 9fc1de2 fable M3: free, the dragged support foot after the skip -> whirl join is pinned (240.2-241.3 only); notes (drop heel pivot left, files)",
-  "* 9c3f4e7 fable actE: she starts facing west on 13's axis (the half turn rides her whirl), type in the sky over the fan, map labels re-set (few, true, in order), notes",
-  "* feade17 fable actB: 5A closer on her, 5C pushes in as the fan folds, the rise as one arc on the water (sit-up in profile, arms open against the dawn and the horizon of roads), float crane lower"
+  "* bae7cf5 (HEAD -> fable/merge, origin/fable/merge) fable r3 DE: notes (outputs, clip)",
+  "* 17697e2 fable r3 DE: figure requests from Act C (face-framing locks keep off the face, ring and rim leave flung hair, a coloured key counts by its saturation), notes for the whole pass (figure, requests served, sequences, shot-by-shot re-check, perf, still weak)",
+  "* 3e9767d fable r3 DE: the handover on b137 is one action (a blended performance catch -> free made at set-up, the cut lands on her whole), silhouettes for the wait and the fold, the fork at the leap's apex reads (lens due south), the b145 branch clears her (lens 12 degrees round), the pull-up waits for b149 and takes one bar, formation label nearer its rings, dev face zoom (zf=1); figure: requests from A+B (chin closed underneath, jaw shadow follows the head and covers the underside of the jaw, no ear strands with strand hair, features from below), front rim thin again",
+  "* 3628de5 fable r3 C: MAIN whole before the fall (high oblique, overhead on b97, the wave ends on the downbeat), set eased by a made track, kick in profile, gold salute, faces, notes",
+  "* a21c682 fable r3 AB: re-check of every shot (chorus line 7 in three rows clear of the runners' heads, nasa keeps its facing, larger comet in the fall), motion check, still weak, requests for the figure owner",
+  "* 6eff8c1 fable r3 AB: the list (fall pulses, Where bridges the cut and holds through the dive, float capped at 12.6 m, road text out of the close top-down, Banach-Tarski lattice body-sized and riding her bones, eyes lead the look-backs), roll call faces the lens, notes",
+  "* 9dcc535 fable r3 DE: figure fixes (back of the head reads as form: rim band, night tone, strand lines, coil lines on a rounder bun; crowd eyes keep their whites and leave together; a neck: lower open collar, neckline, the jaw's shadow as a shape; silhouette by sun angle with the face; back hair clears the disc; ear strand; keyCol input), notes",
+  "* 9c70f98 fable: checkpoint (resume file: anime adopted, round 3 running)",
+  "* 5717bac fable: director's notes for round 3 (v3 + anime figure)",
+  "* ef0bdb9 fable anime: hull pass limited in crowd buckets (172.5 back to classic's cost), notes for the adoption pass (likeness, hair, switch, defaults, film check, perf, what is still wrong)",
+  "* 74f1ad9 fable anime: director's fixes on sheet E (centre parting with a line and a notch, volume, strand tips at the temples, loose strands by the ears, taper to a defined chin, a profile with nose, lips and chin), black hair takes no underlight, catchlights in partial sun, hull pass to LOD 3, face defaults on wrapped track time, SPEC rule 10 and sections 3/5",
+  "* cdaa004 fable anime: figure switch in cast (fig=anime default, fig=classic byte-identical on 5 stills), face/hand/hair through set()/put(), film defaults (expression by track and daylight, saccades, head-led gaze, off-beat blinks that avoid cuts, fists for punches and the salute), cuts.json from main.js dev=cuts, face LOD, strand hair for 06-07",
+  "* 4d38dce fable anime: likeness pass (round-oval face, high centre-parted hairline, almond eyes, straight brows, lips), joy with open eyes + laugh, hair falls behind the shoulders, per-instance hair: 'strands' for the float, sheet E script, notes",
+  "* 62100e5 fable: checkpoint (resume file: anime figure adopted behind a switch, integration running)"
  ]
 }
