@@ -1312,6 +1312,430 @@ def load_clip(spec, **kw):
     return retarget(clip, kind, **kw)
 
 
+# ----------------------------------------------------------------------------- pose authoring
+# For performances with no capture (floating, sitting, a salute): build key poses with a Poser, then
+# keyframes([...]) splines them into a Motion. Planted feet stay planted between keys (leg IK), and
+# the result is meant to be layered with breathe()/drift() so nothing reads as keyframed.
+# Angles are degrees. Local axes on the spine chain: +pitch = bend forward, +yaw = turn to her left,
+# +roll = lean to her right. "body" space = origin on the ground under the hips, heading of the hips,
+# x = her left, y = up (world height), z = her front.
+
+def _rot_z(a):
+    a = np.asarray(a, dtype=np.float64)
+    c, s = np.cos(a), np.sin(a)
+    R = np.zeros(a.shape + (3, 3))
+    R[..., 0, 0] = c; R[..., 0, 1] = -s
+    R[..., 1, 0] = s; R[..., 1, 1] = c
+    R[..., 2, 2] = 1
+    return R
+
+
+def euler_local(pitch=0.0, yaw=0.0, roll=0.0):
+    """Local rotation matrix for (pitch about +X, yaw about +Y, roll about +Z), degrees; yaw first."""
+    return rot_y(math.radians(yaw)) @ _rot_x(math.radians(pitch)) @ _rot_z(math.radians(roll))
+
+
+def stand_pose(arm_deg=13.0, elbow_deg=12.0):
+    """Relaxed standing pose (one frame): arms hanging a little off the body, elbows slightly bent."""
+    m = rest_pose()
+    a = math.radians(arm_deg)
+    for s, sg in (("L", 1.0), ("R", -1.0)):
+        up = frame_from_yz([sg * math.sin(a), -math.cos(a), 0.04], [0, 0.0, 1])
+        lo = up @ _rot_x(math.radians(elbow_deg))             # forearm swings forward
+        m.R[0, J["upArm" + s]] = up
+        m.R[0, J["foreArm" + s]] = lo
+        m.R[0, J["hand" + s]] = lo @ _rot_x(math.radians(6.0))
+    return m
+
+
+def hand_frame(side, fingers, palm):
+    """World orientation of a hand whose fingers point along `fingers` and whose palm faces `palm`."""
+    y = unit(np.asarray(fingers, dtype=np.float64))
+    n = np.asarray(palm, dtype=np.float64)
+    n = unit(n - (n @ y) * y)
+    x = n if side == "L" else -n
+    z = np.cross(x, y)
+    return np.stack([x, y, z], axis=-1)
+
+
+def foot_frame(direction, top=(0.0, 1.0, 0.0)):
+    """(R_foot, R_toe) for a foot whose toes point along `direction` (the sole's forward axis) and whose
+    top faces `top`. direction horizontal + top up = a flat foot."""
+    f = unit(np.asarray(direction, dtype=np.float64))
+    t = np.asarray(top, dtype=np.float64)
+    t = unit(t - (t @ f) * f)
+    Rt = frame_from_yz(f, t)                       # toe frame: +Y forward, +Z top
+    Rf = Rt @ _rot_x(-FOOT_PITCH)                  # the foot bone dips from the ankle to the ball
+    return Rf, Rt
+
+
+class Poser:
+    """One authored pose. Methods mutate and return self, so calls chain:
+        p = M.Poser().hips(dy=-0.3, pitch=20).foot('L', (0.12, 0.1)).arm('R', (-0.2, 1.3, 0.35))
+    `free` marks limbs that keyframes() must not pin to the ground ('legs', or 'L'/'R')."""
+
+    def __init__(self, base=None, frame=0):
+        m = stand_pose() if base is None else base
+        self.root = np.array(m.root[frame], dtype=np.float64)
+        self.R = np.array(m.R[frame], dtype=np.float64)
+        self.free = set()
+        self.lift = None            # optional foot arc height toward this key
+
+    # -- helpers
+    def copy(self):
+        q = Poser.__new__(Poser)
+        q.root, q.R, q.free, q.lift = self.root.copy(), self.R.copy(), set(self.free), self.lift
+        return q
+
+    def motion(self):
+        return Motion(self.root[None].copy(), self.R[None].copy())
+
+    def P(self):
+        return fk(self.root[None], self.R[None])[0]
+
+    def _set(self, m):
+        self.root, self.R = m.root[0].copy(), m.R[0].copy()
+        return self
+
+    def body_frame(self):
+        yaw = float(yaw_of(self.R[0]))
+        return rot_y(yaw), np.array([self.root[0], 0.0, self.root[2]])
+
+    def to_world(self, p, space="body"):
+        p = np.asarray(p, dtype=np.float64)
+        if space == "world":
+            return p
+        if space == "body":
+            Q, o = self.body_frame()
+            return o + Q @ p
+        j = J[space]
+        return self.P()[j] + self.R[j] @ p
+
+    def dir_world(self, d, space="body"):
+        d = np.asarray(d, dtype=np.float64)
+        if space == "world":
+            return d
+        if space == "body":
+            return self.body_frame()[0] @ d
+        return self.R[J[space]] @ d
+
+    # -- whole body
+    def hips(self, pos=None, dy=0.0, dx=0.0, dz=0.0, yaw=0.0, pitch=0.0, roll=0.0, legs=True):
+        """Move/turn the pelvis; the whole body goes with it rigidly (use foot()/leg() afterwards to put
+        the feet back). pos = (x, y, z) world; dx/dy/dz are in body space. legs=False keeps the legs'
+        world orientation (useful for small pelvis tilts while standing)."""
+        Q0, _ = self.body_frame()
+        if pos is not None:
+            self.root = np.asarray(pos, dtype=np.float64).copy()
+        self.root = self.root + Q0 @ np.array([dx, dy, dz])
+        Rh = self.R[0]
+        Q = Rh @ euler_local(pitch, yaw, roll) @ Rh.T
+        keep = {}
+        if not legs:
+            for s in "LR":
+                for n in ("thigh", "shin", "foot", "toe"):
+                    keep[J[n + s]] = self.R[J[n + s]].copy()
+        self.R = Q @ self.R
+        for j, v in keep.items():
+            self.R[j] = v
+        return self
+
+    def bend(self, joint, pitch=0.0, yaw=0.0, roll=0.0):
+        """Rotate a joint (and everything below it) in its own local axes."""
+        j = J[joint]
+        Rj = self.R[j]
+        Q = Rj @ euler_local(pitch, yaw, roll) @ Rj.T
+        for k in descendants(j):
+            self.R[k] = Q @ self.R[k]
+        return self
+
+    def spine(self, pitch=0.0, yaw=0.0, roll=0.0):
+        self.bend("spine", 0.45 * pitch, 0.45 * yaw, 0.45 * roll)
+        return self.bend("chest", 0.55 * pitch, 0.55 * yaw, 0.55 * roll)
+
+    def head(self, pitch=0.0, yaw=0.0, roll=0.0):
+        self.bend("neck", 0.4 * pitch, 0.4 * yaw, 0.4 * roll)
+        return self.bend("head", 0.6 * pitch, 0.6 * yaw, 0.6 * roll)
+
+    def look(self, target=None, direction=None, space="body", weight=1.0, max_deg=80.0):
+        """Turn neck + head so the face points at a target point (or along a direction)."""
+        h = self.P()[J["head"]]
+        want = unit(self.to_world(target, space) - h) if target is not None else unit(self.dir_world(direction, space))
+        for name, frac in (("neck", 0.4), ("head", 1.0)):
+            have = self.R[J["head"]][:, 2]
+            r = rotvec(rot_between(have, want))
+            ang = np.linalg.norm(r)
+            if ang > math.radians(max_deg):
+                r = r * math.radians(max_deg) / ang
+            Q = expmap(r * weight * frac)
+            for k in descendants(J[name]):
+                self.R[k] = Q @ self.R[k]
+        return self
+
+    # -- limbs
+    def arm(self, side, hand, space="body", pole=None, pole_space="body", fingers=None, palm=None, dir_space="body"):
+        """IK: wrist to `hand`. pole = where the elbow leans (default: down, out and a little back).
+        fingers/palm (directions) set the hand's orientation; otherwise it continues the forearm."""
+        sg = 1.0 if side == "L" else -1.0
+        tgt = self.to_world(hand, space)
+        pw = self.dir_world((0.55 * sg, -1.0, -0.35) if pole is None else pole, pole_space)
+        hr = None
+        if fingers is not None:
+            f = self.dir_world(fingers, dir_space)
+            pl = self.dir_world(palm if palm is not None else (0, -1, 0), dir_space)
+            hr = hand_frame(side, f, pl)[None]
+        m = arm_ik(self.motion(), side, tgt[None], pole=pw[None], hand_R=hr)
+        return self._set(m)
+
+    def arm_fk(self, side, raise_=0.0, fwd=0.0, elbow=0.0, twist=0.0):
+        """FK arm: upper arm `raise_` degrees out from hanging straight down (90 = horizontal to the
+        side), swung `fwd` degrees toward the front; elbow bend; twist about the upper arm."""
+        sg = 1.0 if side == "L" else -1.0
+        Q, _ = self.body_frame()
+        Rc = self.R[J["chest"]]
+        a, f = math.radians(raise_), math.radians(fwd)
+        d = np.array([sg * math.sin(a) * math.cos(f), -math.cos(a), math.sin(a) * math.sin(f)])
+        zref = np.array([0.0, 0.0, 1.0]) if abs(d[2]) < 0.9 else np.array([0.0, 1.0, 0.0])
+        up = Rc @ frame_from_yz(d, zref) @ rot_y(math.radians(twist) * sg)
+        lo = up @ _rot_x(math.radians(elbow))
+        self.R[J["upArm" + side]] = up
+        self.R[J["foreArm" + side]] = lo
+        self.R[J["hand" + side]] = lo
+        return self
+
+    def hand(self, side, fingers, palm, space="body"):
+        self.R[J["hand" + side]] = hand_frame(side, self.dir_world(fingers, space), self.dir_world(palm, space))
+        return self
+
+    def leg(self, side, ankle, space="body", knee=None, knee_space="body", toes=None, top=(0, 1, 0), dir_space="body"):
+        """IK: ankle to a point. knee = pole direction (default: the thigh's own front). toes/top give
+        the foot's direction and which way its top faces (default: keep the foot as it is)."""
+        tgt = self.to_world(ankle, space)
+        m = self.motion()
+        j1, j2, j3 = J["thigh" + side], J["shin" + side], J["foot" + side]
+        if knee is None:
+            m = leg_ik(m, side, tgt[None])
+        else:
+            m = _limb_ik(m, j1, j2, j3, tgt[None], pole=self.dir_world(knee, knee_space)[None])
+        self._set(m)
+        if toes is not None:
+            Rf, Rt = foot_frame(self.dir_world(toes, dir_space), self.dir_world(top, dir_space))
+            self.R[j3], self.R[J["toe" + side]] = Rf, Rt
+        return self
+
+    def foot(self, side, xz, yaw=0.0, space="body", knee=None, heel=0.0):
+        """Plant a flat foot: ankle above ground point xz=(x, z), toes turned `yaw` degrees outward...
+        (positive = toward her left). heel > 0 lifts the heel by that many metres (on the ball)."""
+        Q, o = self.body_frame() if space == "body" else (np.eye(3), np.zeros(3))
+        g = o + Q @ np.array([xz[0], 0.0, xz[1]])
+        d = Q @ rot_y(math.radians(yaw)) @ np.array([0.0, 0.0, 1.0])
+        ank = g + np.array([0.0, ANKLE_H, 0.0])
+        top = np.array([0.0, 1.0, 0.0])
+        if heel > 0:
+            ang = math.asin(min(0.95, heel / LEN["foot"]))
+            d2 = d * math.cos(ang) - top * math.sin(ang)
+            top = top * math.cos(ang) + d * math.sin(ang)
+            ball = g + d * LEN["foot"] * math.cos(FOOT_PITCH) + np.array([0, BALL_H, 0])
+            Rf, Rt0 = foot_frame(d2, top)
+            ank = ball - Rf @ np.array([0.0, LEN["foot"], 0.0])
+            self.leg(side, ank, "world", knee=knee)
+            self.R[J["foot" + side]] = Rf
+            self.R[J["toe" + side]] = foot_frame(d, (0, 1, 0))[1]
+            return self
+        self.leg(side, ank, "world", knee=knee)
+        Rf, Rt = foot_frame(d, top)
+        self.R[J["foot" + side]], self.R[J["toe" + side]] = Rf, Rt
+        return self
+
+    def unpin(self, *what):
+        self.free.update(what or ("L", "R"))
+        return self
+
+
+_EASE = {
+    "io": smoothstep, "io2": smootherstep, "lin": lambda u: np.clip(u, 0, 1),
+    "in": lambda u: np.clip(u, 0, 1) ** 2, "out": lambda u: 1.0 - (1.0 - np.clip(u, 0, 1)) ** 2,
+    "in3": lambda u: np.clip(u, 0, 1) ** 3, "out3": lambda u: 1.0 - (1.0 - np.clip(u, 0, 1)) ** 3,
+}
+
+
+def keyframes(keys, fps=FPS, overlap=0.035, pin=True, soften=7.0):
+    """Key poses -> Motion. keys = [(time, Poser | one-frame Motion, ease?)...]; `ease` shapes the
+    move INTO that key ('io' default, 'io2', 'in', 'out', 'in3', 'out3', 'lin'). Repeat a pose at two
+    times for a hold. Joints are interpolated in local space (arcs, not straight lines); the hips path
+    is eased; feet that are on the ground in both neighbouring keys are pinned by leg IK (and arc
+    over the ground when they move), unless the key marks them free (Poser.unpin). overlap = seconds
+    of follow-through (forearms, hands and head arrive that much later); soften = low-pass (Hz) that
+    takes the dead stop out of pass-through keys (0 = off)."""
+    ks = []
+    for k in keys:
+        t, p = k[0], k[1]
+        e = k[2] if len(k) > 2 else "io"
+        if isinstance(p, Motion):
+            q = Poser(p)
+        else:
+            q = p
+        ks.append((float(t), q, e))
+    ks.sort(key=lambda k: k[0])
+    T = np.array([k[0] for k in ks])
+    n = int(round((T[-1] - T[0]) * fps)) + 1
+    t = T[0] + np.arange(n) / fps
+    seg = np.clip(np.searchsorted(T, t, side="right") - 1, 0, len(ks) - 2)
+    u = (t - T[seg]) / np.maximum(T[seg + 1] - T[seg], 1e-9)
+    ue = np.empty(n)
+    for i in range(len(ks) - 1):
+        sel = seg == i
+        ue[sel] = _EASE[ks[i + 1][2]](u[sel])
+    KR = np.stack([k[1].R for k in ks])                    # (K,21,3,3) world
+    KL = to_local(KR)
+    Kroot = np.stack([k[1].root for k in ks])
+    KP = fk(Kroot, KR)
+
+    def interp_local(ueased):
+        A, B = KL[seg], KL[seg + 1]
+        d = rotvec(B @ T_(A))
+        return expmap(d * ueased[:, None, None]) @ A
+
+    L = interp_local(ue)
+    if overlap > 0:
+        # follow-through: distal joints run a little behind (their eased phase is delayed)
+        for names, lag in ((("foreArmL", "foreArmR", "neck"), 0.6 * overlap), (("handL", "handR", "head"), overlap)):
+            tl = np.clip(t - lag, T[0], T[-1])
+            sg2 = np.clip(np.searchsorted(T, tl, side="right") - 1, 0, len(ks) - 2)
+            u2 = (tl - T[sg2]) / np.maximum(T[sg2 + 1] - T[sg2], 1e-9)
+            ue2 = np.empty(n)
+            for i in range(len(ks) - 1):
+                sel = sg2 == i
+                ue2[sel] = _EASE[ks[i + 1][2]](u2[sel])
+            for nm in names:
+                j = J[nm]
+                d = rotvec(KL[sg2 + 1, j] @ T_(KL[sg2, j]))
+                L[:, j] = expmap(d * ue2[:, None]) @ KL[sg2, j]
+    root = Kroot[seg] + (Kroot[seg + 1] - Kroot[seg]) * ue[:, None]
+    out = Motion(root, from_local(L), fps)
+    if soften and n > 16:
+        out = smooth(out, soften)
+        out.root[0], out.root[-1] = root[0], root[-1]
+    if pin:
+        for s in "LR":
+            f, tj = J["foot" + s], J["toe" + s]
+            free = np.array([(s in k[1].free) or ("legs" in k[1].free) for k in ks])
+            ground = np.array([KP[i, f, 1] < ANKLE_H + 0.09 for i in range(len(ks))]) & ~free
+            a, b = KP[seg, f], KP[seg + 1, f]
+            tgt = a + (b - a) * ue[:, None]
+            dist = np.linalg.norm((b - a)[:, [0, 2]], axis=1)
+            lift = np.array([(ks[i + 1][1].lift if ks[i + 1][1].lift is not None else None) for i in range(len(ks) - 1)], dtype=object)
+            lh = np.array([(lift[i] if lift[i] is not None else min(0.14, 0.22 * d0)) for i, d0 in
+                           zip(range(len(ks) - 1), [np.linalg.norm((KP[i + 1, f] - KP[i, f])[[0, 2]]) for i in range(len(ks) - 1)])], dtype=np.float64)
+            both = ground[seg] & ground[seg + 1]
+            tgt[:, 1] += np.where(both & (dist > 0.03), lh[seg] * np.sin(np.pi * ue), 0.0)
+            w = np.where(free[seg], 0.0, 1.0) * (1 - ue) + np.where(free[seg + 1], 0.0, 1.0) * ue
+            d = rotvec(KR[seg + 1, f] @ T_(KR[seg, f]))
+            Rf = expmap(d * ue[:, None]) @ KR[seg, f]
+            d = rotvec(KR[seg + 1, tj] @ T_(KR[seg, tj]))
+            Rt = expmap(d * ue[:, None]) @ KR[seg, tj]
+            cur = out.fk()[:, f]
+            out = leg_ik(out, s, cur + (tgt - cur) * w[:, None])
+            dq = rotvec(Rf @ T_(out.R[:, f]))
+            out.R[:, f] = expmap(dq * w[:, None]) @ out.R[:, f]
+            dq = rotvec(Rt @ T_(out.R[:, tj]))
+            out.R[:, tj] = expmap(dq * w[:, None]) @ out.R[:, tj]
+    return out
+
+
+def drift(m, joints, deg=3.0, period=6.0, seed=0, axes=(1.0, 1.0, 1.0), weight=None):
+    """Additive slow wander (smooth noise, a few sines per axis) on the given joints' local rotations:
+    the 'moving hold' that keeps an authored or held pose alive. deg = amplitude, period = seconds."""
+    rng = np.random.default_rng(seed)
+    t = m.times
+    out = m
+    w = np.ones(m.frames) if weight is None else np.asarray(weight, dtype=np.float64)
+    for jn in joints:
+        rv = np.zeros((m.frames, 3))
+        for a in range(3):
+            if axes[a] == 0:
+                continue
+            for h, amp in ((1.0, 1.0), (1.73, 0.5), (2.9, 0.25)):
+                rv[:, a] += axes[a] * amp * np.sin(2 * np.pi * t * h / period + rng.uniform(0, 2 * np.pi))
+        out = additive(out, jn, np.radians(deg) * rv / 1.75 * w[:, None])
+    return out
+
+
+BODY_RADII = {"hips": 0.10, "spine": 0.10, "chest": 0.11, "neck": 0.05, "head": 0.07,
+              "upArm": 0.045, "foreArm": 0.038, "hand": 0.025, "thigh": 0.075, "shin": 0.05,
+              "foot": 0.04, "toe": 0.02, "clav": 0.04}
+
+
+def body_clearance(m, P=None):
+    """(F,) height of the lowest body surface (joint spheres + the crown and fingertips) above y=0."""
+    P = m.fk() if P is None else P
+    r = np.array([BODY_RADII[n.rstrip("LR") if n[-1] in "LR" else n] for n in JOINTS])
+    low = (P[..., 1] - r[None]).min(1)
+    crown = P[:, J["head"], 1] + m.R[:, J["head"], 1, 1] * 0.09 - 0.095
+    tips = np.minimum(*(P[:, J["hand" + s], 1] + m.R[:, J["hand" + s], 1, 1] * LEN["hand"] - 0.012 for s in "LR"))
+    return np.minimum(np.minimum(low, crown), tips)
+
+
+def rest_on_ground(m, floor=0.0, only_up=True, smooth_hz=4.0):
+    """Seated / lying support: raise (or with only_up=False also lower) the whole body so its lowest
+    surface (hips, back, head, limbs: see BODY_RADII) rests on y=floor instead of sinking into it."""
+    c = body_clearance(m) - floor
+    d = -np.minimum(c, 0.0) if only_up else -c
+    if m.frames > 16 and smooth_hz:
+        b, a = butter(2, min(0.99, smooth_hz / (0.5 * m.fps)))
+        ds = filtfilt(b, a, d)
+        d = np.maximum(d, ds) if only_up else ds
+    out = m.copy()
+    out.root[:, 1] += d
+    return out
+
+
+def ramp(t, a, b, c=None, d=None):
+    """Smooth weight: 0 before a, 1 from b (to c), back to 0 at d. For overlay weights."""
+    w = smootherstep((np.asarray(t, dtype=np.float64) - a) / max(b - a, 1e-9))
+    if c is not None:
+        w = w * (1.0 - smootherstep((t - c) / max(d - c, 1e-9)))
+    return w
+
+
+def step_foot(m, side, t0, t1, delta, lift=0.08, hips=0.5):
+    """Overlay on a standing motion: between t0 and t1 the foot of `side` steps by delta=(dx, dz)
+    (world) with an arc and stays there; the hips follow by `hips` x delta (the other foot stays put)."""
+    t = m.times
+    u = smoothstep((t - t0) / max(t1 - t0, 1e-9))
+    d3 = np.array([delta[0], 0.0, delta[1]])
+    P = m.fk()
+    o = "R" if side == "L" else "L"
+    out = m.copy()
+    uh = smoothstep((t - t0 - 0.04) / max(t1 - t0, 1e-9))
+    out.root = m.root + hips * d3[None] * uh[:, None]
+    out.root[:, 1] -= 0.012 * np.sin(np.pi * uh)
+    tgt = P[:, J["foot" + side]] + d3[None] * u[:, None]
+    tgt[:, 1] += lift * np.sin(np.pi * u) ** 1.2
+    out = leg_ik(out, side, tgt)
+    out = leg_ik(out, o, P[:, J["foot" + o]])
+    return out
+
+
+def graft_upper(lower, upper, joints=("spine",), weight=1.0, hips=0.0):
+    """Take the LOCAL rotations of `joints` and everything below them from `upper` (same frame
+    count) and put them on `lower`: a captured upper body on an authored (seated...) lower body.
+    hips = how much of upper's pelvis rotation relative to its mean to carry over as sway."""
+    Ll, Lu = to_local(lower.R), to_local(upper.R)
+    w = np.broadcast_to(np.asarray(weight, dtype=np.float64), (lower.frames,))
+    for jn in joints:
+        for j in descendants(J[jn]):
+            d = rotvec(Lu[:, j] @ T_(Ll[:, j]))
+            Ll[:, j] = expmap(d * w[:, None]) @ Ll[:, j]
+    if hips > 0:
+        mean = Rot.from_matrix(upper.R[:, 0]).mean().as_matrix()
+        d = rotvec(upper.R[:, 0] @ mean.T)
+        Ll[:, 0] = expmap(d * (hips * w)[:, None]) @ Ll[:, 0]
+    out = lower.copy()
+    out.R = from_local(Ll)
+    return out
+
+
 # ----------------------------------------------------------------------------- track files
 def bone_lengths():
     out = {}
