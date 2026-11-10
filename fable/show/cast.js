@@ -30,7 +30,7 @@ import { loadTrack } from '../engine/src/figure/skeleton.js';
 
 // The render harness's static server cannot list a directory, so the track names live here (everything in work_fable/tracks except `_*`).
 // A missing file is skipped with a console line; add new names here. --q "tracks=a,b,c" loads only those (dev).
-export const TRACKS = ['build', 'butterfly', 'butterfly_only', 'catch', 'drop', 'fall_only', 'float', 'fork_L', 'fork_R', 'fork_walk_L', 'fork_walk_R', 'form_test', 'free', 'idle', 'land',
+export const TRACKS = ['build', 'butterfly', 'butterfly_only', 'catch', 'drop', 'fall_only', 'float', 'fork_L', 'fork_R', 'fork_go_L', 'fork_go_R', 'fork_walk_L', 'fork_walk_R', 'form_test', 'free', 'idle', 'land',
   'life_band', 'life_home', 'life_nasa', 'life_piano', 'life_poet', 'life_stage', 'life_violin', 'life_wetlab', 'life_wushu', 'lookback', 'release', 'rise', 'run_fwd', 'run_loop', 'salute_only',
   'sidekick', 'sit_idle', 'sprint_loop', 'sprint_stop_look', 'turn_around', 'violet', 'walk_fwd', 'walk_lookback', 'walk_loop', 'walk_turn'];
 const SIM_OPTS = { life_nasa: { wind: [0, 0, -9], gust: 1.0 } };          // the wind tunnel (track meta: wind from +Z)
