@@ -1,8 +1,10 @@
 // ACT E helper (seq 14, 15, 16): the morning. Built once, shared as K.shared.actE.
 //
-// The hero dances `free` (song_t0 236.648) from the very spot where she caught the light (CATCH), facing east. Her dance IS main: the road is written
-// under her feet as a loose orange line: 2.4 m east, the whirl, then ten metres south through the leap, the joy and the cartwheel to where she stops
-// and turns east for the second "Back to main" (HUB). From b141 she forks on every bar line, and so does every new branch:
+// The hero dances `free` (song_t0 236.648) from the very spot where she caught the light (CATCH), facing WEST as 13_catch leaves her (the sun behind her).
+// `free` ends facing the way it began, and it must end facing east: the half turn is given to her whirl (track 3.45-5.55 s, where she is spinning anyway),
+// about her own centre (yawAt / placeAt below; the track itself is not touched). Her dance IS main: the road is written under her feet as a loose orange
+// line: 3 m back west along main, the whirl, then ten metres south through the leap, the joy and the cartwheel to where she stops and turns east for the
+// second "Back to main" (HUB). From b141 she forks on every bar line, and so does every new branch:
 //   b141 2 · b142 4 · b143 8 · b144 16 · b145 32 · b146 64.
 // A hero child steps out of her already running (sprint_loop / run_loop at their own speed x 0.93..1.07: no skating); a runner's child leaves her in
 // step, same stride, and their roads part. Every branch has a place in a fan about east seen from HUB (north of main: 42 tips, south: 21; the
@@ -29,10 +31,15 @@ const LN = ['rose', 'cyan', 'gold', 'mint', 'blue', 'coral', 'magenta'];
 export function morning(K) {
   if (K.shared.actE) return K.shared.actE;
   const { bar, world: W, cast, E } = K, { hash1, fbm1 } = K.rng;
-  const C = W.CATCH, EAST = Math.PI / 2, FREE = 'free', tFr = cast.songT0(FREE) || bar(137);
-  const r0 = cast.root(FREE, 0), P0 = cast.origin([C[0], C[1]], EAST, [r0[0], r0[2]]);
+  const C = W.CATCH, EAST = Math.PI / 2, WEST = -Math.PI / 2, FREE = 'free', tFr = cast.songT0(FREE) || bar(137), DUR = cast.dur(FREE);
+  const tWh = cast.event(FREE, 'whirl') ?? 3.478, yawAt = (t) => WEST + Math.PI * ss(t - tFr, tWh - 0.03, tWh + 2.07);
+  // her hips over the ground: the track's own steps, each turned by the yaw she has at that moment (so the extra half turn never moves her), tabulated once at 120 Hz
+  const HN = Math.ceil(DUR * 120), HT = new Float32Array((HN + 1) * 2); { HT[0] = C[0]; HT[1] = C[1]; let p = cast.root(FREE, 0);
+    for (let i = 0; i < HN; i++) { const q = cast.root(FREE, (i + 1) / 120), o = cast.rot(yawAt(tFr + (i + 0.5) / 120), q[0] - p[0], q[2] - p[2]); HT[i * 2 + 2] = HT[i * 2] + o[0]; HT[i * 2 + 3] = HT[i * 2 + 1] + o[1]; p = q; } }
+  const hipsXZ = (t) => { const f = Math.min(HN - 1e-4, Math.max(0, (t - tFr) * 120)), i = Math.floor(f), u = f - i; return [HT[i * 2] + (HT[i * 2 + 2] - HT[i * 2]) * u, HT[i * 2 + 1] + (HT[i * 2 + 3] - HT[i * 2 + 1]) * u]; };
+  const placeAt = (t) => { const yaw = yawAt(t), h = hipsXZ(t), r = cast.root(FREE, t - tFr), o = cast.rot(yaw, r[0], r[2]); return { pos: [h[0] - o[0], 0, h[1] - o[1]], yaw }; };   // -> cast.actor('hero').set
   // a joint of the hero in the world at song time t (0 = hips, 4 = head)
-  const jointAt = (t, j = 0) => { const r = cast.root(FREE, t - tFr, j), o = cast.rot(EAST, r[0], r[2]); return [P0[0] + o[0], r[1], P0[2] + o[1]]; };
+  const jointAt = (t, j = 0) => { const pl = placeAt(t), r = cast.root(FREE, t - tFr, j), o = cast.rot(pl.yaw, r[0], r[2]); return [pl.pos[0] + o[0], r[1], pl.pos[2] + o[1]]; };
   const soft = (t, w = 0.3) => { let x = 0, z = 0; for (let j = -4; j <= 4; j++) { const p = jointAt(t + (j / 4) * w); x += p[0]; z += p[2]; } return { x: x / 9, z: z / 9 }; };
   const TK = [141, 142, 143, 144, 145, 146].map(bar), tAhead = bar(147), tSpan = bar(152.5) - tAhead, TAU = 4.5, T_NEAR = bar(149) + 4;
   const count = (t) => { let c = 1; for (const tk of TK) if (t >= tk) c *= 2; return c; };
@@ -87,7 +94,7 @@ export function morning(K) {
 
   // ---- the people at song time t
   function people(t, o = {}) {
-    if (o.hero !== false) cast.actor('hero').set({ pos: P0, yaw: EAST, track: FREE, time: t - tFr });
+    if (o.hero !== false) cast.actor('hero').set({ ...placeAt(t), track: FREE, time: t - tFr });
     const cr = cast.crowd('morning', 64); let n = 0; const list = [];
     for (const j of J) { if (j.hero || t < j.tb) continue; const s = j.speed * (t - j.tb); if (s > j.Ln - 1) continue; const a = j.near.at(s); let alpha = 1, y = 0;
       if (j.fromHero) y = j.y0 * (1 - sm(seg(t, j.tb, j.tb + 0.3)));                    // she is there on the bar line, whole (a fork is instant); out of a leap she comes down running
@@ -100,7 +107,7 @@ export function morning(K) {
   const runnerAt = (j, t) => j.near.at(Math.min(j.Ln - 1, Math.max(0, j.speed * (t - j.tb))));
   // the roads of the morning: near (human scale, with names) and far (after b147)
   const roads = (t, o = {}) => [nearR.drawable({ head: t, gain: 2.4, textGain: 0.9, minPx: 2.0, haloPx: 0, halo: 0, nodeMinPx: 2.0, ...o, ...(o.near || {}) }), farR.drawable({ head: t, gain: 2.4, textGain: 0, minPx: 2.0, haloPx: 0, halo: 0, ...o, ...(o.far || {}) })];
-  const A = { C, EAST, FREE, tFr, P0, jointAt, soft, HUB, TK, tAhead, count, J, people, runnerAt, roads, box: { x0, x1, z0, z1 }, nearR, farR, curve };
+  const A = { C, EAST, FREE, tFr, placeAt, yawAt, jointAt, soft, HUB, TK, tAhead, count, J, people, runnerAt, roads, box: { x0, x1, z0, z1 }, nearR, farR, curve };
   K.shared.actE = A; return A;
 }
 
@@ -109,7 +116,8 @@ export function morning(K) {
 // is the map: east to the right, north up). No cut between b144 and the last hit.
 export function makeLift(K) {
   const A = morning(K), { bar, bb, world: W } = K, H = A.HUB, ln = Math.log, rad = Math.PI / 180;
-  const X0 = -1420, X1 = Math.max(A.box.x1, W.outBox.x1) + 90, Z0 = Math.min(-1640, A.box.z0 - 80), Z1 = Math.max(1380, A.box.z1 + 80);
+  const X0 = -1700, X1 = A.J[0].end[0] + 900;                // room for the two tags on main: `main` at its west end, `(HEAD -> main)` at its east end
+  const Z0 = Math.min(-1640, A.box.z0 - 80), Z1 = Math.max(1380, A.box.z1 + 80);
   const B = W.frameBox(X0, X1, Z0, Z1, { up: 'map', margin: 1.05, fov: 35 }), mc = [B.pos[0], B.pos[2]];
   const tMain = K.T.words(25)[2].end, tMap = bar(150), tRiser = bb(152, 2), tHit = bar(153);
   //            t         Gx            Gy    Gz            ln R          pitch  az   fov
@@ -128,6 +136,6 @@ export function makeLift(K) {
   function lift(t) { let [gx, gy, gz, lr, p, a, fov] = LK(t);
     if (t > tRiser) { const e = Math.pow(seg(t, tRiser, tHit), 2.4); gx = lerp(gx, DIVE[0], e); gz = lerp(gz, DIVE[1], e); lr = lerp(lr, ln(B.h / 7), e); }
     const R = Math.exp(lr), cp = Math.cos(p * rad), sp = Math.sin(p * rad), ca = Math.cos(a * rad), sa = Math.sin(a * rad), f = [cp * ca, -sp, cp * sa];
-    return { pos: [gx - f[0] * R, gy - f[1] * R, gz - f[2] * R], target: [gx, gy, gz], up: [sp * ca, cp, sp * sa], fov, near: Math.max(0.1, R * 0.03), far: R * 8 + 40000, R, pitch: p }; }
+    return { pos: [gx - f[0] * R, gy - f[1] * R, gz - f[2] * R], target: [gx, gy, gz], up: [sp * ca, cp, sp * sa], fov, near: Math.max(0.1, R * 0.03), far: R * 8 + 40000, R, pitch: p, horizon: Math.tan(p * rad) / Math.tan((fov * rad) / 2) }; }   // horizon: its NDC y
   return { lift, B, mc, tMain, tMap, tRiser, tHit, X0, X1, Z0, Z1 };
 }
