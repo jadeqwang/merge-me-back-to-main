@@ -34,8 +34,8 @@ export default function seq(K) {
           world: world({ text: 0, lights: false }), extra: [...topGlow(1), ...C.fallGlow(t)], hud: hud(n) }; } },
       { t0: bar(101), f: () => { const n = C.thousand(t); const x = C.head[0], z = C.head[1], u = sm(seg(t, bar(101), bb(102, 4))); const camera = { pos: [x - 6.4 + 1.9 * u, 1.35 - 0.45 * u, z], target: [x + 2, 1.45 + 0.05 * u, z], fov: 38, far: 30000 };
         return { camera, env: sunrise, world: world({ text: 0.4 }), hud: hud(n) }; } },
-      { t0: bb(103, 3), f: (tt, u) => { const n = C.thousand(t); const x = C.head[0], z = C.head[1]; const camera = { pos: [x + 11.5 - 1.2 * sm(u), 3.5, z + 5.6], target: [x - 4, 0.75, z - 1.7], fov: 22, far: 30000 };
-        return { camera, env: { grade: { exposure: 1.15, gain: [1.42, 0.91, 0.45] }, figLight: { sunAmt: 0.8, ambient: [0.40, 0.15, 0.16] }, outline: { strength: 0.3, width: 1 } }, world: world({ text: 0.4, lights: false, only: ['main'] }), hud: hud(n) }; } },
+      { t0: bb(103, 3), f: (tt, u) => { const n = C.thousand(t); const x = C.head[0], z = C.head[1]; const camera = { pos: [x + 8.8 - 0.9 * sm(u), 2.5, z + 4.4], target: [x - 5, 1.05, z - 0.7], fov: 24, far: 30000 };
+        return { camera, env: { grade: { exposure: 1.12, gain: [1.5, 0.9, 0.4] }, figLight: { sunAmt: 0.8, ambient: [0.40, 0.15, 0.16] }, outline: { strength: 0.3, width: 1 } }, world: world({ text: 0.4, lights: false, only: ['main'] }), hud: hud(n) }; } },
     ], t1);
   } };
 }
