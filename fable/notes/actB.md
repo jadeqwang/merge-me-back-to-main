@@ -2,9 +2,12 @@
 
 Files: `fable/show/seq/05_chorus1.js`, `06_float.js`, `07_download.js`, and two helpers next to them:
 `actB_geo.js` (`K.shared.actB`: the act's own clocks and places) and `actB_float.js` (`K.shared.actBFloat`: the hair-graph, the top-down shot).
-No shared show file and no engine file was changed by this act.
+No shared show file was changed. One additive engine change: `fable/engine/src/roads.js`, drawable option `nodeAir` (metres; default 0 = off, output
+unchanged): night air for commit nodes seen at a grazing angle, as `fogDist` does for the lines. Without it thousands of far nodes (1.8 px minimum each)
+stack into a hot line on the horizon. Pass it per set: `world: { fork: { fogDist: 90, nodeAir: 80 }, merge: {...}, ... }` (05 has a helper `far(fog, air)`).
+Proof stills after the change: `work_fable/stills/actB/proof_040.png`, `proof_160.png`.
 
-STATUS: in progress (see "State" at the bottom).
+STATUS: act pass done (see "State" at the bottom).
 
 ## Commands
 ```
@@ -36,20 +39,41 @@ node fable/tools/render.mjs --show /fable/show/main.js --from 68 --to 127 --res 
 ## Shot list (song seconds)
 | # | time | words / music | camera | what it is for |
 |---|---|---|---|---|
-| 5A | 69.686-75.77 | "Merge me back to main" | on her road ahead of her, 0.3 m high, fov 48, 3.5 -> 2.9 m, travelling backwards with her | heroic: she sprints at the lens, siblings come up from behind and fuse at each node |
-| 5B | 75.77-83.60 | "Every road I ran becomes the one" | 135-175 m up east of M1 looking west, slow push | the delta braiding into main; flashes on 8-4-2-1; the one light runs east |
-| 5C | 83.60-89.46 | "Fold me in again" | side-on from the south, 5.4 m, travelling with her | eleven lane-coloured afterimages, one folds in per beat; the brake |
+| 5A | 69.686-75.77 | "Merge me back to main" | on her road ahead of her, 0.28 m high, fov 48, 3.1 -> 2.35 m, travelling backwards with her | heroic: she sprints at the lens, siblings come up from behind and fuse at each node |
+| 5B | 75.77-83.60 | "Every road I ran becomes the one" | 135-150 m up, looking west, travelling east (backwards) with the merging front until M1 is in frame | the delta braiding into main; flashes on 8-4-2-1; the one light runs east |
+| 5C | 83.60-89.46 | "Fold me in again" | side-on from the south, travelling with her, 5.5 -> 3.6 m: it closes in as the fan shortens | eleven lane-coloured afterimages, one folds in per beat; the brake |
 | 5D | 89.46-97.515 | "Nothing that I lived can come undone" | front-quarter from the east, 1.25 -> 1.75 m high, slow push | she stops on the hit, looks back; her road to the horizon, commits lock on through "undone" |
-| 6 / 7A | 97.515-116.64 | crash; "Branch and wander"; "Merge and return"; "Ahh" | straight down: 2.75 m (she fills the frame) rising to 32 m and turning 113 degrees, then back down to 6.6 m | the hair is the graph: filaments, forks, roads, pulses home, the text streaming in, her light growing |
-| 7B | 116.64-125.343 | snare crescendo; leap 118.387; roll 123.49 | on the water west of her looking east, 0.24 -> 0.6 m high; from the roll it lifts to 15 m and back | the rise, arms open against the first dawn; the convergence; white into Act C's landing |
+| 6 / 7A | 97.515-116.64 | crash; "Branch and wander"; "Merge and return"; "Ahh" | straight down: 2.75 m (she fills the frame) rising to 26 m and turning 113 degrees, then back down to 6.6 m | the hair is the graph: filaments, forks, roads, pulses home, the text streaming in, her light growing |
+| 7B | 116.64-125.343 | snare crescendo; leap 118.387; roll 123.49 | one arc on the water round her, 0.28-0.5 m high, fov 36: from her right side (the sit-up in 3/4 profile) to the front on the leap, on to her left; from the roll it lifts to 15 m and back | the rise, arms open against the first dawn; the convergence; white into Act C's landing |
 
-## Known problems (so far)
-- 5A: figures in the pack overlap in pairs just before each fusion (that is the fusion, but it reads as doubles in a still).
-- 5B: the lower half of the frame is night mirror with the lyric on it; the delta fills the upper half only.
-- 5D: Act A reported a hot horizon line at 1:30 (the stacked connectors/lights west of her): being fixed per shot (`fogDist`, `lights.air`).
-- 6: the filaments leave the hair as a regular comb of straight lines; the first fork ring reads as a drawn semicircle.
-- 7B: she rises facing west (toward the lens), so the dawn is behind her and she is front-lit only by her own accents.
+## Decisions the director should know about
+- The world's merge clock is untouched (1,024 -> 512 on b41.3 ... 1 on "one"), but she no longer rides it: in 5A she covers three limbs, not seven, and the HUD
+  count shows the world's count at the spot she has reached (1,024 -> 256 by the cut). 5B then shows the real count (8, 4, 2, 1) on the words.
+- 5B has no figure: at that height a body is 3 px. She is the bright head of main; the cut to 5C finds her where that light is.
+- The fan in 5C is eleven copies (her lives in SPEC order), not eight: one per beat fills bars 49-51.3, and the last fold lands as she begins to brake.
+  The HUD reads `main <- jade/<life>` for the beat after each fold.
+- 5D's commits are hers only (root, ten merges, four bar lines, HEAD = 16): the rings on the road in frame are real nodes of her path, in order.
+- Float: she lies head east, feet west, so main arrives at her feet and the graph leaves her head toward the dawn; she stands up facing west (toward the
+  lens in 7B), and the dawn is behind her. The fork radius is different for every strand (1.25-2.2 m from the crown) so there is no drawn ring.
+- 7B ends wide and white (the strands firing home, 0.75 flash); 08 opens close and low on the landing with its own flash.
+- `float` and `rise` put her 240 m west of FORM, where 08 lands her: the white frame covers the move.
+
+## Known problems
+- 1:10-1:16 the pack: two runners that are about to fuse overlap as a double for ~0.3 s; her hair streams behind her and is hidden by her own body from
+  the front. The big rings on the ground near the horizon are other branches' commit nodes (thin rings since Act A's change).
+- 1:16-1:18 the top third of 5B (the far connectors and their lights) is a dense sparkle; the lyric lies on empty mirror in the lower left.
+- 1:24 the two farthest afterimages start at the left edge of frame.
+- 1:29.5-1:37 5D is a quiet 8 s: the only motion is the look-back (from 91.8), the commits locking on and a slow push. Her chest stays toward the lens while
+  the head turns (performance: `sprint_stop_look` turns head and shoulders only; a half-step round would sell it).
+- 1:49-1:55 at the top of the crane she is 8 % of frame height (the shot is about the graph there). The road text does not travel: "streaming in" is
+  brightness running inward along static text (`flow` < 0) plus the pulses.
+- 1:56 the float -> rise hand-over happens at the end of the top-down shot, 0.64 s before the cut: she begins to sit up seen from above.
+- 1:57-1:58 the sit-up is a bundle of trouser for about half a second (deep crouch poses, P1_qa).
+- 2:03.5-2:05.3 in the pull-back she is small and partly lost in the glare of the strands.
 
 ## State
-- Done (first pass, seen in stills only): all six shots; gait-legal speeds everywhere; hand-overs 5C -> 5D -> 6 on the same spot.
-- In progress: horizon calm in 5C/5D; the float's first 5 s (filament comb); the roll and the last frame into 125.343; clip with audio not yet watched.
+- Done: all six shots, watched as strips from the clip with audio (not frame by frame). Gait: 5A 0.885 / 1.01 / 1.08 x `sprint_loop`, runners 1.11-1.15,
+  5C 1.0, then the track's own brake. No positional lerp of a body anywhere in the act.
+
+## Outputs
+- `work_fable/out/actB.mp4` (68-127 s, 720p, mb 2, audio), `work_fable/stills/actB/sheet_final.jpg` (one frame per 2 s from the clip), dense strips `k1..k4.jpg`.
