@@ -12,8 +12,8 @@
 //   b73      `land` (impact frame 125.343, 0.2 s) -> `build` (song_t0 = b73). They face WEST, the camera, the way they came.
 //   b82      the 360 spin is given another 195 degrees: from b82.7 everyone faces the sun (the butterfly's meta.best_yaw 165), for the rest of the act.
 //   b88.3    `build` -> `drop` on the still coil (identical poses).
-//   b89      the hero's butterfly is a SOLO. The copies hold the coil; her landing (153.42) sends a ripple outward (11 ms per metre) on which each copy
-//            drops to the landing crouch (hips kept in place), and from b89.5 all 1,024 are in unison (gongbu punch on b90.1).
+//   b89      the hero's butterfly is a SOLO. The copies hold the coil, breathing (`drop_join`); on b89.3 they sink, leap the butterfly's travel (1.5 m)
+//            into the bow stance and punch with her on b90.1: all 1,024 in unison from there (`drop_join` is `drop` from 154.77).
 //   b93      on the downbeat everyone breaks and RUNS to her letter cell (sprint_loop / run_loop at 0.85-1.15 of the loop's own speed, feet on the beat
 //            where the distance allows), straight lines, nobody slides. On arrival she is back in `drop`, facing the sun. All are in by b96.2.
 //            The hero runs east along main (sprint_loop, then sprint_stop_look's real brake) and stands at the head.
@@ -94,11 +94,11 @@ export function makeActC(K) {
   const cen = cast.meta('drop').center || [0.994, 0.975];
   const rootXZ = (track, time) => { const r = cast.root(track, time); return [r[0], r[2]]; };
   const dLand = (() => { const a = rootXZ('land', tLandEnd - tLand), b = rootXZ('build', tLandEnd - tBuild); return [b[0] - a[0], b[1] - a[1]]; })();   // `land`'s crouch laid on `build`'s
-  const coil = rootXZ('drop', tHold - tDrop), low = rootXZ('drop', tLow - tDrop), at93 = rootXZ('drop', tRun - tDrop);
+  const at93 = rootXZ('drop', tRun - tDrop), JOIN = cast.has('drop_join') ? 'drop_join' : 'drop';     // drop_join (M3): the coil held through b89, then a leap into b90.1; same clock and place as `drop`
   const yawBuild = (tt) => WEST - ((195 * Math.PI) / 180) * sm(seg(tt, tSpin0, tSpin1));
-  // per copy: where its `drop` origin sits from the ripple on (hips kept where the coil had them), where it starts running, where it stands in MAIN
-  const P = S.map((s) => { const d = cast.rot(YD, coil[0] - low[0], coil[1] - low[1]), o2 = s.i === 0 ? [s.x, s.z] : [s.x + d[0], s.z + d[1]], h = cast.rot(YD, at93[0], at93[1]);
-    return { o2, A: [o2[0] + h[0], o2[1] + h[1]], tSw: s.i === 0 ? -1 : tHeroLands + 0.011 * s.r }; });
+  // per copy: where its `drop` origin sits (its slot: the copies leap the butterfly's travel with `drop_join`, so the formation keeps its shape round her),
+  // where it starts running, where it stands in MAIN
+  const P = S.map((s) => { const o2 = [s.x, s.z], h = cast.rot(YD, at93[0], at93[1]); return { o2, A: [o2[0] + h[0], o2[1] + h[1]] }; });
   // ring people -> letter cells: split both sets at the median along the longer side, recursively (neighbours stay neighbours, few crossings)
   { const ai = []; for (let i = 1; i < N; i++) ai.push(i); const bi = cells.map((_, q) => q);
     const rec = (a, b) => { if (a.length === 1) { P[a[0]].cell = cells[b[0]]; return; } let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9; for (const q of b) { const c = cells[q]; x0 = Math.min(x0, c.x); x1 = Math.max(x1, c.x); z0 = Math.min(z0, c.z); z1 = Math.max(z1, c.z); }
@@ -128,10 +128,7 @@ export function makeActC(K) {
       if (tt < tCoil) { out.track = 'build'; out.time = tt - tBuild; out.yaw = yawBuild(tt); out.pos = [s.x, 0, s.z];
         if (hero && t < tLandEnd) { const d = cast.rot(WEST, dLand[0], dLand[1]); out.track = 'land'; out.time = t - tLand; out.pos = [s.x + d[0], 0, s.z + d[1]]; }
         if (!hero) { const age = t - tBorn(s.k); if (age < TP) { const q = peelAt(s, easeOut(age / TP)); out.pos = [q[0], 0, q[1]]; out.alpha = 0.35 + 0.65 * sm(age / TP); } if (age < 0.9) out.gain = 1 + 1.6 * Math.exp(-age / 0.25); } }
-      else { out.track = 'drop'; out.yaw = YD;
-        if (hero || t >= tLow) { out.time = t - tDrop; out.pos = [p.o2[0], 0, p.o2[1]]; if (hero && t < tLow) out.pos = [s.x, 0, s.z]; }
-        else if (t < p.tSw) { out.time = Math.min(t, tHold) - tDrop; out.pos = [s.x, 0, s.z]; }
-        else { out.time = tLow - tDrop; out.pos = [p.o2[0], 0, p.o2[1]]; } }
+      else { out.track = hero ? 'drop' : JOIN; out.yaw = YD; out.time = t - tDrop; out.pos = [p.o2[0], 0, p.o2[1]]; }      // the copies: coil (breathing) to b89.3, load, leap, punch on b90.1; from 154.77 `drop_join` IS `drop`
       return out; }
     if (hero) {
       if (t < p.tSSL) { out.track = 'sprint_loop'; out.time = (t - p.tSSL) * p.rate; out.yaw = p.yaw; const q = (t - tRun) * p.v; out.pos = [p.A[0] + p.dir[0] * q, 0, p.A[1] + p.dir[1] * q]; return out; }

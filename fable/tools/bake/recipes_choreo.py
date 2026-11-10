@@ -423,6 +423,19 @@ def drop():
     """Bars 89-104 (song_t0 = bar 89 - 1.5 s): butterfly apex on the drop, the unison phrase of her
     real set, travelling phrases, THE GROUP FALL on bar 97, rise as one, arms wide, last phrase,
     jump double kick, salute. Performed around meta.center (where the butterfly lands)."""
+    return _drop()
+
+
+@recipe("drop_join")
+def drop_join():
+    """`drop` for the thousand while the hero's butterfly is a solo (M3): same clock, same place. Holds
+    the coil (breathing) to b89.3 (154.04), sinks (anticipation, 0.24 s), leaps the butterfly's travel
+    (1.5 m, 0.48 s) into the bow-stance chamber and punches on b90.1 with `drop`; from 154.758 on it
+    IS `drop`, frame for frame."""
+    return _drop(join=True)
+
+
+def _drop(join=False):
     bf, k_apex, D = butterfly_clip()
     t0, t1 = bt(89) - 1.5, bt(105)
     X = 90.0
@@ -431,20 +444,35 @@ def drop():
     # identical to the end of `build`, so the show can switch tracks anywhere in 151.67-152.70
     tl = C.Timeline(t0, t1, S(mabu(depth=0.62, width=0.40, lean=14.0, look=(0, -0.45, 1)), cf - 12.0, (0.0, 0.0)))
     tl.to(coil, bt(88, 3), 0.62, "smooth", name="coil")
-    t_first = bt(89) - k_apex
-    t_load = t_first + (BF_LOAD - BF_T0)
-    tl.clip(bf, t_first, t_load + 0.10, blend_in=0.10)        # out of stillness: she catches the clip up in 6 frames
-    tl.mark(bt(89), "butterfly_apex")
 
     def Sd(p, facing=0.0, at=(0.0, 0.0)):
         return S(p, facing, (D[0] + at[0], D[1] + at[1]))
 
-    # she sticks the landing: low, one hand to the ground, head up, still (b89.3)
-    tl.to(Sd(crouch("R", look=(0, 0.0, 1)), 0.0, (0.03, 0.03)), bt(89, 3), 0.24, "soft", name="land_low", lift=0.0)
-
-    # b90.1 bow stance + straight punch toward +X
     g = (0.30, 0.0)
-    strike(tl, Sd(gongbu(twist=-22.0, depth=0.74), X, g), Sd(gongbu("R"), X, g), bt(90, 1), prep_dur=0.34, name="gongbu_punch")
+    chamber, punch = Sd(gongbu(twist=-22.0, depth=0.74), X, g), Sd(gongbu("R"), X, g)
+    if not join:
+        t_first = bt(89) - k_apex
+        t_load = t_first + (BF_LOAD - BF_T0)
+        tl.clip(bf, t_first, t_load + 0.10, blend_in=0.10)        # out of stillness: she catches the clip up in 6 frames
+        tl.mark(bt(89), "butterfly_apex")
+        # she sticks the landing: low, one hand to the ground, head up, still (b89.3)
+        tl.to(Sd(crouch("R", look=(0, 0.0, 1)), 0.0, (0.03, 0.03)), bt(89, 3), 0.24, "soft", name="land_low", lift=0.0)
+        # b90.1 bow stance + straight punch toward +X
+        strike(tl, chamber, punch, bt(90, 1), prep_dur=0.34, name="gongbu_punch")
+    else:
+        # the thousand: the coil is held (breath) through the hero's solo; on b89.3 they sink and load
+        # (anticipation), leap the butterfly's travel into the chamber, and the punch is `drop`'s own
+        t_go, t_ch = bt(89, 3), bt(90, 1) - 0.15
+        way = M.unit(np.array([chamber.root[0, 0] - coil.root[0, 0], 0.0, chamber.root[0, 2] - coil.root[0, 2]]))
+        Pc = coil.fk()[0]
+        load = coil.copy()
+        load.root = coil.root - 0.09 * way[None] + np.array([[0.0, -0.085, 0.0]])
+        for sd in "LR":
+            load = M.leg_ik(load, sd, Pc[None, M.J["foot" + sd]])
+        load = M.additive(M.additive(load, "spine", np.radians([[7.0, 0, 0]])), "chest", np.radians([[7.0, 0, 0]]))
+        tl.to(load, t_go + 0.24, 0.24, "soft", name="join_load", lift=0.0)
+        tl.to(chamber, t_ch, t_ch - (t_go + 0.24), "soft", name="join_leap", hop=0.13, lift=0.3, lift_max=0.20, feet_lead=0.14)
+        tl.to(punch, bt(90, 1), 0.15, "snap", name="gongbu_punch", recoil=0.02)
     # b90.3 pubu: the front leg stays, she drops onto the back leg, left palm threads down the leg
     pb = Sd(pubu(), 0.0, (0.0, 0.0))
     fl = ankle(Sd(gongbu("R"), X, g), "L")
@@ -557,6 +585,9 @@ def drop():
     m.meta.update({"center": [round(D[0], 3), round(D[1], 3)], "start_pose": "coil (= build's last pose)",
                    "handoff": "identical to `build` on 151.67-152.70 s"})
     m.meta.update(BEST_YAW)
+    if join:
+        m.meta.update({"join": "holds the coil to 154.04 (b89.3), loads, leaps to the chamber; identical to `drop` from 154.758 (track t %.3f)" % (bt(90, 1) - 0.15 - t0),
+                       "same_as_drop_from": round(bt(90, 1) - 0.15 - t0, 4)})
     return m
 
 

@@ -81,10 +81,11 @@ async function boot() {
     const cam = buildCamera(F.camera, W, H, jx, jy);
     const env = F.env || {}; const dawn = env.dawn ?? 0;
     const pxAngle = (2 * Math.tan(cam.fovY / 2)) / H;
-    const sp = skyParams(dawn, env.sun || {}, ts, pxAngle);
+    const tc = F.clock ?? ts;                                // frame().clock: the shader clock (stars, ripples, fibres), when a show wants it to differ from song time (actE: the last frame = frame 0)
+    const sp = skyParams(dawn, env.sun || {}, tc, pxAngle);
     const list = (F.drawables || []).slice();
     if (F.type) for (const d of F.type) list.push(type.line(d, ts));
-    const base = { gl, W, H, camPos: cam.pos, fovY: cam.fovY, focusDist: cam.focusDist, aperture: cam.aperture, dawn, t: ts, near: cam.near, far: cam.far, env, sunDir: sp.uSunDir };
+    const base = { gl, W, H, camPos: cam.pos, fovY: cam.fovY, focusDist: cam.focusDist, aperture: cam.aperture, dawn, t: tc, near: cam.near, far: cam.far, env, sunDir: sp.uSunDir };
     // 1. planar reflection: the same draws through the mirrored view
     const rctx = { ...base, reflect: true, view: cam.viewR, proj: cam.proj, viewProj: cam.viewProjR };
     gl.bindFramebuffer(gl.FRAMEBUFFER, refl.f); gl.viewport(0, 0, W, H); gl.drawBuffers(BOTH);

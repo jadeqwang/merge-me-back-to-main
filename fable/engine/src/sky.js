@@ -30,12 +30,12 @@ export function skyParams(dawn, sun = {}, t = 0, pxAngle = 0.001) {
   const dir = [Math.cos(elev) * Math.cos(az), Math.sin(elev), Math.cos(elev) * Math.sin(az)];
   const gain = sun.gain ?? k(0.36, 0.56);
   return { uZ: mix3('Z'), uM: mix3('M'), uH: mix3('H').map((c) => c * hgain), uHE: mix3('HE').map((c) => c * hgain), uB1: mix3('B1'), uB2: mix3('B2'), uAG: mix3('AG').map((c) => c * mix1('ag')),
-    uStarGain: mix1('star'), uW1: mix1('w1'), uW2: mix1('w2'), uSunDir: dir, uSunRad: radius, uSunGain: gain, uSunBands: sun.bands ?? 0, uDawn: dawn, uTime: t, uPxAngle: pxAngle };
+    uStarGain: mix1('star'), uW1: mix1('w1'), uW2: mix1('w2'), uSunDir: dir, uSunRad: radius, uSunGain: gain, uSunBands: sun.bands ?? 0, uDawn: dawn, uTime: t, uPxAngle: pxAngle, uSkyK: sun.grad ?? 1 };   // sun.grad > 1 brings the zenith colour down toward the horizon (actE: a bluer day; default 1 = unchanged)
 }
 
 export const SKY_GLSL = `
 uniform vec3 uZ, uM, uH, uHE, uB1, uB2, uAG, uSunDir;
-uniform float uW1, uW2, uStarGain, uSunRad, uSunGain, uSunBands, uDawn, uTime, uPxAngle;
+uniform float uW1, uW2, uStarGain, uSunRad, uSunGain, uSunBands, uDawn, uTime, uPxAngle, uSkyK;
 float h31(vec3 p){ p = fract(p*vec3(.1031,.1030,.0973)); p += dot(p, p.yxz+33.33); return fract((p.x+p.y)*p.z); }
 vec3 h33(vec3 p){ p = fract(p*vec3(.1031,.1030,.0973)); p += dot(p, p.yxz+33.33); return fract((p.xxy+p.yxx)*p.zyx); }
 float vnoise3(vec3 p){ vec3 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
@@ -59,8 +59,9 @@ vec3 skyBase(vec3 d){
   vec2 hz = normalize(d.xz + 1e-6), sz = normalize(uSunDir.xz + 1e-6);
   float ef = max(dot(hz, sz), 0.);                       // 1 toward the sun's azimuth
   vec3 hor = mix(uH, uHE, ef*ef);
-  vec3 col = mix(hor, uM, smoothstep(0.0, 0.30, pow(e, 0.8)));
-  col = mix(col, uZ, smoothstep(0.12, 0.80, pow(e, 0.75)));
+  float eg = clamp(e*uSkyK, 0., 1.);
+  vec3 col = mix(hor, uM, smoothstep(0.0, 0.30, pow(eg, 0.8)));
+  col = mix(col, uZ, smoothstep(0.12, 0.80, pow(eg, 0.75)));
   // the eastern bands: a wide soft one and a thin bright one hugging the horizon
   col += uB2 * exp(-e/uW2) * pow(ef, 2.5) * 0.85;
   col += uB1 * exp(-e/uW1) * pow(ef, 5.0) * 1.2;

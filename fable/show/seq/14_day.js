@@ -1,39 +1,46 @@
-// 14 · bars 137-148 · 3:56.6-4:17.5 · the outro drop, full drums; "Back to main" 235.75 (pickup) and 249.44
-// DAY. For the first time you see her, in full colour. She moves freely (the pencil flourish she learned from violet is hers now).
-// She forks again on b139, b141, b143, b145, b147: new branches run out east in ink colours on the pale mirror.
-// A  b137  medium-wide, tracking her; BACK TO MAIN stands on the horizon      B  b141  low: the leap (apex 243.6)      C  b145  the camera lifts away, pulling back west
-import { seg, ss, sm, lerp } from '../kit.js';
+// 14 · bars 137-148 · 3:56.6-4:17.5 · the outro drop, full drums; "Back to main" 235.75 (pickup) and 249.44; vocalise 238.66-248.97
+// DAY. For the first time you see her, in full colour, and she dances (`free`). Her dance is main: the road is written under her feet from the spot where
+// she caught the light. From b141 she forks on every bar line, and every new branch forks too (2, 4 ... 64 by b146): they run out into the morning on
+// ink roads. On b147 each sends her light ahead. The people, the roads and the lift are built in actE_morning.js.
+//   A  b137-b139  low, close, in front of her (from the east: the sky behind her is the blue west): she stands in the new light, skips (b138), comes at us
+//   B  b139-b142  low wide from the south-east: the whirl, the run, the leap (apex b141 = the first fork: a new branch runs out of her, past the lens), the landing
+//   C  b142-b144  travelling in front of the new branch: she becomes two in step (b142, on the cut), four (b143); main-Jade cartwheels behind them
+//   D  b144-b149  behind her shoulder as she stops and turns east ("Back to main" 249.44), then up and back: 16, 32, 64 roads fanning east with their
+//                 runners; BACK TO MAIN stands on the horizon; b147 the lights go ahead; the camera keeps lifting (no cut into 15)
+import { seg, ss, sm, lerp, clamp01 } from '../kit.js';
+import { morning, makeLift, curve } from './actE_morning.js';
 
 export default function seq(K) {
-  const { bar, bb, world: W, cast } = K; const t0 = bar(137), t1 = bar(149), C = W.CATCH; const cx = C[0] + 8;
-  const O = W.sets.out.roads; const lim1 = O.filter((r) => r.def.depth === 1);
-  // `free` (song_t0 236.648 = b137; 21 s; root motion: she travels about 18 m). Its origin is placed so that where she stops and turns east for the second
-  // "Back to main" (249.44, track t 12.8-17.4) is on main, 2 m short of the fork point, and the walk that ends the track goes east along main.
-  const FREE = 'free', EAST = Math.PI / 2, tFr = cast.songT0(FREE) || t0, rS = cast.root(FREE, 14.5), P0 = cast.origin([cx - 2, 0], EAST, [rS[0], rS[2]]);
-  const heroAt = (t) => { const h = cast.hips(FREE, t - tFr, P0, EAST); return { x: h[0], z: h[2] }; };
-  // people who step out of her on each fork and run off along the new roads (at most 6 per fork are given bodies; the rest are their roads)
-  const RUN = []; W.TO.slice(0, 5).forEach((tf, d) => { const n = Math.min(1 << d, 6); for (let j = 0; j < n; j++) { const r = O.filter((q) => q.def.depth === d + 1 && q.def.lane !== 0)[j % Math.max(1, O.filter((q) => q.def.depth === d + 1 && q.def.lane !== 0).length)]; RUN.push({ tf, r, j, d }); } });
-  function people(t) { const h = heroAt(t);
-    cast.actor('hero').set({ pos: P0, yaw: EAST, track: FREE, time: t - tFr });
-    const cr = cast.crowd('new', 64); let n = 0;
-    for (const [qi, q] of RUN.entries()) { if (t < q.tf - 0.3) continue; const age = t - q.tf; const v = 5 + q.j * 0.6, s = Math.max(0, age - 0.1) * v + 0.02; const hs = heroAt(q.tf); let x, z, yw;
-      if (q.d === 0 || s > 6) { const a = q.r.at(Math.min(q.r.len - 0.5, s + (q.d ? 0 : 0))); x = a.x; z = a.z; yw = Math.atan2(a.tx, a.tz); if (s <= 6) { const u = s / 6; x = lerp(hs.x, a.x, u); z = lerp(hs.z, a.z, u); yw = Math.atan2(a.x - hs.x, a.z - hs.z); } }
-      else { const a = q.r.at(6); const u = s / 6; x = lerp(hs.x, a.x, u * 0.5); z = lerp(hs.z + (q.j % 2 ? 1 : -1) * 0.5, a.z, u * 0.5); yw = Math.atan2(a.x - hs.x, a.z - hs.z); }
-      if (s > q.r.len - 1) continue; const trk = K.loopFor(v);                                     // run_loop / sprint_loop by her ground speed
-      cr.put(n++, { pos: [x, 0, z], yaw: yw, track: trk, time: Math.max(0, age) * Math.min(1.25, v / cast.speed(trk)) + 0.31 * q.j, lane: q.r.def.color, seed: 11 + qi }); }
-    cr.n = n; return h; }
-  const day = { outline: { strength: 1, width: 1.3 } };
-  const world = { text: 0.9, minPx: 2.4, haloPx: 0 };
-  const soft = (t) => { let x = 0, z = 0; for (let j = -4; j <= 4; j++) { const p = heroAt(t + j * 0.35); x += p.x; z += p.z; } return { x: x / 9, z: z / 9 }; };   // where she roughly is (the camera does not chase every step)
+  const { bar, bb, world: W, cast } = K; const t0 = bar(137), t1 = bar(149), A = morning(K), L = (K.shared.actE.L = makeLift(K)), C = A.C, H = A.HUB;
+  const tB = bar(139), tC = bar(142), tD = bar(144);
+  // her light is the day key from the first frame (13_catch ends on it); the sky finishes turning blue during shot A
+  const DAY = { ambient: [0.70, 0.73, 0.88], rimCol: [0, 0, 0], rimBoth: 0, sunAmt: 1, under: 0, emissive: 0, fibres: 0, trans: 0 };
+  const grad = (t) => lerp(1, 1.9, ss(t, t0, bar(139)));                                  // the blue comes down toward the horizon as the day settles
+  const env = (t, o = {}) => ({ figLight: DAY, outline: { strength: 1, width: 1.3 }, sun: { grad: grad(t) }, ground: { ripple: 0.016, reflGain: 0.8 }, ...o });
+  const world = (o = {}) => ({ out: { hide: true }, lights: false, text: 0.9, minPx: 2.2, haloPx: 0, halo: 0, ...o });
+  const hud = (t) => K.hudMain(t, { count: A.count(t) }), pop = (t) => { let f = 0; for (const tk of A.TK) if (t >= tk) f += 0.1 * Math.exp(-(t - tk) * 9); return f; };
+  // B: keyed by hand round the leap. pos is absolute (relative to CATCH), the target rides on her (softened) with an offset
+  const camB = curve([
+    [tB,        6.3, 0.5,  2.7,   -0.1, 1.05, 0.25],
+    [bar(140),  6.9, 0.5,  3.6,   0.0, 1.05, 0.4],
+    [bar(141),  7.8, 0.36, 6.7,   0.5, 1.42, 0.5],
+    [bar(141.5), 7.9, 0.42, 7.5,  0.6, 1.2, 0.6],
+    [tC,        7.8, 0.5,  8.8,   0.3, 1.15, 0.4]]);
+  // C: the first new branch and everyone who comes from her: where they are (centroid) and the way they are going
+  const c1 = A.J[1], fam = A.J.filter((j) => j.top === c1), grp = (t) => { let x = 0, z = 0, n = 0; for (const j of fam) if (t >= j.tb) { const a = A.runnerAt(j, t); x += a.x; z += a.z; n++; } return { x: x / n, z: z / n }; };
+  const GD = (() => { const a = grp(tC + 0.05), b = grp(tD), l = Math.hypot(b.x - a.x, b.z - a.z); return [(b.x - a.x) / l, (b.z - a.z) / l]; })();
   return { name: '14_day', t0, t1, frame(t) {
-    const h = people(t); const n = W.outCount(t); const c = soft(t);
+    A.people(t); const c = A.soft(t, 0.5), extra = (o) => A.roads(t, o);
     return K.cut(t, [
-      { t0, f: (tt, u) => { const camera = { pos: [c.x - 5.4 + 0.5 * u, 1.4, c.z + 3.2], target: [c.x + 2.0, 1.0, c.z - 1.6], fov: 35, far: 40000 };
-        return { camera, env: day, world, type: [K.lyric(24, camera, { font: 'hook', x: -0.9, y: 0.24, rows: [1, 2], px: 104, dist: 60, out: bar(138.6) })], hud: K.hudMain(t, { count: n }), flash: 0.5 * Math.exp(-(t - t0) * 5) }; } },
-      { t0: bar(141), f: (tt, u) => { const camera = { pos: [c.x - 4.6, 0.5 + 0.2 * u, c.z - 2.8], target: [c.x + 1, 1.55, c.z + 0.8], fov: 38, far: 40000 };
-        return { camera, env: day, world, hud: K.hudMain(t, { count: n }) }; } },
-      { t0: bar(145), f: (tt, u) => { const e = sm(u); const camera = { pos: [cx - 9 - 90 * e, 2.0 + 85 * e, 4.5 + 8 * e], target: [cx + 30 + 230 * e, 0.8 * (1 - e), 0], fov: 35, far: 40000 };
-        return { camera, env: day, world: { ...world, minPx: 2.2, widthScale: lerp(1, 34, e) }, type: [K.lyric(25, camera, { font: 'hook', x: -0.9, y: 0.24, rows: [1, 2], px: 100, dist: 80 })], hud: K.hudMain(t, { count: n }) }; } },
+      { t0, f: (tt, u) => { const e = sm(u), camera = { pos: [c.x + 3.05 + 0.5 * e, 0.42 + 0.2 * e, c.z + 1.55 + 0.3 * e], target: [c.x - 0.1, 1.0 + 0.05 * e, c.z + 0.62], fov: 38, far: 40000 };
+        return { camera, env: env(t), world: world(), extra: extra(), type: [K.lyric(24, camera, { font: 'hook', x: -0.92, y: 0.34, rows: [1, 2], px: 80, dist: 40, out: bar(138.7), fade: 0.3, ink: 1, reflect: false })], hud: hud(t), flash: 0.45 * Math.exp(-(t - t0) * 4.5) }; } },
+      { t0: tB, f: () => { const k = camB(t), s = A.soft(t, 0.35), camera = { pos: [C[0] + k[0], k[1], C[1] + k[2]], target: [s.x + k[3], k[4], s.z + k[5]], fov: 38, far: 40000 };
+        return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
+      { t0: tC, f: (tt, u) => { const g = grp(t), e = sm(u), d = 4.6 + 2.6 * e, camera = { pos: [g.x + GD[0] * d + GD[1] * 1.3, 0.75 + 1.25 * e, g.z + GD[1] * d - GD[0] * 1.3], target: [g.x - GD[0] * 0.8, 0.98 - 0.1 * e, g.z - GD[1] * 0.8], fov: 40, far: 40000 };
+        return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
+      { t0: tD, f: () => { const camera = L.lift(t), ref = L.lift(bar(145));
+        return { camera, env: env(t), world: world({ minPx: 2.0 }), extra: extra(),
+          type: [K.lyric(25, ref, { font: 'hook', mode: 'stand', x: 0.5, y: 0, align: 'center', px: 84, dist: 1500, out: L.tMain + 0.35, fade: 0.5, ink: 1 })], hud: hud(t), flash: pop(t) }; } },
     ], t1);
   } };
 }

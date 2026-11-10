@@ -53,7 +53,7 @@ export function frame(t) {
   K.cast.begin();
   const F = s.frame(tt, K) || {};
   const env = F.env || {}; const dawn = env.dawn ?? K.world.dawn(tt);
-  const out = { camera: F.camera, env: { ...env, dawn, grade: K.grade(dawn, env.grade || {}) }, drawables: [], type: F.type || [], hud: F.hud === undefined ? null : F.hud, overlay: F.overlay };
+  const out = { camera: F.camera, env: { ...env, dawn, grade: K.grade(dawn, env.grade || {}) }, drawables: [], type: F.type || [], hud: F.hud === undefined ? null : F.hud, overlay: F.overlay, clock: F.clock };
   if (F.world !== false) out.drawables.push(...K.world.draw(tt, F.world || {}));
   if (F.extra) out.drawables.push(...F.extra);
   out.drawables.push(...K.cast.drawables(dawn));
