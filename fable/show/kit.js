@@ -65,10 +65,19 @@ export async function makeKit(E) {
   // In-place loops do not travel: the sequence moves pos. loopFor(v) = the loop whose own speed is nearest to a ground speed v (m/s).
   const LOOPS = ['walk_loop', 'run_loop', 'sprint_loop'].filter((n) => cast.has(n));
   const loopFor = (v) => { let best = LOOPS[0] || 'idle', bd = 1e9; for (const n of LOOPS) { const d = Math.abs(Math.log(Math.max(v, 0.05) / cast.speed(n))); if (d < bd) { bd = d; best = n; } } return best; };
+  // No skating (NOTES_v1 Global): a loop plays at most 15 % faster or slower than it was captured (run_loop 3.42, sprint_loop 4.93, walk_loop 1.14 m/s).
+  //   gait(v) -> { track, rate, speed, ok }: the loop for a ground speed v, its playback rate (clamped to 0.85..1.15) and the ground speed that rate really
+  //   gives. Move her at `speed`; when `ok` is false v is outside every loop's range: change how fast she travels, not her legs.
+  //   runner(at, s0, t0, v, { phase }) -> (t) => { s, a, pos, yaw, track, time }: a body on a road/path (at(s) -> {x, z, tx, tz}) that passes arc length s0 at
+  //   time t0 and holds the gait-legal speed nearest v. Spread the result into cast.actor(...).set({...}).
+  const GAIT = { lo: 0.85, hi: 1.15 };
+  const gait = (v) => { let best = null; for (const n of LOOPS) { const sp = cast.speed(n), rate = Math.min(GAIT.hi, Math.max(GAIT.lo, v / sp)), err = Math.abs(Math.log(Math.max(v, 0.01) / (sp * rate))) + 0.02 * Math.abs(Math.log(rate));
+    if (!best || err < best.err) best = { track: n, rate, speed: sp * rate, err }; } return best ? { ...best, ok: best.err < 0.03 } : { track: 'idle', rate: 1, speed: 0, ok: false }; };
+  const runner = (at, s0, t0, v, o = {}) => { const g = gait(v); return (t) => { const s = s0 + g.speed * (t - t0), a = at(s); return { s, a, pos: [a.x, 0, a.z], yaw: Math.atan2(a.tx, a.tz), track: g.track, time: (t - t0) * g.rate + (o.phase ?? 0) }; }; };
   // loopClock(posAt, t0, t1, track, { lo, hi, anchor: [t, phase] }) -> (t) => track time. The loop's phase advances with the ground covered along posAt
-  // (rate = speed / meta.speed, clamped to [lo, hi]), so her feet do not skate while the world moves her near the loop's own speed. `anchor` pins the phase
+  // (rate = speed / meta.speed, clamped to [lo, hi] = 0.85..1.15 by default), so her feet do not skate while the world moves her near the loop's own speed. `anchor` pins the phase
   // at one song time (to hand over to another track on a matching frame). Tabulated once at 30 Hz: frame(t) stays a pure function of t.
-  function loopClock(posAt, t0, t1, track, o = {}) { const dt = 1 / 30, n = Math.max(1, Math.ceil((t1 - t0) / dt)), sp = cast.speed(track) || 1, lo = o.lo ?? 0.8, hi = o.hi ?? 1.25, ph = new Float32Array(n + 1); let p = posAt(t0);
+  function loopClock(posAt, t0, t1, track, o = {}) { const dt = 1 / 30, n = Math.max(1, Math.ceil((t1 - t0) / dt)), sp = cast.speed(track) || 1, lo = o.lo ?? GAIT.lo, hi = o.hi ?? GAIT.hi, ph = new Float32Array(n + 1); let p = posAt(t0);
     for (let i = 0; i < n; i++) { const q = posAt(t0 + (i + 1) * dt), v = Math.hypot(q.x - p.x, q.z - p.z) / dt; ph[i + 1] = ph[i] + dt * Math.min(hi, Math.max(lo, v / sp)); p = q; }
     const at = (t) => { const x = Math.min(n, Math.max(0, (t - t0) / dt)), i = Math.min(n - 1, Math.floor(x)); return ph[i] + (ph[i + 1] - ph[i]) * (x - i) + Math.min(0, t - t0) + Math.max(0, t - t0 - n * dt); };
     const off = o.anchor ? o.anchor[1] - at(o.anchor[0]) : 0; return (t) => at(t) + off; }
@@ -79,5 +88,5 @@ export async function makeKit(E) {
   // a shot list: pick the entry whose [t0, next t0) contains t. Each entry: { t0, f(t, u, t0, t1) }
   const cut = (t, list, tEnd) => { let i = 0; while (i < list.length - 1 && t >= list[i + 1].t0) i++; const a = list[i].t0, b = i + 1 < list.length ? list[i + 1].t0 : tEnd; return list[i].f(t, (t - a) / (b - a), a, b); };
 
-  return { E, T, bar, bb, world, cast, gitlog, LANE, LIVES, VIOLET, basis, at, project, place, lyric, label, grade, hudMain, ctxMain, yawTo, rel, yawOf, frameOf, loopFor, loopClock, ride, shared, cut, hex: E.hex, camPath: E.camPath, rng: E.rng };
+  return { E, T, bar, bb, world, cast, gitlog, LANE, LIVES, VIOLET, basis, at, project, place, lyric, label, grade, hudMain, ctxMain, yawTo, rel, yawOf, frameOf, loopFor, loopClock, gait, runner, GAIT, ride, shared, cut, hex: E.hex, camPath: E.camPath, rng: E.rng };
 }

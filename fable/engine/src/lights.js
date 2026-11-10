@@ -3,7 +3,7 @@
 import { Program, FS_HEAD } from './glx.js';
 const VS = `#version 300 es
 layout(location=0) in vec3 iPos; layout(location=1) in vec3 iCol; layout(location=2) in float iRad;
-uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uAperture, uFocus, uMinPx, uGain, uCamY;
+uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uAperture, uFocus, uMinPx, uGain, uCamY, uAir;
 out vec2 vC; out vec3 vCol; out float vR, vCoc;
 void main(){
   vec2 c = vec2(float(gl_VertexID&1), float((gl_VertexID>>1)&1))*2.-1.; vC = c;
@@ -14,8 +14,8 @@ void main(){
   float r = max(sqrt(r0*r0 + coc*coc), uMinPx);
   float e = (r0*r0)/(r*r);                                           // energy conservation
   float graze = smoothstep(0.0, 0.10, uCamY/dist);
-  e = max(e, min(1., r0/uMinPx)*0.6*mix(0.25*exp(-dist/1200.), 1., graze)*step(coc, uMinPx));   // tiny sharp lights keep a floor so the far plain still glitters (less at the horizon, where they stack)
-  e *= mix(exp(-dist/600.), 1., graze);                               // night air at the horizon
+  e = max(e, min(1., r0/uMinPx)*0.6*mix(0.25*exp(-dist/(2.*uAir)), 1., graze)*step(coc, uMinPx));   // tiny sharp lights keep a floor so the far plain still glitters (less at the horizon, where they stack)
+  e *= mix(exp(-dist/uAir), 1., graze);                               // night air at the horizon (opts.air metres; 320 by default: the horizon stays well under a figure's accents)
   vCol = iCol * uGain * e; vR = r; vCoc = coc;
   p.xy += c * (r + 1.5) * 2. / uRes * p.w;
   gl_Position = p;
@@ -44,7 +44,7 @@ export class Lights {
       if (!count) return;
       gl.bindVertexArray(self.vao);
       if (!uploaded) { gl.bindBuffer(gl.ARRAY_BUFFER, self.buf); gl.bufferSubData(gl.ARRAY_BUFFER, 0, data, 0, count * 7); uploaded = true; }
-      self.prog.use().set({ uVP: ctx.viewProj, uRes: [ctx.W, ctx.H], uProjK: ctx.H / (2 * Math.tan(ctx.fovY / 2)), uAperture: ctx.aperture, uFocus: ctx.focusDist, uCamY: Math.abs(ctx.camPos[1]), uMinPx: o.minPx ?? 0.9, uGain: (o.gain ?? 1) * (ctx.reflect ? (o.reflGain ?? 1) : 1) });
+      self.prog.use().set({ uVP: ctx.viewProj, uRes: [ctx.W, ctx.H], uProjK: ctx.H / (2 * Math.tan(ctx.fovY / 2)), uAperture: ctx.aperture, uFocus: ctx.focusDist, uCamY: Math.abs(ctx.camPos[1]), uMinPx: o.minPx ?? 0.9, uAir: o.air ?? 320, uGain: (o.gain ?? 1) * (ctx.reflect ? (o.reflGain ?? 1) : 1) });
       gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count); gl.bindVertexArray(null);
     } };
   }

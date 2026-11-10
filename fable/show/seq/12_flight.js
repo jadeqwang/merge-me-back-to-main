@@ -1,33 +1,64 @@
 // 12 · bars 121-128 · 3:28.8-3:42.7 · chorus 2, pads only (no kick, no bass)
-// A  b121  "Merge me back to main"             the light's flight: north-east over the night continent, the camera close behind it
-//          "Every road I ran becomes the one"  the roads of the almond converge under it toward M1; dawn grows ahead
-// B  b127  main-Jade, facing where it comes from, the thousand standing behind her, the sun about to break; the light arrives over our shoulder
-import { seg, ss, sm, lerp } from '../kit.js';
+// (D) to 210.96   "Merge ..."                        still on her (11_violet's last shot): the camera lifts away, she is a small steady light at the end of her road
+// F1  210.96 "me" "... me back to main"              cut on "me": the light, high over the dark continent, heading south-west for the roads. Vast, slow, one comet
+// F2  214.97      "Every road I ran becomes the one" it comes down over the merge of the thousand roads and banks east onto main: the roads become one under it
+//                                                    and the dawn swings in ahead. The same shot runs on down main toward the people standing there ("one", 219.37)
+// F3  b128        (220.99)                           main-Jade, frontal, the thousand behind her, the sun about to break behind them. It arrives over our shoulder
+// The thousand at the catch, and how they fold home (13_catch), are built here: K.shared.actD.crowd.
+import { seg, ss, sm, lerp, clamp01 } from '../kit.js';
 import { N } from '../formation.js';
 
 export default function seq(K) {
-  const { bar, world: W, cast } = K; const t0 = bar(121), t1 = bar(129), tB = bar(127), C = W.CATCH;
-  // the thousand at the catch: rows behind her (east), facing west with her
-  const slots = new Float32Array(N * 2); { let n = 1; slots[0] = C[0]; slots[1] = 0; for (let r = 0; n < N; r++) { const cols = 16 + r * 2, x = C[0] + 5 + r * 2.4; for (let c = 0; c < cols && n < N; c++, n++) { slots[n * 2] = x + ((c * 7) % 3) * 0.3; slots[n * 2 + 1] = (c - (cols - 1) / 2) * 2.3; } } }
-  K.shared.catchSlots = slots;
+  const { bar, bb, world: W, cast, T, E } = K; const t0 = bar(121), t1 = bar(129), tHit = t1, tF2 = T.line(21).start, tF3 = bar(128), C = W.CATCH, D = K.shared.actD, tF1 = D.tEnd;
+  const WEST = -Math.PI / 2, LN = ['rose', 'blue', 'cyan', 'mint', 'gold', 'coral', 'magenta', 'main'], h1 = K.rng.hash1;
+
+  // ---- the thousand: arcs behind her (east of her), facing west as she does; an aisle is left along main so she stands clear against the sun
+  const S = []; for (let j = 0; S.length < N - 1 && j < 200; j++) { const r = 5 + 1.9 * j, n = Math.floor((r * 2.8) / 1.7); for (let q = 0; q < n && S.length < N - 1; q++) { const a = ((q + 0.5) / n - 0.5) * 2.8, x = C[0] + r * Math.cos(a) + 0.5 * (h1(S.length * 3 + 1) - 0.5), z = r * Math.sin(a) + 0.5 * (h1(S.length * 7 + 2) - 0.5);
+    if (Math.abs(z) < 1.5) continue; S.push({ x, z, d: Math.hypot(x - C[0], z), i: S.length }); } }
+  // they fold home nearest first: 1, 2, 4 ... 512 of them on ten successive beats (b130.1 .. b132.2), the doubling run backwards. Each runs for home (sprint_loop at a
+  // legal pace), and half a second before her beat she lets go of her body and is a light that reaches main-Jade exactly on the beat.
+  const V_RUN = 5.6, G = K.gait ? K.gait(V_RUN) : { track: 'sprint_loop', rate: 1.13, speed: V_RUN }, T_LIGHT = 0.5, T_RUN = 2.6;
+  S.slice().sort((a, b) => a.d - b.d).forEach((s, rank) => { const k = Math.floor(Math.log2(rank + 1)); s.k = k; s.tb = bb(130 + (k >> 2), 1 + (k & 3)); s.ts = s.tb - Math.min(T_RUN, s.d / G.speed); s.tr = tHit + s.d / 30;
+    s.ux = (C[0] - s.x) / s.d; s.uz = -s.z / s.d; s.lane = LN[s.i % 8]; s.ph = 7 * h1(s.i * 13 + 5); });
+  const beats = [...Array(10)].map((_, k) => bb(130 + (k >> 2), 1 + (k & 3)));
+  const LC = E.lights(4096), laneLin = Object.fromEntries(LN.map((n) => [n, K.hex(K.LANE[n])]));
+  // crowd(t, { fold }) -> { n: branches left, lights: drawable | null, pulse: 0..: how hard the last arrivals landed }
+  function crowd(t, o = {}) { const cr = cast.crowd('thousand', N), fold = !!o.fold, L = new Float32Array(4096 * 7), tgt = D.held(Math.max(t, tHit)); let n = 0, nl = 0, left = 1;
+    for (const s of S) { let x = s.x, z = s.z, track = 'idle', time = t + s.ph, yaw = WEST, lane = s.lane, gain = 1, alpha = 1;
+      if (fold) { const q = t - s.tr; if (q > 0 && q < 0.8) { lane = 'violet'; gain = 1 + 1.6 * (1 - q / 0.8); }                                // the violet ripple
+        if (t >= s.tb) continue; left++;
+        if (t > s.ts) { const run = Math.min(s.d - 0.4, G.speed * (t - s.ts) * Math.min(1, (t - s.ts) / 0.35 * 0.5 + 0.5)); x += s.ux * run; z += s.uz * run; yaw = Math.atan2(s.ux, s.uz); track = G.track; time = (t - s.ts) * G.rate + s.ph;
+          const u = (t - (s.tb - T_LIGHT)) / T_LIGHT; if (u > 0) { alpha = 1 - clamp01(u / 0.6); const c = laneLin[s.lane];
+            for (let j = 0; j < 3 && nl < 4096; j++) { const uj = Math.max(0, u - j * 0.07), e = uj * uj * (1.6 - 0.6 * uj), g = (j ? 0.35 / j : 1) * 5 * Math.min(1, u * 4); L.set([x + (tgt[0] - x) * e, 1.2 + (tgt[1] - 1.2) * e, z + (tgt[2] - z) * e, (c[0] + 0.35) * g, (c[1] + 0.35) * g, (c[2] + 0.35) * g, 0.05 - 0.012 * j], nl * 7); nl++; } } } }
+      else left++;
+      if (alpha > 0.02) cr.put(n++, { pos: [x, 0, z], yaw, track, time, lane, gain, alpha, seed: s.i + 2 }); }
+    cr.n = n; let pulse = 0; if (fold) beats.forEach((tb, k) => { if (t >= tb) pulse += Math.exp(-(t - tb) * 5) * (0.25 + 0.085 * k); });
+    return { n: left, lights: nl ? LC.drawable(L, nl, { minPx: 1.4 }) : null, pulse }; }
   // main-Jade: `idle`, then `catch` (song_t0 220.0: the light lands in her hands on b129, her head lifts on "life", her arms are open on "become")
-  const tC = cast.songT0('catch') || 220.0; K.shared.catchPerf = (t) => ({ track: t < tC ? 'idle' : 'catch', time: t - tC });
-  // the thousand stand in `idle` (each at its own point of the loop); when they fold in they run to her (`run_loop`, turned toward her)
-  K.shared.catchCrowd = (t, o = {}) => { const cr = cast.crowd('thousand', N); const fold = o.fold; let n = 0;
-    for (let i = 1; i < N; i++) { let x = slots[i * 2], z = slots[i * 2 + 1], lane = K.LANES8[i % 7], track = 'idle', yaw = -Math.PI / 2;
-      if (fold) { const d = Math.hypot(x - C[0], z); const tv = fold.t0 + d / 34; if (t > tv) lane = 'violet';                       // the violet ripple runs out through them
-        const tg = fold.go(i, d); if (t > tg) { const u = Math.min(1, (t - tg) / 0.9); const e = u * u * u; if (u >= 1) continue; yaw = Math.atan2(C[0] - x, -z); x = lerp(x, C[0], e); z = lerp(z, 0, e); track = 'run_loop'; } }
-      cr.put(n++, { pos: [x, 0, z], yaw, track, time: t + i, lane, seed: i + 1 }); }
-    cr.n = n; return n + 1; };
+  const tC = cast.songT0('catch') || 220.0, hero = (t, o = {}) => cast.actor('hero').set({ pos: [C[0], 0, 0], yaw: WEST, track: t < tC ? 'idle' : 'catch', time: t - tC, ...o });
+  // the frontal camera of the catch (F3, and 13's first shot): low, on main, the sun dead behind her
+  const front = (t) => { const u = sm(seg(t, tF3, tHit + 2.6)); return { pos: [C[0] - 7.4 + 1.5 * u, 1.12 + 0.08 * u, 0.42], target: [C[0] + 4, 1.34, -0.1], fov: 35, focusDist: 6.6 - 1.4 * u, aperture: 0.015, far: 30000 }; };
+  const dawnAt = (t) => (t < tF2 ? lerp(D.dawnAt(tF1), 0.2, seg(t, tF1, tF2)) : t < tF3 ? lerp(0.2, 0.42, sm(seg(t, tF2, tF3))) : lerp(0.42, 0.5, seg(t, tF3, tHit)));
+  Object.assign(D, { crowd, hero, front, tHit, C });
+
+  // ---- the flight camera: behind and above where the light was a moment ago, looking where it will be. It banks with the turn.
+  const hdg = (t) => { const a = D.lightAt(t - 0.25), b = D.lightAt(t + 0.25); return Math.atan2(b[0] - a[0], b[2] - a[2]); };
+  const chase = (t, o) => { const L = D.lightAt(t), Lb = D.lightAt(t - o.back), La = D.lightAt(t + o.lead); let dh = hdg(t + 0.4) - hdg(t - 0.4); dh = Math.atan2(Math.sin(dh), Math.cos(dh));
+    const side = o.side || 0, hx = La[0] - Lb[0], hz = La[2] - Lb[2], hl = Math.hypot(hx, hz) || 1;
+    return { pos: [Lb[0] - (hz / hl) * side, Math.max(1.5, Lb[1] + o.up), Lb[2] + (hx / hl) * side], target: [La[0], La[1] - o.down, La[2]], fov: o.fov, roll: -(o.bank ?? 14) * Math.max(-1, Math.min(1, dh / 0.8)), near: 0.5, far: 40000, mote: Math.hypot(L[0] - Lb[0], L[1] - Lb[1] - o.up, L[2] - Lb[2]) }; };
+  const flightWorld = (k) => ({ text: 0.3, flow: 0.2, flowSpeed: 9, minPx: 1.3, gain: 1.5 + 0.6 * k, fogDist: 900, lights: { gain: 0.45, minPx: 1.1 }, conn: { gain: 0.45, halo: 0 }, violet: D.violetWorld });
+
   return { name: '12_flight', t0, t1, frame(t) {
-    if (t < tB) { const L = K.shared.lightAt(t), Lb = K.shared.lightAt(t - 0.22), La = K.shared.lightAt(t + 0.7);
-      const camera = { pos: [Lb[0], Lb[1] + 5, Lb[2]], target: [La[0], La[1] - 10, La[2]], fov: 40, far: 40000 };
-      return { camera, env: { grade: { exposure: 1.5 } }, world: { text: 0.3, flow: 0.25, flowSpeed: 9, minPx: 1.5, lights: { gain: 0.9, minPx: 1.2 }, conn: { gain: 0.9, halo: 0 } }, extra: [K.shared.lightDraw(t, 0.5)],
-        type: [K.lyric(20, camera, { font: 'hook', x: -0.92, y: 0.36, rows: [2, 3], dist: 60 }), K.lyric(21, camera, { font: 'hook', x: -0.92, y: 0.20, rows: [2, 2, 3], dist: 60 })],
-        hud: { branch: K.VIOLET.name, color: K.LANE.violet, ctx: 1 } }; }
-    const u = seg(t, tB, t1); const camera = { pos: [C[0] - 6.4 + 0.6 * u, 1.2, 1.3], target: [C[0] + 3, 1.45, -0.4], fov: 37, focusDist: 6.5, aperture: 0.02, far: 30000 };
-    cast.actor('hero').set({ pos: [C[0], 0, 0], yaw: -Math.PI / 2, ...K.shared.catchPerf(t) });
-    const n = K.shared.catchCrowd(t);
-    return { camera, world: { text: 0.5, flow: 0.1, lights: { gain: 0.5 } }, extra: [K.shared.lightDraw(t, 0.6)], type: [K.lyric(22, camera, { font: 'hook', x: -0.92, y: 0.36, rows: [2, 2], dist: 34 })], hud: K.hudMain(t, { count: n }) };
+    if (t < tF1) return D.shotD(t);
+    if (t < tF3) { const k = sm(seg(t, tF2, tF3)), lo = sm(seg(t, tF2 - 0.5, tF2 + 2.5));
+      const camera = chase(t, { back: lerp(0.5, 0.3, lo), up: lerp(30, 7, lo) - 3.5 * k, lead: lerp(1.1, 0.8, lo), down: lerp(24, 5, lo), fov: lerp(46, 40, lo), side: lerp(22, 0, lo) });
+      const type = t < tF2 - 0.15 ? [K.lyric(20, camera, { font: 'hook', px: 104, x: -0.92, y: 0.4, rows: [2, 3], dist: 80, out: tF2 - 0.15, fade: 0.3, reflect: false })] : [K.lyric(21, camera, { font: 'hook', px: 96, x: -0.92, y: 0.26, rows: [2, 3, 2], dist: 80, out: tF3, fade: 0.01, reflect: false })];
+      return { camera, env: { dawn: dawnAt(t), grade: { exposure: 1.5, bloom: 0.6 } }, world: flightWorld(k), extra: [D.roadDraw(t, { textGain: 0 }), D.lightDraw(t, { size: 0.012 * camera.mote, gain: 0.9, tail: 0.7, minPx: 2.2 })], type, hud: D.hudViolet(t) }; }
+    // F3: she is waiting. The light's own glow runs up the road ahead of it.
+    const camera = front(t), L = D.lightAt(t), cw = crowd(t), near = ss(t, tF3, tHit);
+    hero(t);
+    return { camera, env: { dawn: dawnAt(t) }, world: { text: 0.5, flow: 0.1, lights: { gain: 0.4 }, violet: D.violetWorld },
+      extra: [W.glow([{ x: L[0], z: L[2], r: 5 + 0.25 * Math.abs(C[0] - L[0]), c: [0.5, 0.36, 0.95].map((q) => q * (0.25 + 0.9 * near)) }]), D.lightDraw(t, { size: 0.05, gain: 1.2, tail: 0.3, minPx: 2 })],
+      type: [K.lyric(21, camera, { font: 'hook', px: 84, x: -0.93, y: 0.34, rows: [2, 3, 2], dist: 34, out: 221.6, fade: 0.4, reflect: false }), K.lyric(22, camera, { font: 'hook', px: 110, x: -0.93, y: 0.44, rows: [1, 3], dist: 34, reflect: false })], hud: K.hudMain(t, { count: cw.n }) };
   } };
 }

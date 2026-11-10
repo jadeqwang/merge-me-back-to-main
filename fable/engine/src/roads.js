@@ -57,16 +57,21 @@ vec3 inkOf(vec3 c){ float l = dot(c, vec3(0.2126,0.7152,0.0722)); return mix(vec
 `;
 const VS_LINE = `#version 300 es
 layout(location=0) in vec2 aPos; layout(location=1) in vec2 aDir; layout(location=2) in float aSide; layout(location=3) in float aS; layout(location=4) in float aG; layout(location=5) in vec3 aCol; layout(location=6) in float aW;
-uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uMinPx, uHaloPx, uWidthScale, uCamY, uFogDist;
+uniform mat4 uVP; uniform vec2 uRes; uniform float uProjK, uMinPx, uHaloPx, uWidthScale, uCamY, uFogDist, uCalm;
 out float vV, vCore, vG, vS, vE; out vec3 vCol;
 void main(){
   vec4 c = uVP*vec4(aPos.x, 0., aPos.y, 1.); vec4 cd = uVP*vec4(aDir.x, 0., aDir.y, 0.);
   vec2 sd = (cd.xy*c.w - c.xy*cd.w) * uRes; float l = length(sd); sd = l > 1e-12 ? sd/l : vec2(1., 0.);
   vec2 n = vec2(-sd.y, sd.x);
   float pxPerM = uProjK / max(abs(c.w), 1e-3);
-  float tru = aW*uWidthScale*pxPerM; float core = max(tru, uMinPx*0.5);
+  float tru = aW*uWidthScale*pxPerM;
   float graze = smoothstep(0.0, 0.10, uCamY/max(abs(c.w), 1e-3));          // 0 at the horizon, 1 seen from above
-  vE = pow(min(1., tru/(uMinPx*0.5)), mix(1.25, 0.6, graze)) * mix(exp(-abs(c.w)/uFogDist), 1., graze);   // and night air: far roads seen edge-on fade out
+  // A road lying ACROSS the view at a grazing angle covers far less of the screen than its width in metres says (it is foreshortened by camY/dist): a
+  // thousand such lines used to stack into a white-hot band on the horizon. uCalm = 1 (default; opts.calm; night only: ink roads keep their weight) draws the true footprint; 0 = the old look.
+  vec4 cn = uVP*vec4(-aDir.y, 0., aDir.x, 0.); float perp = aW*uWidthScale*abs(dot((cn.xy*c.w - c.xy*cn.w)*uRes*0.5/max(c.w*c.w, 1e-6), n));
+  float wpx = mix(tru, min(tru, perp), uCalm);                             // the width it really has on screen (a line on the ground, not a tube)
+  float core = max(wpx, uMinPx*0.5); float cov = min(1., wpx/(uMinPx*0.5));
+  vE = pow(cov, mix(mix(1.25, 0.6, graze), 0.6, uCalm)) * mix(exp(-abs(c.w)/uFogDist), 1., graze);   // and night air: far roads seen edge-on fade out
   float half_ = core + uHaloPx + 1.5;
   c.xy += n * aSide * half_ * 2. / uRes * c.w;
   vV = aSide*half_; vCore = core; vG = aG; vS = aS; vCol = aCol; gl_Position = c;
@@ -116,10 +121,12 @@ void main(){
   float vis = step(vG, uHead); if (vis <= 0.) discard;
   float d = length(vC)*(vR + 1.5);
   float disc = smoothstep(vR + 0.75, vR - 0.75, d);
-  float hole = smoothstep(vR*0.42 + 0.75, vR*0.42 - 0.75, d) * step(4.0, vR);
-  float pop = exp(-max(uHead - vG, 0.)/0.35) * 3.0;        // a commit lands: it flashes, then settles
-  float a = disc - hole*0.85;
-  vec3 em = mix(vCol, vec3(1.), 0.25) * uGain * (1.6 + pop);
+  float ring = smoothstep(4.0, 7.0, vR);                   // 0 = a far dot, 1 = near enough to be a ring
+  float ri = vR - max(1.7, vR*0.15);                       // a thin ring (NOTES_v1: punctuation, not props)
+  float hole = smoothstep(ri + 0.75, ri - 0.75, d) * ring;
+  float pop = exp(-max(uHead - vG, 0.)/0.35) * mix(3.0, 1.6, ring);        // a commit lands: it flashes, then settles
+  float a = disc - hole*0.9;
+  vec3 em = mix(vCol, vec3(1.), 0.25) * uGain * (mix(1.6, 0.75, ring) + pop);
   o = vec4(em*a*(1.-uInk) + inkOf(vCol)*a*uInk, a*uInk);
 }`;
 
@@ -178,7 +185,7 @@ export class Roads {
       const common = { uVP: ctx.viewProj, uRes: [ctx.W, ctx.H], uProjK: projK, uHead: o.head ?? 1e9, uSoft: o.soft ?? 0.05, uHeadLen: o.headLen ?? 0.35, uHeadGain: o.headGain ?? 0, uInk: ink,
         uGain: o.gain ?? 2.2, uFlow: o.flow ?? 0, uFlowSpeed: o.flowSpeed ?? 5, uTime: ctx.t, uPulse: pulses };
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      gl.bindVertexArray(self.lineVao); self.pLine.use().set({ ...common, uFogDist: o.fogDist ?? 260, uCamY: Math.abs(ctx.camPos[1]), uWidthScale: o.widthScale ?? 1, uMinPx: o.minPx ?? 1.3, uHaloPx: o.haloPx ?? 5, uHalo: o.halo ?? 0.22 }); gl.drawElements(gl.TRIANGLES, self.ni, gl.UNSIGNED_INT, 0);
+      gl.bindVertexArray(self.lineVao); self.pLine.use().set({ ...common, uFogDist: o.fogDist ?? 260, uCalm: (o.calm ?? 1) * (1 - ink), uCamY: Math.abs(ctx.camPos[1]), uWidthScale: o.widthScale ?? 1, uMinPx: o.minPx ?? 1.3, uHaloPx: o.haloPx ?? 5, uHalo: o.halo ?? 0.22 }); gl.drawElements(gl.TRIANGLES, self.ni, gl.UNSIGNED_INT, 0);
       if (self.ng && (o.textGain ?? 1) > 0) { gl.bindVertexArray(self.glyphVao); self.pGlyph.use().set({ ...common, uT: self.atlas.tex, uCell: self.atlas.cellEm, uAtlas: [self.atlas.cols, self.atlas.rows, self.atlas.uv[0], self.atlas.uv[1]], uTextGain: o.textGain ?? 0.8 }); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, self.ng); }
       if (self.nn) { gl.bindVertexArray(self.nodeVao); self.pNode.use().set({ ...common, uNodeMinPx: o.nodeMinPx ?? 1.8 }); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, self.nn); }
       gl.bindVertexArray(null);

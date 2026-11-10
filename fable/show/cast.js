@@ -184,7 +184,7 @@ export async function makeCast(E) {
   const DEF = { pos: [0, 0, 0], yaw: 0, scale: 1, density: 1, solid: 1, alpha: 1, gain: 1, visible: true, track: 'idle', time: 0 };
   // ---- the real figure: one instance description per body
   const inst = (s, lane, variant, seed) => { const t = T(s.track); return { pos: s.pos, yaw: s.yaw, scale: s.scale, track: t ? t.name : 0, time: t ? wrap(t.name, s.time) : 0, lane: laneOf(lane), density: s.density, solid: s.solid, alpha: s.visible ? s.alpha : 0, gain: s.gain,
-    variant: variant === 'violet' || variant === 'bun' ? 'bun' : undefined, seed: s.seed ?? seed, vary: s.vary, trail: s.trail, story: s.story, eyes: s.eyes, lodBias: s.lodBias }; };
+    variant: s.pencil === 'hand' ? 'bun_write' : s.pencil === 'gone' ? 'bun_one' : variant === 'violet' || variant === 'bun' ? 'bun' : undefined, seed: s.seed ?? seed, /* set({ pencil: 'hand' | 'gone' }): the violet branch has drawn one pencil / it became the light (actD) */ vary: s.vary, trail: s.trail, story: s.story, eyes: s.eyes, lodBias: s.lodBias }; };
   // ---- the stand-in: a capsule that follows the track's hips
   const ss = (x, a, b) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
   const write = (d, o, s, color, bun, dawn) => { const r = root(s.track, s.time), w = rot(s.yaw, r[0], r[2]), vis = s.visible ? s.alpha : 0, sol = s.solid * ss(dawn, 0.38, 0.54), den = (0.25 + 0.75 * s.density) * (1 - ss(dawn, 0.40, 0.56));
