@@ -1,22 +1,22 @@
 {
  "branch": "fable/merge",
- "total": 56,
- "head": "8b0c4d4",
+ "total": 88,
+ "head": "f72b3b3",
  "generated": "2026-11-10",
  "lines": [
-  "* 8b0c4d4 (HEAD -> fable/merge) fable F1: show kit (world, cast stand-ins, formation), 16 sequences, engine fixes (monotone camPath, sunrise, glows, overlay) - animatic work in progress",
-  "* 1bd9af4 (origin/fable/merge) fable cut: RESUME checkpoint 3 (figure in engine, performances baked)",
-  "* 765c3bb fable F3: figure in the real engine (figtest show), sky-sampled rim, water hair, hems draw in at rest, night light tuned in-engine",
-  "* 2c04e99 fable M2: choreography polish (free-leg kicks, straight dive, stuck landing, dead-still fall), review movies, notes",
-  "* 474a969 fable F3: one shading model lit by the world (night/blue hour/sunrise/day), black hair with sheen, parted mass, bigger trouser sail, fine fibres",
-  "* ce027ae fable M2: build + drop choreography (pose builder, song-time timeline, five tracks), first pass",
-  "* 6f630ce fable M1: free, the nine lives, plant_hands + despike, pins measured; notes",
-  "* afdd404 fable spec: one lit-cel figure, lighting carries the arc (glyph-particle night material rejected)",
-  "* 778e216 fable F3: rework: skinned mesh from lofts, cloth-lite trousers, fibres for light mode, hair guide grid, cel face",
-  "* cb844fd fable M1: pose authoring in the motion library; utility performances (violet, sprint_stop_look, float, rise, release, catch, forks, land, sit_idle)",
-  "* 811cc79 fable F3: notes: director's review and rework plan",
-  "* c9efd7f fable cut: choreography spec (performances pinned to song times), RESUME checkpoint 2",
-  "* d8759ca fable F2: phase-1 fixes after preview review (recovered from the interrupted agent)",
-  "* 2d1fb7a fable F3: adopt the motion library rest pose, hair combing + volume, eyes, patch text, notes"
+  "* f72b3b3 (HEAD -> fable/merge) fable actE: closer leap shot, the fork shot stays with the first branch, softer blue, terminal set above the far lights with credits clear of her, exact one-frame loop seam, notes (shot list, known problems, outputs)",
+  "* 3f924f8 (origin/fable/merge) fable actB: notes current (engine option nodeAir, shot list, decisions, known problems, outputs)",
+  "* 9fc1de2 fable M3: free, the dragged support foot after the skip -> whirl join is pinned (240.2-241.3 only); notes (drop heel pivot left, files)",
+  "* 9c3f4e7 fable actE: she starts facing west on 13's axis (the half turn rides her whirl), type in the sky over the fan, map labels re-set (few, true, in order), notes",
+  "* feade17 fable actB: 5A closer on her, 5C pushes in as the fan folds, the rise as one arc on the water (sit-up in profile, arms open against the dawn and the horizon of roads), float crane lower",
+  "* c90079d fable M3: run_from_stand / run_to_stand (ACCAD Male2 C1 / C2 into and out of run_loop), usage and why the MAIN-cell runs are not rewired; notes",
+  "* 1d7485f fable actB: calm horizon in the chorus (roads: nodeAir option, default off), 5B follows the merging front, ragged filaments out of the hair, debug show removed",
+  "* 67680d8 fable actB: notes (idea of the act, shot list, known problems, state)",
+  "* 08cf32c fable M3: drop_join (the thousand hold the coil through the solo butterfly, load, leap, punch on b90.1; identical to drop from 154.77) wired into actC_form; notes",
+  "* 2877d1e fable: WIP checkpoint at the usage limit (act B, act E, motion fixes in progress; renders across all acts)",
+  "* 9469c65 fable M3: fork_go_L/R (idle -> side step -> walking away, one track) wired into seq 01; notes",
+  "* 356267b fable M3: violet sit re-authored (controlled descent, hand to the ground, knees up, arms round the knees, chin to the sky, breath); shot D frame follows the seat back 0.5 m; notes",
+  "* 30d4ef2 fable actA: frame 0 reframed (her right side, larger, feet and ring in frame), rootWorld for the loop, swoop, piano/stage/orrery props, lyric and counter placement, shot list and notes; debug show removed",
+  "* 6553295 fable actA: first pass of the reworked act (forks at human scale with the people kept, counter, split/thousand on the words, side truck, release orb, comet fan, six life vignettes with props, roll call, root rings); world fork clock + hero neighbourhood; notes"
  ]
 }
