@@ -13,11 +13,14 @@ workstream notes in `fable/notes/`.
 - The anime figure (face, expressions, gaze, clump hair) is ADOPTED and is the default (`fig=anime`); `--q "fig=classic"` renders the
   film as in v3. Notes `fable/notes/anime_lookdev.md` (section "ADOPTION PASS"); sheets `work_fable/stills/anime/E_likeness.jpg`,
   `F_in_film.jpg`. Jade has seen the first sheets and may still veto.
-- Running (since 16:50): round 3, three agents working from `fable/NOTES_v3.md`: Acts A+B (`fable/notes/r3_AB.md`), Act C
-  (`r3_C.md`), Acts D+E plus sole ownership of `fable/engine/src/figure_anime/` (`r3_DE.md`). If one died, start a fresh agent with:
-  "continue the round-3 pass for <acts> from fable/NOTES_v3.md and your notes file fable/notes/r3_<X>.md".
-- Next: render v4 (cut script below), review sheets, review copy to `review/fable_v4/`; then master (consider 4K), encodes for X
-  (2-pass x264 ~12M, maxrate 16M, High@4.1, AAC 256k, faststart) and YouTube.
+- Round 3 is done (notes `fable/notes/r3_AB.md`, `r3_C.md`, `r3_DE.md`; task list was `fable/NOTES_v3.md`).
+- v4 is rendered with the anime figure: `work_fable/out/v4.mp4`, sheets `work_fable/stills/v4/`, review copy `review/fable_v4/` (pushed).
+  Scene-change check against `fable/show/cuts.json`: no unplanned jumps (only flashes on hits at 80.13, 118.4, 153.2, 222.73).
+- Running (since 17:50): motion QA of v4 by three Sonnet agents on 6 fps strips (`work_fable/stills/v4/qa/qa_SSS.jpg`, 5 s per sheet);
+  they write `work_fable/stills/v4/qa/report_1..3.md` (0-95 s, 95-190 s, 190-282 s).
+- Next: turn the QA reports into round 4 (confirm each high/medium item on a strip before fixing; small, exact), render v5, review
+  copy; then master (consider 4K: test one 3840x2160 still first), encodes for X (2-pass x264 ~12M, maxrate 16M, High@4.1, AAC 256k,
+  faststart) and YouTube.
 - Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
   scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
 
