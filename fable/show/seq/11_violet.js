@@ -26,7 +26,7 @@ export default function seq(K) {
   const pts = [-120, -80, -40, 0].map((d) => { const p = WP.at(sJ + d); return [p.x, p.z]; });
   { const S = onC(thJ), n = Math.max(2, Math.round(Math.hypot(S[0] - J.x, S[1] - J.z) / 45)); for (let i = 1; i < n; i++) pts.push([J.x + (S[0] - J.x) * i / n, J.z + (S[1] - J.z) * i / n]);
     const na = Math.ceil((thJ - TH) / (9 * D2R)); for (let i = 0; i <= na; i++) pts.push(onC(thJ + (TH - thJ) * i / na)); pts.push([V[0] - LAST * 0.5 * hE[0], V[1] - LAST * 0.5 * hE[1]], [V[0], V[1]]); }
-  const gJ = WP.gAt(sJ - 120), rdef = { pts, color: W.col('violet'), width: 0.04, text: VIOLET.name + '  ' + VIOLET.text, textSize: 0.34, textSide: 1, flip: true, nodes: [{ u: 1, r: 0.12 }], g: [0, 0] };
+  const gJ = WP.gAt(sJ - 120), rdef = { pts, color: W.col('violet'), width: 0.04, text: VIOLET.name + '  ' + VIOLET.text, textSize: 0.34, textSide: 1, nodes: [{ u: 1, r: 0.12 }], g: [0, 0] };
   { const L = E.roads([rdef], { step: 1.0 }).roads[0].len; rdef.gk = [[0, gJ], [1 - 56 / L, bar(105)], [1 - 19 / L, T.line(17).start], [1 - 0.5 / L, 190.6], [1, tGo]]; delete rdef.g; }
   const LR = E.roads([rdef], { step: 1.0 }), P = LR.roads[0];
   // world options for every shot of the act that can see her road: the world's own violet road stops where this one takes over
@@ -76,11 +76,11 @@ export default function seq(K) {
     [220.5, [C[0] - 150, 10, 0]], [221.8, [C[0] - 40, 3.2, 0]], [222.4, [C[0] - 8, 1.8, 0]], [bar(129), chest]].map(([t, pos]) => ({ t, pos, target: [0, 0, 0] })));
   const lightAt = (t) => (t <= tL ? hold(Math.max(tGo, t)) : t < tK ? early(t) : t < bar(129) ? fly(t).pos : held(t));
   // the mote: a hot violet-white head, a halo, and a tail of where it has just been (long when it is fast). o: { gain, size (head radius, m), tail (s), minPx }
-  const LL = E.lights(160), VC = K.hex(K.LANE.violet);
-  const lightDraw = (t, o = {}) => { const d = new Float32Array(160 * 7), g = (o.gain ?? 1) * 20, sz = o.size ?? 0.012, tail = o.tail ?? 0.5, N = 120; let n = 0; const p = lightAt(t);
+  const LL = E.lights(260), VC = K.hex(K.LANE.violet);
+  const lightDraw = (t, o = {}) => { const d = new Float32Array(260 * 7), g = (o.gain ?? 1) * 20, sz = o.size ?? 0.012, tail = o.tail ?? 0.5, N = 240; let n = 0; const p = lightAt(t);
     const put = (q, k, w, r) => { d.set([q[0], q[1], q[2], (VC[0] + w) * g * k, (VC[1] + w) * g * k, (VC[2] + w * 1.1) * g * k, r], n * 7); n++; };
     put(p, 2.4, 1.4, sz); put(p, 0.1, 0.5, sz * 2.3);
-    for (let j = 1; j <= N; j++) { const u = j / N, tj = t - tail * u * u; if (tj < tL) break; put(lightAt(tj), 0.5 * (1 - u) * (1 - u) * Math.min(1, j / 3), 0.25, sz * (0.7 - 0.45 * u)); }
+    for (let j = 1; j <= N; j++) { const u = j / N, tj = t - tail * Math.pow(u, 1.35); if (tj < tL) break; put(lightAt(tj), 0.3 * (1 - u) * (1 - u) * Math.min(1, j / 5), 0.25, sz * (0.7 - 0.45 * u)); }
     return LL.drawable(d, n, { minPx: o.minPx ?? 1.5, reflGain: 0.8 }); };
 
   // ---- the ribbon: the ink as beads of light, close enough to be a line. After tGo each bead lets go of its place and is drawn into the mote.
@@ -124,7 +124,7 @@ export default function seq(K) {
     who(t);
     const type = [K.lyric(19, camera, { x: 0.12, y: 0.4, rows: [3, 4], dist: 30, px: 80, out: 207.45, fade: 0.5, reflGain: 0.1 })];
     if (t > tLift - 0.1) type.push(K.lyric(20, camera, { font: 'hook', px: 120, x: 0, y: 0.52, align: 'center', dist: 200, words: T.words(20).slice(0, 1), out: tEnd + 1, reflGain: 0 }));
-    return { camera, env: env(t, dim, { exposure: 1.6 + 0.15 * dim }), world: world(t, { violet: violetWorld, text: 0.85 + 0.4 * lift, minPx: 1.3 + 0.9 * lift }), extra: [roadDraw(t, { head: headAt(t), textGain: 0.85 + 0.3 * lift, minPx: 1.3 + 0.5 * lift, gain: 2.4 - 0.9 * lift }), lightDraw(t, { size: 0.012 + 0.0022 * Math.hypot(lightAt(t)[0] - fr.x, lightAt(t)[2] - fr.z), gain: 1 - 0.8 * ss(t, 206.5, 209.5), tail: 0.35 }), farLights(t), eastGlow(t), selfLight(t, dim * (0.3 + 0.7 * lift), 1 + 1.4 * l2)], type, hud: hud(t) }; };
+    return { camera, env: env(t, dim, { exposure: 1.6 + 0.15 * dim }), world: world(t, { violet: violetWorld, text: 0.85 + 0.4 * lift, minPx: 1.3 + 0.9 * lift }), extra: [roadDraw(t, { head: headAt(t), textGain: 0.85 + 0.3 * lift, minPx: 1.3 + 0.5 * lift, gain: 2.4 - 0.9 * lift }), lightDraw(t, { size: 0.012 + 0.0022 * Math.hypot(lightAt(t)[0] - fr.x, lightAt(t)[2] - fr.z), gain: 1 - 0.8 * ss(t, 206.5, 209.5), tail: 0.35 }), farLights(t), eastGlow(t), selfLight(t, dim * (0.3 + 1.0 * lift), 1 + 1.4 * l2)], type, hud: hud(t) }; };
 
   K.shared.actD = { held, lightAt, lightDraw, roadDraw, violetWorld, shotD, tEnd, hudViolet: hud, P, fr, dawnAt }; K.shared.lightAt = lightAt;                    // (15_map draws the flight from K.shared.lightAt)
   return { name: '11_violet', t0, t1, frame(t) {
@@ -142,7 +142,7 @@ export default function seq(K) {
       { t0: tC, f: () => { const push = sm(seg(t, tC, 197.4)), rise = ss(t, tGo + 0.5, tD + 0.3), camera = { pos: K.rel(fr, -2.0 + 1.2 * push - 0.1 * rise, 2.2 - 0.75 * push + 0.05 * rise, 1.5 + 0.12 * push - 0.06 * rise),
           target: [lineMid[0] + 0.22 * rise * EAST[0], lineMid[1] - 0.03 + 0.08 * (1 - push) + 0.2 * rise, lineMid[2]], fov: 35 - 5 * push, aperture: 0.02 };
         camera.focusDist = Math.hypot(camera.pos[0] - lineMid[0], camera.pos[1] - lineMid[1], camera.pos[2] - lineMid[2]);
-        who(t); const rb = ribbon(t), type = [K.lyric(18, camera, { x: 0.0, y: 0.5, rows: [3, 3], dist: 30, out: 200.9, fade: 0.35, px: 74, reflect: false })];
+        who(t); const rb = ribbon(t), type = [K.lyric(18, camera, { x: 0.0, y: 0.5, rows: [3, 3], dist: 30, out: 200.86, fade: 0.14, px: 74, reflect: false })];
         if (t > 199.6 && t < tGo + 0.6) type.push(noteLine(t));
         if (t >= 200.85) type.push(K.lyric(19, camera, { x: 0.0, y: 0.5, rows: [3, 4], dist: 30, px: 74, reflect: false }));
         const extra = [roadDraw(t, { head: headAt(t) }), farLights(t), eastGlow(t), rb.draw]; if (t > tGo) extra.push(lightDraw(t, { gain: 0.2 + 0.8 * rb.got, size: 0.005 + 0.007 * rb.got, tail: 0.3 }));

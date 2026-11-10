@@ -57,7 +57,7 @@ export default function seq(K) {
     if (t < tF1) return D.shotD(t);
     if (t < tF3) { const k = sm(seg(t, tF2, 218.2)), hi = sm(seg(t, tF2 - 0.6, tF2 + 1.6)), lo = sm(seg(t, 218.0, 220.3));
       const camera = chase(t, { back: lerp(0.5, 0.3, lo), up: lerp(lerp(30, 36, hi), 4.5, lo), lead: lerp(1.1, 0.8, lo), down: lerp(lerp(24, 46, hi), 3, lo), fov: lerp(46, 40, lo), side: lerp(22, 0, hi), bank: 9 });
-      const type = (t < tF2 - 0.15 ? [K.lyric(20, camera, { font: 'hook', px: 104, x: -0.92, y: 0.36, rows: [2, 3], dist: 80, out: tF2 - 0.15, fade: 0.3, reflect: false })] : [K.lyric(21, camera, { font: 'hook', px: 80, x: -0.92, y: 0.2, rows: [2, 3, 2], dist: 80, out: tF3, fade: 0.01, reflect: false })]).map((d) => rolled(d, camera));
+      const type = (t < tF2 - 0.15 ? [K.lyric(20, camera, { font: 'hook', px: 104, x: -0.92, y: 0.27, rows: [2, 3], dist: 80, out: tF2 - 0.15, fade: 0.3, reflect: false })] : [K.lyric(21, camera, { font: 'hook', px: 80, x: -0.92, y: 0.2, rows: [2, 3, 2], dist: 80, out: tF3, fade: 0.01, reflect: false })]).map((d) => rolled(d, camera));
       return { camera, env: { dawn: dawnAt(t), grade: { exposure: 1.5, bloom: 0.6 } }, world: flightWorld(k), extra: [D.roadDraw(t, { textGain: 0 }), D.lightDraw(t, { size: 0.012 * camera.mote, gain: 0.9, tail: 0.7, minPx: 2.2 })], type, hud: D.hudViolet(t) }; }
     // F3: she is waiting. The light's own glow runs up the road ahead of it.
     const camera = front(t), L = D.lightAt(t), cw = crowd(t), near = ss(t, tF3, tHit);
