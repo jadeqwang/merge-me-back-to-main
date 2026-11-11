@@ -10,14 +10,16 @@ Inputs of a shot (the JSON): `name`, `t0` (film time of the model clip's first f
 `frames`, and optional per-shot overrides (see DEFAULTS). The code renders (ref / plate / norefl, 1920x1080) come from render_plates.sh.
 
 Stages (each writes under work_fable/hybrid/<name>/ and can be re-run alone):
-  frames    model clip -> model/%04d.png; the model's own cut frames (segments.json)
-  patch     clean plates for frames where the code frame blends two shots or the model cuts a frame late/early (platefix/)
-  code      ref, plate, norefl -> the code figure's mask and box per frame, the code reflection, the mirror line (code.json, codefig/)
+  frames    model clip -> model/%04d.png; the model's own cut frames near the code cuts (segments.json)
+  patch     clean plate stills for frames where the code frame blends two shots or the model cuts a frame late/early (platefix/; runs the render harness)
+  code      ref, plate, norefl -> the code figure's mask and box per frame (codefig/, code.json), the code mirror image (coderefl/)
   a0        coarse matte of every model frame at 720p (BiRefNet on the whole frame): where she is (a0/)
   up        Real-ESRGAN anime x4 on the model frames, stored at x2 (up/)
-  a1        fine matte: BiRefNet again on a crop round her from the x2 frames, guards (ground, road, HUD), temporal smoothing (alpha/)
-  register  model figure -> code figure: time lag check, scale and offset per frame, smoothed per shot between cuts (reg.json)
-  comp      plate + her reflection + her layer + HUD guard -> out/%04d.png -> hybrid_<name>.mp4, hybrid_<name>_compare.mp4 (review folder)
+  a1        fine matte: BiRefNet again on a square crop round her from the x2 frames (a1/)
+  alpha     orphans dropped, road guard at shoe level, light choke, motion-aware temporal median (alpha/)
+  register  model figure -> code figure: time lag check, one scale per segment, slow offsets, the mirror line (reg.json)
+  comp      plate + her mirror image + her layer + HUD guard -> out/%04d.png (and layer/ = her alpha at film resolution)
+  encode    hybrid_<name>.mp4 and hybrid_<name>_compare.mp4 with the song (review folder), each kept under 15 MB
   qa        contact strips for judging (work_fable/hybrid/qa/)
 """
 import argparse, json, os, subprocess, sys, time
@@ -34,6 +36,7 @@ UP = 2                     # her layer is stored at x2 of the model clip (x4 fro
 
 DEFAULTS = {
     'audio': 'inputs/Merge.wav',
+    'review': 'review/fable_v7/seedance_test',      # where encode writes
     'cuts': 'fable/show/cuts.json',
     'lag': 0,                 # model frame k shows code frame k + lag
     'fig_thr': 14,            # code figure mask: |norefl - plate| above this (0..255)
@@ -481,7 +484,8 @@ def stage_register(s):
         raw += [{'k': int(k), 'hs': float(hs[i]), 'ty_b': float(ty_b[i]), 'ty_t': float(ty_t[i]), 'tx': float(tx[i]), 'full': bool(full[i])} for i, k in enumerate(ks)]
         res_b = (ty_b - TY[a:b])[ok_b]
         log(f'register: segment {a}-{b}: S {np.median(S):.4f} (x{np.median(S) * UP / 1.5:.4f} at equal resolution), TX {TX[a:b].min():.1f}..{TX[a:b].max():.1f}, TY {TY[a:b].min():.1f}..{TY[a:b].max():.1f} film px; '
-            f'feet residual (her lowest point against the code figure\'s): rms {np.sqrt(np.mean(res_b ** 2)) if len(res_b) else 0:.1f} px, max {np.abs(res_b).max() if len(res_b) else 0:.1f} px')
+            f'feet residual (her lowest point against the code figure\'s): median {np.median(np.abs(res_b)) if len(res_b) else 0:.1f} px, rms {np.sqrt(np.mean(res_b ** 2)) if len(res_b) else 0:.1f} px, max {np.abs(res_b).max() if len(res_b) else 0:.1f} px; '
+            f'largest step of the track {max(np.abs(np.diff(TX[a:b])).max(), np.abs(np.diff(TY[a:b])).max()) if b - a > 1 else 0:.2f} px/frame')
     # ---- the mirror line: the row about which the code figure flips onto the code reflection
     ML = np.full(N, np.nan)
     for k in range(N):
@@ -576,23 +580,46 @@ def fit_reflection(s, reg):
         idx = idx[::max(1, len(idx) // 4000)]
         Xs.append(np.concatenate([norefl.reshape(-1, 3)[idx].astype(np.float32), colf.reshape(-1, 3)[idx], np.full((len(idx), 1), k, np.float32)], axis=1))
         Ys.append(ref.reshape(-1, 3)[idx].astype(np.float32))
+    N = s['frames']
     if not Xs:
         log('reflection fit: no usable samples; using defaults')
-        return {'a': [0.86] * 3, 'b': [0.14] * 3, 'g': [0.0] * 3, 'n': 0}
+        return {'a': [[0.9] * 3] * N, 'b': [[0.08] * 3] * N, 'n': 0}
     X, Y = np.concatenate(Xs), np.concatenate(Ys)
-    fit = {'a': [], 'b': [], 'g': [], 'n': int(len(X)), 'rms': []}
     from scipy.optimize import nnls
-    for c in range(3):
-        # no free offset (a pale, even mirror makes it trade against a): the mirror keeps a of what was there and adds b of the body's colour
-        A = np.stack([X[:, c], X[:, 3 + c]], axis=1).astype(np.float64)
-        co, _ = nnls(A, Y[:, c].astype(np.float64))
-        co[0] = min(co[0], 1.0)
-        fit['a'].append(float(co[0]))
-        fit['b'].append(float(co[1]))
-        fit['g'].append(0.0)
-        fit['rms'].append(float(np.sqrt(np.mean((A @ co - Y[:, c]) ** 2))))
-    fit['mean_change'] = [float(np.mean(Y[:, c] - X[:, c])) for c in range(3)]
-    log('reflection fit:', json.dumps({k: (np.round(v, 3).tolist() if isinstance(v, list) else v) for k, v in fit.items()}))
+
+    def fit1(sel):
+        # no free offset (a pale, even mirror makes it trade against a): the mirror keeps `a` of what was there and adds `b` of the body's colour
+        a_, b_, r_ = [], [], []
+        for c in range(3):
+            A = np.stack([X[sel, c], X[sel, 3 + c]], axis=1).astype(np.float64)
+            co, _ = nnls(A, Y[sel, c].astype(np.float64))
+            co[0] = min(co[0], 1.0)
+            a_.append(co[0])
+            b_.append(co[1])
+            r_.append(np.sqrt(np.mean((A @ co - Y[sel, c]) ** 2)))
+        return a_, b_, r_
+
+    # the light changes inside a shot (sunrise): the law is fitted in windows of a second and interpolated
+    win = s['refl'].get('fit_window', 24)
+    centres, AA, BB, RR = [], [], [], []
+    for c0 in range(0, N, win // 2):
+        sel = (X[:, 6] >= c0 - win / 2) & (X[:, 6] < c0 + win / 2)
+        if sel.sum() < 500:
+            continue
+        a_, b_, r_ = fit1(sel)
+        centres.append(c0)
+        AA.append(a_)
+        BB.append(b_)
+        RR.append(r_)
+    if not centres:
+        a_, b_, r_ = fit1(np.ones(len(X), bool))
+        centres, AA, BB, RR = [0], [a_], [b_], [r_]
+    AA, BB = np.array(AA), np.array(BB)
+    ks = np.arange(N)
+    fit = {'a': np.stack([np.interp(ks, centres, AA[:, c]) for c in range(3)], axis=1).tolist(), 'b': np.stack([np.interp(ks, centres, BB[:, c]) for c in range(3)], axis=1).tolist(),
+           'n': int(len(X)), 'rms': float(np.mean(RR)), 'mean_change': [float(np.mean(Y[:, c] - X[:, c])) for c in range(3)]}
+    log(f'reflection fit: {len(centres)} windows, {len(X)} samples, rms {fit["rms"]:.1f} levels; a {np.round(AA.mean(axis=0), 3).tolist()} b {np.round(BB.mean(axis=0), 3).tolist()}; '
+        f'mean change under the code figure\'s mirror image {np.round(fit["mean_change"], 1).tolist()} levels')
     return fit
 
 
@@ -633,10 +660,11 @@ def stage_comp(s):
     if fit:
         with open(P(s, 'reflfit.json'), 'w') as f:
             json.dump(fit, f)
-        a_, b_, g_ = (np.array(fit[q], np.float32) for q in 'abg')
+        FA, FB = np.array(fit['a'], np.float32), np.array(fit['b'], np.float32)
     t0 = time.time()
     hud_hits = 0
     edge_warn = 0
+    stat = []
     for k, plate in enumerate(read_video(P(s, 'plate.mp4'), W, H)):
         if k >= s['frames']:
             break
@@ -655,7 +683,9 @@ def stage_comp(s):
             ramp = np.clip((np.arange(H, dtype=np.float32) - ym) / 3.0, 0, 1)[:, None]          # nothing of the mirror image above the contact line
             c = rf[..., 3] * ramp * (1 - road_key(plate, key)) * R['gain']
             cp = rf[..., :3] * (ramp * (1 - road_key(plate, key)) * R['gain'])[..., None]
-            out = out + c[..., None] * ((a_ - 1) * out + g_ / 255) + b_ * cp
+            dref = c[..., None] * (FA[k] - 1) * out + FB[k] * cp
+            out = out + dref
+            stat.append([float(dref[..., i].sum() / max(1.0, c.sum())) * 255 for i in range(3)])
         out = np.clip(out, 0, 1)
         # ---- light wrap: the world's light creeps a little over her edge
         if G['wrap'] > 0:
@@ -677,6 +707,8 @@ def stage_comp(s):
             edge_warn += 1
         cv2.imwrite(P(s, 'out', f'{k:04d}.png'), (np.clip(out, 0, 1)[..., ::-1] * 255 + 0.5).astype(np.uint8), [cv2.IMWRITE_PNG_COMPRESSION, 1])
         cv2.imwrite(P(s, 'layer', f'{k:04d}.png'), (A * 255 + 0.5).astype(np.uint8))
+    if stat:
+        log('comp: mean change under HER mirror image', np.round(np.mean(stat, axis=0), 1).tolist(), 'levels (compare with the code figure\'s in the fit line)')
     log(f'comp: {s["frames"]} frames in {time.time() - t0:.1f} s; HUD guard used on {hud_hits} frames; her layer cut by the model frame edge inside the film frame on {edge_warn} frames')
 
 
@@ -701,7 +733,7 @@ def encode(cmd_in, vf, out, s, limit=15e6, crf=18, fc=False):
 
 
 def stage_encode(s):
-    rev = os.path.join(ROOT, s.get('review', 'review/fable_v7/seedance_test'))
+    rev = os.path.join(ROOT, s['review'])
     fps = str(s['fps'])
     hyb = os.path.join(rev, f'hybrid_{s["name"]}.mp4')
     encode(['-framerate', fps, '-i', P(s, 'out', '%04d.png')], VF, hyb, s)
