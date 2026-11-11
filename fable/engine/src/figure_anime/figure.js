@@ -17,7 +17,7 @@
 // Modes: light (solid 0): a near-black body that only occludes, clothes drawn as luminous fibres, skin a soft lantern;
 // silhouette (solid 1, dawn ~0.6): black mesh, warm rim, translucent hems; cel (solid 1, dawn 1 or cel:1): flat colours.
 import { buildBody, PART, HAIR, VSTRIDE, FSTRIDE } from './body.js';
-import { meshVS, meshFS, clumpVS, clumpFS, HAND_GLSL } from './shade.js';
+import { meshVS, meshFS, clumpVS, clumpFS, HAND_GLSL, HAND_U } from './shade.js';
 import { simulate, SIM, STRAP_N } from './sim.js';
 import { J, NJ, STRIDE, boneScales } from './skeleton.js';
 import { skyParams } from '../sky.js';
@@ -100,8 +100,8 @@ void skin(TI ti, vec3 nloc0, vec3 bloc, out vec3 P, out vec3 N, out vec3 B){
     off.y *= sq; off.xz *= 1.0 + 0.4 * (1.0 - sq);
     P = C + off; P.y = max(P.y, 0.006); N = X * nloc.x - T * nloc.y + Z * nloc.z; B = X * bloc.x - T * bloc.y + Z * bloc.z;
   } else {
-    int bb = int(a_bn.y + 0.5); vec4 qa = jquat(ti, ba); vec3 la = a_la.xyz; if (a_lb.w < -0.5) handPose(la, nloc); la.y *= bscale(i_misc.x, ba);
-    P = jpos(ti, ba) + qrot(qa, la);
+    int bb = int(a_bn.y + 0.5); vec4 qa = jquat(ti, ba); vec3 la = a_la.xyz, jp = jpos(ti, ba); if (a_lb.w < -0.5) handPose(la, nloc, handPx(place(jp))); la.y *= bscale(i_misc.x, ba);
+    P = jp + qrot(qa, la);
     if (a_lb.w > 0.001) { vec3 lb = a_lb.xyz; lb.y *= bscale(i_misc.x, bb); P = mix(P, jpos(ti, bb) + qrot(jquat(ti, bb), lb), a_lb.w); }
     if (a_bn.w > 0.0) P += simNode(ti, LAG + 2) * a_bn.w;
     N = qrot(qa, nloc); B = qrot(qa, bloc);
@@ -281,6 +281,14 @@ async function ensureFont(family, url, desc) {
   catch (e) { console.warn('figure: font ' + family + ' not loaded (' + e.message + '); falling back'); }
 }
 const h1 = (n) => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+// hands: per hand a shape value (-1 splayed .. 0 relaxed .. 1 fist) and optionally a special shape with an amount: 'grip' (the pencil) | 'blade' (flat, fingers together).
+// Packed as 12 bits: shape 0..62, + 64 * special (1 grip, 2 blade), + 256 * amount 0..15 (shade.js handPose).
+function handCode(h) {
+  if (typeof h === 'number') return Math.round((Math.min(1, Math.max(-1, h)) + 1) * 31);
+  let v = 0, sp = 0, am = 0;
+  if (h === 'grip') { sp = 1; am = 1; } else if (h === 'blade') { sp = 2; am = 1; } else if (h && typeof h === 'object') { v = +h.v || 0; if (h.grip) { sp = 1; am = h.grip; } else if (h.blade) { sp = 2; am = h.blade; } }
+  return Math.round((Math.min(1, Math.max(-1, v)) + 1) * 31) + 64 * sp + 256 * Math.round(Math.min(1, Math.max(0, +am || 0)) * 15);
+}
 
 export class Figure {
   constructor(gl, opts = {}) {
@@ -431,6 +439,7 @@ export class Figure {
     const tex = (unit, t, loc) => { if (loc) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.uniform1i(loc, unit); } };
     tex(0, this.texJoint, u.u_joint); tex(1, this.texSim, u.u_sim); tex(2, this.texTracks, u.u_tracks); tex(3, this.texAtlas, u.u_atlas); tex(4, this.texText, u.u_text); tex(5, this.texParts, u.u_parts);
     if (u.u_psize) gl.uniform1f(u.u_psize, this.body.atlas.size);
+    if (u['u_hpose[0]']) { gl.uniform4fv(u['u_hpose[0]'], HAND_U.pose); gl.uniform4fv(u['u_hgeo[0]'], HAND_U.geo); gl.uniform1fv(u['u_htw[0]'], HAND_U.tw); }      // the hand's shapes (shade.js handPose)
     const L = this._L; if (u.u_amb) gl.uniform3fv(u.u_amb, L.ambient); if (u.u_rimCol) gl.uniform3fv(u.u_rimCol, L.rimCol); if (u.u_rimDir) gl.uniform3fv(u.u_rimDir, L.rimDir);
     const f1 = (loc, x) => { if (loc) gl.uniform1f(loc, x); }; f1(u.u_rimBoth, L.rimBoth); f1(u.u_sunAmt, L.sunAmt); f1(u.u_under, L.under); f1(u.u_emis, L.emissive); f1(u.u_trans, L.trans); f1(u.u_fibG, L.fibres); f1(u.u_faceG, L.face); f1(u.u_tiles, this.body.tiles); f1(u.u_sil, L.sil); if (u.u_key) gl.uniform3fv(u.u_key, L.keyDir); if (u.u_keyCol) gl.uniform3fv(u.u_keyCol, L.keyCol);
   }
@@ -500,15 +509,12 @@ export class Figure {
       const variant = (o.variant === 'bun' || o.variant === true || o.variant === 1) ? 1 : o.variant === 'bun_write' ? 2 : o.variant === 'bun_one' ? 3 : 0;   // bun: two pencils | bun_write: one drawn, in her right hand | bun_one: one left (the other became the light)
       let mask = tr.mask; if (mask === undefined) mask = 15; if (Array.isArray(mask)) mask = mask.reduce((m, nm) => m | (1 << this.emitters.findIndex((e) => e.name === nm)), 0);
       const tc = tr.color || lane, fc = o.face || (o.eyes === false ? { expr: 'calm' } : {}), eid = typeof fc.expr === 'number' ? fc.expr : (EXPR[fc.expr] ?? 0);
-      // hands: per hand a shape value (-1 splayed .. 0 relaxed .. 1 fist) and optionally a special shape with an amount: 'grip' (the pencil) | 'blade' (flat, fingers together)
-      const hd = o.hand ?? 0, per = hd !== null && typeof hd === 'object' && ('L' in hd || 'R' in hd); let hL = per ? (hd.L ?? 0) : hd, hR = per ? (hd.R ?? 0) : hd; if (variant === 2 && o.hand === undefined) hR = 'grip';   // holding the pencil
-      const c01 = (x) => Math.min(1, Math.max(0, +x || 0)), hq = (h) => { let v = 0, sp = 0, am = 0; if (typeof h === 'number') v = h; else if (h === 'grip') { sp = 1; am = 1; } else if (h === 'blade') { sp = 2; am = 1; } else if (h && typeof h === 'object') { v = h.v ?? 0; if (h.grip) { sp = 1; am = c01(h.grip); } else if (h.blade) { sp = 2; am = c01(h.blade); } }
-        return Math.round((Math.min(1, Math.max(-1, +v || 0)) + 1) * 31) + 64 * sp + 256 * Math.round(am * 15); };
+      const hd = o.hand ?? 0, per = typeof hd === 'object' && hd !== null && ('L' in hd || 'R' in hd); let hL = per ? (hd.L ?? 0) : hd, hR = per ? (hd.R ?? 0) : hd; if (variant === 2 && o.hand === undefined) hR = 'grip';   // holding the pencil
       const gz = fc.lookAt ? this._gaze(o, fc.lookAt) : (fc.gaze || [0, 0]);
       // seeded per-instance variation: a few hundredths of a second, a little height (so a crowd reads as people)
       a.set([p[0], p[1], p[2], o.yaw || 0, (o.scale ?? 1) * (1 + vary * (h1(seed * 1.7) - 0.5) * 0.05), (o.time || 0) + vary * (h1(seed * 2.9) - 0.5) * 0.05, o.density ?? 1, o.solid ?? 1, lane[0], lane[1], lane[2], o.gain ?? 1,
         this.trackId(o.track ?? 0), variant, Math.min(this.nStories - 1, o.story || 0), o.cel ?? -1, o.alpha ?? 1, seed, o.flow ?? 0, o.hair === 'strands' ? 1 : 0,
-        tr.len || 0, tr.gain ?? 1, mask, hq(hL) + 4096 * hq(hR), tc[0], tc[1], tc[2], tr.width || 0.03, eid + 0.99 * Math.min(1, Math.max(0, fc.amt ?? 1)), fc.blink ?? (eid === 4 || eid === 5 ? 0 : -1), gz[0], gz[1]], k);
+        tr.len || 0, tr.gain ?? 1, mask, handCode(hL) + 4096 * handCode(hR), tc[0], tc[1], tc[2], tr.width || 0.03, eid + 0.99 * Math.min(1, Math.max(0, fc.amt ?? 1)), fc.blink ?? (eid === 4 || eid === 5 ? 0 : -1), gz[0], gz[1]], k);
     });
     return a;
   }

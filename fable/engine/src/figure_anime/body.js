@@ -1,6 +1,6 @@
 // ANIME look-dev copy of ../figure/body.js (see fable/notes/anime_lookdev.md). Differences: an anime head (larger cranium, small chin,
 // nose/lips pushed out of the loft; hairline evaluated analytically, the same maths in the shader), hair as ~20 chunky clump tubes
-// on the same guide sim, hands that curl (flat mitten + thumb, bent in the vertex shader), consistent triangle winding (inverted hull).
+// on the same guide sim, real hands (palm, four fingers, thumb: HAND below, posed in the vertex shader; fable/notes/polish.md), consistent triangle winding (inverted hull).
 // Jade's body: a skinned triangle mesh lofted from elliptical cross-sections in the rest pose (three LODs), a part-id
 // atlas (so the orange band, openings and skin/cloth borders are crisp), the fibres her clothes are woven from (light
 // mode), decal points (back disc, RARE EARTH, chest dot, 1420 MHz patch), hair guides + strands, straps, trouser chains.
@@ -177,28 +177,33 @@ export function buildBody(opts = {}) {
         part: (u, v, P) => { const d = dOf(P); if (d < 0.0 && Math.abs(P[0]) < 0.14) return -1; return (d > 0.085 && d < 0.128) ? PART.STRIPE : PART.JACKET; } });
     sleeves.push({ sl, side, sh, dir, dOf, sleeveBones });
     // HANDS (polish pass): palm + four fingers + thumb, see HAND at the top. Vertices carry lb = (side, digit id, 0) and lb.w = -1: the vertex shader poses
-    // them (handPose). Far LOD: the palm, the thumb and ONE mitten that takes the mean of the four fingers' angles, so the hand keeps its shape when it changes.
+    // them (handPose). LOD 0 only; LOD 1 and 2 have the thumb and ONE mitten (below) that takes the mean of the four fingers' angles.
     const hp = REST_POS[ha], bodyward = [-side, 0, 0], palm = norm(sub(bodyward, mul(dir, dot(bodyward, dir))));
     const vecC = (c) => add(add(mul(palm, c[0]), mul(dir, c[1])), [0, 0, c[2]]), fromC = (c) => add(hp, vecC(c)), toC = (P) => { const q = sub(P, hp); return [dot(q, palm), dot(q, dir), q[2]]; };
     const reg = side > 0 ? 10 : 11, hcfg = (digit, o) => ({ region: reg, partConst: PART.SKIN, bones: one(ha), mark: -1, side, digit, tileKey: 'hand', ...o });
     // the cuff closes on the wrist (it was an open tube: one looked into the sleeve), and the wrist runs up inside it
-    loft(new Loft([S(0.5070, 0.0335, 0.0355, 0.005), S(0.5100, 0.0310, 0.0330, 0.0045), S(0.5128, 0.0215, 0.0260, 0.003), S(0.5150, 0.0105, 0.0160, 0.0005)], X, Z), { nu: 20, nv: 4, region: side > 0 ? 1 : 2, partConst: PART.JACKET, bones: one(ha), tileKey: 'cuff', noHull: true });
+    loft(new Loft([S(0.5062, 0.0352, 0.0372, 0.005), S(0.5100, 0.0318, 0.0338, 0.0045), S(0.5128, 0.0215, 0.0260, 0.003), S(0.5150, 0.0105, 0.0160, 0.0005)], X, Z), { nu: 20, nv: 4, region: side > 0 ? 1 : 2, partConst: PART.JACKET, bones: one(ha), tileKey: 'cuff', noHull: true, lods: [0] });
     // palm: a slab with rounded edges, narrow at the wrist, widest at the knuckles; the knuckle line slopes back toward the little finger
     const PALM = [[-0.042, 0.0128, 0.0185, 0], [-0.012, 0.0128, 0.0190, 0], [0.008, 0.0130, 0.0208, 0.0004], [0.030, 0.0136, 0.0282, 0.0012], [0.054, 0.0128, 0.0342, 0.0010], [0.074, 0.0114, 0.0370, 0.0006], [0.088, 0.0098, 0.0366, 0.0004], [0.0965, 0.0064, 0.0330, 0], [0.0995, 0.0012, 0.0200, 0]];
-    loft(new Loft(PALM.map(([y, rx, rz, z]) => ({ c: fromC([0, y, z]), rx, rz })), palm, Z), hcfg(6, { nu: 18, nv: 18,
-      warp: (P, g) => { const c = toC(P), u = clamp(c[0] / g.rx, -1, 1), k = smooth(0.040, 0.094, c[1]); c[0] = g.rx * Math.sign(u) * Math.pow(Math.abs(u), 0.72);
-        c[1] -= k * (0.0100 * Math.pow(clamp(-c[2] / 0.036, 0, 1), 1.4) + 0.0030 * Math.pow(clamp(c[2] / 0.036, 0, 1), 1.6)); return fromC(c); } }));
+    const palmWarp = (P, g) => { const c = toC(P), u = clamp(c[0] / g.rx, -1, 1), k = smooth(0.040, 0.094, c[1]); c[0] = g.rx * Math.sign(u) * Math.pow(Math.abs(u), 0.72);
+        c[1] -= k * (0.0100 * Math.pow(clamp(-c[2] / 0.036, 0, 1), 1.4) + 0.0030 * Math.pow(clamp(c[2] / 0.036, 0, 1), 1.6)); return fromC(c); };
+    loft(new Loft(PALM.map(([y, rx, rz, z]) => ({ c: fromC([0, y, z]), rx, rz })), palm, Z), hcfg(6, { nu: 18, nv: 18, warp: palmWarp, lods: [0] }));
     const tipR = (rr, sLen) => [[sLen - 0.0120, 1], [sLen - 0.0052, 0.93], [sLen - 0.0016, 0.64], [sLen, 0.12]].map(([q, m]) => [q, rr(q) * m]);
     for (let k = 0; k < 4; k++) {                    // fingers: tapered, a little flatter than wide, a round tip
       const D = HAND.dig[k], rr = (q) => D.r * (1 - 0.20 * Math.max(0, q) / D.len) * (q < 0 ? 0.92 : 1), acr = vecC([0, -D.d[2], D.d[1]]);
       const RS = [[-0.011, rr(-1)], [-0.004, rr(-1)], [0.006, rr(0.006)], [D.L[0] * 0.5, rr(D.L[0] * 0.5) * 0.97], [D.L[0], rr(D.L[0]) * 1.03], [D.L[0] + D.L[1] * 0.5, rr(D.L[0] + D.L[1] * 0.5) * 0.97], [D.L[0] + D.L[1], rr(D.L[0] + D.L[1]) * 1.02], ...tipR(rr, D.len)];
-      loft(new Loft(RS.map(([q, r]) => ({ c: fromC(add(D.B, mul(D.d, q))), rx: r * 0.84, rz: r })), palm, acr), hcfg(k, { nu: 10, nv: 14, lods: [0, 1] }));
+      loft(new Loft(RS.map(([q, r]) => ({ c: fromC(add(D.B, mul(D.d, q))), rx: r * 0.84, rz: r })), palm, acr), hcfg(k, { nu: 10, nv: 14, lods: [0] }));      // LOD 0 only: by the time a body is small enough for LOD 1 the fingers have closed into one shape (shade.js handPose), which is what the mitten is
     }
     { const D = HAND.dig[4], e1 = cross(D.d, D.f1), rr = (q) => (q < 0.008 ? D.r : q < D.L[0] ? lerp(D.r, 0.0090, smooth(0.008, D.L[0], q)) : lerp(0.0090, 0.0077, (q - D.L[0]) / (D.len - D.L[0])));      // thumb: a full base (the ball of the thumb), two joints
       const RS = [[-0.013, D.r * 0.9], [-0.004, D.r], [0.008, rr(0.008)], [0.022, rr(0.022)], [D.L[0], rr(D.L[0])], [D.L[0] + D.L[1] * 0.5, rr(D.L[0] + D.L[1] * 0.5) * 0.96], [D.L[0] + D.L[1], rr(D.L[0] + D.L[1]) * 1.02], ...tipR(rr, D.len)];
-      loft(new Loft(RS.map(([q, r]) => ({ c: fromC(add(D.B, mul(D.d, q))), rx: r * 0.90, rz: r })), vecC(e1), vecC(D.f1)), hcfg(4, { nu: 10, nv: 13 })); }
-    { const D = HAND.dig[5], RS = [[-0.008, 0.0330, 0.0072], [0.004, 0.0346, 0.0074], [0.030, 0.0340, 0.0070], [0.055, 0.0312, 0.0064], [0.070, 0.0262, 0.0058], [0.079, 0.0170, 0.0046], [0.0825, 0.0040, 0.0016]];      // the far mitten
-      loft(new Loft(RS.map(([q, rz, rx]) => ({ c: fromC(add(D.B, mul(D.d, q))), rx, rz })), palm, Z), hcfg(5, { nu: 14, nv: 16, lods: [2] })); }
+      for (const [nv, lods] of [[13, [0]], [7, [1, 2]]]) loft(new Loft(RS.map(([q, r]) => ({ c: fromC(add(D.B, mul(D.d, q))), rx: r * 0.90, rz: r })), vecC(e1), vecC(D.f1)), hcfg(4, { nu: 10, nv, lods })); }
+    { // LOD 1 and 2: ONE form from the wrist to the fingertips (digit 5: rigid below the knuckles, bent beyond them by the mean of the four fingers) + the thumb.
+      // Its tip follows the four fingertips (the little finger's side is 3 cm shorter), so nothing jumps where it takes over from the closed fingers of LOD 0.
+      const D = HAND.dig[5], RS = [[-0.042, 0.0185, 0.0128], [-0.012, 0.0190, 0.0128], [0.008, 0.0208, 0.0130], [0.030, 0.0282, 0.0136], [0.054, 0.0342, 0.0128], [0.074, 0.0368, 0.0114],
+        [0.091, 0.0362, 0.0090], [0.117, 0.0358, 0.0072], [0.142, 0.0340, 0.0066], [0.157, 0.0300, 0.0060], [0.166, 0.0200, 0.0048], [0.1695, 0.0050, 0.0016]];
+      const TIPS = [[-0.036, 0.048], [-0.026, 0.056], [-0.009, 0.0795], [0.009, 0.0875], [0.027, 0.0775], [0.037, 0.070]];
+      const tipAt = (z) => { let i = 0; while (i < TIPS.length - 2 && z > TIPS[i + 1][0]) i++; return lerp(TIPS[i][1], TIPS[i + 1][1], clamp((z - TIPS[i][0]) / (TIPS[i + 1][0] - TIPS[i][0]), 0, 1)); };
+      loft(new Loft(RS.map(([y, rz, rx]) => ({ c: fromC([0, y, 0]), rx, rz })), palm, Z), hcfg(5, { nu: 14, nv: 18, lods: [1, 2], warp: (P) => { const c = toC(P), q = c[1] - D.B[1]; if (q > 0) c[1] = D.B[1] + q * tipAt(c[2]) / 0.0825; return fromC(c); } })); }
   }
 
   // trousers: fitted at the high waist, then a long bell to the floor. The legs are chains of simulated ring centres.
