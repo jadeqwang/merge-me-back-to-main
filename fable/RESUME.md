@@ -35,9 +35,14 @@ workstream notes in `fable/notes/`.
   when it redraws, the character is far better than the procedural figure and follows the code render pose for pose; framing holds
   if the prompt pins it; the night shot from behind was hardly changed; submit ONE job at a time. Flicker not judged (Jade must
   watch `compare_*.mp4`). NO further generation without Jade's decision: a full conversion is ~150 s of hero shots, ~$145-230.
-- Running since 23:25 (one agent, spends nothing): hybrid composite prototype: her redrawn layer cut out of `out_day_take2.mp4` /
-  `out_become.mp4` and laid over the code-drawn world (plate without the figure, matte, register, upscale, reflection). Outputs
-  `review/fable_v7/seedance_test/hybrid_*.mp4`, scripts `fable/tools/hybrid/`, notes `fable/notes/hybrid.md`.
+- Hybrid composite prototype DONE (00:30, no spend): her redrawn layer cut out (BiRefNet), registered, upscaled and laid over the
+  code-drawn world with her mirror image; lyrics/HUD/world pixels are the code's. Outputs `review/fable_v7/seedance_test/hybrid_*.mp4`
+  (+ `_compare`), tool `fable/tools/hybrid/hybrid.py`, notes `fable/notes/hybrid.md`, plate switch `--q "hide=fig"` in cast.js.
+  8-9 min per 6 s clip, unattended, no per-shot tuning. Calm lit single-figure shots look excellent (`hybrid_become` is usable as
+  is). Problems, all from the model's frames: face and hands melt in fast motion (day 239.2-239.4, 240.8), the model stops following
+  her step at 242.5-242.7, her face reads dark during the sunrise transition 230.2-230.6, the model cut one frame late, 24 fps layer
+  in a 30 fps film. WAITING FOR JADE: adopt the hybrid for hero shots or not (see the README in that folder). Nothing else is
+  running; the hourly checkpoint job was cancelled at 00:35 because nothing changes until she decides.
 - Code-version deliverables exist: 4K master `work_fable/out/v7_uhd.mp4` (8.3 GB), X encode
   `work_fable/out/deliver/merge_fable_v7_x_1080p.mp4` (429 MB).
 - Ask Jade whether to drop older review versions (v1-v6, 92 MB each) from the branch.
