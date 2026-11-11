@@ -208,36 +208,38 @@ vec2 lidUp(float u, float open, float joy){
 }
 // bold drawn folds: shadow shapes in loft space (t.x round the form, t.y along it), per region
 float fa(float f, float w){ return smoothstep(0.0, 2.0 * w + 1e-5, f); }      // an implicit shape (f > 0 inside) with a filtered edge, w = the width of a pixel in f's units (strictly inside: where a shape's function is exactly 0 along a line, nothing is drawn). No derivative is taken in here or in folds()
-// a wedge lying round the sleeve at height y0: thickest (th) at a = 0, running to a point wp turns one way and wn the other
-float wedge(float a, float y, float y0, float th, float wp, float wn){ float k = clamp(1.0 - (a > 0.0 ? a / wp : -a / wn), 0.0, 1.0); return th * k * sqrt(k) - abs(y - y0); }
-// a gather rising from the cuff: its base (half width w, turns) on the line y1, its point len further up the arm
-float gather(float tx, float y, float c, float w, float len, float y1){ float a = abs(fract(tx - c + 0.5) - 0.5); return min(w * (y - (y1 - len)) / len - a, (y1 - y) * 0.5); }
-vec2 folds(float region, vec2 t, vec3 la, vec3 arm, vec2 dt){      // dt: the width of a pixel in t (taken once, outside)      // x: the fold's shadow shape, y: its drawn line (sleeves)
+// FINAL pass (fable/notes/final_fixes.md): the sleeve's folds are CURVED shapes. They were a diamond (a wedge with a corner at its thickest point) and straight-sided
+// triangles: seen large at night (195-202) they read as the facets of a low-poly sleeve. Now:
+// a crescent lying round the sleeve: one edge is the crease (the curve y0, given by the caller), the other bulges th * 2 away from it (sg: which way); its
+// thickness runs out smoothly (no corner anywhere) to a fine point wp turns one way and wn the other. y of the result: the profile (for the crease's ink)
+vec2 cres(float a, float y, float y0, float th, float wp, float wn, float sg){ float u = clamp(a > 0.0 ? a / wp : -a / wn, 0.0, 1.0), k = 1.0 - u * u, pr = k * sqrt(k); return vec2(th * pr - abs(y - y0 - sg * th * pr), pr); }
+// a gather rising from the cuff: a thorn (concave sides, a fine point), its base (half width w, turns) on the line y1, its point len further up the arm, leaning lean turns over its length
+float gather(float tx, float y, float c, float w, float len, float y1, float lean){ float s = clamp((y - (y1 - len)) / len, 0.0, 1.0), q = 1.0 - s, a = abs(fract(tx - c - lean * q * q + 0.5) - 0.5); return min(w * s * sqrt(s) - a, (y1 - y) * 0.5); }
+vec2 folds(float region, vec2 t, vec3 la, vec3 arm, vec2 dt, float soft){      // dt: the width of a pixel in t (taken once, outside); soft: 0 a drawn edge (day) .. 1 a soft one (night)      // x: the fold's shadow shape, y: its drawn line (sleeves)
   float fo = 0.0, ln = 0.0;
   if (region == 3.0 || region == 4.0) {            // trouser leg: la = (ring x, 0 hip .. 1 hem, ring z)
     float a = atan(la.z, la.x) / 6.2832 + 0.5, p = la.y;
     fo = step(tri(a * 5.0 + 0.10 * sin(p * 9.0 + region * 2.0) + 0.2), 0.40 * smoothstep(0.52, 1.0, p));        // tall wedges rising from the hem
     fo = max(fo, step(abs(p - 0.47 - 0.045 * sin(a * 12.566 + 1.0)), 0.010) * step(0.62, tri(a * 2.0 + 0.2)));     // creases at the knee
   } else if (region == 15.0) {                     // jacket: gathers above the elastic hem (t.y 0 = hem)
-    float id = floor(t.x * 13.0), hh = fract(sin(id * 12.99 + 3.1) * 43758.5); fo = fa(min((0.22 + 0.34 * hh) * smoothstep(0.10 + 0.12 * hh, 0.03, t.y) - tri(t.x * 13.0), (t.y - 0.012) * 6.0), 20.0 * dt.x + 3.0 * dt.y);      // (polish: of uneven height, filtered edges)
+    float id = floor(t.x * 13.0), hh = fract(sin(id * 12.99 + 3.1) * 43758.5); fo = fa(min((0.22 + 0.34 * hh) * smoothstep(0.10 + 0.12 * hh, 0.03, t.y) - tri(t.x * 13.0), (t.y - 0.012) * 6.0), 20.0 * dt.x + 3.0 * dt.y + 0.09 * soft);      // (polish: of uneven height, filtered edges)
   } else if (region == 1.0 || region == 2.0) {     // sleeves (polish): t.y 0 shoulder .. 0.54 elbow .. 0.85 the widest ring .. 0.93 gathered into the cuff .. 1
-    // DRAWN, like the character sheet: inside the elbow a wedge of shadow with an inked far edge (it deepens as the arm bends; the forearm's and the upper arm's
-    // creases come with the bend), a long soft pull on the upper arm, and where the sleeve gathers into the cuff six wedges of different sizes (they were nine
-    // equal teeth in a tone too pale to see) (a band of tone under the puff was tried: seen along the forearm it drew a target round the cuff). All in a tone deeper than the form's shadow (see lightc in main).
+    // DRAWN, like the character sheet: inside the elbow a crescent of shadow with an inked crease (it deepens as the arm bends; the forearm's and the upper arm's
+    // creases come with the bend), a long soft pull on the upper arm, and where the sleeve gathers into the cuff six thorns of different sizes (a band of tone
+    // under the puff was tried: seen along the forearm it drew a target round the cuff). By day in a tone deeper than the form's shadow, at night one soft step (see main).
     if (arm.z <= 0.0) return vec2(0.0);                                                                     // a far body (the vertex shader did not look the elbow up): no sleeve folds, they would be under a pixel
     float a = fract(t.x - arm.y + 0.5) - 0.5, y = t.y, b = arm.x, mir = region == 1.0 ? 1.0 : -1.0, tx = region == 1.0 ? t.x : 1.0 - t.x, f = -1.0, g = -1.0; a *= mir;
-    float wy = 0.75 * dt.y + 0.20 * dt.x, wx = 0.75 * dt.x + 0.20 * dt.y;                                   // a pixel in the units of a wedge (along the sleeve) and of a gather (round it)
+    float wy = 0.75 * dt.y + 0.20 * dt.x + mix(0.0015, 0.0085, soft), wx = 0.75 * dt.x + 0.20 * dt.y + mix(0.0012, 0.0080, soft);      // a pixel in the units of a crescent (along the sleeve) and of a gather (round it), plus the edge's own softness: 1.5 mm by day, 8 mm at night
     if (y > 0.33 && y < 0.78) {
-      float th1 = 0.046 + 0.046 * b, y1 = 0.552 - 0.06 * a, th2 = 0.040 * smoothstep(0.08, 0.50, b), y2 = 0.668 + 0.02 * b, th3 = 0.030 * smoothstep(0.25, 0.75, b), y3 = 0.445 - 0.02 * b;
-      f = wedge(a + 0.02, y, y1, th1, 0.30, 0.15);
-      f = max(f, wedge(0.11 - a, y, y2 + 0.08 * (a - 0.11), th2, 0.20, 0.08)); f = max(f, wedge(a + 0.12, y, y3 - 0.06 * (a + 0.12), th3, 0.17, 0.07));      // (staggered round the arm: stacked on one line they drew a target on a bent elbow)
-      g = gather(a, 1.0 - y, -0.170, 0.044, 0.185, 1.0 - 0.340);                                           // the pull on the upper arm: its point toward the elbow
-      float k1 = clamp(1.0 - ((a + 0.02) > 0.0 ? (a + 0.02) / 0.30 : -(a + 0.02) / 0.15), 0.0, 1.0);
-      ln = fa(0.0030 * sqrt(k1) * step(0.02, k1) * (1.0 - 0.7 * smoothstep(0.35, 0.8, b)) - abs(y - y1 - th1 * k1 * sqrt(k1)), wy);     // the inked far edge of the elbow's wedge
+      float a1 = a + 0.02, a2 = 0.11 - a, a3 = a + 0.12, th1 = 0.013 + 0.019 * b, y1 = 0.538 - 0.05 * a1 + 0.26 * a1 * a1, th2 = 0.015 * smoothstep(0.08, 0.50, b), y2 = 0.655 + 0.02 * b - 0.07 * a2 - 0.30 * a2 * a2, th3 = 0.012 * smoothstep(0.25, 0.75, b), y3 = 0.452 - 0.02 * b - 0.05 * a3 - 0.24 * a3 * a3;
+      vec2 c1 = cres(a1, y, y1, th1, 0.30, 0.15, 1.0);
+      f = max(c1.x, max(cres(a2, y, y2, th2, 0.20, 0.09, 1.0).x, cres(a3, y, y3, th3, 0.17, 0.08, -1.0).x));      // (staggered round the arm: stacked on one line they drew a target on a bent elbow)
+      g = gather(a, 1.0 - y, -0.170, 0.040, 0.185, 1.0 - 0.340, 0.020);                                    // the pull on the upper arm: its point toward the elbow
+      ln = fa(0.0026 * sqrt(c1.y) * step(0.02, c1.y) * (1.0 - 0.7 * smoothstep(0.35, 0.8, b)) - abs(y - y1), 0.75 * dt.y + 0.20 * dt.x);     // the inked crease of the elbow's crescent
     }
     if (y > 0.62) {
-      g = max(g, gather(tx, y, 0.040, 0.042, 0.260, 0.932)); g = max(g, gather(tx, y, 0.210, 0.030, 0.170, 0.932)); g = max(g, gather(tx, y, 0.380, 0.050, 0.300, 0.932));
-      g = max(g, gather(tx, y, 0.550, 0.028, 0.150, 0.932)); g = max(g, gather(tx, y, 0.710, 0.044, 0.240, 0.932)); g = max(g, gather(tx, y, 0.880, 0.032, 0.190, 0.932));
+      g = max(g, gather(tx, y, 0.040, 0.042, 0.260, 0.932, 0.016)); g = max(g, gather(tx, y, 0.210, 0.030, 0.170, 0.932, -0.010)); g = max(g, gather(tx, y, 0.380, 0.050, 0.300, 0.932, -0.022));
+      g = max(g, gather(tx, y, 0.550, 0.028, 0.150, 0.932, 0.008)); g = max(g, gather(tx, y, 0.710, 0.044, 0.240, 0.932, 0.018)); g = max(g, gather(tx, y, 0.880, 0.032, 0.190, 0.932, -0.012));
     }
     fo = max(fa(f, wy), fa(g, wx)) * arm.z; ln *= arm.z;
   }
@@ -322,18 +324,22 @@ void main(){
   vec3 diff, glow; float silh = u_sil * smoothstep(0.25, 0.80, dot(-V, normalize(u_sun)));
   if (!head && (part == ${PART.HAIR} || part == ${PART.BUN})) diff = hairLit(v_la, N, N, N, 0.0, V, v_hv, v_hl, lane, 0.0, 2.0, glow);
   else {
-    vec2 fold2 = vec2(0.0); if (u_points == 0) fold2 = folds(region, tfo, v_la, (region == 1.0 || region == 2.0) ? vec3(floor(v_flags.z) / 255.0, v_flags.y, clamp((fract(v_flags.z) - 0.01) / 0.97, 0.0, 1.0)) : vec3(0.0, 0.25, 0.0), dtf); float fold = fold2.x;
-    float ndl = dot(N, u_key) + (skin ? 0.30 : 0.08), aw = fwidth(ndl) * 0.8 + 0.004;
+    float kT = max(max(u_keyCol.r, u_keyCol.g), u_keyCol.b) - min(min(u_keyCol.r, u_keyCol.g), u_keyCol.b), kW = max(u_sunAmt, min(0.85, 2.0 * kT));      // r3: a COLOURED key (keyCol) counts by its own saturation, not only by sunAmt (at sunAmt 0.1-0.3 it barely tinted the jacket); white: as before. Skin takes half the tint
+    // FINAL pass: nite = 1 on the jacket and its sleeves while the key is weak (night, the violet hour), 0 from sunrise on. There a fold is ONE soft tone step (foldN) and the
+    // form's own terminator is a soft gradient: both were hard edges that followed the mesh, i.e. facets, on the film's closest shot (195-202). Day and sunrise: as before.
+    float nite = (u_points == 0 && (region == 1.0 || region == 2.0 || region == 15.0)) ? 1.0 - smoothstep(0.12, 0.30, kW) : 0.0;
+    vec2 fold2 = vec2(0.0); if (u_points == 0) fold2 = folds(region, tfo, v_la, (region == 1.0 || region == 2.0) ? vec3(floor(v_flags.z) / 255.0, v_flags.y, clamp((fract(v_flags.z) - 0.01) / 0.97, 0.0, 1.0)) : vec3(0.0, 0.25, 0.0), dtf, nite); float foldN = fold2.x * nite, fold = fold2.x - foldN;
+    float ndl = dot(N, u_key) + (skin ? 0.30 : 0.08), aw = fwidth(ndl) * 0.8 + 0.004 + 0.45 * nite;
     float sh = mix(smoothstep(-aw, aw, ndl) * (1.0 - forceSh), 1.0 - faceD.x, (head && hairM < 1.0 && v_la.z > 0.015) ? faceD.y : 0.0) * (1.0 - fold), jaw = 0.0;
     if (u_points == 0 && (region == 14.0 || region == 0.0)) { float e = v_la.y + 0.110 - 0.30 * v_la.x, ae = fwidth(e) * 0.8 + 0.0008; jaw = smoothstep(-ae, ae, e) * (1.0 - smoothstep(0.062, 0.090, v_la.z)); sh *= 1.0 - jaw; }
     if (head) { float ajw = fwidth(v_flags.y) * 0.8 + 0.02; jaw = smoothstep(0.60 - ajw, 0.60 + ajw, -v_flags.y) * smoothstep(-0.030, -0.040, v_la.y) * (1.0 - hairM); sh *= 1.0 - jaw; }      /* polish: from the loft's smooth normal (the screen-space one drew the mesh's facets as stray triangles on the jaw) */      // ... and the underside of the jaw is in it too (seen from below the face was one pale shape); it leaves the neck when her head tips back (the neck is then in front of the jaw, in the light)      // r3: the jaw's shadow is a SHAPE in the head's frame (it turns with her head; deeper on the side away from the key): the neck sits in it, the collarbone below is lit, so chin, neck and collar separate
     vec3 nightAmb = u_amb * (skin ? 1.6 : 1.0) * (1.0 - 0.30 * fold) * (1.0 - 0.38 * jaw);       // skin holds a little more of the night's light: a face in shadow tones, not a hole
-    float kT = max(max(u_keyCol.r, u_keyCol.g), u_keyCol.b) - min(min(u_keyCol.r, u_keyCol.g), u_keyCol.b), kW = max(u_sunAmt, min(0.85, 2.0 * kT));      // r3: a COLOURED key (keyCol) counts by its own saturation, not only by sunAmt (at sunAmt 0.1-0.3 it barely tinted the jacket); white: as before. Skin takes half the tint
     vec3 lightc = mix(mix(nightAmb, shadeTint(skin ? ${PART.SKIN} : part) * mix(vec3(1.0), vec3(0.86, 0.75, 0.80), jaw), u_sunAmt), skin ? mix(vec3(1.0), u_keyCol, 0.5) : u_keyCol, kW * sh);
-    if (region == 1.0 || region == 2.0 || region == 15.0) lightc *= mix(vec3(1.0), mix(vec3(1.0), vec3(0.44, 0.48, 0.66), u_sunAmt), fold);      // sleeves: a fold is a tone deeper than the form's shadow, so it still reads on the shaded side
+    if (region == 1.0 || region == 2.0 || region == 15.0) lightc *= mix(vec3(1.0), mix(vec3(1.0), vec3(0.44, 0.48, 0.66), u_sunAmt), fold) * (1.0 - 0.17 * foldN);      // sleeves: a fold is a tone deeper than the form's shadow, so it still reads on the shaded side
     diff = base * lightc * (1.0 - 0.55 * inside * step(2.5, region) * step(region, 4.5)) * (1.0 - 0.92 * silh);
     diff = mix(diff, vec3(0.030, 0.032, 0.075) * mix(u_amb, vec3(1.0), u_sunAmt), 0.86 * fold2.y * smoothstep(0.3, 0.8, u_sunAmt) * (1.0 - silh));      // the folds' ink strokes (daylight only, like the outline)
-    float dirM = smoothstep(-0.2, 0.6, dot(N, u_rimDir)), thr = head ? mix(0.92, 0.84, dirM) : (skin ? mix(0.86, 0.72, dirM) : mix(0.80, 0.60, dirM)), ar = fwidth(fres) * 0.8 + 0.01;
+    if (u_points == 0 && skin && (region == 10.0 || region == 11.0)) diff *= 1.0 - 0.36 * (1.0 - smoothstep(0.12, 0.30, kW)) * smoothstep(4.2, 6.2, v_flags.z) * (1.0 - smoothstep(0.48, 0.70, facing));      // FINAL pass: at night there is no ink, and a hand was one flat tone (the pencil hand of 195-202: a block). Each finger and the palm's edge turn a tone darker where they turn away from the lens: the fingers separate. Only while the fingers are open (their width in pixels), and gone by sunrise
+    float dirM = smoothstep(-0.2, 0.6, dot(N, u_rimDir)), thr = head ? mix(0.92, 0.84, dirM) : (skin ? mix(0.86, 0.72, dirM) : mix(0.80, 0.60, dirM)), ar = fwidth(fres) * 0.8 + 0.01 + 0.07 * nite;      // (FINAL pass: on the night jacket the rim's inner edge is soft: hard, it drew the facets of a bent elbow)
     glow = mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.35) * ((head ? 0.30 : 0.50) * smoothstep(thr - ar, thr + ar, fres) * (u_rimBoth + (1.0 - u_rimBoth) * dirM));
     if (hairM > 0.0) { vec3 g2, hc = hairLit(v_la, N, N, N, 0.0, V, v_hv, v_hl, lane, 1.0, 1.0, g2);
       float pxh = max(length(dFdx(v_la.xz)), length(dFdy(v_la.xz))) + 1e-6, pl = line(abs(v_la.x - F_PARTX - 0.0012 * sin(v_la.z * 75.0)), 0.0017, pxh) * smoothstep(-0.060, -0.030, v_la.z) * step(0.09, v_la.y) * (1.0 - smoothstep(0.0035, 0.0075, pxh));

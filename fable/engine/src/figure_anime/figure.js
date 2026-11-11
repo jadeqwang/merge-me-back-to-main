@@ -450,8 +450,13 @@ export class Figure {
     const camPos = v ? [-(v[0] * v[12] + v[1] * v[13] + v[2] * v[14]), -(v[4] * v[12] + v[5] * v[13] + v[6] * v[14]), -(v[8] * v[12] + v[9] * v[13] + v[10] * v[14])] : ctx.camPos;
     const ppm1 = ctx.H / (2 * Math.tan((ctx.fovY || 0.6) / 2));
     const NB = 9, buckets = Array.from({ length: NB }, () => []), q = this.quality * (ctx.reflect ? 0.7 : 1);
+    const few = this.inst.length <= 48;
     for (const o of this.inst) {
-      const p = o.pos || [0, 0, 0], sc = o.scale ?? 1, d = Math.hypot(p[0] - camPos[0], p[1] + 0.9 * sc - camPos[1], p[2] - camPos[2]);
+      const p = o.pos || [0, 0, 0], sc = o.scale ?? 1; let d = Math.hypot(p[0] - camPos[0], p[1] + 0.9 * sc - camPos[1], p[2] - camPos[2]);
+      // FINAL pass: the distance to where she IS (her hips on the track) when that is nearer than her instance's origin. A take with root motion (`violet` walks far out
+      // from its origin) had put the film's closest shot (195-202) on mesh LOD 1: the mitten hand, a coarse sleeve. Never further than before (a level can only go up),
+      // and not for a crowd (more than 48 bodies: their buckets, and the frame cost of 142-181, stay exactly as they were)
+      if (few) { const hq = this._hips(o); d = Math.min(d, Math.hypot(hq[0] - camPos[0], hq[1] - camPos[1], hq[2] - camPos[2])); }
       const hpx = 1.7 * sc * ppm1 / Math.max(d, 0.3) * (o.lodBias || 1) * q, frac = Math.min(1, (hpx / 620) * (hpx / 620));
       buckets[Math.min(NB - 1, Math.max(0, Math.round(-Math.log2(Math.max(frac, 1e-6)))))].push(o);
     }
@@ -490,6 +495,13 @@ export class Figure {
     gl.bindVertexArray(null); gl.depthMask(true);
   }
   // eye direction toward a world point: the target in the head joint's frame (CPU copy of the track), as iris offsets in -1..1
+  // where her hips are in the world (CPU copy of the vertex shader's trackInfo / jpos / place, nearest frame): for the level of detail
+  _hips(o) {
+    const p = o.pos || [0, 0, 0], sc = o.scale ?? 1, T = this.tracks[this.trackId(o.track)]; if (!T || !T.track.data) return [p[0], p[1] + 0.9 * sc, p[2]];
+    const tr = T.track, n = T.frames, D = tr.data; let ft = (o.time || 0) * (tr.fps || 60), lap = 0; if (tr.loop) { lap = Math.floor(ft / n); ft -= lap * n; } else ft = Math.min(n - 1, Math.max(0, ft));
+    const f = Math.min(n - 1, Math.max(0, Math.floor(ft))) * STRIDE, ld = tr.loop ? (tr.loopDelta || [0, 0]) : [0, 0], x = D[f] + ld[0] * lap, z = D[f + 2] + ld[1] * lap, c = Math.cos(o.yaw || 0), s = Math.sin(o.yaw || 0);
+    return [p[0] + (c * x + s * z) * sc, p[1] + D[f + 1] * sc, p[2] + (-s * x + c * z) * sc];
+  }
   _gaze(o, target) {
     const T = this.tracks[this.trackId(o.track ?? 0)]; if (!T) return [0, 0];
     const tr = T.track, D = tr.data, F = tr.frames, p = o.pos || [0, 0, 0], sc = o.scale ?? 1; let ff = (o.time || 0) * (tr.fps || 60), lap = 0;
