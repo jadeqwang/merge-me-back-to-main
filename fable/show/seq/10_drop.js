@@ -77,12 +77,15 @@ void main(){ vec4 p = uInvVP * vec4(vUv*2.-1., 1., 1.); vec3 d = normalize(p.xyz
       { t0: bar(97), f: () => { const n = C.thousand(t, { each: (i, d) => { d.gain = i === 0 ? 2.4 : 1.5; } }); const c = t < tS ? down(t) : orbit(t); const up = 1 - ss(t, bar(98) + 0.2, bar(98) + 1.5), k = ss(t, bar(98) + 1.3, bar(98) + 2.4), g = ss(t, bar(101), bar(103));
         return { camera: { ...c, topUp: [1, 0, 0], near: up > 0.5 ? 2 : 0.1, far: 30000 }, env: { ground: topGround(up), grade: sunGrade(k, g), ...sunSide(k, g) },
           world: world({ text: 0, lights: false, gain: lerp(2.4, 0.15, k), main: { head: C.mainHead(t), gain: 2.4 }, ...(k > 0.6 ? { only: ['main'] } : {}) }), extra: [...(k > 0.01 ? [belt(k)] : []), ...topGlow(up), ...C.fallGlow(t, { gain: 0.8 * up }), C.heroPool(t, c, { gain: PG * (1 + PU * up) })], hud: hud(n) }; } },
-      { t0: bb(103, 3), f: (tt, u) => { const n = C.thousand(t, { each: (i, d) => { if (i === 0) d.gain = 1.6; } }); const a = C.heroHips(bar(104) + 0.4), Ha = (x, y, z) => [a[0] + x, y, a[2] + z];
+      { t0: bb(103, 3), f: (tt, u) => { let hp = null; const n = C.thousand(t, { each: (i, d) => { if (i === 0) { d.gain = 1.6; hp = d.pos; } else { const w = C.troupeSlot(i); d.pos = [hp[0] + w[0], 0, hp[2] + w[1]]; } } }); const a = C.heroHips(bar(104) + 0.4), Ha = (x, y, z) => [a[0] + x, y, a[2] + z];
         // r4 Y (NOTES_v4 Y5): the cut finds them in the kick's low landing (her hips 0.34 m up, 0.7 m north of where she will salute) and the frame was aimed at
         // the salute: a strip of bodies low and right under an empty sky until 178.9. The aim now starts on the low pose and rises with her (her hips, averaged
         // over 0.3 s) into the same held frame; it is home on b104 (179.25), before the fist meets the palm.
         let hy = 0, hzz = 0; for (let q = -2; q <= 2; q++) { const p = C.heroHips(Math.max(t + q * 0.075, bb(103, 3) + 0.02)); hy += p[1] / 5; hzz += p[2] / 5; } const rise = sm(seg(hy, 0.34, 1.0));
-        const camera = { pos: Ha(7.6 - 0.7 * sm(u), 0.8, 1.95), target: Ha(0, lerp(0.70, 1.28, rise), hzz - a[2] - 0.15), fov: 25, far: 30000 };
+        // final pass: FRONTAL. The lens stands on her axis (due east of where she salutes, on main), she is on the vertical centre line, and for this shot the 1,023
+        // stand in a wedge behind her (C.troupeSlot: the word's ground plan had her on one corner of the A's leg, bodies on one side of her only and in front of her);
+        // her head a third down the frame, nobody between her and the lens, nobody cut by a frame edge before the eighth row. Same cut, same rise.
+        const camera = { pos: Ha(7.5 - 0.4 * sm(u), 1.15, 0), target: Ha(0, lerp(0.62, 1.07, rise), hzz - a[2]), fov: 25, far: 30000 };
         return { camera, env: { grade: sunGrade(1, 1), ...sunSide(1, 1) }, world: world({ text: 0, lights: false, only: ['main'], main: { head: C.mainHead(t), gain: 2.4 } }), extra: [belt(1), C.heroPool(t, camera, { gain: PG })], hud: hud(n) }; } },
     ], t1);
   } };

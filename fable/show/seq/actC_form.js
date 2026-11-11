@@ -219,6 +219,13 @@ export function makeActC(K) {
             if (seenPop && t > q.tDep + dt) for (let k = 0; k < 2; k++) if (f[k][1] < 0.105 && pf[k][1] < 0.105) { const sl = Math.hypot(f[k][0] - pf[k][0], f[k][2] - pf[k][2]) / dt; nPl++; sumPl += sl; const bt = (byTrack[d.track + (i === 0 ? ' (hero)' : '')] = byTrack[d.track + (i === 0 ? ' (hero)' : '')] || [0, 0]); bt[0]++; bt[1] += sl; hist[sl < 0.15 ? 0 : sl < 0.3 ? 1 : sl < 0.6 ? 2 : sl < 1.2 ? 3 : 4]++; if (sl > maxPl) { maxPl = sl; atPl = `copy ${i} t ${t.toFixed(3)} ${d.track} sc ${q.sc.toFixed(3)} R ${q.R}`; } } }
         pd = d; ph = h; pf = f; } }
     console.log(`actC check: hips step max ${(maxHip * 100).toFixed(1)} cm per 1/60 s (${atHip}); at the set pose join ${(maxJoin[0] * 100).toFixed(1)} cm; yaw step max ${((maxYaw * 180) / Math.PI).toFixed(2)} deg (${atYaw}); planted feet: ${nPl} samples, mean ${(sumPl / nPl).toFixed(3)} m/s, share < 0.15 / 0.3 / 0.6 / 1.2 / more m/s: ${hist.map((h) => ((100 * h) / nPl).toFixed(1)).join(' / ')} %, max ${maxPl.toFixed(2)} m/s (${atPl}); mean by track: ${Object.keys(byTrack).sort().map((k) => `${k} ${(byTrack[k][1] / byTrack[k][0]).toFixed(3)}`).join(', ')}`); }
+  // final pass: the salute's troupe (10 E, 178.4-181), seen from the front on her axis: a wedge behind her, she alone in the front row. Row k stands k * 1.7 m behind
+  // her, k + 1 bodies 1.9 m apart, centred on her axis, each row in the gaps of the one before. Offsets [east, south] from HER instance origin (every copy is on
+  // the same take at the same time there, so the wedge moves as one). The copies nearest to her in the word take the rows nearest to her.
+  let wedge = null;
+  function troupeSlot(i) { if (!wedge) { ensure(); const RS = 1.7, LS = 1.9, slots = []; for (let k = 1; slots.length < N - 1; k++) for (let j = 0; j <= k; j++) slots.push([-k * RS, (j - k / 2) * LS]);
+      const order = []; for (let q = 1; q < N; q++) order.push(q); order.sort((x, y) => (P[x].rf || 0) - (P[y].rf || 0) || x - y); wedge = new Array(N).fill(null); order.forEach((q, n2) => { wedge[q] = slots[n2]; }); wedge[0] = [0, 0]; }
+    return wedge[i]; }
   // fill the crowd; returns how many are on stage
   function thousand(t, o = {}) { const cr = cast.crowd('thousand', N), n = t < bar(73) ? 0 : 1 << stageAt(t); for (let i = 0; i < n; i++) { const d = dancer(i, t, o); if (o.each) o.each(i, d); cr.put(i, d); } return n; }
   // where the hero's hips are (world), for cameras and for main's write head
@@ -237,6 +244,6 @@ export function makeActC(K) {
   function heroPool(t, cam, o = {}) { const h = heroHips(t), d = cam ? Math.hypot(cam.pos[0] - h[0], cam.pos[1], cam.pos[2] - h[2]) : 0, r = Math.max(o.r ?? 1.3, 0.035 * d), g = o.gain ?? 1, c = o.color || [1.0, 0.40, 0.09];
     return W.glow([{ x: h[0], z: h[2], r, c: c.map((v) => v * g) }, { x: h[0], z: h[2], r: 0.45 * r, c: c.map((v) => v * g * 0.9) }]); }
   K.shared.dropCam = dropCam;
-  return { N, S, P, hx, hz, box, head, view, cells, heroCell, CW, CL, WEST, EAST, YD, TP, tBorn, stageAt, peelAt, streakDraw, dancer, thousand, heroHips, mainHead, headAt, fallGlow, heroPool, laneOf, dropCam, coilCam, ensure,
+  return { N, S, P, hx, hz, box, head, view, cells, heroCell, CW, CL, WEST, EAST, YD, TP, tBorn, stageAt, peelAt, streakDraw, dancer, thousand, heroHips, mainHead, headAt, fallGlow, heroPool, troupeSlot, laneOf, dropCam, coilCam, ensure,
     times: { tBuild, tDrop, tLand, tCoil, tHeroLands, tLow, tRun, T2, tJoin: tJ, tSet, tFall, tUnison, tEarly } };
 }

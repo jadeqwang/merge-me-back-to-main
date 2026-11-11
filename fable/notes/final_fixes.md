@@ -1,8 +1,8 @@
 # Final-fix pass before the master render, 2026-11-10
 
-Brief: three exact fixes on the Fable cut v6. Status line (kept current): **item 1 done and checked; items 2 and 3 open. Not pushed.**
+Brief: three exact fixes on the Fable cut v6. Status line (kept current): **items 1 and 2 done and checked; item 3 open. Not pushed.**
 
-Files touched: `fable/engine/src/figure_anime/shade.js`, `figure.js`. `fig=classic` (`fable/engine/src/figure/`) is not touched.
+Files touched: `fable/engine/src/figure_anime/shade.js`, `figure.js`; `fable/show/seq/10_drop.js`, `actC_form.js`. `fig=classic` (`fable/engine/src/figure/`) is not touched.
 
 ## Commands
 ```
@@ -10,6 +10,10 @@ node fable/tools/render.mjs --show /fable/show/main.js --res 1280x720 --sheet 19
 node fable/tools/render.mjs --show /fable/show/main.js --res 1280x720 --sheet 199.0:200.5:0.1:work_fable/stills/final/i1_write_01s.jpg:4
 node fable/tools/render.mjs --show /fable/show/main.js --res 1920x1080 --stills 199:a.png,200.5:b.png        # 3840x2160 and a crop to judge the hand
 node fable/tools/render.mjs --show /fable/show/main.js --res 1920x1080 --bench 172.5
+node fable/tools/render.mjs --show /fable/show/main.js --res 1280x720 --sheet 178.4:181.0:0.2:work_fable/stills/final/i2_salute_02s.jpg:4      # and 178.4:179.5:0.1 -> i2_salute_01s.jpg
+node fable/tools/render.mjs --show /fable/show/main.js --res 1280x720 --sheet 177.25:177.75:0.0333334:work_fable/stills/final/i3_kick_30fps.jpg:4
+node fable/tools/render.mjs --show /fable/show/main.js --q "cgeo=1" --res 640x360 --stills 179.6:x.png | grep 'actC geo'      # the cells round her, metres from her feet
+node fable/tools/render.mjs --show /fable/show/main.js --q "dev=cuts&standin=1" --stills 0:x.png | grep -o 'CUTS.*' | cut -c6- | cmp - fable/show/cuts.json
 fable/engine/src/figure_anime/sheet.sh out.jpg H anime 480x480 4 500 "5 13 21 29"                            # the pencil grip by day, four views (MB=4 in the environment for the film's ink)
 ```
 Outputs (git-ignored): `work_fable/stills/final/` (strips), `work_fable/stills/final/dev/` (working crops, before / after).
@@ -53,3 +57,20 @@ Left / not done for item 1:
 - Night folds are deliberately faint (17 %): at 720p they are barely there; the sleeve reads by its rim and its cuff.
 - Any other shot with 48 bodies or fewer whose take carries her far from her instance's origin now gets the mesh level her real distance asks for. Seen: seq 11
   (188-203). Not swept: the whole film at a fine step.
+
+## 2. The salute, 178.383-181.0 (10 E)
+Why it sat right of centre with bodies cut by the right edge: no lens could balance it. In the word's ground plan (`--q "cgeo=1"`) she stands on a CORNER: her
+row runs 8.7 m to her north at 0.8 m a body, three rows stand behind her on that side only, a second group stands IN FRONT of her on the north side (2-8 m east,
+from 0.8-2.4 m north of her axis), and to her south there is nothing for 4.8 m (the gap between the A and the I), then the I. The old lens stood in that gap.
+- **The lens is frontal**: on her axis, due east of where she salutes (on main), 7.5 -> 7.1 m, 1.15 m up, 25 degrees as before; it aims at her hips' own
+  north-south position (she lands 0.7 m north of where she salutes and comes back), so she is on the vertical centre line (50.2 % at 179.6).
+- **For this shot the 1,023 stand in a wedge behind her** (`actC_form.js` `troupeSlot`, applied in the shot's `each`): row k is 1.7 k m behind her, k + 1 bodies
+  1.9 m apart, centred on her axis, each row in the gaps of the one before; she is alone in the front row, nobody stands between her and the lens. The copies
+  nearest to her in the word take the nearest rows. Offsets are from her instance origin: all 1,024 are on the same take at the same time there, so the wedge
+  moves as one body. The wedge is wider than the lens's angle from the eighth row on (22 m back, bodies a third of her size): the crowd runs out through both
+  edges there, the near rows are whole. The change of ground plan is on the cut (178.383), from a lens 2.3 m away at ground level to this one.
+- Her head is 31-34 % down the frame, her feet 83 %, the pool under her. The aim rises with her as before (`rise`, her hips' height): 178.8-179.0, still from 179.1.
+- Cut times: unchanged (`cuts.json` regenerated into a scratch file: identical).
+Checked: `i2_salute_02s.jpg` (178.4-181 / 0.2 s), `i2_salute_01s.jpg` (178.4-179.5 / 0.1 s), 1080p stills 178.6, 179.0, 179.6 (`dev/s_check.jpg`).
+Left: 178.4-178.8 (the low landing pose before the rise): the troupe is a low band across the middle, sky above and 35 % of empty mirror (reflections) below;
+she is 2 % right of centre there (she is still coming back from the landing). The far rows are cut by both frame edges (by design, from row 8).
