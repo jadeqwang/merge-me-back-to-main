@@ -1,8 +1,7 @@
 # Fable cut: resume here
 
-Branch `fable/merge`. A third, independent cut of "Merge", made end to end by Claude Fable 5.2, every pixel code-drawn, no filming.
-If you are a new session picking this up: read `fable/SPEC.md` (the direction, look, timeline, contracts), then this file, then the
-workstream notes in `fable/notes/`.
+**Start with `fable/HANDOFF.md`** (written 2026-11-11): current state, the decision waiting for Jade, how to work, the rules.
+This file is the running log behind it; the block below was last updated at the end of that session and the older text is history.
 
 ## State (updated 2026-11-10 15:45, checkpoint 7): READ THIS BLOCK FIRST, the older text below is history
 
