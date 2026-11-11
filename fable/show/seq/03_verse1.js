@@ -23,11 +23,11 @@ export const LIFE = {
   'jade/piano': { track: 'life_piano', prop: 'piano', dist: 4.5, camY: 1.0, tgtY: 0.76, face: 42, rface: -22, ts: 0.17, start: 0.45 },
   'jade/violin': { track: 'life_violin', prop: 'violin', dist: 5.3, camY: 1.2, tgtY: 0.98, face: 48, rface: -26, ts: 0.19, start: 0.1 },
   'jade/poet': { track: 'life_poet', prop: 'notebook', dist: 3.3, camY: 0.62, tgtY: 0.46, face: 50, rface: -23, ts: 0.13, start: 1.7 },
-  'jade/nasa-ames': { track: 'life_nasa', prop: 'wind', dist: 5.5, camY: 1.15, tgtY: 0.98, face: 8, ts: 0.19, start: 0.6 },
+  'jade/nasa-ames': { track: 'life_nasa', prop: 'wind', dist: 5.5, camY: 1.15, tgtY: 0.98, face: 8, ts: 0.19, start: 0.6, headClear: [1.27, 1.80, -0.35, 0.55] },   // r4 Y: no streamline across her head and raised arms
   'jade/robot-ninja-apocalypse': { track: 'life_band', prop: 'guitar', dist: 5.2, camY: 1.15, tgtY: 0.98, face: 62, ts: 0.19, start: 0 },
   'jade/wushu': { track: 'life_wushu', prop: null, dist: 5.4, camY: 1.15, tgtY: 0.95, face: 40, ts: 0.19, start: 0 },
   'jade/sandstorm': { track: 'life_stage', prop: 'stage', dist: 5.6, camY: 1.15, tgtY: 1.0, face: 55, rface: -22, ts: 0.19, start: 0 },
-  'jade/home': { track: 'life_home', prop: 'orrery', dist: 3.0, camY: 0.66, tgtY: 0.79, face: 35, ts: 0.12, start: 0, reach: 0.72 },      // r2: closer (she is half the frame); the model hangs 0.72 m from her shoulder (was 1.2) so it still fits
+  'jade/home': { track: 'life_home', prop: 'orrery', dist: 3.0, camY: 0.66, tgtY: 0.79, face: -15, ts: 0.12, start: 0, reach: 0.72 },      // r2: closer (she is half the frame); the model hangs 0.72 m from her shoulder (was 1.2) so it still fits. r4 Y (Y7): seen from her side (face 35 -> -15): with her knees toward the lens they were a second body in the foreground; in profile the pointing arm and her lifted face lead, the knees are hers
 };
 
 export default function seq(K) {
@@ -110,7 +110,7 @@ export default function seq(K) {
       camera = { pos: K.rel(f, 0.15, 4.1 - 0.12 * u, h[1] + 0.02), target: K.rel(f, -0.85, 0, h[1] - 0.2), fov: 35, focusDist: 4.2, aperture: 0.018 }; }
     else camera = { pos: K.rel(a, 0.75 - lr.shift, cfg.dist * (1 - 0.035 * u), cfg.camY), target: K.rel(a, -lr.shift, 0, cfg.tgtY), fov: 35, focusDist: cfg.dist, aperture: 0.018 };
     cast.actor(L.name, { lane: L.lane }).set({ pos, yaw, track: cfg.track, time, vary: 0, face: eyesLead(cfg.track, time) });
-    const col = K.hex(L.color), b = props.begin(); if (cfg.prop) props[cfg.prop](b, { pos, yaw, color: col, track: cfg.track, time, clock: t, reach: cfg.reach });
+    const col = K.hex(L.color), b = props.begin(); if (cfg.prop) props[cfg.prop](b, { pos, yaw, color: col, track: cfg.track, time, clock: t, reach: cfg.reach, headClear: cfg.headClear });
     return { camera, env: { grade: { exposure: 1.6, vignette: 0.42 }, ground: { fogAmt: 0.6 } },
       world: { named: { hide: true }, conn: { gain: 0.16 }, fork: { gain: 0.4 }, merge: { gain: 0.4 }, text: 0, flow: 0.08, lights: { gain: 0.55, minPx: 1.3, clear: [[a.x, a.z, 24]], clearHeads: [[a.x, a.z, 24]] } },
       extra: [W.glow([{ x: a.x, z: a.z, r: 3.2, c: [col[0] * 0.1, col[1] * 0.1, col[2] * 0.1] }]), lr.R.drawable({ head: t, gain: 2.6, textGain: 1.15, widthScale: 1.2, halo: 0.3, haloPx: 5, flow: 0.18, flowSpeed: 3, minPx: 1.6 }), props.drawable(b, { gain: 1 })],

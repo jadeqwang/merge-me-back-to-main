@@ -52,7 +52,7 @@ void main(){ vec4 p = uInvVP * vec4(vUv*2.-1., 1., 1.); vec3 d = normalize(p.xyz
       { t: bar(98) + 0.75, pos: [tcx - 30, 0.5 * hT, tcz + 6], target: [tcx - 3, 0, tcz + 1], fov: 36 }, { t: bar(98) + 1.45, pos: Hr(-10, 15, 16), target: Hr(3, 1.0, 0), fov: 37 },
       { t: bar(98) + 2.1, pos: Hr(11, 8, 3.0), target: Hr(0, 1.0, -0.4), fov: 34 }, { t: bar(98) + 2.6, pos: Hr(8.2, 2.6, 2.4), target: Hr(0, 1.0, -0.7), fov: 31 }, { t: tS, ...orbit(tS), stop: true }]);
     const sunrise = { grade: { exposure: 1.02 } }; const world = (o = {}) => ({ text: 0.5, flow: 0.1, lights: { gain: 0.5 }, main: { head: C.mainHead(t) }, ...o });
-    const hud = (n) => K.hudMain(t, { count: n });
+    const hud = (n) => K.hudMain(t, { count: n }), PG = +(E.Q.get('ypg') || 0.6), PU = +(E.Q.get('ypu') || 4);
     // the mirror from above: deep rose-violet, gold toward the sun (east = up), and the sun's glitter path down main, through the gap between the A and the I
     const topGround = (up) => ({ base: [lerp(0.02, 0.085, up), lerp(0.02, 0.018, up), lerp(0.08, 0.07, up)], f0: lerp(0.5, 0.30, up), baseCut: lerp(0.5, 0.2, up), ripple: 0.02 });
     if (!specks) { specks = []; for (let q = 0; q < 520; q++) { const a = hash1(q * 7 + 1), b = hash1(q * 13 + 5) + hash1(q * 29 + 3) + hash1(q * 31 + 11) - 1.5, u = a * a; specks.push({ x: tcx + (0.62 - 1.3 * u) * hT, z: hz + b * (1.6 + 5.5 * u), r: 0.22 + 0.9 * hash1(q * 3 + 2) * (0.4 + u), w: 1.3 + 3.1 * hash1(q * 17), p: 6.283 * hash1(q * 19 + 4), k: 0.5 + 0.9 * (1 - u) }); } }
@@ -73,12 +73,17 @@ void main(){ vec4 p = uInvVP * vec4(vUv*2.-1., 1., 1.); vec3 d = normalize(p.xyz
       { t0, f: () => { const n = C.thousand(t, { each: (i, d) => { if (i === 0 && t < bar(90)) d.trail = { len: 0.5, gain: 1.2, mask: ['toeL', 'toeR', 'handL', 'handR'] }; } }); const camera = { ...C.dropCam(t), far: 30000 }; const imp = Math.exp(-(t - t0) * 3);
         return { camera, env: sunrise, world: world(), hud: hud(n), flash: 0.5 * imp }; } },
       { t0: bar(93), f: () => { const n = C.thousand(t, { each: (i, d) => { if (i === 0) d.gain = 2.2; } }); const c = lift(t); const up = ss(t, bar(94.4), bar(96.4));
-        return { camera: { ...c, far: 30000, topUp: [1, 0, 0] }, env: { ground: topGround(up), grade: { exposure: 1.02 } }, world: world({ text: 0.3 * (1 - up), main: { head: C.mainHead(t), headGain: 3, headLen: 3 } }), extra: topGlow(up), hud: hud(n) }; } },
+        return { camera: { ...c, far: 30000, topUp: [1, 0, 0] }, env: { ground: topGround(up), grade: { exposure: 1.02 } }, world: world({ text: 0.3 * (1 - up), main: { head: C.mainHead(t), headGain: 3, headLen: 3 } }), extra: [...topGlow(up), C.heroPool(t, c, { gain: PG * (1 + PU * up) })], hud: hud(n) }; } },
       { t0: bar(97), f: () => { const n = C.thousand(t, { each: (i, d) => { d.gain = i === 0 ? 2.4 : 1.5; } }); const c = t < tS ? down(t) : orbit(t); const up = 1 - ss(t, bar(98) + 0.2, bar(98) + 1.5), k = ss(t, bar(98) + 1.3, bar(98) + 2.4), g = ss(t, bar(101), bar(103));
         return { camera: { ...c, topUp: [1, 0, 0], near: up > 0.5 ? 2 : 0.1, far: 30000 }, env: { ground: topGround(up), grade: sunGrade(k, g), ...sunSide(k, g) },
-          world: world({ text: 0, lights: false, gain: lerp(2.4, 0.15, k), main: { head: C.mainHead(t), gain: 2.4 }, ...(k > 0.6 ? { only: ['main'] } : {}) }), extra: [...(k > 0.01 ? [belt(k)] : []), ...topGlow(up), ...C.fallGlow(t, { gain: 0.8 * up })], hud: hud(n) }; } },
-      { t0: bb(103, 3), f: (tt, u) => { const n = C.thousand(t, { each: (i, d) => { if (i === 0) d.gain = 1.6; } }); const a = C.heroHips(bar(104) + 0.4), Ha = (x, y, z) => [a[0] + x, y, a[2] + z]; const camera = { pos: Ha(7.6 - 0.7 * sm(u), 0.8, 1.95), target: Ha(0, 1.28, -0.15), fov: 25, far: 30000 };
-        return { camera, env: { grade: sunGrade(1, 1), ...sunSide(1, 1) }, world: world({ text: 0, lights: false, only: ['main'], main: { head: C.mainHead(t), gain: 2.4 } }), extra: [belt(1)], hud: hud(n) }; } },
+          world: world({ text: 0, lights: false, gain: lerp(2.4, 0.15, k), main: { head: C.mainHead(t), gain: 2.4 }, ...(k > 0.6 ? { only: ['main'] } : {}) }), extra: [...(k > 0.01 ? [belt(k)] : []), ...topGlow(up), ...C.fallGlow(t, { gain: 0.8 * up }), C.heroPool(t, c, { gain: PG * (1 + PU * up) })], hud: hud(n) }; } },
+      { t0: bb(103, 3), f: (tt, u) => { const n = C.thousand(t, { each: (i, d) => { if (i === 0) d.gain = 1.6; } }); const a = C.heroHips(bar(104) + 0.4), Ha = (x, y, z) => [a[0] + x, y, a[2] + z];
+        // r4 Y (NOTES_v4 Y5): the cut finds them in the kick's low landing (her hips 0.34 m up, 0.7 m north of where she will salute) and the frame was aimed at
+        // the salute: a strip of bodies low and right under an empty sky until 178.9. The aim now starts on the low pose and rises with her (her hips, averaged
+        // over 0.3 s) into the same held frame; it is home on b104 (179.25), before the fist meets the palm.
+        let hy = 0, hzz = 0; for (let q = -2; q <= 2; q++) { const p = C.heroHips(Math.max(t + q * 0.075, bb(103, 3) + 0.02)); hy += p[1] / 5; hzz += p[2] / 5; } const rise = sm(seg(hy, 0.34, 1.0));
+        const camera = { pos: Ha(7.6 - 0.7 * sm(u), 0.8, 1.95), target: Ha(0, lerp(0.70, 1.28, rise), hzz - a[2] - 0.15), fov: 25, far: 30000 };
+        return { camera, env: { grade: sunGrade(1, 1), ...sunSide(1, 1) }, world: world({ text: 0, lights: false, only: ['main'], main: { head: C.mainHead(t), gain: 2.4 } }), extra: [belt(1), C.heroPool(t, camera, { gain: PG })], hud: hud(n) }; } },
     ], t1);
   } };
 }

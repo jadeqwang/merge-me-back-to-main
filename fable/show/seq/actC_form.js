@@ -232,7 +232,11 @@ export function makeActC(K) {
       const c = i === 0 ? [1.6, 0.62, 0.16] : c0; list.push({ x: p.B[0] + 0.95, z: p.B[1], r: 1.7 + 0.5 * hit, c: [c[0] * k, c[1] * k, c[2] * k] }); }
     return list.length ? [W.glow(list)] : []; }
 
+  // r4 Y (NOTES_v4 Y4): she must be findable among her copies in the wide shots: a soft pool of main-orange on the mirror under her (it stays on the ground when
+  // she jumps), on her road. Its radius grows with the camera's distance (3.5 %: about the same size on screen from 40 m up as from 6 m away), never under `r`.
+  function heroPool(t, cam, o = {}) { const h = heroHips(t), d = cam ? Math.hypot(cam.pos[0] - h[0], cam.pos[1], cam.pos[2] - h[2]) : 0, r = Math.max(o.r ?? 1.3, 0.035 * d), g = o.gain ?? 1, c = o.color || [1.0, 0.40, 0.09];
+    return W.glow([{ x: h[0], z: h[2], r, c: c.map((v) => v * g) }, { x: h[0], z: h[2], r: 0.45 * r, c: c.map((v) => v * g * 0.9) }]); }
   K.shared.dropCam = dropCam;
-  return { N, S, P, hx, hz, box, head, view, cells, heroCell, CW, CL, WEST, EAST, YD, TP, tBorn, stageAt, peelAt, streakDraw, dancer, thousand, heroHips, mainHead, headAt, fallGlow, laneOf, dropCam, coilCam, ensure,
+  return { N, S, P, hx, hz, box, head, view, cells, heroCell, CW, CL, WEST, EAST, YD, TP, tBorn, stageAt, peelAt, streakDraw, dancer, thousand, heroHips, mainHead, headAt, fallGlow, heroPool, laneOf, dropCam, coilCam, ensure,
     times: { tBuild, tDrop, tLand, tCoil, tHeroLands, tLow, tRun, T2, tJoin: tJ, tSet, tFall, tUnison, tEarly } };
 }

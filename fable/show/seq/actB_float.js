@@ -69,7 +69,11 @@ export function actBFloat(K) {
         figLight: { under: 0.25 + 0.5 * lit, ambient: [0.06 + 0.13 * lit, 0.07 + 0.09 * lit, 0.19 + 0.02 * lit], emissive: 2 + 1.6 * lit + 0.8 * kick * lit, fibres: 1.6 + 2.2 * lit } },
       world: { only: ['main'], lights: false, text: 0.45, flow: 0.12, flowSpeed: 6, main: { head: G.headAtX(feetX), gain: 2.6, textGain: 0.45 * (1 - ss(t, 115.0, 116.0)) } },      // r3: main's text leaves before the close frame turns it upside down (116.6-117.95); the road stays
       extra: [W.glow(glows), drawFil(t, { pulses, gain: 0.8 + 1.0 * lit }), draw(t, { pulses, gain: 2.0 - 0.7 * inward, flow: 0.05 + 0.3 * inward, flowSpeed: -(4 + 8 * dl) * inward, textGain: 0.3 + 0.9 * dl, halo: 0.25 - 0.13 * inward })],
-      type: [K.lyric(11, refL11, { mode: 'ground', x: 0.306, y: -0.91, rows: [1, 2], px: 87 }), K.lyric(12, refL12, { mode: 'ground', x: 0.40, y: -0.79, rows: [1, 2], px: 70 })],
+      // r4 Y (NOTES_v4 Y2: title-safe, 5 % margins, for a line's whole time on screen). Both lines lie on the water under a camera that moves. Line 11 is placed
+      // for the camera of 104.9; before that the camera is lower, and "and wander" (103.67) was cut by the frame's foot until 104.5: the block is 7.5 % of the
+      // frame higher (y -0.91 -> -0.76; baseline 92 % down at 104.0). Line 12: the camera starts down at 111.43 and the end of "return" ran out through the right
+      // margin at 112.3-112.8: 1.5 % left (x 0.40 -> 0.37) and gone 0.35 s sooner (hold 0.3, fade 0.3: out by 112.46; "return" is sung to 111.855).
+      type: [K.lyric(11, refL11, { mode: 'ground', x: 0.306, y: -0.76, rows: [1, 2], px: 87 }), K.lyric(12, refL12, { mode: 'ground', x: 0.37, y: -0.79, rows: [1, 2], px: 70, hold: 0.3, fade: 0.3 })],
       hud: K.hudMain(t, { count: 1 }) };
   };
   return (K.shared.actBFloat = { hair, fil, draw, drawFil, cam, body, gOfR, feetX, H, top });

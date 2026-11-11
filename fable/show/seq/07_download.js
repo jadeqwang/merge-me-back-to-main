@@ -1,7 +1,7 @@
 // 7 · bars 65-72 · 1:51.4-2:05.3 · "Ahh" twice; hats; snare crescendo from 116.64; the F#5 leap on b69 (118.387); 32nd roll 123.49.  Notes: fable/notes/actB.md
 // A  b65      the download: the top-down shot of 06 comes back down toward her; what every branch lived streams home along every strand as text, a pulse
 //             lands on every beat, and she grows brighter (actB_float.js `top`)
-// B  116.64   (snare crescendo) low on the water, west of her, looking east: she sits up, is lifted, and on the leap (118.387) her arms open and the first
+// B  116.648  (b68.1, snare crescendo) low on the water, west of her, looking east: she is lifted off the mirror (the lens lifts with her), and on the leap (118.387) her arms open and the first
 //             band of dawn comes up behind her, over the horizon of roads. She hovers; on the roll the camera lifts away and everything she is made of
 //             comes home at once: white on the b73 impact (08 opens on her landing, close and low)
 import { seg, ss, lerp, sm, easeIn } from '../kit.js';
@@ -9,12 +9,17 @@ import { actBGeo } from './actB_geo.js';
 import { actBFloat } from './actB_float.js';
 
 export default function seq(K) {
-  const { bar, world: W, cast, T } = K; const G = actBGeo(K), F = actBFloat(K), t0 = bar(65), t1 = bar(73), tCut = K.bb(68, 4), tLeap = bar(69), tRoll = 123.49, sx = G.stopX;
+  const { bar, world: W, cast, T } = K; const G = actBGeo(K), F = actBFloat(K), t0 = bar(65), t1 = bar(73), tCut = bar(68), tUp = K.bb(68, 4), tLeap = bar(69), tRoll = 123.49, sx = G.stopX;
   // r2 (NOTES_v2): the cut to the water line waits for b68.4 (117.952): by then she is upright and her arms are opening, one beat before the leap. The sit-up
   // (a plank and a bundle of trouser from the side) is only ever seen from straight above. From the roll the camera stays LOW and backs off to 7 m (she is a
   // third of the frame, her head above the horizon) instead of lifting to 15 m, where she was a speck in the glare.
+  // r4 Y (NOTES_v4 Y1): seen from above, the sit-up shrank the fan of her hair to a dark ball in 0.2 s and crumpled her body (117.0-117.95). The top-down
+  // shot now ends on b68.1 (116.648, the first snare of the crescendo), before she moves: the fan is never seen shrinking. The lift is seen from the water
+  // line, with the anime figure (r2's plank was the classic one): she lies on the mirror over her reflection (hips 0.18 m), the lens starts 4.4 m from her,
+  // level with her, and lifts and backs off with her, one key a beat, into r2's frame on b68.4 (tUp; from there on the shot is as it was).
   const camR = K.camPath([
-    { t: tCut, pos: [sx - 4.5, 0.36, 2.2], target: [sx, 1.32, 0], fov: 36 }, { t: tLeap, pos: [sx - 4.9, 0.38, 1.7], target: [sx, 1.45, 0], fov: 36 }, { t: 121.0, pos: [sx - 5.2, 0.42, 0], target: [sx, 1.45, 0], fov: 36 },
+    { t: tCut, pos: [sx - 3.0, 0.30, 3.2], target: [sx + 0.2, 0.42, 0], fov: 36 }, { t: K.bb(68, 2), pos: [sx - 3.5, 0.32, 3.0], target: [sx + 0.1, 0.62, 0], fov: 36 }, { t: K.bb(68, 3), pos: [sx - 4.1, 0.34, 2.6], target: [sx, 0.98, 0], fov: 36 },
+    { t: tUp, pos: [sx - 4.5, 0.36, 2.2], target: [sx, 1.32, 0], fov: 36 }, { t: tLeap, pos: [sx - 4.9, 0.38, 1.7], target: [sx, 1.45, 0], fov: 36 }, { t: 121.0, pos: [sx - 5.2, 0.42, 0], target: [sx, 1.45, 0], fov: 36 },
     { t: tRoll, pos: [sx - 4.9, 0.5, -1.7], target: [sx, 1.4, 0], fov: 36 }, { t: 124.5, pos: [sx - 5.9, 0.8, -1.8], target: [sx + 1, 1.3, 0], fov: 36 }, { t: t1, pos: [sx - 6.9, 1.15, -1.4], target: [sx + 2, 1.22, 0], fov: 36 }]);
   const dawnAt = (t) => (t < tLeap ? lerp(0.03, 0.07, ss(t, 116.64, tLeap)) : lerp(0.07, 0.17, ss(t, tLeap, tLeap + 0.8)) + 0.03 * seg(t, tLeap + 0.8, t1) + 0.07 * easeIn(seg(t, tRoll, t1)));
   return { name: '07_download', t0, t1, frame(t) {

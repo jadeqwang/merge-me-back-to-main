@@ -92,7 +92,7 @@ export default function seq(K) {
           cast.actor(R.id, { lane: R.color }).set({ pos: [q.x, 0, q.z], yaw: Math.atan2(q.tx, q.tz), track: 'sprint_loop', time: R.clock(t), alpha: 1 - ss(t, R.tEnd - 0.2, R.tEnd + 0.02), gain: 0.8 }); clear.push([q.x, q.z, 2.5]); }
         cast.actor('hero').set({ pos: [a.x, 0, a.z], yaw: K.yawOf(a), track: 'sprint_loop', time: G.clockA(t), gain: 1 + 1.3 * flash });
         return { camera, env: { figLight: FL }, world: false, extra: [...W.draw(tau, { text: 0.8, flow: 0.2, flowSpeed: 9, ...far(80, 70), lights: { clear, gain: 0.4, air: 160 }, merge: { headGain: 2, headLen: 0.12, fogDist: 80, nodeAir: 70 } }), W.glow(glows)],
-          type: [K.lyric(7, camera, { font: 'hook', x: -0.93, y: 0.33, rows: [2, 2, 1], dist: 30, px: 72, reflGain: 0.04 })], hud: K.hudMain(t, { count: W.count(tau) }) }; } },
+          type: [K.lyric(7, camera, { font: 'hook', x: -0.895, y: 0.33, rows: [2, 2, 1], dist: 30, px: 72, reflGain: 0.04 })], hud: K.hudMain(t, { count: W.count(tau) }) }; } },
       { t0: tB, f: () => {
         const camera = { ...camB(t), far: 30000 }, one = t >= tOne, hx = G.mainX(t);
         const d = new Float32Array(64 * 7); let n = 0; const put = (x, z, c, g, rad) => { d.set([x, 0.6, z, c[0] * g, c[1] * g, c[2] * g, rad], n * 7); n++; };
@@ -117,7 +117,7 @@ export default function seq(K) {
         cast.actor('hero').set({ ...G.body(t), gain: 1 + 0.9 * Math.min(1.5, flash), alpha: 1 - 0.7 * dip });
         const just = last >= 0 && bt - (last + 1) < 1 && last < NF ? lives[last].name : null;
         return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.15, ...far(40, 40), main: { head: G.headAtX(hx), fogDist: 260 }, lights: { clear: [[hx, 0, 6]], gain: 0.35, air: 120 } }, extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.3 }), eggF.drawable({ head: t, gain: 1.6, textGain: 1.0, minPx: 0.5, halo: 0 }), ...(btOn ? [props.drawable(bb, { gain: 1, minPx: 1.3, haloPx: 3, halo: 0.22 })] : [])],
-          type: [K.lyric(9, camera, { font: 'hook', x: -0.93, y: 0.44, rows: [1, 3], dist: 34 })], hud: K.hudMain(t, { count: 1, branch: just ? 'main ← ' + just : 'main' }) }; } },
+          type: [K.lyric(9, camera, { font: 'hook', x: -0.895, y: 0.44, rows: [1, 3], dist: 34 })], hud: K.hudMain(t, { count: 1, branch: just ? 'main ← ' + just : 'main' }) }; } },
       { t0: tD, f: () => {
         const camera = camD(t), hx = G.heroX(t);
         const done = t >= tDone ? Math.exp(-(t - tDone) * 2.2) : 0, bt = T.beatAt(t), held = t > tDone + 0.5 ? 0.35 * Math.exp(-(bt % 1) * 2.5) : 0;      // through the held "undone" the locked road breathes on the beat
@@ -128,7 +128,7 @@ export default function seq(K) {
         if (done > 0.02) glows.push({ x: hx, z: 0, r: 1.2 + 6 * (1 - done), c: mul([1.0, 0.55, 0.25], 1.5 * done) });
         return { camera, env: { figLight: FL }, world: { text: 0.8, flow: 0.1, ...far(90, 80), pulses: [{ g: lockG(t), width: 0.5, gain: 3.5 }], lights: { gain: 0.4, air: 160, clear: [[hx, 0, 6]] }, main: { head: G.headAtX(hx), fogDist: 260 } },
           extra: [W.glow(glows), commits.drawable({ head: t, gain: 1.2 }), lockR.drawable({ head: t, gain: 3.2 + 2 * held, nodeMinPx: 2.2 })],
-          type: [K.lyric(10, camera, { font: 'hook', x: -0.93, y: 0.19, rows: [2, 2, 2, 1], dist: 34, px: 66, out: t1, fade: 0.01, reflGain: 0.03 })], hud: K.hudMain(t, { count: 1 }) }; } },
+          type: [K.lyric(10, camera, { font: 'hook', x: -0.895, y: 0.19, rows: [2, 2, 2, 1], dist: 34, px: 66, out: t1, fade: 0.01, reflGain: 0.03 })], hud: K.hudMain(t, { count: 1 }) }; } },
     ], t1);
   } };
 }

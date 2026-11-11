@@ -129,7 +129,10 @@ export function makeProps(K) {
       for (let k = 0; k <= N; k++) { const z = z0 + (ln * k) / N; let x = Math.abs(psi) < 1e-3 ? 1e-3 : psi; if (body) { let xx = Math.sign(x) * Math.max(Math.abs(x), R * 1.02); for (let it = 0; it < 4; it++) { const r2 = xx * xx + z * z; xx = x / Math.max(0.12, 1 - (R * R) / Math.max(r2, R * R * 1.0001)); } x = xx; }
         pts.push([x, y + 0.03 * Math.sin(z * 0.9 + i), z]); }
       const edge = sm((span / 2 - Math.abs(z0 + ln / 2)) / 2.5), a = edge * (0.35 + 0.65 * hash(i, 6));
-      for (let k = 0; k < N; k++) seg(b, M(pts[k]), M(pts[k + 1]), c, 0.0035 + 0.003 * hash(i, 7), g * a * (1 - k / N), g * a * (1 - (k + 1) / N)); }
+      // r4 Y (NOTES_v4 Y6), optional: o.headClear = [y0, y1, z0, z1] (her frame, metres): a streamline at head height breaks as it passes her head, so no
+      // streak is drawn across her face (the lines are light: they show through her). Default: none, as before.
+      const hc = o.headClear, inB = hc && y > hc[0] && y < hc[1], hk = (z) => (inB ? 1 - sm((z - hc[2] + 0.25) / 0.25) * (1 - sm((z - hc[3]) / 0.25)) : 1);
+      for (let k = 0; k < N; k++) seg(b, M(pts[k]), M(pts[k + 1]), c, 0.0035 + 0.003 * hash(i, 7), g * a * (1 - k / N) * hk(pts[k][2]), g * a * (1 - (k + 1) / N) * hk(pts[k + 1][2])); }
   }
 
   // ---- jade/robot-ninja-apocalypse: three chords and a van. The neck lies in her left hand, the sound hole under her strumming hand
