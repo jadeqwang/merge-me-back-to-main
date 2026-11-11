@@ -5,6 +5,7 @@
 // C  b49     "Fold me in again"                      side-on: her eleven lives as afterimages in their lane colours, one folds into her on every beat
 // D  89.46   "Nothing that I lived can come undone"  she stops on the 89.80 hit and looks back down her road; its commits lock on, oldest first, toward us; the last
 //                                                    one under her feet on "un-DONE" (94.04); the camera pushes in all the way to the crash
+// r4 Y (NOTES_v4 Y2): lines 7, 9 and 10 start at x -0.895 (were -0.93: 1-1.4 % of the frame outside the 5 % title-safe margin).
 import { seg, ss, lerp, sm, clamp01 } from '../kit.js';
 import { hash1 } from '../../engine/src/rng.js';
 import { actBGeo } from './actB_geo.js';

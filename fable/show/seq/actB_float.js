@@ -41,6 +41,7 @@ export function actBFloat(K) {
   const CK = [[97.515, 2.75, 28, -0.5], [100.0, 3.1, 44, -0.42], [102.65, 5.6, 78, -0.1], [104.9, 7.0, 100, 0.5], [107.2, 9.5, 110, 1.2], [109.43, 11.9, 116, 2.05], [110.6, 12.6, 119, 2.2], [111.43, 12.5, 121, 2.2],
     [112.3, 11.2, 124, 1.95], [113.17, 9.3, 127, 1.6], [114.04, 7.0, 130, 1.1], [115.3, 4.6, 136, 0.4], [116.0, 3.7, 139, 0.15], [116.64, 3.3, 141, 0.0],
     // r2: the shot now runs on to b68.4 (117.952): the sit-up is seen from straight above (she rises toward the lens and the lens rises with her), never side-on
+    // r4 Y: 07 now leaves this shot on b68.1 (116.648), before she moves (the fan of hair shrank to a ball as she sat up): the two keys below are no longer seen
     [117.3, 3.9, 145, -0.45], [117.952, 4.9, 149, -0.8]];
   const path = K.camPath(CK.map(([t, h, th, e]) => ({ t, pos: [h, th, e], target: [0, 0, 0] })));
   const cam = (t) => { const [h, thd, e] = path(t).pos, th = (thd * Math.PI) / 180, cx = H[0] + e * Math.cos(0); return { pos: [cx, h, 0], target: [cx, 0, 0], topUp: [Math.sin(th), 0, -Math.cos(th)], fov: 35, near: 0.2, far: 20000, h }; };

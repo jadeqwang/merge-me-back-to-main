@@ -52,7 +52,7 @@ void main(){ vec4 p = uInvVP * vec4(vUv*2.-1., 1., 1.); vec3 d = normalize(p.xyz
       { t: bar(98) + 0.75, pos: [tcx - 30, 0.5 * hT, tcz + 6], target: [tcx - 3, 0, tcz + 1], fov: 36 }, { t: bar(98) + 1.45, pos: Hr(-10, 15, 16), target: Hr(3, 1.0, 0), fov: 37 },
       { t: bar(98) + 2.1, pos: Hr(11, 8, 3.0), target: Hr(0, 1.0, -0.4), fov: 34 }, { t: bar(98) + 2.6, pos: Hr(8.2, 2.6, 2.4), target: Hr(0, 1.0, -0.7), fov: 31 }, { t: tS, ...orbit(tS), stop: true }]);
     const sunrise = { grade: { exposure: 1.02 } }; const world = (o = {}) => ({ text: 0.5, flow: 0.1, lights: { gain: 0.5 }, main: { head: C.mainHead(t) }, ...o });
-    const hud = (n) => K.hudMain(t, { count: n }), PG = +(E.Q.get('ypg') || 0.6), PU = +(E.Q.get('ypu') || 4);
+    const hud = (n) => K.hudMain(t, { count: n }), PG = 0.6, PU = 6;      // r4 Y (Y4): her pool of orange (C.heroPool): gain at ground level, and how much more it needs on the bright mirror of the high shots (x 7)
     // the mirror from above: deep rose-violet, gold toward the sun (east = up), and the sun's glitter path down main, through the gap between the A and the I
     const topGround = (up) => ({ base: [lerp(0.02, 0.085, up), lerp(0.02, 0.018, up), lerp(0.08, 0.07, up)], f0: lerp(0.5, 0.30, up), baseCut: lerp(0.5, 0.2, up), ripple: 0.02 });
     if (!specks) { specks = []; for (let q = 0; q < 520; q++) { const a = hash1(q * 7 + 1), b = hash1(q * 13 + 5) + hash1(q * 29 + 3) + hash1(q * 31 + 11) - 1.5, u = a * a; specks.push({ x: tcx + (0.62 - 1.3 * u) * hT, z: hz + b * (1.6 + 5.5 * u), r: 0.22 + 0.9 * hash1(q * 3 + 2) * (0.4 + u), w: 1.3 + 3.1 * hash1(q * 17), p: 6.283 * hash1(q * 19 + 4), k: 0.5 + 0.9 * (1 - u) }); } }

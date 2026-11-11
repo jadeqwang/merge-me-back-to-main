@@ -18,7 +18,7 @@ export default function seq(K) {
   const camC = K.camPath([
     { t: bar(81), pos: R(-7.5, 4.6, 3.6), target: R(10, 0.8, 0), fov: 50 }, { t: bar(82), pos: R(-13.5, 8.2, 2.0), target: R(8, 0.4, 0), fov: 50 }, { t: bar(83), pos: R(-21, 12.5, 0), target: R(5, 0, 0), fov: 50 },
     { t: bar(84.5), pos: R(-9, 10, 0), target: R(22, 0, 0), fov: 48 }, { t: bar(86), pos: R(8, 8.5, 0), target: R(50, 1.5, 0), fov: 46 }]);
-  const PG = +(K.E.Q.get('ypg') || 0.75);
+  const PG = 0.75;                                  // r4 Y: gain of her pool of orange (C.heroPool) at blue hour
   const world = (t, o = {}) => ({ text: 0.7, flow: 0.1, main: { head: C.mainHead(t) }, ...o });
   return { name: '08_build', t0, t1, frame(t) {
     const hud = (n) => K.hudMain(t, { count: n });
@@ -26,8 +26,8 @@ export default function seq(K) {
       { t0, f: () => { const n = C.thousand(t); const c = camA(t), imp = Math.exp(-(t - t0) * 2.5), ring = 1 - Math.exp(-(t - t0) * 3.2);
         const camera = { ...c, focusDist: Math.hypot(c.pos[0] - hx, c.pos[2] - hz), aperture: 0.03 };
         return { camera, world: world(t), extra: [...C.streakDraw(t), W.glow([{ x: hx, z: hz, r: 2.5 + 12 * ring, c: [1.6 * imp, 0.85 * imp, 0.5 * imp] }, { x: hx, z: hz, r: 1.6, c: [0.5 * imp + 0.10, 0.26 * imp + 0.05, 0.14 * imp + 0.02] }])], hud: hud(n), flash: 0.55 * Math.exp(-(t - t0) * 6) }; } },
-      { t0: bar(77), f: (tt, u) => { const n = C.thousand(t, { canon: 0.016 }); const e = lerp(u, sm(u), 0.6) * u ** 0.35, x = -1.2 + 14.4 * e, z = 5.4 + 12.6 * e, th = 0.28;
-        const camera = { pos: R(x, 1.05 + 0.15 * e, z), target: R(x + 6 * Math.sin(th), 1.0, z - 6 * Math.cos(th)), fov: 35, focusDist: 5.6, aperture: 0.03 };
+      { t0: bar(77), f: (tt, u) => { const n = C.thousand(t, { canon: 0.016 }); const e = lerp(u, sm(u), 0.6) * u ** 0.35, out = 1.7 * sm(seg(u, 0.15, 0.45)), x = -1.2 + 14.4 * e, z = 5.4 + 12.6 * e + out, th = 0.28;   // r4 Y (Y3): from 133.3 the truck eases 1.7 m further out from the flank (it ran 3.4-4.6 m off it): the nearest copies are 45-50 % of the frame's height (were up to 77 %) and enter whole instead of as torsos cut by the right edge (134.5-135.6, 137.0-137.3). The opening on her is as it was
+        const camera = { pos: R(x, 1.05 + 0.15 * e, z), target: R(x + 6 * Math.sin(th), 1.0, z - 6 * Math.cos(th)), fov: 35, focusDist: 5.6 + 0.8 * out, aperture: 0.03 };
         return { camera, world: world(t), extra: C.streakDraw(t, { rest: 0.1 }), hud: hud(n) }; } },
       { t0: bar(81), f: () => { const n = C.thousand(t); const camera = { ...camC(t), far: 30000 };
         return { camera, world: world(t, { text: 0.5, lights: { gain: 0.6 } }), extra: [...C.streakDraw(t, { rest: lerp(0.3, 0.07, sm(seg(t, bar(83.6), bar(85.5)))) }), C.heroPool(t, camera, { gain: PG })], hud: hud(n) }; } },   // r4 Y: her pool (Y4)

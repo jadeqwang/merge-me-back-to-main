@@ -137,12 +137,12 @@ export default function seq(K) {
         who(t);
         return { camera, env: env(t), world: world(t), extra: [roadDraw(t, { head: headAt(t) })], type: [K.lyric(16, camera, { x: 0.2, y: 0.3, rows: [2, 2, 3], dist: 40 })], hud: hud(t) }; } },
       // B · she walks into the frame, stops, and looks east.
-      { t0: bar(109), f: (tt, u) => { const k = 1 - ss(t, bar(109), 191), cam0 = K.rel(a, -3.42 - 0.5 * k, 3.08, 1.38), camera = { pos: [cam0[0] + 0.3 * u * EAST[0], cam0[1], cam0[2]], target: K.rel(a, 1.88, -5.4, 1.22), fov: 36, focusDist: 4.6, aperture: 0.04 };
+      { t0: bar(109), f: (tt, u) => { const k = 1 - ss(t, bar(109), 191), cam0 = K.rel(a, -3.42 - 0.5 * k, 3.08, 1.38), camera = { pos: [cam0[0] + 0.3 * u * EAST[0], cam0[1], cam0[2]], target: K.rel(a, 1.88, -5.4, 0.80), fov: 36, focusDist: 4.6, aperture: 0.04 };   // r4 Y (Y10): the lens looks 2.3 degrees lower (target 1.22 -> 0.80): her feet stood on the frame's bottom edge (188.3-189.8); now there is mirror under them
         who(t);
-        return { camera, env: env(t), world: world(t), extra: [roadDraw(t, { head: headAt(t) }), farLights(t), eastGlow(t)], type: [K.lyric(17, camera, { x: -0.92, y: 0.36, rows: [4, 3], dist: 30 })], hud: hud(t) }; } },
+        return { camera, env: env(t), world: world(t), extra: [roadDraw(t, { head: headAt(t) }), farLights(t), eastGlow(t)], type: [K.lyric(17, camera, { x: -0.90, y: 0.36, rows: [4, 3], dist: 30 })], hud: hud(t) }; } },
       // C · the writing, and the letting go (no cut on the drum-out: the picture holds its breath with the music).
-      { t0: tC, f: () => { const push = sm(seg(t, tC, 197.4)), rise = ss(t, tGo + 0.5, tD + 0.3), camera = { pos: K.rel(fr, -2.0 + 1.2 * push - 0.1 * rise, 2.2 - 0.75 * push + 0.05 * rise, 1.5 + 0.12 * push - 0.06 * rise),
-          target: [lineMid[0] + 0.22 * rise * EAST[0], lineMid[1] - 0.03 + 0.08 * (1 - push) + 0.2 * rise, lineMid[2]], fov: 35 - 5 * push, aperture: 0.02 };
+      { t0: tC, f: () => { const HR = 0.07, push = sm(seg(t, tC, 197.4)), rise = ss(t, tGo + 0.5, tD + 0.3), camera = { pos: K.rel(fr, -2.0 + 1.2 * push - 0.1 * rise, 2.2 - 0.75 * push + 0.05 * rise, 1.5 + 0.12 * push - 0.06 * rise),
+          target: [lineMid[0] + 0.22 * rise * EAST[0], lineMid[1] - 0.03 + 0.08 * (1 - push) + HR * push + 0.2 * rise, lineMid[2]], fov: 35 - 5 * push, aperture: 0.02 };   // r4 Y (Y8): head room. The lens looks 7 cm higher at the line once it has pushed in (her bun was on the frame's top edge 200.0-202.3, the pencil in it 202.5-203.0); the handwriting keeps its size, 8 % lower in the frame
         camera.focusDist = Math.hypot(camera.pos[0] - lineMid[0], camera.pos[1] - lineMid[1], camera.pos[2] - lineMid[2]);
         who(t); const rb = ribbon(t), type = [K.lyric(18, camera, { x: 0.0, y: 0.5, rows: [3, 3], dist: 30, out: 200.86, fade: 0.14, px: 74, reflect: false })];
         if (t > 199.6 && t < tGo + 0.6) type.push(noteLine(t));
