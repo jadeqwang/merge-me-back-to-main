@@ -69,20 +69,22 @@ light of 13_catch (a separate drawable; her layer then covers it, as her body do
 | `encode` | the two review files, x264 crf 18 (raised until under 15 MB), AAC from `inputs/Merge.wav` | 5 s |
 | `qa` | strips: composite at 4 fps, code/hybrid pairs, feet at full resolution | 2 s |
 
-Time per clip (6 s of film): about 2.5 min of code renders + about 6.5 min of `hybrid.py` = 9 min, unattended, about 1.5 min per film second.
-(Measured totals of the clean final runs are in the last section.)
+Time per clip (6 s of film): about 2.5 min of code renders + about 6 min of `hybrid.py` = under 9 min, unattended, about 1.5 min per film
+second. (Measured totals of the clean final runs are in the last section.)
 
 ### Why these choices (what was tried)
 - Matte. `isnet-anime` (rembg) failed: it lost the black silhouette entirely (alpha near 0 at 230.0) and kept the orange ring and road at her
   feet. `BiRefNet-general` is clean on both clips: hair strands, fingers and the straps kept; ring, road, mirror image, lyric and HUD left out.
-  Running it a second time on a crop from the upscaled frame sharpens the edge and fixed the holes between the legs. A difference key
+  Running it a second time on a crop from the upscaled frame gives it about twice the pixels on her: a sharper edge, and the ring at her
+  feet, which the whole-frame pass still kept in the dark frames (231.25), is left out. A difference key
   against the plate was NOT used: the model's background is the code background scaled and shifted, with its own sun, so it is not a clean
   reference, and her white jacket is close to the day sky.
 - Upscale. Real-ESRGAN `x4plus_anime_6B` (0.5 s per frame) against `realesr-animevideov3` (0.05 s) against bicubic: 6B has the crispest
   line and eyes; animevideov3 is a little softer and a safe faster choice; bicubic keeps the H.264 grain of the model clip. RGB is upscaled,
   the alpha is made on the upscaled picture.
-- Registration. The model's frame turned out to be a near-constant similarity of the input: day x1.034 (she is drawn 3.4 % smaller, about
-  -22 px, +1 px), become x0.989 (+36 px, +11..18 px drifting slowly). So one scale per segment and slow offsets are right; per-frame
+- Registration. The model's frame turned out to be a near-constant similarity of the input: day x1.034 (she is drawn 3.4 % smaller; offset
+  about -22 px in x, 0 px in y at film resolution, the same in all three shots of the clip), become x0.989 (+36 px in x, +10..18 px in y,
+  drifting slowly). So one scale per segment and slow offsets are right; per-frame
   matching would make her bob with every difference in the model's drawing. Time lag is 0 frames in both clips.
 - Mirror image. The code mirror is measured, not guessed: under the flipped code figure, `ref = a * norefl + b * figure colour` is fitted
   per channel in windows of one second (the light changes during the sunrise) and the same law is applied to her flipped, softened,
@@ -116,13 +118,13 @@ Day clip (236.67-242.71)
 3. 240.125: the hybrid's cut is one frame (42 ms) later than the film's nominal cut, because the model's is.
 4. Feet. After registration her lowest point is within 1.4 px (median, first shot), 2.9 px and 5.3 px (second, third shot) of the code
    figure's; single frames differ by 20 px and more where the model places a foot differently or shows a shoe the code trousers hide
-   (240.8-241.0). The registration track itself moves at most 0.4 px per frame, so any sliding seen is the model's own drawing.
+   (241.5-241.7). The registration track itself moves at most 0.4 px per frame, so any sliding seen is the model's own drawing.
 5. Mirror image: one flip line for the whole body (the ground row at her depth), so the nearer foot's image sits 10-20 px off; it is soft
    and faint like the code's, and carries little of the redraw's detail. In a jump the image stays on the ground as it should.
 6. Colour: her trousers are the sheet's navy, darker than the procedural figure's blue; frames 0-6 are lighter (the model copied the
    flash on the cut). No scale pops (one scale per shot: 0.7760, 0.7751, 0.7745). No matte flicker seen on consecutive frames; the
    temporal median changed 0.08 % of the matte on average and removed one single-frame glitch (frame 120, 9.6 %).
-7. Her hair is longer and flies wider than the code figure's (up to 14 % of her layer lies outside the code silhouette + 40 px at 241.0):
+7. Her hair is longer and flies wider than the code figure's (up to 14 % of her layer lies outside the code silhouette + 40 px, at 241.1 and 241.7):
    the redraw's choice, but it means she covers more of the plate than the code figure did.
 
 Become clip (230.0-236.04)
@@ -164,5 +166,21 @@ Work a full conversion would add
 - Machine time about 1.5 min per film second on the 3090: about 4 h for 150 s, unattended.
 - A decision on frame rate (24 fps master), and the credits must say what was redrawn and by what.
 
-## Measured run times and honest view
-See the end of this file after the final clean runs.
+## Measured run times
+Final clean runs of `hybrid.py ... all` from the model clip and the three code renders, on the RTX 3090, nothing else on the GPU:
+day 376 s (with the 37 s plate patch), become 342 s. The code renders before that: 135 s for the first (shader warm-up), then 47 to 57 s
+each. So 8 to 9 minutes per 6 s clip, of which nothing needs a person.
+
+## Honest view
+- The compositing side holds. Cutting her out, putting her on the code figure's place and giving her the code mirror worked on both clips
+  with one set of defaults, and the code world, lyric type and HUD come through untouched. On a calm shot (`become`) the result is clean
+  enough to cut into the film as it is: stable edges, feet within a pixel or two, a believable mirror image.
+- The weak link is the model's drawing, not the composite: faces and hands melt in fast moves, it can stop following for a few frames,
+  it cuts a frame late, and it decides lighting for itself (the dark face in the transition, no glowing straps). None of that can be
+  repaired by matte or grade; it means choosing which shots to redraw and paying for retakes.
+- Across a whole film I would expect it to hold for the calm, lit, single-figure hero shots (sunrise, standing, walking, slow turns: maybe
+  half of the 150 s), to be a gamble for the dance, and to be the wrong tool for night, silhouettes, crowds and top-down shots. The film
+  would then mix two kinds of figure, redrawn and procedural, cut against each other; whether that reads as a style or as a seam was not
+  tested here and is the real question for Jade.
+- Not judged: motion. Everything above comes from stills and strips; line boil, edge shimmer and the mirror ripple in motion need eyes
+  on the four review files.
