@@ -20,8 +20,9 @@ export default function seq(K) {
   const sunAt = (t) => { const d = dawnAt(t), e = 1 - Math.exp(-(t - t0) / 0.45); return { elev: lerp(D.SUN_HELD, D.sunElev(d), e), gain: lerp(D.sunHeld(d).gain, sm(Math.min(1, Math.max(0, (d - 0.36) / 0.2))), e) }; };
   // r2 · C3 is one shot from b132.2: waist-up on her as the last lights land and the violet note goes from her hands into her chest; it eases back to the medium as her head
   // lifts and her arms open. (It replaces a bar of near-empty wide, 228.4-229.7, and the cut on b133.)
-  const camC3 = (t) => { const e = sm(seg(t, tC3 + 0.9, 232.4)), u = seg(t, tC3, t1), px = lerp(-1.95, -5.0 + 0.35 * sm(u), e), pz = lerp(0.2, 0.55, e), y = lerp(1.3, 1.25, e);
-    return { pos: [C[0] + px, y, pz], target: [C[0] + px + 8, lerp(1.22, 1.3, e) + (y - 1.25) * 0, pz - 2.55], fov: 35, focusDist: -px - 0.1, aperture: 0.02, far: 30000 }; };
+  // r4: through the hold of "become" (232.4 -> b137) it keeps coming in, 0.6 m: the frame is never still while she stands in the pose, and it is on its way to 14's closer axis
+  const camC3 = (t) => { const e = sm(seg(t, tC3 + 0.9, 232.4)), u = seg(t, tC3, t1), px = lerp(-1.95, -5.0 + 0.35 * sm(u) + 0.6 * sm(seg(t, 232.4, t1)), e), pz = lerp(0.2, 0.55, e), y = lerp(1.3, 1.25, e);
+    return { pos: [C[0] + px, y, pz], target: [C[0] + px + 8, lerp(1.22, 1.3, e) - 0.4 * sm(seg(t, 232.4, t1)), pz - 2.55], fov: 35, focusDist: -px - 0.1, aperture: 0.02, far: 30000 }; };
   // her light, key by key: silhouette (dawn 0.6) -> day, complete on "become"
   const mix3 = (a, b, u) => a.map((v, i) => v + (b[i] - v) * u);
   const figLight = (w) => ({ ambient: mix3([0.03, 0.02, 0.03], [0.70, 0.73, 0.88], w), rimCol: mix3([2.4, 1.25, 0.5], [0, 0, 0], w), rimBoth: 0, sunAmt: w, under: 0.12 * (1 - w), emissive: 1.5 * (1 - w), fibres: 0.1 * (1 - w), trans: 1 - w });

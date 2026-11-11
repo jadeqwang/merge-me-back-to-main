@@ -54,6 +54,13 @@ def stand(arms="waist", look=(0, 0, 1), y=M.HIPS_H - 0.004, feet=0.085, spine=(0
     elif arms == "wide":
         kw = dict(armL={"dir": (1, 0.0, 0.0), "elbow": (0, -0.2, -1), "hand": (1, 0.0, 0)},
                   armR={"dir": (-1, 0.0, 0.0), "elbow": (0, -0.2, -1), "hand": (-1, 0.0, 0)})
+    elif arms in ("open", "open2"):
+        # r4 (drop b100.1): arms wide as a wushu shape, not a T: a little above the shoulders and a little behind them, elbows unlocked, the wrists set so
+        # the palms stand (fingers up and out), chest lifted. "open2" is where the hold drifts to through the bar: higher, the palms turning up.
+        u, e, hy = (0.13, 0.975, 0.75) if arms == "open" else (0.24, 0.965, 0.5)
+        kw = dict(armL={"dir": (1, u, -0.07), "elbow": (0, -1, -0.45), "ext": e, "hand": (0.8, hy, 0.05), "palm": (0.4, -0.1, 1)},
+                  armR={"dir": (-1, u, -0.07), "elbow": (0, -1, -0.45), "ext": e, "hand": (-0.8, hy, 0.05), "palm": (-0.4, -0.1, 1)},
+                  shrug=(1.5, 1.5))
     elif arms == "up":       # both arms thrown overhead in a V
         kw = dict(armL={"dir": (0.42, 1.0, 0.05), "elbow": (1, 0, -0.3)},
                   armR={"dir": (-0.42, 1.0, 0.05), "elbow": (-1, 0, -0.3)})
@@ -545,7 +552,8 @@ def _drop(join=False):
     # b97.1 THE FALL, held through the bar; b98.1 push up, b98.3 crouch, b99.1 spring up; b100.1 arms wide
     _fall(tl, bt(97), c)
     _rise(tl, bt(98, 1), bt(98, 3), bt(99, 1), c)
-    tl.to(Sd(stand("wide")), bt(100), 0.17, "snap", name="arms_wide", recoil=0.015)
+    tl.to(Sd(stand("open", spine=(-5, 0, 0), look=(0, 0.16, 1))), bt(100), 0.17, "snap", name="arms_wide", recoil=0.015)
+    tl.to(Sd(stand("open2", spine=(-8, 0, 0), look=(0, 0.30, 1))), bt(100, 3.7), 1.05, "soft")          # r4: the hold lives: it keeps opening and lifting until the next phrase takes it
     # b101.1 / b101.3 / b102.1 horse stance punches: right to the side, left to the side, right to the front
     sr = {"dir": (-1, 0.0, 0.03), "elbow": (0, -1, -0.2), "ext": 0.99}
     sl = {"dir": (1, 0.0, 0.03), "elbow": (0, -1, -0.2), "ext": 0.99}

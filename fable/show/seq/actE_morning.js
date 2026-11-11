@@ -69,7 +69,7 @@ export function morning(K) {
   // through the cut); hips and legs over 236.55 -> 237.05 (the back foot comes up beside the front one, which stays where it is). Both 13_catch and 14_day play it
   // (HO.set), so the cut on b137 is a cut on one continuous action, and she is seen whole.
   let HO = null;
-  if (hasHO) { const PAR = [-1, 0, 1, 2, 3, 2, 5, 6, 7, 2, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19], NJ = 21, fps = 60, tH0 = 235.9, tH1 = 238.0, NF = Math.round((tH1 - tH0) * fps) + 1, data = new Float32Array(NF * 147);
+  if (hasHO) { const PAR = [-1, 0, 1, 2, 3, 2, 5, 6, 7, 2, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19], NJ = 21, fps = 60, tH0 = 235.9, tH1 = 238.3, NF = Math.round((tH1 - tH0) * fps) + 1, data = new Float32Array(NF * 147);
     const qmul = (a, b) => [a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0], a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]];
     const qcon = (q) => [-q[0], -q[1], -q[2], q[3]], qrot = (q, v) => { const x = q[0], y = q[1], z = q[2], w = q[3], cx = y * v[2] - z * v[1] + w * v[0], cy = z * v[0] - x * v[2] + w * v[1], cz = x * v[1] - y * v[0] + w * v[2]; return [v[0] + 2 * (y * cz - z * cy), v[1] + 2 * (z * cx - x * cz), v[2] + 2 * (x * cy - y * cx)]; };
     const qnorm = (q) => { const l = Math.hypot(q[0], q[1], q[2], q[3]) || 1; return [q[0] / l, q[1] / l, q[2] / l, q[3] / l]; };
@@ -77,16 +77,30 @@ export function morning(K) {
     // a pose of a track at track time tt: world (track-space) position and orientation per joint, then parent-relative
     const pose = (name, tt, sh) => { const tr = cast.tracks[name], D = tr.data, f = Math.min(tr.frames - 1.001, Math.max(0, tt * tr.fps)), i = Math.floor(f), u = f - i, P = [], Q = [];
       for (let j = 0; j < NJ; j++) { const a = i * 147 + j * 7, b = a + 147; P.push([D[a] + (D[b] - D[a]) * u + sh[0], D[a + 1] + (D[b + 1] - D[a + 1]) * u, D[a + 2] + (D[b + 2] - D[a + 2]) * u + sh[1]]); Q.push(slerp([D[a + 3], D[a + 4], D[a + 5], D[a + 6]], [D[b + 3], D[b + 4], D[b + 5], D[b + 6]], u)); }
-      const lq = [Q[0]], lo = [P[0]]; for (let j = 1; j < NJ; j++) { const c = qcon(Q[PAR[j]]); lq.push(qmul(c, Q[j])); lo.push(qrot(c, [P[j][0] - P[PAR[j]][0], P[j][1] - P[PAR[j]][1], P[j][2] - P[PAR[j]][2]])); } return { lq, lo }; };
+      const lq = [Q[0]], lo = [P[0]]; for (let j = 1; j < NJ; j++) { const c = qcon(Q[PAR[j]]); lq.push(qmul(c, Q[j])); lo.push(qrot(c, [P[j][0] - P[PAR[j]][0], P[j][1] - P[PAR[j]][1], P[j][2] - P[PAR[j]][2]])); } return { lq, lo, P, Q }; };
     const r0 = cast.root(FREE, 0), shF = [ST[0] - r0[0], ST[1] - r0[2]], mix3 = (a, b, u) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u];
-    for (let k = 0; k < NF; k++) { const t = tH0 + k / fps, wu = ss(t, 236.20, 237.35), wl = ss(t, 236.55, 237.05), A = pose(CA, Math.min(cast.dur(CA) - 0.02, D13.cT(t)), [0, 0]), B = pose(FREE, Math.max(0, t - tFr), shF), P = [], Q = [];
-      for (let j = 0; j < NJ; j++) { const w = j === 0 || j >= 13 ? wl : wu, q = slerp(A.lq[j], B.lq[j], w), o = mix3(A.lo[j], B.lo[j], w);
-        if (j === 0) { P.push(o); Q.push(q); } else { const pq = Q[PAR[j]], r = qrot(pq, o); P.push([P[PAR[j]][0] + r[0], P[PAR[j]][1] + r[1], P[PAR[j]][2] + r[2]]); Q.push(qnorm(qmul(pq, q))); }
-        data.set([P[j][0], P[j][1], P[j][2], Q[j][0], Q[j][1], Q[j][2], Q[j][3]], k * 147 + j * 7); } }
+    // r4: (a) the back foot STEPS up (it slid 30 cm along the ground: the legs were only blended). Both ankles are now driven in the world and the legs re-solved (two-bone
+    // IK about the blended knee direction): the left foot stays where both takes have it, the right lifts 7 cm and is set down beside it (236.62 -> 237.12), toe and heel
+    // turning from one take's foot to the other's; the hips stay over the standing leg until it lands (236.85 -> 237.35). (b) the arms no longer come down, wait, and go
+    // up again: they come down ONCE, slowly, out through the sides, over the whole of the step and the gathering dip of the skip (236.45 -> 237.95), and arrive at her
+    // sides at the bottom of that dip, exactly as the skip throws them up: one swing. Spine and head go over first (236.3 -> 237.2).
+    const vsub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], vdot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], vlen = (a) => Math.hypot(a[0], a[1], a[2]), vunit = (a) => { const l = vlen(a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+    const vcross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+    const qarc = (u, v) => { const d = vdot(u, v); if (d < -0.99999) return [1, 0, 0, 0]; const c = vcross(u, v); return qnorm([c[0], c[1], c[2], 1 + d]); };     // the shortest turn that takes u to v (unit vectors)
+    const legIK = (P, Q, th, T, Qf, Qt, loToe) => { const sh = th + 1, ft = th + 2, H = P[th], K = P[sh], E = P[ft], a = vlen(vsub(K, H)), b = vlen(vsub(E, K)), d = vsub(T, H), dl = vlen(d), dc = Math.min(a + b - 1e-4, Math.max(Math.abs(a - b) + 1e-4, dl)), n = [d[0] / dl, d[1] / dl, d[2] / dl];
+      const x = (a * a - b * b + dc * dc) / (2 * dc), h = Math.sqrt(Math.max(0, a * a - x * x)), fr = qrot(Q[th], [0, 0, 1]); let pv = vsub(K, H); pv = [pv[0] + 0.25 * fr[0], pv[1] + 0.25 * fr[1], pv[2] + 0.25 * fr[2]];      /* the knee bends the way the thigh faces (a nearly straight leg says nothing reliable about it) */ const pn = vdot(pv, n); pv = vunit([pv[0] - pn * n[0], pv[1] - pn * n[1], pv[2] - pn * n[2]]);
+      const Kn = [H[0] + n[0] * x + pv[0] * h, H[1] + n[1] * x + pv[1] * h, H[2] + n[2] * x + pv[2] * h], Tn = [H[0] + n[0] * dc, H[1] + n[1] * dc, H[2] + n[2] * dc];
+      Q[th] = qnorm(qmul(qarc(vunit(vsub(K, H)), vunit(vsub(Kn, H))), Q[th])); Q[sh] = qnorm(qmul(qarc(vunit(vsub(E, K)), vunit(vsub(Tn, Kn))), Q[sh])); P[sh] = Kn; P[ft] = Tn; Q[ft] = Qf; Q[ft + 1] = Qt; const o = qrot(Qf, loToe); P[ft + 1] = [Tn[0] + o[0], Tn[1] + o[1], Tn[2] + o[2]]; };
+    for (let k = 0; k < NF; k++) { const t = tH0 + k / fps, wa = ss(t, 236.45, 237.95), wsp = ss(t, 236.30, 237.20), wh = ss(t, 236.85, 237.35), wst = ss(t, 236.62, 237.12), A = pose(CA, Math.min(cast.dur(CA) - 0.02, D13.cT(t)), [0, 0]), B = pose(FREE, Math.max(0, t - tFr), shF), P = [], Q = [];
+      for (let j = 0; j < NJ; j++) { const w = j === 0 || j >= 13 ? wh : j <= 4 ? wsp : wa, q = slerp(A.lq[j], B.lq[j], w), o = mix3(A.lo[j], B.lo[j], w);
+        if (j === 0) { P.push(o); Q.push(q); } else { const pq = Q[PAR[j]], r = qrot(pq, o); P.push([P[PAR[j]][0] + r[0], P[PAR[j]][1] + r[1], P[PAR[j]][2] + r[2]]); Q.push(qnorm(qmul(pq, q))); } }
+      for (const [th, w] of [[13, wh], [17, wst]]) { const ft = th + 2, T = mix3(A.P[ft], B.P[ft], w); if (th === 17) T[1] += 0.075 * Math.sin(Math.PI * w); legIK(P, Q, th, T, slerp(A.Q[ft], B.Q[ft], w), slerp(A.Q[ft + 1], B.Q[ft + 1], w), mix3(A.lo[ft + 1], B.lo[ft + 1], w)); }
+      for (let j = 0; j < NJ; j++) data.set([P[j][0], P[j][1], P[j][2], Q[j][0], Q[j][1], Q[j][2], Q[j][3]], k * 147 + j * 7); }
     const src = cast.tracks[FREE], track = { name: 'handover', fps, frames: NF, loop: false, events: [], boneLengths: src.boneLengths, data, simOpts: {}, meta: { song_t0: tH0, made_by: 'actE_morning.js (catch -> free)' } };
     cast.tracks.handover = track; if (cast.fig) cast.fig.addTrack(track);
-    const tIn = tH0 + 0.25, tOut = 237.8;                                     // played from 236.15 (still `catch`'s own pose) to 237.8 (`free`'s own motion, 1.15 s in)
-    HO = { t0: tH0, tIn, tOut, on: (t) => t >= tIn && t < tOut, set: (t) => { const w = ss(t, 236.2, 237.35); return { pos: [C[0], 0, C[1]], yaw: WEST, track: 'handover', time: t - tH0, face: { expr: 'joy', amt: 0.9 - 0.25 * w }, hand: -0.6 + 0.35 * w }; } }; }
+    if (+K.E.Q.get('hodump')) for (let k = 0; k < NF; k += 8) console.log('HODUMP ' + (k + ' ' + NF + ' ' + Array.from(data.subarray(k * 147, Math.min(NF, k + 8) * 147), (v) => v.toFixed(5)).join(' ')).replace(/\d/g, (c) => 'abcdefghij'[c]));      // dev: --q "hodump=1" prints the made track (from 235.9, 60 fps) in pieces of 8 frames, digits as letters a-j (the harness drops any console line with "404" in it): it is checked by numbers (feet, bone lengths, speeds)
+    const tIn = tH0 + 0.25, tOut = 238.1;                                     // played from 236.15 (still `catch`'s own pose) to 238.1 (`free`'s own motion, 1.45 s in: the skip is leaving the ground)
+    HO = { t0: tH0, tIn, tOut, on: (t) => t >= tIn && t < tOut, set: (t) => { const w = ss(t, 236.45, 237.95); return { pos: [C[0], 0, C[1]], yaw: WEST, track: 'handover', time: t - tH0, face: { expr: 'joy', amt: 0.9 - 0.25 * w }, hand: -0.6 + 0.35 * w }; } }; }
   const TK = [141, 142, 143, 144, 145, 146].map(bar), tAhead = bar(147), tSpan = bar(152.5) - tAhead, TAU = 4.5, T_NEAR = bar(149) + 4;
   const count = (t) => { let c = 1; for (const tk of TK) if (t >= tk) c *= 2; return c; };
   const HUB = soft(bar(145), 0.2);

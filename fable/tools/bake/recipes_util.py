@@ -493,14 +493,19 @@ def rise():
     p0 = M.Poser(fl, k).unpin("legs")
     x0, z0 = p0.root[0], p0.root[2]
 
-    def air(y, pitch, spine, head, raise_, fwd, elbow, thL, knL, thR, knR, toes=-38.0, palm=(0, 0.3, 1), dz=0.0):
+    def air(y, pitch, spine, head, raise_, fwd, elbow, thL, knL, thR, knR, toes=-38.0, palm=(0, 0.3, 1), dz=0.0, dL=None, dR=None, lean=(0.0, 0.0), tilt=(0.0, 0.0), wrist=0.0):
+        """dL / dR = (raise, fwd, elbow, twist) added to that arm (r4: the two arms are never the same; twist < 0 turns the bend of the elbow upward);
+        lean = (yaw, roll) of the spine, tilt = (yaw, roll) of the head; wrist = degrees the hand trails above the forearm's line."""
         p = M.Poser()
         p.hips(pos=(x0, y, z0 + dz), pitch=pitch)
-        p.spine(pitch=spine)
-        p.head(pitch=head)
-        for s in "LR":
-            p.arm_fk(s, raise_=raise_, fwd=fwd, elbow=elbow)
-            p.hand(s, p.R[J["foreArm" + s]][:, 1], p.dir_world(palm), space="world")
+        p.spine(pitch=spine, yaw=lean[0], roll=lean[1])
+        p.head(pitch=head, yaw=tilt[0], roll=tilt[1])
+        for s, d in (("L", dL), ("R", dR)):
+            d = d or (0.0, 0.0, 0.0, 0.0)
+            p.arm_fk(s, raise_=raise_ + d[0], fwd=fwd + d[1], elbow=elbow + d[2], twist=d[3])
+            f = p.R[J["foreArm" + s]][:, 1]
+            w = math.radians(wrist)
+            p.hand(s, M.unit(f * math.cos(w) + np.array([0.0, 1.0, 0.0]) * math.sin(w)), p.dir_world(palm), space="world")
         for s, th, kn in (("L", thL, knL), ("R", thR, knR)):
             p.bend("thigh" + s, pitch=th, roll=(4.0 if s == "L" else -4.0))
             p.bend("shin" + s, pitch=kn)
@@ -510,10 +515,19 @@ def rise():
     # drawn up by the sternum: the chest leads, the head and arms trail, the legs hang
     k1 = air(0.30, -52.0, -12.0, -16.0, 26.0, -32.0, 18.0, 40.0, -22.0, 34.0, -16.0, toes=-30.0, dz=0.03)
     k2 = air(0.98, -10.0, -8.0, 2.0, 30.0, -22.0, 22.0, 14.0, -34.0, 6.0, -18.0)
-    k3 = air(1.505, 2.0, -17.0, -24.0, 124.0, -12.0, 8.0, 17.0, -40.0, -5.0, -7.0)          # the accent
-    k4 = air(1.565, 1.0, -19.0, -27.0, 131.0, -14.0, 6.0, 14.0, -34.0, -6.0, -8.0)
-    k5 = air(1.40, 0.0, -7.0, -6.0, 96.0, -2.0, 10.0, 7.0, -16.0, -2.0, -8.0, palm=(0, -0.3, 1))
-    k6 = air(1.085, 0.0, -2.0, 0.0, 52.0, 4.0, 14.0, 4.0, -9.0, 1.0, -6.0, toes=-30.0, palm=(0, -1, 0.3))
+    # r4: the accent and the way down were one symmetric shape with locked elbows, and the arms RESTED level (a T) at 121-122.5. Now: the right arm reaches higher than
+    # the left and both elbows are soft on the accent; she turns a little in the air; coming down the arms never stop on the level: the elbows lead down and pass it at speed
+    # (about 120.7) with the hands trailing above them, and she rests lower, half folded like wings; one knee stays drawn up until she nears the ground.
+    k3 = air(1.505, 2.0, -17.0, -24.0, 124.0, -12.0, 8.0, 17.0, -40.0, -5.0, -7.0,          # the accent
+             dL=(-7, 3, 8, -40), dR=(5, -2, 3, -40), lean=(4, -4), tilt=(-5, 3))
+    k4 = air(1.565, 1.0, -19.0, -27.0, 131.0, -14.0, 6.0, 14.0, -34.0, -6.0, -8.0,
+             dL=(-9, 4, 12, -45), dR=(4, -2, 4, -45), lean=(6, -5), tilt=(-6, 3), wrist=6.0)
+    k45 = air(1.50, 0.5, -13.0, -15.0, 0.0, 0.0, 0.0, 12.0, -30.0, -4.0, -9.0, palm=(0, -0.2, 1),            # the elbows lead down, the hands trail above them
+              dL=(92, 0, 42, -75), dR=(104, -4, 34, -78), lean=(5, -4), tilt=(-3, 2), wrist=8.0)
+    k5 = air(1.40, 0.0, -7.0, -6.0, 0.0, 0.0, 0.0, 11.0, -27.0, -2.0, -9.0, palm=(0, -0.6, 1),
+             dL=(54, 8, 58, -60), dR=(62, 6, 50, -65), lean=(3, -3), tilt=(0, 1.5), wrist=10.0)
+    k6 = air(1.085, 0.0, -2.0, 0.0, 0.0, 0.0, 0.0, 4.0, -9.0, 1.0, -6.0, toes=-30.0, palm=(0, -1, 0.3),
+             dL=(38, 10, 30, -20), dR=(44, 8, 26, -22), lean=(1, -1.5), wrist=6.0)
     st = idle_seg(1.0)
     k8 = M.Poser(st, 0)
     k8.root[0] += x0 - st.root[0, 0]
@@ -526,7 +540,7 @@ def rise():
         k7.leg(s, Pk[J["foot" + s]], "world")
         k7.R[J["foot" + s]], k7.R[J["toe" + s]] = k8.R[J["foot" + s]], k8.R[J["toe" + s]]
     keys = [(0.0, p0), (1.0, k1, "in"), (1.78, k2, "lin"), (acc + 0.045, k3, "out"), (acc + 1.1, k4, "io"),
-            (5.7, k5, "io"), (7.75, k6, "io"), (8.45, k7, "out"), (9.0, k8, "io")]
+            (4.6, k45, "in"), (5.75, k5, "out"), (7.75, k6, "io"), (8.45, k7, "out"), (9.0, k8, "io")]
     m = M.keyframes(keys, overlap=0.06, soften=5.0)
     m = M.drift(m, ["upArmL", "upArmR"], deg=2.5, period=4.0, seed=3, weight=M.ramp(m.times, 2.4, 3.2, 7.0, 8.2))
     m = M.drift(m, ["thighL", "thighR", "shinL", "shinR"], deg=2.5, period=3.4, seed=4, axes=(1, 0, 0.3),
@@ -580,12 +594,9 @@ def release():
     return finish(m, None, [(1.35, "cupped"), (acc, "release")])
 
 
-@recipe("catch")
-def catch():
-    """Chorus 2 'Fold me in again': the light arrives at her chest on the 222.735 hit: both hands
-    receive it, half a step back with the impact, her head bows over it; at 229.6 the head lifts and
-    the arms open slowly wide, palms forward (fully open 232.71), held. 16 s, song_t0 = 220.0.
-    It arrives from +Z (she faces it)."""
+def _catch_base():
+    """`catch` as it was up to round 3 (the ending was a level, straight, symmetric T held for four seconds).
+    Still the source of everything up to the moment her head lifts (229.6): catch() keeps those frames as they are."""
     S0 = 220.0
     hit, lift, open_ = 222.735 - S0, 229.6 - S0, 232.71 - S0
     m = idle_seg(16.0, 6.0)
@@ -620,6 +631,154 @@ def catch():
     m = M.drift(m, ["upArmL", "upArmR"], deg=1.6, period=5.0, seed=7, weight=M.ramp(t, open_ - 0.5, open_ + 0.6))
     m = M.ground_clamp(m, floor=0.0)
     return finish(m, S0, [(hit, "impact"), (lift, "head_lifts"), (open_, "open")], arrives_from="+Z")
+
+
+def spline_keys(keys, t, lead=None, t_lead=(0.0, 0.8)):
+    """Key poses -> Motion on the times t, WITHOUT stopping on the keys: every joint's parent-relative
+    rotation and the hips' path run through the keys on monotone cubic splines (PCHIP), so a key that the
+    motion passes through is passed through at speed, and a key repeated at two times is a true rest.
+    keys = [(time, Poser)...]. lead = {joint: seconds}: that joint runs ahead of the others by so much
+    (a lead of the chest before the arms, of one arm before the other: nothing arrives together); the
+    lead fades in over t_lead after the first key and out before the last, so both ends are the keys.
+    Feet are NOT pinned here (the caller owns the ground)."""
+    T = np.array([k[0] for k in keys], dtype=np.float64)
+    KL = M.to_local(np.stack([k[1].R for k in keys]))
+    Kroot = np.stack([k[1].root for k in keys])
+    t = np.asarray(t, dtype=np.float64)
+    fade = M.ramp(t, T[0] + t_lead[0], T[0] + t_lead[1]) * (1.0 - M.ramp(t, T[-1] - 0.6, T[-1]))
+    L = np.empty((len(t), M.NJ, 3, 3))
+    for j in range(M.NJ):
+        tj = np.clip(t + (lead or {}).get(M.JOINTS[j], 0.0) * fade, T[0], T[-1])
+        q = PchipInterpolator(T, M.quat_continuous(KL[:, j]), axis=0)(tj)
+        L[:, j] = M.Rot.from_quat(M.unit(q)).as_matrix()
+    th = np.clip(t + (lead or {}).get("hips", 0.0) * fade, T[0], T[-1])
+    return M.Motion(PchipInterpolator(T, Kroot, axis=0)(th), M.from_local(L))
+
+
+def _add(m, joint, deg, w):
+    """Additive local rotation (pitch, yaw, roll in degrees) weighted per frame."""
+    return M.additive(m, joint, np.radians(np.asarray(deg, dtype=np.float64))[None] * np.asarray(w)[:, None])
+
+
+@recipe("catch")
+def catch():
+    """Chorus 2 'Fold me in again': the light arrives at her chest on the 222.735 hit: both hands
+    receive it, half a step back with the impact, her head bows over it. At 229.6 ("life") her head
+    lifts; her hands leave her chest and unfold forward, palms up, and on "become" (232.71) her arms
+    arrive open: a soft V, hands above the shoulders, elbows unlocked and a little behind them, palms
+    forward and up, chest lifted, head tipped back; her weight has come forward onto the front (left)
+    leg, the back heel off the ground. Not symmetric (the left arm leads and ends lower, the right hip
+    hangs, the shoulders answer). Then she is ALIVE in it to the end: the arms keep opening slowly,
+    the head comes level to look at us, a breath out, wrists and elbows soften, the heel sinks, and a
+    last breath in. 16 s, song_t0 = 220.0. It arrives from +Z (she faces it).
+    r4: frames before 9.6 s are _catch_base()'s, untouched; the feet do not move from there on (the
+    left foot is where it was to the micron, the right turns on the ball of the foot)."""
+    S0 = 220.0
+    hit, lift, open_, end = 222.735 - S0, 229.6 - S0, 232.71 - S0, 16.0
+    old = _catch_base()
+    kl = int(round(lift * 60))
+    P0 = M.Poser(old, kl)
+    Pw = P0.P()
+    hx, hy, hz = P0.root
+    gL, gR = Pw[J["footL"]], Pw[J["footR"]]
+    yawL = math.degrees(math.atan2(*(Pw[J["toeL"]] - gL)[[0, 2]]))
+    yawR = math.degrees(math.atan2(*(Pw[J["toeR"]] - gR)[[0, 2]]))
+
+    def key(dx=0.0, dy=0.0, dz=0.0, hyaw=0.0, hroll=0.0, sp=(0, 0, 0), hd=(0, 0, 0), heel=0.0, L=None, R=None, armsik=None):
+        """One authored pose on her stance. dx/dy/dz: hips from where they are at 9.6; sp/hd = (pitch, yaw,
+        roll) of the spine / head; L, R = (raise, fwd, elbow, twist, wrist) for an FK arm (wrist = degrees
+        the hand falls back from the forearm's line); armsik = per side (hand xyz, fingers, palm) in body space."""
+        p = M.Poser()
+        p.hips(pos=(hx + dx, hy + dy, hz + dz), yaw=hyaw, roll=hroll)
+        p.spine(*sp)
+        p.head(*hd)
+        for s, a in (("L", L), ("R", R)):
+            sg = 1.0 if s == "L" else -1.0
+            if a is not None:
+                p.arm_fk(s, raise_=a[0], fwd=a[1], elbow=a[2], twist=a[3])
+                Rf = p.R[J["foreArm" + s]]
+                f = Rf[:, 1]
+                out = M.unit(np.array([sg, 0.25, -0.1]) - (np.array([sg, 0.25, -0.1]) @ f) * f)     # a relaxed wrist lets the hand fall outward
+                w = math.radians(a[4])
+                p.hand(s, f * math.cos(w) + out * math.sin(w), p.dir_world((0.0, 0.45, 1.0)), space="world")
+            elif armsik is not None:
+                h, fg, pl = armsik[s]
+                p.arm(s, h, fingers=fg, palm=pl, pole=(0.75 * sg, -1.0, -0.25))
+        p.foot("L", (gL[0], gL[2]), yawL, space="world")
+        p.foot("R", (gR[0], gR[2]), yawR, space="world", heel=heel)
+        return p
+
+    def chest(sg, x, y, z, fg, pl):
+        return ((sg * x, y, z), (sg * fg[0], fg[1], fg[2]), (sg * pl[0], pl[1], pl[2]))
+
+    def ik(x, y, z, fg, pl, dL=(0, 0, 0)):
+        return {"L": chest(1.0, x + dL[0], y + dL[1], z + dL[2], fg, pl), "R": chest(-1.0, x, y, z, fg, pl)}
+
+    # the phrase (track time; +220 = song time)
+    k1 = key(dy=-0.004, sp=(7, 0, 0), hd=(6, 0, 0),                                   # 229.6-230.4 the head comes up first; the hands loosen on the chest
+             armsik=ik(0.075, 1.185, 0.165, (-0.6, 0.55, 0.45), (-0.2, 0.1, -1), dL=(0.0, -0.012, 0.01)))
+    k2 = key(dx=0.012, dy=-0.012, dz=0.03, hroll=1.0, sp=(2, 1, -1), hd=(1, -3, 0),   # 231.2 they have left it and unfold forward, palms up: an offering; she sinks a little, gathering
+             armsik=ik(0.215, 1.165, 0.375, (0.2, 0.12, 1), (-0.25, 1, 0.15), dL=(0.02, 0.012, 0.015)))
+    k3 = key(dx=0.03, dy=-0.008, dz=0.06, hyaw=-2.0, hroll=2.2, sp=(-3, 2, -3), hd=(-5, -3, 1), heel=0.015,   # 231.95 the sweep: out and up, elbows leading
+             L=(66, 30, 52, -40, 6), R=(60, 34, 58, -36, 8))
+    k4 = key(dx=0.065, dy=-0.003, dz=0.088, hyaw=-6.0, hroll=4.5, sp=(-10, 6, -9), hd=(-14, -5, 3), heel=0.055,   # 232.71 OPEN
+             L=(90, -3, 40, -66, 8), R=(100, -6, 30, -72, 6))
+    k5 = key(dx=0.067, dy=-0.002, dz=0.09, hyaw=-6.0, hroll=4.7, sp=(-11, 6, -9.5), hd=(-12, -4, 3), heel=0.06,     # 233.4 still opening, slower: the arms float up
+             L=(95, -5, 35, -68, 10), R=(106, -8, 25, -74, 8))
+    k6 = key(dx=0.066, dy=-0.002, dz=0.088, hyaw=-5.0, hroll=4.7, sp=(-9.5, 4, -9.5), hd=(-2, 0, 2), heel=0.055,    # 234.6 the top of it; the head has come level: she looks at us
+             L=(99, -7, 31, -70, 14), R=(111, -10, 22, -75, 12))
+    k7 = key(dx=0.075, dy=-0.010, dz=0.07, hyaw=-3.0, hroll=5.5, sp=(-5, 2, -8), hd=(1, 2, -2.5), heel=0.015,       # 236.6 the breath out: arms sink a little, elbows and wrists soft, her weight sits into the hip, the heel nearly down
+             L=(88, -2, 44, -62, 26), R=(99, -4, 36, -68, 22))
+    keys = [(lift - 0.5, P0), (lift, P0), (lift + 0.78, k1), (lift + 1.6, k2), (lift + 2.35, k3), (open_, k4),
+            (open_ + 0.6, k5), (open_ + 1.6, k6), (end - 0.02, k7), (end + 0.5, k7)]
+    n = int(round((end - lift) * 60)) + 1
+    t = lift + np.arange(n) / 60.0
+    # nothing arrives together: the hips and chest lead, the left arm runs ahead of the right, hands arrive last. The LAST part (her right hand) lands on the pin.
+    lead = {"hips": 0.20, "spine": 0.20, "chest": 0.18, "neck": 0.10, "head": 0.06, "clavL": 0.18, "clavR": 0.14,
+            "upArmL": 0.16, "foreArmL": 0.12, "handL": 0.07, "upArmR": 0.07, "foreArmR": 0.03, "handR": 0.0,
+            "thighL": 0.20, "shinL": 0.20, "thighR": 0.20, "shinR": 0.20}
+    m = spline_keys(keys, t, lead=lead, t_lead=(0.5, 1.4))
+    # breath: in as she opens (full on "become"), out, and in again at the very end (it is at rest on the last frame); the arms ride on it
+    b = 0.5 - 0.5 * np.cos(2 * np.pi * (t - open_) / (end - 0.02 - open_) + 2 * np.pi) * 1.0
+    b = 1.0 - b                                             # 1 at open_ and at the end, 0 half way
+    wb = M.ramp(t, lift + 0.4, open_ - 0.6)
+    bb_ = (b - 1.0) * wb                                     # the keys are the full breath: breathing OUT takes away from them
+    m = _add(m, "chest", (-2.0, 0, 0), bb_)
+    m = _add(m, "spine", (-0.9, 0, 0), bb_)
+    m = _add(m, "head", (1.6, 0, 0), bb_)
+    for s, sg in (("L", 1.0), ("R", -1.0)):
+        m = _add(m, "clav" + s, (0, 0, sg * 2.6), bb_)
+        m = _add(m, "upArm" + s, (0, 0, sg * 1.6), bb_)
+    # the moving hold: slow wander, different on the two sides, most in the wrists
+    wd = M.ramp(t, open_ - 0.9, open_ + 0.3)
+    m = M.drift(m, ["upArmL"], deg=1.5, period=5.3, seed=21, weight=wd)
+    m = M.drift(m, ["upArmR"], deg=1.3, period=4.4, seed=22, weight=wd)
+    m = M.drift(m, ["foreArmL"], deg=2.0, period=3.9, seed=23, weight=wd)
+    m = M.drift(m, ["foreArmR"], deg=1.8, period=4.7, seed=24, weight=wd)
+    m = M.drift(m, ["handL"], deg=3.5, period=3.3, seed=25, weight=wd)
+    m = M.drift(m, ["handR"], deg=3.0, period=4.1, seed=26, weight=wd)
+    m = M.drift(m, ["neck", "head"], deg=0.9, period=5.9, seed=27, weight=wd)
+    m = M.drift(m, ["spine"], deg=0.5, period=7.1, seed=28, weight=wd)
+    sway = 0.004 * np.sin(2 * np.pi * (t - open_) / 6.4) * wd
+    m.root[:, 0] += sway
+    # the ground. Left foot: exactly where it has stood since the hit. Right foot: turns on the ball of the foot as the heel comes up
+    heel = PchipInterpolator([k[0] for k in keys], [0, 0, 0, 0.004, 0.018, 0.055, 0.06, 0.055, 0.015, 0.015])(np.clip(t + 0.1 * M.ramp(t, lift, lift + 0.8), lift, end))
+    Rf0, Rt0 = P0.R[J["footR"]], P0.R[J["toeR"]]
+    ball = gR + Rf0 @ np.array([0.0, M.LEN["foot"], 0.0])
+    ax = Rf0[:, 0]
+    ang = np.arcsin(np.clip(heel / M.LEN["foot"], 0.0, 0.95))
+    sgn = 1.0 if (M.expmap(ax * 0.1) @ (gR - ball))[1] > (gR - ball)[1] else -1.0
+    Q = M.expmap(sgn * ang[:, None] * ax[None])
+    ankR = ball[None] + np.einsum("fab,b->fa", Q, gR - ball)
+    m = M.leg_ik(m, "L", np.repeat(gL[None], n, 0))
+    m = M.leg_ik(m, "R", ankR)
+    m.R[:, J["footL"]], m.R[:, J["toeL"]] = P0.R[J["footL"]], P0.R[J["toeL"]]
+    m.R[:, J["footR"]], m.R[:, J["toeR"]] = Q @ Rf0, Rt0
+    # splice: everything before the head lifts is the old take, frame for frame
+    out = old.copy()
+    out.root[kl:kl + n] = m.root[:n]
+    out.R[kl:kl + n] = m.R[:n]
+    return finish(out, S0, [(hit, "impact"), (lift, "head_lifts"), (open_, "open")], arrives_from="+Z", r4="ending re-authored from 9.6 s (the opening is a gesture, not a T)")
 
 
 # ----------------------------------------------------------------------------- forks
