@@ -37,4 +37,22 @@ node fable/tools/render.mjs --show /fable/show/main.js --q "dev=cuts&standin=1" 
 
 ## Verified
 - Strips before / after per item (`work_fable/stills/r4_Y/`): `i1_side.jpg` (the old water-line camera from 116.65), `i1_v1.jpg` (the lift, 0.1 s), `i2_l11.jpg`, `i2_seq05.jpg`, `i2_margins.jpg` (title-safe box), `i3_truck_out.jpg` (0.25 s), `i4_08c.jpg`, `i4_10.jpg` (0.5 s, the pool), `i6_nasa.jpg` (0.1 s), `i7_home_var.jpg` (six angles), `i7_home_ab.jpg`, `i8_9_10.jpg`, `check_a.jpg`.
-- Motion: see "Motion check" below.
+
+## Motion check (frames taken from `work_fable/out/r4_Y.mp4`: 45-205 s, 1280x720, 30 fps, mb 4, audio; 160 s to render)
+- `m1.jpg`: the lift 116.5-118.0 at 15 fps: the fan is whole and still on the last top-down frame (116.633); from 116.7 she lies on the mirror, lifts from 117.0, is
+  upright at 117.8, arms opening at 117.97; the lens rises with her, no pop of pose or hair at the cut or on b68.4. The salute 178.3-179.5 at 15 fps: the troupe sits
+  at mid-height in the low pose (178.37-178.83), the frame tilts up with the rise (178.9-179.2) and is still from 179.23.
+- `m2.jpg`: home 55.8-57.5 at 10 fps (profile, the arm steady on the model, the head starts round at 57.3); the truck 133.3-135.9 at 7.5 fps (the ease outward is
+  not felt as a move; the copy that enters at 134.5 is whole by 134.77); the pool 163-169.7: a steady warm disc at the foot of the A's right leg in every frame.
+- `m3.jpg`: 187.9-190.1 (mirror under her feet for the whole walk-in), 199.8-203.55 (head room throughout), line 12 at 111.6-112.5 and line 11 at 103.6-104.6 at 10 fps.
+- Not done: the mp4 was not watched as video with sound (frames only); 1080p.
+
+## Still weak (exact times)
+- 116.65-117.05: before the lift reads she is a low, foreshortened shape on the water for 0.4 s; her hair is one dark tail (request 3).
+- 134.6-135.2: she herself is cut by the left edge as the truck leaves her; 138.3-139.2: the row at the end of the truck still runs out of both edges (six to seven bodies whole between).
+- 143.5-145.2: her pool is small (she is about 25 px tall at 720p); 145.2-148 she is behind the lens.
+- 163-170: on the bright mirror her pool shares main with the sun's glitter; it is the largest and the only steady one.
+- 178.9-179.2: the tilt up with the rise is quick (4 degrees in 0.3 s); it stops before the salute's beat.
+- 112.3-112.45: the end of "return" is on the 5 % line while it fades (inside while it is fully lit).
+- 52.3-54.0: nasa's face is still behind her raised arms (the pose).
+- 225.3-228.4: item 9, unchanged until request 1 is taken.
