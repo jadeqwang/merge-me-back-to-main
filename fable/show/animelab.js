@@ -10,6 +10,9 @@
 //   mode=M  medium / detail checks: 0 half body front, 1 back three-quarter (disc, RARE EARTH), 2 bun close, 3-5 right hand (fist, relaxed, splayed),
 //           6 the figure at 1/3 of frame height (crop to judge the face at film size), 7 float top-down (10: with hair: 'strands'), 8 violet seated close, 9 catch open half body,
 //           11-13 the bun variants (bun, bun_write, bun_one) at night, 14 bun by day from behind
+//   mode=H  hands (polish pass): cell = view * 8 + shape. shapes: 0 splayed (-1), 1 open (-0.6), 2 relaxed, 3 loose (0.4), 4 fist, 5 pencil grip (bun_write), 6 blade, 7 the salute
+//           (right fist in the left palm, medium shot); views 0-3: round the right hand of the open arms (`catch` 12.9), 4-5: the left hand, front and from above-behind
+//   mode=S  sleeves and jacket (polish pass): 0 open arms front, 1 the same from behind, 2 a punch (`build`), 3 the salute, 4 idle from the side, 5 `free`, 6 the open arms close on one sleeve
 //   mode=Z  one custom cell: --q "mode=Z&track=idle&tt=3&turn=0.5&el=0&dist=5&light=day&expr=joy&hand=1&variant=bun&ty=0.95&fov=30"
 import { Figure as FigOld, LANES as FL } from '../engine/src/figure/figure.js';
 import { Figure as FigNew } from '../engine/src/figure_anime/figure.js';
@@ -18,7 +21,7 @@ import { loadTrack } from '../engine/src/figure/skeleton.js';
 let E, figs = {}, R = {}, L, mode, which, tracks = {}, camMode;
 const PI = Math.PI, DEG = PI / 180, LN = ['main', 'rose', 'blue', 'cyan', 'mint', 'gold', 'coral', 'magenta'];
 const h = (n, q) => { const s = Math.sin(n * q) * 43758.5453; return s - Math.floor(s); };
-const NEED = { A: ['idle'], F: ['idle'], B: ['idle', 'run_loop', 'catch'], C: ['run_loop', 'drop', 'violet', 'catch', 'free'], X: ['run_loop', 'build'], M: ['idle', 'float', 'violet', 'catch'], P: ['float', 'idle', 'sidekick'], D: ['free', 'violet'], Z: [] };
+const NEED = { A: ['idle'], F: ['idle'], B: ['idle', 'run_loop', 'catch'], C: ['run_loop', 'drop', 'violet', 'catch', 'free'], X: ['run_loop', 'build'], M: ['idle', 'float', 'violet', 'catch'], P: ['float', 'idle', 'sidekick'], D: ['free', 'violet'], H: ['idle', 'catch', 'salute_only'], S: ['idle', 'catch', 'salute_only', 'build', 'free'], Z: [] };
 
 export async function setup(engine) {
   E = engine; mode = String(E.param('mode', 'A')); which = String(E.param('fig', 'both')); camMode = String(E.param('cam', ''));
@@ -105,6 +108,16 @@ function cellsFor(i, t) {
     if (i >= 11 && i <= 13) return cell({ track: 'violet', T: [16.5, 18.5, 24][i - 11], turn: [40, 40, 150][i - 11] * DEG, light: 'nightV', variant: ['bun', 'bun_write', 'bun_one'][i - 11], dist: 2.6, ty: 1.2, sep: 1.2, face: F('calm', { amt: 0.3 }) });
     if (i === 14) return cell({ track: 'idle', T: 3, turn: 150 * DEG, light: 'day', variant: 'bun', dist: 2.7, ty: 1.22, sep: 0.95 });
     return cell({ track: 'catch', T: 12.9, turn: 20 * DEG, light: 'day', dist: 2.9, ty: 1.25, sep: 1.5, hand: -1, face: F('joy') });
+  }
+  if (mode === 'H') {
+    const SH = [-1, -0.6, 0, 0.4, 1, 'grip', 'blade'], v = Math.floor(i / 8), k = i % 8, hd = SH[k], lt = String(E.param('light', 'day'));
+    if (k === 7) return cell({ track: 'salute_only', T: 1.0 + 0.2 * v, turn: [0, 35, -35, 90, 0, 0][v] * DEG, light: lt, dist: 1.5, fov: 24, ty: 1.28, hand: { L: 'blade', R: 1 }, only: 'anime', face: F('determined') });
+    return cell({ track: 'catch', T: 12.9, turn: [20, 110, 200, 290, 20, 200][v] * DEG, el: [0.1, 0.1, 0.1, 0.1, 0.1, 0.5][v], light: lt, dist: E.param('dist', 0.85), fov: 24, aim: v < 4 ? 12 : 8, camY: 0.05, hand: hd, variant: hd === 'grip' ? 'bun_write' : undefined, only: 'anime', face: F('joy') });
+  }
+  if (mode === 'S') {
+    const lt = String(E.param('light', 'day')), C = [{ track: 'catch', T: 12.9, turn: 20 * DEG, hand: -0.6, face: F('joy') }, { track: 'catch', T: 12.9, turn: 160 * DEG, hand: -0.6 }, { track: 'build', T: 0.87, turn: 60 * DEG, hand: 1, face: F('determined') },
+      { track: 'salute_only', T: 1.0, turn: 25 * DEG, hand: { L: 'blade', R: 1 }, face: F('determined') }, { track: 'idle', T: 3, turn: 80 * DEG }, { track: 'free', T: 8.7, turn: 30 * DEG, hand: -0.2, face: F('joy') }, { track: 'catch', T: 12.9, turn: 20 * DEG, hand: -0.6, face: F('joy'), dist: 1.5, aim: 7 }][i] || {};
+    return cell({ light: lt, dist: 3.0, ty: 1.25, fov: 26, only: 'anime', ...C });
   }
   if (mode === 'Z') {
     const expr = String(E.param('expr', 'neutral')), v = E.param('variant', '');

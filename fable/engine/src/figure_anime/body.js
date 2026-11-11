@@ -22,8 +22,49 @@ export const VSTRIDE = 20, FSTRIDE = 28, TILE = 512;
 // The face, in the head joint's local frame (metres; x = her left, y up from the joint at 1.505, z front). Shared with the shader.
 // LIKENESS pass (2026-11-10, from Jade's own photo and the character sheet): a round-oval face (full cheeks, soft short chin), a high open forehead with a
 // centre parting, long almond eyes set a little wide with the outer corners up, straight full brows, very dark brown irises, a soft short nose, full lips.
-export const FACE = { PARTX: 0.003, EX: 0.0403, EY: 0.0275, EW: 0.0262, BY: 0.0252, NY: -0.0150, MY: -0.0365, TILT: 0.0029, K1: 0.082, K2: 0.122 };
+// POLISH pass: the eyes are a fifth larger (EW 0.0262 -> 0.0312, their height by ES in the shader), a little wider apart, the brows higher to clear them.
+export const FACE = { PARTX: 0.003, EX: 0.0420, EY: 0.0275, EW: 0.0312, ES: 1.17, BY: 0.0318, NY: -0.0150, MY: -0.0365, TILT: 0.0040, K1: 0.082, K2: 0.122 };
 const fract = (x) => x - Math.floor(x);
+// THE HANDS (polish pass). A palm, four fingers and a thumb as separate tapered forms, rigid to the hand joint and POSED in the vertex shader from a small
+// table of authored shapes (HAND.pose), blended per instance by `hand`. Canonical hand frame (metres): x = out of the palm, y = wrist -> fingertips,
+// z = toward the thumb; the hand joint's local frame is (side * x, y, z). Digits 0..3 = index, middle, ring, little; 4 = thumb; 5 = the far mitten (LOD).
+//   B  base pivot (knuckle; the thumb's saddle joint)    az  rest direction in the palm plane, degrees toward the thumb (fingers)    d  rest direction (thumb)
+//   L  three segment lengths                            r   radius at the base (half width; fingers are a little flatter than wide)
+// A pose row = [spread, a1, a2, a3] in degrees per digit. Fingers: spread about the palm normal (+ = toward the thumb), then knuckle, middle and end joint
+// (+ = curl toward the palm). Thumb: swing in the palm plane (+ = away from the index), opposition (+ = out of the palm plane, toward the palm side), then its
+// two joints (+ = curl across the palm), and a fifth number: the turn of the whole thumb about its own length (what lets its pad face the fingers).
+export const HAND = {
+  dig: [
+    { B: [0.0000, 0.0885, 0.0272], az: 3.5, L: [0.0345, 0.0225, 0.0195], r: 0.0087 },
+    { B: [0.0000, 0.0915, 0.0088], az: 0.5, L: [0.0375, 0.0250, 0.0205], r: 0.0089 },
+    { B: [0.0000, 0.0875, -0.0092], az: -3.0, L: [0.0350, 0.0235, 0.0200], r: 0.0085 },
+    { B: [0.0000, 0.0790, -0.0262], az: -7.0, L: [0.0275, 0.0175, 0.0180], r: 0.0076 },
+    { B: [0.0050, 0.0240, 0.0215], d: [0.20, 0.74, 0.64], twist: 38, L: [0.0400, 0.0300, 0.0255], r: 0.0118 },
+    { B: [0.0000, 0.0870, 0.0000], az: 0, L: [0.0340, 0.0225, 0.0195], r: 0.0340 },
+  ],
+  //            index             middle            ring              little            thumb
+  pose: {
+    splay: [[8, -5, 3, 0], [2, -6, 3, 0], [-5, -5, 3, 0], [-13, -4, 4, 0], [8, -7, 0, 9, 5]],              // -1: flat, fingers fanned, thumb out
+    relax: [[2, 14, 24, 12], [0, 20, 32, 16], [-1, 27, 38, 20], [-4, 33, 42, 22], [11, 5, 48, 15, 43]],       //  0: the natural curl, more toward the little finger
+    fist: [[-3, 86, 102, 72], [0, 88, 104, 74], [3, 90, 104, 74], [7, 92, 100, 72], [-7, 30, 35, 67, 35]],    // +1: thumb across the index and middle fingers
+    grip: [[0, 20, 6, 4], [9, 10, 95, 57], [3, 62, 96, 60], [7, 72, 98, 64], [4, 14, 50, 27, 46]],            // the pencil of bun_write: index along the shaft, thumb pad on it, the others hooked round it (solved against the pencil's own line: fable/notes/polish.md)
+    blade: [[-3, -3, 2, 0], [0, -4, 2, 0], [3, -3, 2, 0], [7, -1, 4, 2], [-3, -2, 33, 34, 40]],               // a flat palm, fingers together, thumb tucked (the salute's left hand, palm strikes)
+  },
+};
+for (const D of HAND.dig) {
+  if (D.d) { D.d = norm(D.d); D.f1 = norm(cross(D.d, [1, 0, 0])); const t = D.twist * DEG; D.f2 = norm(add(mul([-1, 0, 0], Math.cos(t)), mul(D.f1, Math.sin(t)))); }
+  else { const a = D.az * DEG; D.d = [0, Math.cos(a), Math.sin(a)]; D.f1 = D.f2 = [0, Math.sin(a), -Math.cos(a)]; }
+  D.len = D.L[0] + D.L[1] + D.L[2];
+}
+const rodr = (p, c, ax, a) => { const q = sub(p, c), cs = Math.cos(a), sn = Math.sin(a); return add(c, add(add(mul(q, cs), mul(cross(ax, q), sn)), mul(ax, dot(ax, q) * (1 - cs)))); };
+// the same chain as the vertex shader (shade.js handPose), without the soft joints: a point of digit k given in the REST hand (canonical frame), posed by row a
+export const handFK = (k, a, p) => {
+  const D = HAND.dig[k], s = dot(sub(p, D.B), D.d), j1 = add(D.B, mul(D.d, D.L[0])), j2 = add(D.B, mul(D.d, D.L[0] + D.L[1]));
+  if (s > D.L[0] + D.L[1]) p = rodr(p, j2, D.f2, a[3] * DEG);
+  if (s > D.L[0]) p = rodr(p, j1, D.f2, a[2] * DEG);
+  if (s > 0) { if (a[4]) p = rodr(p, D.B, D.d, a[4] * DEG); p = rodr(p, D.B, D.f1, a[1] * DEG); p = rodr(p, D.B, [1, 0, 0], a[0] * DEG); }
+  return p;
+};
 // > 0 = hair. Curtain bangs from an off-centre parting, sweeping out and down to the temples, then the side hair in front of the ears.
 export const hairD = (x, y, z) => {
   const ax = Math.abs(x), apx = Math.abs(x - FACE.PARTX);
@@ -95,7 +136,8 @@ export function buildBody(opts = {}) {
   const one = (j) => () => ({ a: j });
   const two = (ja, jb, x0, hw) => (x) => { const w = smooth(x0 - hw, x0 + hw, x); return w <= 0 ? { a: ja } : w >= 1 ? { a: jb } : { a: ja, b: jb, w }; };
   const skinOf = (P, N, bones, lagW = 0) => { const a = bones.a, b = bones.b === undefined ? bones.a : bones.b; return { la: toLocal(a, P), lb: toLocal(b, P), w: bones.w || 0, n: dirToLocal(a, N), a, b, chain: -1, lagW, frame: (d) => dirToLocal(a, d) }; };
-  const loft = (L, cfg) => { defs.push({ L, cfg, tile: defs.length }); return L; };
+  const tileOf = {}; let nTiles = 0;                 // lofts of one flat colour may share an atlas tile (cfg.tileKey): the hands are 16 lofts
+  const loft = (L, cfg) => { let tile; if (cfg.tileKey) { if (tileOf[cfg.tileKey] === undefined) tileOf[cfg.tileKey] = nTiles++; tile = tileOf[cfg.tileKey]; } else tile = nTiles++; defs.push({ L, cfg, tile }); return L; };
   const vOf = (L, cfg, f) => (cfg.vParam ? f * (L.n - 1) : L.vAtS(L.length * f));
 
   // ================= forms (rest pose: hips 1.005, chest 1.225, neck 1.415, head joint 1.505, crown 1.655) =================
@@ -134,15 +176,29 @@ export function buildBody(opts = {}) {
       { nu: 32, nv: 26, region: side > 0 ? 1 : 2, tileSize: TILE, bones: sleeveBones, fibres: 0.0033, fibreUp: mul(dir, -1),
         part: (u, v, P) => { const d = dOf(P); if (d < 0.0 && Math.abs(P[0]) < 0.14) return -1; return (d > 0.085 && d < 0.128) ? PART.STRIPE : PART.JACKET; } });
     sleeves.push({ sl, side, sh, dir, dOf, sleeveBones });
-    // hand: a FLAT mitten of fingers plus a thumb; the vertex shader bends it at two knuckle lines (per-instance `hand`: -1 splayed, 0 relaxed, 1 fist).
-    // mark = the value stored in lb.w (-1 fingers, -2 thumb); lb.x = side.
+    // HANDS (polish pass): palm + four fingers + thumb, see HAND at the top. Vertices carry lb = (side, digit id, 0) and lb.w = -1: the vertex shader poses
+    // them (handPose). Far LOD: the palm, the thumb and ONE mitten that takes the mean of the four fingers' angles, so the hand keeps its shape when it changes.
     const hp = REST_POS[ha], bodyward = [-side, 0, 0], palm = norm(sub(bodyward, mul(dir, dot(bodyward, dir))));
-    const hc = (t) => add(hp, mul(dir, t));
-    loft(new Loft([{ c: hc(-0.012), rx: 0.019, rz: 0.024 }, { c: hc(0.025), rx: 0.017, rz: 0.036 }, { c: hc(0.070), rx: 0.015, rz: 0.043 }, { c: hc(0.110), rx: 0.013, rz: 0.042 }, { c: hc(0.142), rx: 0.011, rz: 0.038 }, { c: hc(0.160), rx: 0.008, rz: 0.028 }, { c: hc(0.167), rx: 0.003, rz: 0.010 }], palm, Z),
-      { nu: 14, nv: 14, region: side > 0 ? 10 : 11, partConst: PART.SKIN, bones: one(ha), mark: -1, side });
-    const td = norm(add(mul(dir, 0.72), add([0, 0, 0.62], mul(palm, 0.25)))), t0 = add(hp, add(mul(dir, 0.028), [0, 0, 0.026])), tz = norm(cross(td, palm));
-    loft(new Loft([{ c: t0, rx: 0.011, rz: 0.012 }, { c: add(t0, mul(td, 0.03)), rx: 0.010, rz: 0.011 }, { c: add(t0, mul(td, 0.056)), rx: 0.008, rz: 0.009 }, { c: add(t0, mul(td, 0.066)), rx: 0.002, rz: 0.003 }], palm, tz),
-      { nu: 8, nv: 5, region: side > 0 ? 10 : 11, partConst: PART.SKIN, bones: one(ha), mark: -2, side });
+    const vecC = (c) => add(add(mul(palm, c[0]), mul(dir, c[1])), [0, 0, c[2]]), fromC = (c) => add(hp, vecC(c)), toC = (P) => { const q = sub(P, hp); return [dot(q, palm), dot(q, dir), q[2]]; };
+    const reg = side > 0 ? 10 : 11, hcfg = (digit, o) => ({ region: reg, partConst: PART.SKIN, bones: one(ha), mark: -1, side, digit, tileKey: 'hand', ...o });
+    // the cuff closes on the wrist (it was an open tube: one looked into the sleeve), and the wrist runs up inside it
+    loft(new Loft([S(0.5070, 0.0335, 0.0355, 0.005), S(0.5100, 0.0310, 0.0330, 0.0045), S(0.5128, 0.0215, 0.0260, 0.003), S(0.5150, 0.0105, 0.0160, 0.0005)], X, Z), { nu: 20, nv: 4, region: side > 0 ? 1 : 2, partConst: PART.JACKET, bones: one(ha), tileKey: 'cuff', noHull: true });
+    // palm: a slab with rounded edges, narrow at the wrist, widest at the knuckles; the knuckle line slopes back toward the little finger
+    const PALM = [[-0.042, 0.0128, 0.0185, 0], [-0.012, 0.0128, 0.0190, 0], [0.008, 0.0130, 0.0208, 0.0004], [0.030, 0.0136, 0.0282, 0.0012], [0.054, 0.0128, 0.0342, 0.0010], [0.074, 0.0114, 0.0370, 0.0006], [0.088, 0.0098, 0.0366, 0.0004], [0.0965, 0.0064, 0.0330, 0], [0.0995, 0.0012, 0.0200, 0]];
+    loft(new Loft(PALM.map(([y, rx, rz, z]) => ({ c: fromC([0, y, z]), rx, rz })), palm, Z), hcfg(6, { nu: 18, nv: 18,
+      warp: (P, g) => { const c = toC(P), u = clamp(c[0] / g.rx, -1, 1), k = smooth(0.040, 0.094, c[1]); c[0] = g.rx * Math.sign(u) * Math.pow(Math.abs(u), 0.72);
+        c[1] -= k * (0.0100 * Math.pow(clamp(-c[2] / 0.036, 0, 1), 1.4) + 0.0030 * Math.pow(clamp(c[2] / 0.036, 0, 1), 1.6)); return fromC(c); } }));
+    const tipR = (rr, sLen) => [[sLen - 0.0120, 1], [sLen - 0.0052, 0.93], [sLen - 0.0016, 0.64], [sLen, 0.12]].map(([q, m]) => [q, rr(q) * m]);
+    for (let k = 0; k < 4; k++) {                    // fingers: tapered, a little flatter than wide, a round tip
+      const D = HAND.dig[k], rr = (q) => D.r * (1 - 0.20 * Math.max(0, q) / D.len) * (q < 0 ? 0.92 : 1), acr = vecC([0, -D.d[2], D.d[1]]);
+      const RS = [[-0.011, rr(-1)], [-0.004, rr(-1)], [0.006, rr(0.006)], [D.L[0] * 0.5, rr(D.L[0] * 0.5) * 0.97], [D.L[0], rr(D.L[0]) * 1.03], [D.L[0] + D.L[1] * 0.5, rr(D.L[0] + D.L[1] * 0.5) * 0.97], [D.L[0] + D.L[1], rr(D.L[0] + D.L[1]) * 1.02], ...tipR(rr, D.len)];
+      loft(new Loft(RS.map(([q, r]) => ({ c: fromC(add(D.B, mul(D.d, q))), rx: r * 0.84, rz: r })), palm, acr), hcfg(k, { nu: 10, nv: 14, lods: [0, 1] }));
+    }
+    { const D = HAND.dig[4], e1 = cross(D.d, D.f1), rr = (q) => (q < 0.008 ? D.r : q < D.L[0] ? lerp(D.r, 0.0090, smooth(0.008, D.L[0], q)) : lerp(0.0090, 0.0077, (q - D.L[0]) / (D.len - D.L[0])));      // thumb: a full base (the ball of the thumb), two joints
+      const RS = [[-0.013, D.r * 0.9], [-0.004, D.r], [0.008, rr(0.008)], [0.022, rr(0.022)], [D.L[0], rr(D.L[0])], [D.L[0] + D.L[1] * 0.5, rr(D.L[0] + D.L[1] * 0.5) * 0.96], [D.L[0] + D.L[1], rr(D.L[0] + D.L[1]) * 1.02], ...tipR(rr, D.len)];
+      loft(new Loft(RS.map(([q, r]) => ({ c: fromC(add(D.B, mul(D.d, q))), rx: r * 0.90, rz: r })), vecC(e1), vecC(D.f1)), hcfg(4, { nu: 10, nv: 13 })); }
+    { const D = HAND.dig[5], RS = [[-0.008, 0.0330, 0.0072], [0.004, 0.0346, 0.0074], [0.030, 0.0340, 0.0070], [0.055, 0.0312, 0.0064], [0.070, 0.0262, 0.0058], [0.079, 0.0170, 0.0046], [0.0825, 0.0040, 0.0016]];      // the far mitten
+      loft(new Loft(RS.map(([q, rz, rx]) => ({ c: fromC(add(D.B, mul(D.d, q))), rx, rz })), palm, Z), hcfg(5, { nu: 14, nv: 16, lods: [2] })); }
   }
 
   // trousers: fitted at the high waist, then a long bell to the floor. The legs are chains of simulated ring centres.
@@ -190,12 +246,12 @@ export function buildBody(opts = {}) {
   { // the drawn pencil, held in the right hand like a pen: through the mitten, the lead beyond the fingertips
     const up = J.upArmR, fo = J.foreArmR, ha = J.handR, sh = REST_POS[up], dir = norm(sub(REST_POS[fo], sh)), hp = REST_POS[ha], bodyward = [1, 0, 0], palm = norm(sub(bodyward, mul(dir, dot(bodyward, dir))));
     const ax = norm(add(mul(dir, 0.88), add([0, 0, 0.36], mul(palm, 0.20)))), t1 = norm(cross(ax, palm)), t2 = cross(ax, t1), c0 = add(hp, add(mul(dir, 0.085), add([0, 0, 0.012], mul(palm, 0.022)))), C = (h, r) => ({ c: add(c0, mul(ax, h - 0.085)), rx: r, rz: r });
-    loft(new Loft([C(0, 0.001), C(0.002, 0.0058), C(0.02, 0.0058), C(0.10, 0.0058), C(0.188, 0.0058), C(0.204, 0.0024), C(0.212, 0.0004)], t1, t2), { nu: 6, nv: 12, vParam: true, region: 13, variant: 4, part: pencilPart, bones: one(ha) });
+    loft(new Loft([C(0.050, 0.001), C(0.052, 0.0058), C(0.064, 0.0058), C(0.10, 0.0058), C(0.188, 0.0058), C(0.204, 0.0024), C(0.212, 0.0004)], t1, t2), { nu: 8, nv: 12, vParam: true, region: 13, variant: 4,      /* polish: the held pencil starts inside the closed hand (it used to come out through the heel of the palm); its line and its tip are unchanged */ part: pencilPart, bones: one(ha) });
     pencilTip = toLocal(ha, add(c0, mul(ax, 0.212 - 0.085)));
   }
 
   // ================= atlas + meshes + fibres =================
-  const T = Math.ceil(Math.sqrt(defs.length)), ASIZE = T * TILE, atlas = new Uint8Array(ASIZE * ASIZE).fill(255);
+  const T = Math.ceil(Math.sqrt(nTiles)), ASIZE = T * TILE, atlas = new Uint8Array(ASIZE * ASIZE).fill(255);
   for (const d of defs) {
     const { L, cfg } = d, tx = (d.tile % T) * TILE, ty = Math.floor(d.tile / T) * TILE; d.org = [tx, ty];
     const res = cfg.tileSize || 64, sc = TILE / res;
@@ -215,10 +271,11 @@ export function buildBody(opts = {}) {
       const s = cfg.skin ? cfg.skin(u, v, P, q.N, q.g) : skinOf(P, q.N, cfg.bones(P, v), cfg.lag ? cfg.lag(P) : 0);
       return { s, uv: uvOf(fu, fv), N: q.N, P };
     };
-    const put = (arr, o, seed) => arr.push(o.s.la[0], o.s.la[1], o.s.la[2], 0, cfg.mark ? cfg.side : o.s.lb[0], o.s.lb[1], o.s.lb[2], cfg.mark || o.s.w, o.s.n[0], o.s.n[1], o.s.n[2], seed, o.s.a, o.s.b, o.s.chain, o.s.lagW, o.uv[0], o.uv[1], cfg.variant || 0, cfg.region || 0);
+    const put = (arr, o, seed) => arr.push(o.s.la[0], o.s.la[1], o.s.la[2], 0, cfg.mark ? cfg.side : o.s.lb[0], cfg.mark ? cfg.digit : o.s.lb[1], cfg.mark ? 0 : o.s.lb[2], cfg.mark || o.s.w, o.s.n[0], o.s.n[1], o.s.n[2], seed, o.s.a, o.s.b, o.s.chain, o.s.lagW, o.uv[0], o.uv[1], cfg.variant || 0, cfg.region || 0);
     LODS.forEach((q, li) => {
+      if (cfg.lods && !cfg.lods.includes(li)) return;      // (fingers: near LODs only; the mitten: the far one)
       const M = meshes[li], nu = Math.max(6, Math.round(cfg.nu * q)), nv = Math.max(3, Math.round(cfg.nv * q)), base = M.v.length / VSTRIDE;
-      const row = []; for (let i = 0; i <= nv; i++) for (let j = 0; j <= nu; j++) { const o = vert(j / nu * Math.PI * 2, vOf(L, cfg, i / nv), j / nu, i / nv); row.push(o); put(M.v, o, 0); }
+      const row = []; for (let i = 0; i <= nv; i++) for (let j = 0; j <= nu; j++) { const o = vert(j / nu * Math.PI * 2, vOf(L, cfg, i / nv), j / nu, i / nv); row.push(o); put(M.v, o, cfg.noHull ? -1 : 0); }      // (n.w = -1: no ink hull on this form)
       // consistent winding (counter-clockwise seen from outside), so the inverted-hull outline can cull front faces
       let flip = false; { const i = nv >> 1, j = nu >> 2, A = row[i * (nu + 1) + j], B = row[i * (nu + 1) + j + 1], C = row[(i + 1) * (nu + 1) + j]; flip = dot(cross(sub(B.P, A.P), sub(C.P, A.P)), A.N) < 0; }
       for (let i = 0; i < nv; i++) for (let j = 0; j < nu; j++) { const a = base + i * (nu + 1) + j, b = a + 1, c = a + nu + 1, e = c + 1; if (flip) M.i.push(a, c, b, b, c, e); else M.i.push(a, b, c, b, e, c); }

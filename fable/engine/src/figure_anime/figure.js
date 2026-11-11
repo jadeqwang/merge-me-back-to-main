@@ -1,6 +1,6 @@
 // ANIME look-dev copy of ../figure/figure.js (same public API; see fable/notes/anime_lookdev.md). New per-instance options:
 //   face: { expr: 'neutral'|'determined'|'joy' (eyes open)|'back'|'calm' (eyes closed)|'laugh' (eyes closed in arcs), amt: 0..1, blink: 0..1 (omit = automatic), gaze: [x, y] (-1..1), lookAt: [x, y, z] (world) }
-//   hand: -1 splayed .. 0 relaxed .. 1 fist, or { L, R }.   hair: 'strands' = the classic fine strand hair for the back mass (the float shot).
+//   hand: -1 splayed .. 0 relaxed .. 1 fist | 'grip' (the pencil hold) | 'blade' (flat palm, fingers together) | { v, grip: 0..1 } | { v, blade: 0..1 }, or { L, R } of those.   hair: 'strands' = the classic fine strand hair for the back mass (the float shot).
 //     fig.light / env.figLight add: keyDir, ink (outline gain), face (catchlights at night), sil (0..1: silhouette against the sun; default by dawn), keyCol ([r,g,b] of the sun-lit tone; default white).
 // The instanced figure renderer. One Figure = body (mesh LODs, fibres, decals, hair) + tracks with their baked secondary
 // motion on the GPU; it draws any number of instances per frame behind the Drawable contract (SPEC §5): draw(ctx).
@@ -42,7 +42,7 @@ layout(location=9) in vec4 i_par;    // scale, time, density, solid
 layout(location=10) in vec4 i_col;   // lane rgb, gain
 layout(location=11) in vec4 i_misc;  // track, variant, story, cel (-1 auto)
 layout(location=12) in vec4 i_fx;    // alpha, seed, flow, hair (0 clumps, 1 fine strands)
-layout(location=13) in vec4 i_trail; // len, gain, mask, hands (left + 64 * right, each 0..63)
+layout(location=13) in vec4 i_trail; // len, gain, mask, hands (left + 4096 * right; each: shape 0..62 + 64 * special + 256 * amount, see shade.js handPose)
 layout(location=14) in vec4 i_tcol;  // trail rgb, width
 layout(location=15) in vec4 i_face;  // expression id + 0.99 * amount, blink (-1 auto), gaze x, gaze y
 uniform sampler2D u_joint, u_sim, u_tracks;
@@ -500,12 +500,15 @@ export class Figure {
       const variant = (o.variant === 'bun' || o.variant === true || o.variant === 1) ? 1 : o.variant === 'bun_write' ? 2 : o.variant === 'bun_one' ? 3 : 0;   // bun: two pencils | bun_write: one drawn, in her right hand | bun_one: one left (the other became the light)
       let mask = tr.mask; if (mask === undefined) mask = 15; if (Array.isArray(mask)) mask = mask.reduce((m, nm) => m | (1 << this.emitters.findIndex((e) => e.name === nm)), 0);
       const tc = tr.color || lane, fc = o.face || (o.eyes === false ? { expr: 'calm' } : {}), eid = typeof fc.expr === 'number' ? fc.expr : (EXPR[fc.expr] ?? 0);
-      const hd = o.hand ?? 0, hq = (h) => Math.round((Math.min(1, Math.max(-1, h)) + 1) * 31.5); let hL = typeof hd === 'number' ? hd : (hd.L ?? 0), hR = typeof hd === 'number' ? hd : (hd.R ?? 0); if (variant === 2 && o.hand === undefined) hR = 0.62;   // holding the pencil
+      // hands: per hand a shape value (-1 splayed .. 0 relaxed .. 1 fist) and optionally a special shape with an amount: 'grip' (the pencil) | 'blade' (flat, fingers together)
+      const hd = o.hand ?? 0, per = hd !== null && typeof hd === 'object' && ('L' in hd || 'R' in hd); let hL = per ? (hd.L ?? 0) : hd, hR = per ? (hd.R ?? 0) : hd; if (variant === 2 && o.hand === undefined) hR = 'grip';   // holding the pencil
+      const c01 = (x) => Math.min(1, Math.max(0, +x || 0)), hq = (h) => { let v = 0, sp = 0, am = 0; if (typeof h === 'number') v = h; else if (h === 'grip') { sp = 1; am = 1; } else if (h === 'blade') { sp = 2; am = 1; } else if (h && typeof h === 'object') { v = h.v ?? 0; if (h.grip) { sp = 1; am = c01(h.grip); } else if (h.blade) { sp = 2; am = c01(h.blade); } }
+        return Math.round((Math.min(1, Math.max(-1, +v || 0)) + 1) * 31) + 64 * sp + 256 * Math.round(am * 15); };
       const gz = fc.lookAt ? this._gaze(o, fc.lookAt) : (fc.gaze || [0, 0]);
       // seeded per-instance variation: a few hundredths of a second, a little height (so a crowd reads as people)
       a.set([p[0], p[1], p[2], o.yaw || 0, (o.scale ?? 1) * (1 + vary * (h1(seed * 1.7) - 0.5) * 0.05), (o.time || 0) + vary * (h1(seed * 2.9) - 0.5) * 0.05, o.density ?? 1, o.solid ?? 1, lane[0], lane[1], lane[2], o.gain ?? 1,
         this.trackId(o.track ?? 0), variant, Math.min(this.nStories - 1, o.story || 0), o.cel ?? -1, o.alpha ?? 1, seed, o.flow ?? 0, o.hair === 'strands' ? 1 : 0,
-        tr.len || 0, tr.gain ?? 1, mask, hq(hL) + 64 * hq(hR), tc[0], tc[1], tc[2], tr.width || 0.03, eid + 0.99 * Math.min(1, Math.max(0, fc.amt ?? 1)), fc.blink ?? (eid === 4 || eid === 5 ? 0 : -1), gz[0], gz[1]], k);
+        tr.len || 0, tr.gain ?? 1, mask, hq(hL) + 4096 * hq(hR), tc[0], tc[1], tc[2], tr.width || 0.03, eid + 0.99 * Math.min(1, Math.max(0, fc.amt ?? 1)), fc.blink ?? (eid === 4 || eid === 5 ? 0 : -1), gz[0], gz[1]], k);
     });
     return a;
   }

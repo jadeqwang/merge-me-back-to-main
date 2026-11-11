@@ -20,7 +20,7 @@
 //
 // FIGURE SWITCH (2026-11-10): ?fig=anime (default; fable/engine/src/figure_anime, notes/anime_lookdev.md) | ?fig=classic (fable/engine/src/figure: the film as it was).
 //   The anime figure takes three more fields through set()/put():  face: { expr, amt, blink, gaze: [x, y], lookAt: [x, y, z] } (any subset; overrides the default below),
-//   hand: -1 splayed .. 0 relaxed .. 1 fist | { L, R },  hair: 'strands' (the fine strand hair, for the float).  The classic figure ignores them.
+//   hand: -1 splayed .. 0 relaxed .. 1 fist | 'grip' | 'blade' | { v, blade: 0..1 } | { v, grip: 0..1 } | { L, R } of those (real fingers since the polish pass),  hair: 'strands' (the fine strand hair, for the float).  The classic figure ignores them.
 //   Without them every body gets the FILM DEFAULTS (autoFace / autoHand below): expression from the track, its time and the daylight; gaze forward with
 //   small saccades, turning with the head; seeded blinks every 2.5-6 s that never sit on a beat or a cut; fists for punches and the salute's right hand.
 // Three backends behind this interface:
@@ -253,13 +253,15 @@ export async function makeCast(E) {
   const handMemo = {};
   function autoHand(n, tt, variant) {
     if (typeof n !== 'string') return 0;
-    let H = handMemo[n]; if (!H) { const ev = (tracks[n] && tracks[n].events) || []; H = handMemo[n] = { punch: ev.filter((e) => /punch/.test(e.name)).map((e) => e.t), salute: evt(n, 'salute'), palm: ev.filter((e) => /double_palm|arms_wide|^open$/.test(e.name)).map((e) => e.t) }; if (n === 'life_wushu') H.punch.push(0.92); }
+    let H = handMemo[n]; if (!H) { const ev = (tracks[n] && tracks[n].events) || []; H = handMemo[n] = { punch: ev.filter((e) => /punch/.test(e.name)).map((e) => e.t), salute: evt(n, 'salute'), palm: ev.filter((e) => /double_palm|arms_wide|^open$/.test(e.name)).map((e) => e.t), blade: ev.filter((e) => /double_palm|_push$/.test(e.name)).map((e) => e.t) }; if (n === 'life_wushu') H.punch.push(0.92); }
     if (RUNS[n]) return 0.4;
     let fist = 0, open = 0; for (const p of H.punch) fist = Math.max(fist, ss(tt, p - 0.45, p - 0.2) * (1 - ss(tt, p + 0.3, p + 0.6))); for (const p of H.palm) open = Math.max(open, ss(tt, p - 0.4, p - 0.1) * (1 - ss(tt, p + 0.6, p + 1.0)));
-    if (n === 'catch') open = Math.max(open, ss(tt, 11.8, 12.9)); if (n === 'free') open = Math.max(open, 0.35);
+    if (n === 'catch') open = Math.max(open, ss(tt, 11.8, 12.9)); if (n === 'free') open = Math.max(open, 0.35); if (n === 'release') open = Math.max(open, 0.7 * ss(tt, 2.25, 2.8));      // (release: the cupped hands open as the light leaves them)
     const base = fist - 0.6 * open * (1 - fist);
-    if (H.salute !== undefined) { const k = ss(tt, H.salute - 0.6, H.salute - 0.15); if (k > 0) return { L: base * (1 - k) - 0.25 * k, R: base * (1 - k) + k }; }      // bao quan: right fist into the open left palm
-    return base === 0 && variant === 'bun_write' ? undefined : base;
+    let blade = 0; for (const p of H.blade) blade = Math.max(blade, ss(tt, p - 0.4, p - 0.1) * (1 - ss(tt, p + 0.6, p + 1.0)));      // polish pass (real fingers): palm strikes are a flat hand with the fingers together ('blade'), not a fan
+    if (H.salute !== undefined) { const k = ss(tt, H.salute - 0.6, H.salute - 0.15); if (k > 0) return { L: { v: base * (1 - k) - 0.25 * k, blade: k }, R: base * (1 - k) + k }; }      // bao quan: right fist into the open left palm (a flat palm, fingers together)
+    if (blade > 0.01) return { v: base * (1 - blade), blade: blade * (1 - fist) };
+    return base === 0 && variant === 'bun_write' ? undefined : base;      // (undefined with bun_write: the figure's own pencil grip)
   }
   const actors = new Map(), crowds = new Map();
   const cast = {

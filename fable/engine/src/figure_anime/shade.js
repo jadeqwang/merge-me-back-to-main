@@ -4,33 +4,52 @@
 //          blush; every edge filtered by its own pixel footprint, so it thins and fades with distance instead of popping),
 //          the hairline (same maths as body.js hairD), and the inverted-hull outline pass (u_hull > 0).
 //   clump  the hair: flattened tapered tubes on the guide sim, flat two-tone with an "angel ring" in head space.
-import { PART, HAIR, FACE } from './body.js';
+import { PART, HAIR, FACE, HAND } from './body.js';
 import { J } from './skeleton.js';
 
 const f = (x) => { const s = String(x); return /[.e]/.test(s) ? s : s + '.0'; };
 const FACE_GLSL = Object.entries(FACE).map(([k, v]) => `const float F_${k} = ${f(v)};`).join(' ');
 
-// the hand: bent at two knuckle lines in the hand joint's frame (y = wrist -> fingertips, x*side = palm). Lives in the shared SKIN chunk.
+// the hand (polish pass): every digit is posed in the hand joint's frame from the table of authored shapes in body.js HAND (the canonical hand frame is
+// (side * x, y, z): x out of the palm, y wrist -> fingertips, z toward the thumb). Joints bend over a short soft band; the far mitten (digit 5) takes the mean
+// of the four fingers. The per-hand code in i_trail.w: shape value 0..62 (-1 splayed .. 0 relaxed .. +1 fist) + 64 * special (1 pencil grip, 2 flat blade)
+// + 256 * its amount (0..15). Lives in the shared SKIN chunk. Keep in step with body.js handFK.
+const DEGR = Math.PI / 180, v3 = (a) => `vec3(${a.map(f).join(', ')})`, POSES = ['splay', 'relax', 'fist', 'grip', 'blade'];
+const HROWS = POSES.flatMap((n) => { const r = HAND.pose[n], m = [0, 1, 2, 3].map((i) => (i === 0 ? 0 : (r[0][i] + r[1][i] + r[2][i] + r[3][i]) / 4)); return [...r.map((x) => x.slice(0, 4)), m]; });
 export const HAND_GLSL = `
 ${FACE_GLSL}
+const vec3 HB[6] = vec3[6](${HAND.dig.map((D) => v3(D.B)).join(', ')});
+const vec3 HD[6] = vec3[6](${HAND.dig.map((D) => v3(D.d)).join(', ')});
+const vec3 HF1[6] = vec3[6](${HAND.dig.map((D) => v3(D.f1)).join(', ')});
+const vec3 HF2[6] = vec3[6](${HAND.dig.map((D) => v3(D.f2)).join(', ')});
+const vec2 HL[6] = vec2[6](${HAND.dig.map((D) => `vec2(${f(D.L[0])}, ${f(D.L[0] + D.L[1])})`).join(', ')});
+const vec4 HPOSE[30] = vec4[30](${HROWS.map((r) => `vec4(${r.map((x) => f(+(x * DEGR).toFixed(5))).join(', ')})`).join(', ')});
+const float HTW[5] = float[5](${POSES.map((n) => f(+((HAND.pose[n][4][4] || 0) * DEGR).toFixed(5))).join(', ')});
+void hrot(inout vec3 p, inout vec3 n, vec3 c, vec3 ax, float a){ float cs = cos(a), sn = sin(a); vec3 q = p - c; p = c + q * cs + cross(ax, q) * sn + ax * (dot(ax, q) * (1.0 - cs)); n = n * cs + cross(ax, n) * sn + ax * (dot(ax, n) * (1.0 - cs)); }
+float handS(){ int k = int(a_lb.y + 0.5); return k > 5 ? 0.0 : dot(vec3(a_la.x * a_lb.x, a_la.y, a_la.z) - HB[k], HD[k]); }      // metres along the digit from its knuckle (rest pose)
 void handPose(inout vec3 p, inout vec3 n){
-  float sd = a_lb.x, pk = i_trail.w, hv = (sd > 0.0 ? mod(pk, 64.0) : floor(pk / 64.0)) / 31.5 - 1.0;   // -1 splayed .. 0 relaxed .. 1 fist
-  float fi = max(hv, 0.0), op = max(-hv, 0.0);
-  if (a_lb.w > -1.5) {
-    float a2 = mix(0.35, 1.75, fi) * (1.0 - op) * smoothstep(F_K2 - 0.012, F_K2 + 0.012, p.y), a1 = mix(0.30, 1.50, fi) * (1.0 - op) * smoothstep(F_K1 - 0.012, F_K1 + 0.012, p.y);
-    p.z *= 1.0 + 0.38 * op * smoothstep(0.05, 0.15, p.y);
-    vec2 d = p.xy - vec2(0.0, F_K2); float c = cos(a2), s = sin(a2) * sd; p.xy = vec2(0.0, F_K2) + vec2(d.x * c + d.y * s, -d.x * s + d.y * c); n.xy = vec2(n.x * c + n.y * s, -n.x * s + n.y * c);
-    d = p.xy - vec2(0.0, F_K1); c = cos(a1); s = sin(a1) * sd; p.xy = vec2(0.0, F_K1) + vec2(d.x * c + d.y * s, -d.x * s + d.y * c); n.xy = vec2(n.x * c + n.y * s, -n.x * s + n.y * c);
-  } else {
-    float a = 1.25 * fi - 0.45 * op; vec2 b = vec2(0.0, 0.026), d = p.xz - b; float c = cos(a), s = sin(a) * sd;
-    p.xz = b + vec2(d.x * c + d.y * s, -d.x * s + d.y * c); n.xz = vec2(n.x * c + n.z * s, -n.x * s + n.z * c); p.x += sd * 0.010 * fi;
-  }
+  int k = int(a_lb.y + 0.5); if (k > 5) return;                                              // 6 = the palm: rigid
+  float sd = a_lb.x, pk = i_trail.w, code = sd > 0.0 ? mod(pk, 4096.0) : floor(pk / 4096.0);
+  float hv = mod(code, 64.0) / 31.0 - 1.0, shp = mod(floor(code / 64.0), 4.0), amt = floor(code / 256.0) / 15.0, w = min(abs(hv), 1.0);
+  vec4 a = mix(HPOSE[6 + k], HPOSE[(hv < 0.0 ? 0 : 12) + k], w); float tw = mix(HTW[1], HTW[hv < 0.0 ? 0 : 2], w);
+  if (shp > 0.5) { int sp = shp < 1.5 ? 3 : 4; a = mix(a, HPOSE[sp * 6 + k], amt); tw = mix(tw, HTW[sp], amt); }
+  vec3 c = vec3(p.x * sd, p.y, p.z), m = vec3(n.x * sd, n.y, n.z), B = HB[k], d = HD[k]; float s = dot(c - B, d);
+  if (k == 5) c.z *= 1.0 + 0.30 * max(-hv, 0.0) * (1.0 - min(shp, 1.0) * amt) * smoothstep(0.0, 0.05, s);      // the mitten widens as the fingers fan
+  hrot(c, m, B + d * HL[k].y, HF2[k], a.w * smoothstep(-0.0060, 0.0060, s - HL[k].y));
+  hrot(c, m, B + d * HL[k].x, HF2[k], a.z * smoothstep(-0.0065, 0.0065, s - HL[k].x));
+  float w0 = smoothstep(-0.0085, 0.0055, s);
+  if (k == 4) hrot(c, m, B, d, tw * w0);
+  hrot(c, m, B, HF1[k], a.y * w0); hrot(c, m, B, vec3(1.0, 0.0, 0.0), a.x * w0);
+  p = vec3(c.x * sd, c.y, c.z); n = vec3(m.x * sd, m.y, m.z);
 }`;
 
 // ---------------------------------------------------------------------------------------------------------------------
 export const meshVS = (COMMON, SKIN) => COMMON + SKIN + `
 uniform int u_points; uniform float u_hull;
 out vec3 v_n; out vec3 v_w; out vec2 v_uv; out vec3 v_la; out vec4 v_flags;   // region, thin, point part (-1 = mesh), height above her feet (m)
+out vec2 v_dig;                                // hands: digit id (0..3 fingers, 4 thumb, 5 mitten, 6 palm; -1 = not a hand), metres along the digit
+flat out vec2 v_arm;                           // sleeves: how far the elbow is bent (0 straight .. 1), and where round the sleeve the INSIDE of the elbow is (turns of the loft's angle)
+out vec3 v_hn;                                 // the head loft's own smooth normal in the head's frame (the under-jaw shadow)
 flat out vec4 v_inst; flat out vec4 v_lane; flat out vec4 v_fa; flat out vec4 v_fb; flat out vec3 v_hv; flat out vec3 v_hl; flat out float v_fpx;   // v_fpx: metres of face per pixel at the head (one number for the whole face: both eyes leave together)
 void cull(){ gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; }
 vec3 unyaw(vec3 p){ float c = cos(i_pos.w), s = sin(i_pos.w); return vec3(c * p.x - s * p.z, p.y, s * p.x + c * p.z); }
@@ -38,23 +57,23 @@ vec3 unyaw(vec3 p){ float c = cos(i_pos.w), s = sin(i_pos.w); return vec3(c * p.
 void expr(float id, out vec4 a, out vec2 b){
   if (id < 0.5) { a = vec4(1.0, 0.0, 0.0, 0.35); b = vec2(0.0); }                    // neutral: calm, the hint of a smile
   else if (id < 1.5) { a = vec4(0.80, 1.5, -1.2, -0.25); b = vec2(0.0); }            // determined
-  else if (id < 2.5) { a = vec4(0.96, -0.35, 0.9, 1.0); b = vec2(0.8, 0.0); }        // joy: eyes open (the lower lids rise with the smile), open smile
-  else if (id < 3.5) { a = vec4(0.94, -0.55, 0.35, 0.60); b = vec2(0.0); }           // looking back: soft
+  else if (id < 2.5) { a = vec4(0.96, -0.06, 0.75, 1.0); b = vec2(0.30, 0.0); }       // joy: eyes open (the lower lids rise with the smile), a relaxed smile, the lips just parted (polish: it was an open D that read as a dot)
+  else if (id < 3.5) { a = vec4(0.94, -0.22, 0.35, 0.60); b = vec2(0.0); }           // looking back: soft
   else if (id < 4.5) { a = vec4(0.0, -0.2, 0.0, 0.35); b = vec2(0.0); }              // calm: eyes closed
   else { a = vec4(0.0, -0.3, 0.8, 1.0); b = vec2(1.0, 1.0); }                        // laugh: eyes closed in upward arcs, open smile
 }
 void main(){
-  v_inst = vec4(i_par.w, i_misc.y > 0.5 ? 1.0 : 0.0, i_par.z, i_fx.x); v_lane = i_col; v_fa = vec4(0.0); v_fb = vec4(0.0); v_hv = vec3(0.0, 0.0, 1.0); v_hl = vec3(0.0, 1.0, 0.0); v_fpx = 0.0;
+  v_inst = vec4(i_par.w, i_misc.y > 0.5 ? 1.0 : 0.0, i_par.z, i_fx.x); v_lane = i_col; v_fa = vec4(0.0); v_fb = vec4(0.0); v_hv = vec3(0.0, 0.0, 1.0); v_hl = vec3(0.0, 1.0, 0.0); v_fpx = 0.0; v_hn = a_n.xyz; v_arm = vec2(0.0, 0.25);
   if (i_fx.x <= 0.0) { cull(); return; }
   if (u_points == 0 && a_uv.z > 1.5) {       // variant geometry: 2 bun + one pencil | 3 the second pencil in the bun | 4 that pencil in her right hand
     float vz = a_uv.z, m = i_misc.y; bool show = m > 0.5 && (vz < 2.5 || (vz < 3.5 && m < 1.5) || (vz > 3.5 && m > 1.5 && m < 2.5));
     if (!show) { cull(); return; }
   }
-  if (u_hull > 0.0 && u_points == 1) { cull(); return; }
+  if (u_hull > 0.0 && (u_points == 1 || a_n.w < -0.5)) { cull(); return; }
   TI ti = trackInfo(i_misc.x, i_par.y); vec3 P, N, B;
   if (u_hull > 0.0 && u_hull * i_par.x * u_px / distance(u_camPos, place(jpos(ti, 0))) < 0.30) { cull(); return; } skin(ti, a_n.xyz, vec3(1.0, 0.0, 0.0), P, N, B);
   vec3 W = place(P), Nw = normalize(yaw(N)); float reg = floor(a_uv.w + 0.5);
-  v_n = Nw; v_la = a_la.xyz; v_uv = a_uv.xy;
+  v_n = Nw; v_la = a_la.xyz; v_uv = a_uv.xy; v_dig = (u_points == 0 && a_lb.w < -0.5) ? vec2(a_lb.y, handS()) : vec2(-1.0, 0.0);
   if (u_points == 0 && (reg == 5.0 || reg == 12.0)) {     // the head: clean spherical normals, and the view / key directions in head space
     vec4 hq = jquat(ti, ${J.head}), hc = vec4(-hq.xyz, hq.w); vec3 hp = place(jpos(ti, ${J.head}) + qrot(hq, vec3(0.0, 0.07, 0.0)));
     v_hv = qrot(hc, unyaw(normalize(u_camPos - hp))); v_hl = qrot(hc, unyaw(u_key)); v_fpx = distance(u_camPos, hp) / (u_px * i_par.x);
@@ -66,14 +85,19 @@ void main(){
     ea.x *= 1.0 - blink; v_fa = ea; v_fb = vec4(eb, i_face.zw);
   }
   if (u_points == 0 && (reg == 14.0 || reg == 0.0)) { vec4 hq = jquat(ti, ${J.head}); v_la = qrot(vec4(-hq.xyz, hq.w), P - jpos(ti, ${J.head})); }      // neck and torso: where they are in the HEAD's frame (the jaw's shadow falls on them)
+  if (u_points == 0 && u_hull <= 0.0 && (reg == 1.0 || reg == 2.0)) {      // sleeves: the drawn folds follow the elbow (polish)
+    int uj = reg == 1.0 ? ${J.upArmL} : ${J.upArmR}; vec4 qu = jquat(ti, uj); vec3 fl = qrot(vec4(-qu.xyz, qu.w), qrot(jquat(ti, uj + 1), vec3(0.0, 1.0, 0.0)));
+    float hl2 = length(fl.xz); vec2 dv = normalize(mix(vec2(0.0, 1.0), fl.xz / max(hl2, 1e-4), smoothstep(0.04, 0.30, hl2)) + vec2(1e-5, 0.0));
+    v_arm = vec2(clamp((1.0 - fl.y) / 1.3, 0.0, 1.0), atan(dv.y, dv.x) / 6.2832);
+  }
   v_flags = vec4(a_uv.w, a_bn.z > -0.5 ? smoothstep(0.5, 1.0, a_la.y) : 0.0, -1.0, 0.0);
   if (u_points == 1) {
     vec3 V = normalize(u_camPos - W); W += V * 0.005; v_flags.z = a_la.w;
     gl_PointSize = clamp(2.0 * a_uv.x * i_par.x * u_px / distance(u_camPos, W) * 1.15, 1.5, u_maxPS);
   }
   if (u_hull > 0.0) {                        // inverted hull: the ink line. Heavier on big forms and on the shadow side, never more than ~3 px
-    float dist = distance(u_camPos, W), wt = (reg == 5.0 || reg == 10.0 || reg == 11.0 || reg == 14.0) ? 0.55 : (reg == 13.0 ? 0.3 : (reg == 9.0 ? 0.6 : 1.0));
-    wt *= 1.0 - 0.45 * dot(Nw, u_key); if (reg == 5.0) wt *= smoothstep(-0.0650, -0.0630, a_la.y);      // (no hull at the closed tip of the chin)
+    float dist = distance(u_camPos, W), wt = (reg == 10.0 || reg == 11.0) ? (a_lb.y < 4.5 ? 0.30 : 0.42) : (reg == 5.0 || reg == 14.0) ? 0.55 : (reg == 13.0 ? 0.3 : (reg == 9.0 ? 0.6 : 1.0));
+    wt *= 1.0 - ((reg == 10.0 || reg == 11.0) ? 0.25 : 0.66) * dot(Nw, normalize(u_key + vec3(0.0, 0.35, 0.0))); if (reg == 5.0)      /* polish: the line has weight: heavy under a form and on its shadow side, thin toward the sun (fingers stay fine) */ wt *= smoothstep(-0.0650, -0.0630, a_la.y);      // (no hull at the closed tip of the chin)
     W += Nw * min(u_hull * i_par.x * wt, 3.2 * wt * dist / u_px);
   }
   v_w = W; v_flags.w = (W.y - i_pos.y) / i_par.x; gl_Position = u_viewProj * vec4(W, 1.0);
@@ -127,7 +151,7 @@ export const meshFS = (PARTS) => `#version 300 es
 precision highp float; precision highp int;
 uniform sampler2D u_parts; uniform vec3 u_camPos, u_sun; uniform int u_points; uniform float u_psize, u_tiles, u_hull;
 uniform vec3 u_amb, u_rimCol, u_rimDir, u_key, u_keyCol; uniform float u_rimBoth, u_sunAmt, u_under, u_emis, u_trans, u_faceG, u_sil;
-in vec3 v_n; in vec3 v_w; in vec2 v_uv; in vec3 v_la; in vec4 v_flags;
+in vec3 v_n; in vec3 v_w; in vec2 v_uv; in vec3 v_la; in vec4 v_flags; in vec2 v_dig; in vec3 v_hn; flat in vec2 v_arm;
 flat in vec4 v_inst; flat in vec4 v_lane; flat in vec4 v_fa; flat in vec4 v_fb; flat in vec3 v_hv; flat in vec3 v_hl; flat in float v_fpx;
 layout(location=0) out vec4 o_col; layout(location=1) out vec4 o_aux;
 ${PARTS}
@@ -158,28 +182,45 @@ float aa(float d, float px){ return smoothstep(-0.7 * px, 0.7 * px, d); }
 float line(float d, float t, float px){ float te = max(t, min(0.9 * px, 3.0 * t)); return (1.0 - smoothstep(0.5 * te - 0.5 * px, 0.5 * te + 0.5 * px, d)) * min(1.0, 3.0 * t / (0.9 * px)); }
 // upper lid: (y, dy/dx) in eye space at u = x / half-width. The outer end runs on as the lash flick.
 vec2 lidUp(float u, float open, float joy){
-  float uc = clamp(u, -1.0, 1.0), q = 1.0 - uc * uc, kc = mix(-0.0052, 0.0072, joy);
-  float yC = kc * q + mix(-0.0014, -0.0040, joy), yU = 0.0170 * (1.0 - pow(abs(uc), 2.6)) * (1.0 - 0.10 * uc);
-  float dC = kc * -2.0 * uc, dU = -0.0170 * 2.6 * pow(abs(uc), 1.6) * sign(uc) * (1.0 - 0.10 * uc) - 0.00170 * (1.0 - pow(abs(uc), 2.6));
+  float uc = clamp(u, -1.0, 1.0), q = 1.0 - uc * uc, kc = mix(-0.0052, 0.0072, joy) * F_ES, hu = 0.0170 * F_ES;
+  float yC = kc * q + mix(-0.0014, -0.0040, joy) * F_ES, yU = hu * (1.0 - pow(abs(uc), 2.6)) * (1.0 - 0.10 * uc);
+  float dC = kc * -2.0 * uc, dU = -hu * 2.6 * pow(abs(uc), 1.6) * sign(uc) * (1.0 - 0.10 * uc) - 0.10 * hu * (1.0 - pow(abs(uc), 2.6));
   float y = mix(yC, yU, open) + F_TILT * u, dy = (mix(dC, dU, open) + F_TILT) / F_EW;
   if (u > 1.0) { float sl = mix(0.10, 0.02, open); y += (u - 1.0) * F_EW * sl; dy = sl; }
   if (u < -1.0) dy = F_TILT / F_EW;
   return vec2(y, dy);
 }
 // bold drawn folds: shadow shapes in loft space (t.x round the form, t.y along it), per region
-float folds(float region, vec2 t, vec3 la){
-  float fo = 0.0;
+float fa(float f){ float w = fwidth(f) * 0.75 + 1e-5; return smoothstep(-w, w, f); }      // an implicit shape (f > 0 inside) with a filtered edge
+// a wedge lying round the sleeve at height y0: thickest (th) at a = 0, running to a point wp turns one way and wn the other
+float wedge(float a, float y, float y0, float th, float wp, float wn){ float k = clamp(1.0 - (a > 0.0 ? a / wp : -a / wn), 0.0, 1.0); return th * k * sqrt(k) - abs(y - y0); }
+// a gather rising from the cuff: its base (half width w, turns) on the line y1, its point len further up the arm
+float gather(float tx, float y, float c, float w, float len, float y1){ float a = abs(fract(tx - c + 0.5) - 0.5); return min(w * (y - (y1 - len)) / len - a, (y1 - y) * 0.5); }
+vec2 folds(float region, vec2 t, vec3 la, vec2 arm){      // x: the fold's shadow shape, y: its drawn line (sleeves)
+  float fo = 0.0, ln = 0.0;
   if (region == 3.0 || region == 4.0) {            // trouser leg: la = (ring x, 0 hip .. 1 hem, ring z)
     float a = atan(la.z, la.x) / 6.2832 + 0.5, p = la.y;
     fo = step(tri(a * 5.0 + 0.10 * sin(p * 9.0 + region * 2.0) + 0.2), 0.40 * smoothstep(0.52, 1.0, p));        // tall wedges rising from the hem
     fo = max(fo, step(abs(p - 0.47 - 0.045 * sin(a * 12.566 + 1.0)), 0.010) * step(0.62, tri(a * 2.0 + 0.2)));     // creases at the knee
   } else if (region == 15.0) {                     // jacket: gathers above the elastic hem (t.y 0 = hem)
-    fo = step(tri(t.x * 13.0), 0.50 * smoothstep(0.17, 0.03, t.y)) * step(0.012, t.y);
-  } else if (region == 1.0 || region == 2.0) {     // sleeves: gathers at the cuff, a wedge inside the elbow
-    fo = step(tri(t.x * 9.0), 0.55 * smoothstep(0.70, 0.85, t.y)) * step(t.y, 0.868);
-    fo = max(fo, step(abs(t.y - 0.50 - 0.05 * tri(t.x * 2.0 + 0.25)), 0.011) * step(tri(t.x + 0.25), 0.42));
+    float id = floor(t.x * 13.0), hh = fract(sin(id * 12.99 + 3.1) * 43758.5); fo = fa(min((0.22 + 0.34 * hh) * smoothstep(0.10 + 0.12 * hh, 0.03, t.y) - tri(t.x * 13.0), t.y - 0.012));      // (polish: of uneven height, filtered edges)
+  } else if (region == 1.0 || region == 2.0) {     // sleeves (polish): t.y 0 shoulder .. 0.54 elbow .. 0.85 the widest ring .. 0.93 gathered into the cuff .. 1
+    // DRAWN, like the character sheet: inside the elbow a wedge of shadow with an inked far edge (it deepens as the arm bends; the forearm's and the upper arm's
+    // creases come with the bend), a long soft pull on the upper arm, and where the sleeve gathers into the cuff six wedges of different sizes (they were nine
+    // equal teeth in a tone too pale to see) over the shaded underside of the puff. All in a tone deeper than the form's shadow (see lightc in main).
+    float a = fract(t.x - arm.y + 0.5) - 0.5, y = t.y, b = arm.x, mir = region == 1.0 ? 1.0 : -1.0, tx = region == 1.0 ? t.x : 1.0 - t.x; a *= mir;
+    float th1 = 0.050 + 0.075 * b, y1 = 0.552 - 0.06 * a, th2 = 0.066 * smoothstep(0.06, 0.45, b), y2 = 0.655 + 0.03 * b + 0.07 * a, th3 = 0.052 * smoothstep(0.20, 0.70, b), y3 = 0.452 - 0.02 * b - 0.05 * a;
+    float f = wedge(a + 0.02, y, y1, th1, 0.30, 0.15);
+    f = max(f, wedge(-a + 0.03, y, y2, th2, 0.24, 0.11)); f = max(f, wedge(a - 0.02, y, y3, th3, 0.20, 0.10));
+    f = max(f, gather(a, 1.0 - y, -0.170, 0.044, 0.185, 1.0 - 0.340));                                    // the pull on the upper arm: its point toward the elbow
+    f = max(f, gather(tx, y, 0.040, 0.042, 0.260, 0.932)); f = max(f, gather(tx, y, 0.210, 0.030, 0.170, 0.932)); f = max(f, gather(tx, y, 0.380, 0.050, 0.300, 0.932));
+    f = max(f, gather(tx, y, 0.550, 0.028, 0.150, 0.932)); f = max(f, gather(tx, y, 0.710, 0.044, 0.240, 0.932)); f = max(f, gather(tx, y, 0.880, 0.032, 0.190, 0.932));
+    f = max(f, min(y - 0.936, 0.974 - y));                                                                  // under the puff, above the cuff
+    fo = fa(f);
+    float k1 = clamp(1.0 - ((a + 0.02) > 0.0 ? (a + 0.02) / 0.30 : -(a + 0.02) / 0.15), 0.0, 1.0);
+    ln = fa((0.0030 + 0.0014 * b) * sqrt(k1) * step(0.02, k1) - abs(y - y1 - th1 * k1 * sqrt(k1)));     // the inked far edge of the elbow's wedge
   }
-  return fo;
+  return vec2(fo, ln);
 }
 void main(){
   int part; float region = floor(v_flags.x + 0.5); bool head = (u_points == 0 && region == 5.0);
@@ -191,6 +232,7 @@ void main(){
   if (head) { dH = hairD(v_la); float aw = fwidth(dH) * 0.7 + 1e-5; hairM = smoothstep(-aw, aw, dH); part = dH > 0.0 ? ${PART.HAIR} : ${PART.SKIN}; }
   float regA = (u_points == 0 && part == ${PART.SKIN} && (region == 14.0 || (region == 0.0 && v_la.y > -0.2))) ? 5.0 : region;      // face, neck and the skin of the neckline are ONE area for the post outline: under the chin the line is the hull's brown jaw line alone (the two together were a dark mark at 236.6-240)
   vec3 auxc = celColor(part) * 0.7 + 0.3 * vec3(hash(regA + 0.37), hash(regA + 1.7), hash(regA + 4.1));
+  if (v_dig.x > -0.5 && v_dig.x < 4.5) { float rd = regA + 0.13 * (floor(v_dig.x + 0.5) + 1.0); auxc = mix(auxc, celColor(part) * 0.7 + 0.3 * vec3(hash(rd + 0.37), hash(rd + 1.7), hash(rd + 4.1)), smoothstep(0.004, 0.020, v_dig.y)); }      // each finger is its own area for the post outline (a thin line where two touch), fading into the palm at the knuckle: no line across the hand
   if (u_hull > 0.0) {                          // the ink line: brown round skin, blue-black elsewhere
     if (region == 0.0 && v_la.y > -0.150) discard;      // (not where the neck leaves the torso: it drew a line across the throat)
     vec3 ink = (part == ${PART.SKIN}) ? vec3(0.150, 0.042, 0.040) : vec3(0.010, 0.009, 0.026);
@@ -199,62 +241,75 @@ void main(){
   vec3 V = normalize(u_camPos - v_w), N = normalize(v_n); float inside = 0.0; if (dot(N, V) < 0.0 && !head) { N = -N; inside = 1.0; }
   float thin = v_flags.y * v_flags.y * (1.0 - inside);
   float facing = dot(N, V), fres = 1.0 - max(facing, 0.0);
-  bool skin = head || part == 0; vec3 base = head ? celColor(0) : celColor(part); float forceSh = 0.0, catchA = 0.0, irisGlow = 0.0;
+  bool skin = head || part == 0; vec3 base = head ? celColor(0) : celColor(part); float forceSh = 0.0, catchA = 0.0, irisGlow = 0.0; vec2 faceD = vec2(0.0);      // faceD: the designed daylight shadow on the face, and how much of it replaces the form shading
   if (head && hairM < 1.0 && v_la.z > 0.015) {
     vec3 h = v_la; float px = max(length(dFdx(h.xy)), length(dFdy(h.xy))) + 1e-6;         // metres of face per pixel
     float vis = 1.0 - smoothstep(0.0068, 0.0105, v_fpx), farE = smoothstep(0.0028, 0.0058, v_fpx), visD = 1.0 - smoothstep(0.0030, 0.0062, v_fpx);   // face LOD without a switch: first the details go (mouth, brows, blush), then the eyes (r3: WITH their whites to the end and a smaller iris far away: small proper eyes, never dark ovals); at crowd distance nothing
     float sx = h.x < 0.0 ? -1.0 : 1.0, ex = abs(h.x) - F_EX, u = ex / F_EW, ey = h.y - F_EY, open = v_fa.x, joy = v_fb.y, smile = v_fa.w;
     float uc = clamp(u, -1.0, 1.0), q = 1.0 - uc * uc;
-    vec2 lu = lidUp(u, open, joy); float yC = mix(-0.0052, 0.0072, joy) * q + mix(-0.0014, -0.0040, joy) + F_TILT * u, squint = clamp((smile - 0.45) / 0.55, 0.0, 1.0);
-    float lo = mix(yC, -0.0114 * (1.0 - 0.34 * squint) * q * (1.0 - 0.10 * uc) + F_TILT * u, open);
+    vec2 lu = lidUp(u, open, joy); float yC = (mix(-0.0052, 0.0072, joy) * q + mix(-0.0014, -0.0040, joy)) * F_ES + F_TILT * u, squint = clamp((smile - 0.45) / 0.55, 0.0, 1.0);
+    float lo = mix(yC, -0.0114 * F_ES * (1.0 - 0.34 * squint) * q * (1.0 - 0.10 * uc) + F_TILT * u, open);
     float inEye = aa(min(lu.x - ey, ey - lo) - 0.0002, px) * step(abs(u), 1.0) * smoothstep(0.0, 0.15, open);
-    // blush, nose, mouth
-    vec2 bq = vec2((abs(h.x) - 0.047) / 0.017, (h.y + 0.006) / 0.0085);
-    base = mix(base, S(0.965, 0.640, 0.640), (0.20 + 0.22 * joy) * exp(-dot(bq, bq)) * visD);
+    // blush (warm, under the outer half of the eye), nose, mouth
+    vec2 bq = vec2((abs(h.x) - 0.0500) / 0.0200, (h.y + 0.0085) / 0.0098);
+    base = mix(base, S(0.985, 0.655, 0.600), (0.25 + 0.20 * joy + 0.10 * squint) * exp(-dot(bq, bq)) * visD);
     vec3 lineC = S(0.52, 0.25, 0.25), darkC = S(0.105, 0.085, 0.115);
     vec2 nq = vec2((h.x - 0.0006) / 0.0048, (h.y - F_NY) / 0.0016); base = mix(base, S(0.84, 0.56, 0.54), aa((1.0 - length(nq)) * 0.0015, px) * 0.85 * vis * (1.0 - smoothstep(0.0012, 0.0030, v_fpx)));
-    float mw = 0.0112 + 0.0038 * max(smile, 0.0), mx = h.x / mw, mq = max(0.0, 1.0 - mx * mx), ym = F_MY + smile * 0.0040 * (mx * mx - 0.45), ms = smile * 0.0080 * mx / mw;
+    // mouth (polish): a relaxed smile is a LINE that widens and turns up at its corners, the lips just parted; only the laugh opens it
+    float sm = max(smile, 0.0), mw = 0.0124 + 0.0078 * sm, mwl = 0.0124 + 0.0034 * sm, mx = h.x / mw, mq = max(0.0, 1.0 - mx * mx), ym = F_MY + smile * 0.0056 * (mx * mx - 0.40), ms = smile * 0.0112 * mx / mw;
     float mo = v_fb.x, inM = step(abs(mx), 1.0), lipV = 1.0 - smoothstep(0.0016, 0.0036, v_fpx);
-    { float yl0 = ym - mo * 0.0090 * mq; vec2 lq = vec2(h.x / (mw * 0.70), (h.y - (yl0 - 0.0034)) / 0.0036), uq = vec2(h.x / (mw * 0.62), (h.y - (ym + 0.0016)) / 0.0022);
-      base = mix(base, S(0.905, 0.560, 0.545), 0.62 * aa((1.0 - length(lq)) * 0.0036, px) * step(h.y, yl0) * vis * lipV);                     // lower lip
-      base = mix(base, S(0.880, 0.540, 0.530), 0.40 * aa((1.0 - length(uq)) * 0.0022, px) * step(ym, h.y) * (1.0 - mo) * vis * lipV); }             // upper lip
-    if (mo > 0.01) { float yl = ym - mo * 0.0090 * mq; base = mix(base, mix(S(0.86, 0.47, 0.47), S(0.50, 0.17, 0.20), smoothstep(yl + 0.002, yl + 0.006, h.y)), aa(min(ym - h.y, h.y - yl), px) * inM * visD); }
-    base = mix(base, lineC, line(abs(h.y - ym) / sqrt(1.0 + ms * ms), 0.00110 * (0.30 + 0.70 * mq), px) * inM * visD);
-    // eye: white (shaded under the lid), iris, pupil
+    { float yl0 = ym - mo * 0.0100 * mq; vec2 lq = vec2(h.x / (mwl * 0.72), (h.y - (yl0 - 0.0034)) / 0.0036), uq = vec2(h.x / (mwl * 0.62), (h.y - (ym + 0.0016)) / 0.0022);
+      base = mix(base, S(0.915, 0.585, 0.560), 0.50 * aa((1.0 - length(lq)) * 0.0036, px) * step(h.y, yl0) * vis * lipV);                     // lower lip
+      base = mix(base, S(0.880, 0.540, 0.530), 0.34 * aa((1.0 - length(uq)) * 0.0022, px) * step(ym, h.y) * (1.0 - mo) * vis * lipV); }             // upper lip
+    if (mo > 0.01) { float yl = ym - mo * 0.0100 * mq; base = mix(base, mix(S(0.84, 0.45, 0.45), S(0.52, 0.18, 0.21), smoothstep(yl + 0.0012, yl + 0.0048, h.y)), aa(min(ym - h.y, h.y - yl), px) * inM * visD); }
+    base = mix(base, lineC, line(abs(h.y - ym) / sqrt(1.0 + ms * ms), 0.00135 * (0.22 + 0.78 * mq), px) * inM * visD);
+    // eye: white (shaded under the lid), iris (a designed gradient: near black under the lid, warm brown low, a lighter crescent at the bottom), pupil, ONE catchlight
     float sclA = inEye * vis;
-    base = mix(base, mix(S(0.970, 0.965, 0.985), S(0.70, 0.69, 0.84), smoothstep(0.0055, 0.0020, lu.x - ey)), sclA);
-    float qx = h.x - sx * F_EX; vec2 ic = vec2(v_fb.z * 0.0068 - sx * 0.0006, 0.0020 + v_fb.w * 0.0036), e = vec2((qx - ic.x) / 0.0136, (ey - ic.y) / 0.0152) * (1.0 + 0.30 * farE); float r = length(e);
-    float iris = aa((1.0 - r) * 0.0124, px) * inEye * vis, pup = aa((0.43 - length(e - vec2(0.0, 0.05))) * 0.0124, px);
-    vec3 icol = mix(S(0.43, 0.235, 0.150), S(0.150, 0.082, 0.072), smoothstep(-0.85, 0.15, e.y));
-    icol = mix(icol, S(0.105, 0.058, 0.062), smoothstep(0.76, 0.92, r)); icol = mix(icol, S(0.06, 0.04, 0.05), pup); icol *= 1.0 - 0.40 * smoothstep(0.20, 0.90, e.y);
+    base = mix(base, mix(S(0.970, 0.965, 0.985), S(0.70, 0.69, 0.84), smoothstep(0.0066, 0.0024, lu.x - ey)), sclA);
+    float qx = h.x - sx * F_EX; vec2 ic = vec2(v_fb.z * 0.0080 - sx * 0.0007, 0.0034 + v_fb.w * 0.0040), e = vec2((qx - ic.x) / 0.0150, (ey - ic.y) / 0.0170) * (1.0 + 0.30 * farE); float r = length(e);
+    float iris = aa((1.0 - r) * 0.0158, px) * inEye * vis, pup = aa((0.40 - length(e - vec2(0.0, 0.04))) * 0.0158, px);
+    vec3 icol = mix(S(0.360, 0.200, 0.120), S(0.100, 0.058, 0.058), smoothstep(-0.66, 0.16, e.y));
+    icol = mix(icol, S(0.520, 0.305, 0.175), aa((length(e - vec2(0.0, 0.34)) - 1.06) * 0.0158, px) * 0.85);       // the lighter crescent low in the iris
+    icol = mix(icol, S(0.090, 0.050, 0.056), smoothstep(0.80, 0.94, r)); icol = mix(icol, S(0.045, 0.030, 0.040), pup); icol *= 1.0 - 0.35 * smoothstep(0.30, 0.95, e.y);
     base = mix(base, icol, iris); irisGlow = iris * (1.0 - pup) * smoothstep(0.0, -0.75, e.y) * smoothstep(0.55, 1.0, r + 0.25);
-    catchA = max(aa((1.0 - length((e - vec2(-0.36, 0.38)) / vec2(0.30, 0.25))) * 0.0030, px), 0.9 * aa((1.0 - length((e - vec2(0.38, -0.50)) / 0.14)) * 0.0015, px)) * iris * smoothstep(0.25, 0.6, open);
-    // lower lid, lash, brow
-    base = mix(base, lineC, line(abs(ey - lo), 0.0007, px) * smoothstep(0.05, 0.45, u) * step(u, 1.0) * open * 0.6 * visD);
-    float tl = mix(0.0030, 0.0054, smoothstep(-0.9, 0.9, u)) * smoothstep(-1.10, -0.82, u) * smoothstep(1.32, 1.0, u) * (1.0 + 0.2 * (1.0 - open));
-    base = mix(base, darkC, line(abs(ey - lu.x - 0.0004) / sqrt(1.0 + lu.y * lu.y), tl, px) * vis);
-    float ub = u - 0.05, tb = max(u - 0.45, 0.0), yb = F_BY + 0.0017 * u + 0.0019 * (1.0 - ub * ub) - 0.0070 * tb * tb + v_fa.y * 0.0042 * u + v_fa.z * 0.0030, sb = (0.0017 - 0.0038 * ub - 0.0140 * tb + v_fa.y * 0.0042) / F_EW;
-    base = mix(base, darkC, 0.95 * line(abs(ey - yb) / sqrt(1.0 + sb * sb), mix(0.0047, 0.0017, smoothstep(-0.6, 1.05, u)), px) * smoothstep(-1.00, -0.84, u) * smoothstep(1.12, 0.92, u) * visD);
+    catchA = aa((1.0 - length((e - vec2(-0.33, 0.36)) / vec2(0.36, 0.32))) * 0.0054, px) * iris * smoothstep(0.25, 0.6, open);
+    // lower lid, lash (a line with weight: it thickens outward into the flick), brow (straight and full)
+    base = mix(base, lineC, line(abs(ey - lo), 0.0008, px) * smoothstep(0.05, 0.45, u) * step(u, 1.0) * open * 0.6 * visD);
+    float tl = mix(0.0036, 0.0068, smoothstep(-0.9, 0.9, u)) * smoothstep(-1.10, -0.82, u) * smoothstep(1.30, 1.0, u) * (1.0 + 0.2 * (1.0 - open));
+    base = mix(base, darkC, line(abs(ey - lu.x - 0.0010) / sqrt(1.0 + lu.y * lu.y), tl, px) * vis);
+    float ub = u - 0.05, tb = max(u - 0.50, 0.0), yb = F_BY + 0.0020 * u + 0.0010 * (1.0 - ub * ub) - 0.0056 * tb * tb + v_fa.y * 0.0046 * u + v_fa.z * 0.0032, sb = (0.0020 - 0.0020 * ub - 0.0112 * tb + v_fa.y * 0.0046) / F_EW;
+    base = mix(base, darkC, 0.97 * line(abs(ey - yb) / sqrt(1.0 + sb * sb), mix(0.0058, 0.0030, smoothstep(-0.5, 1.05, u)), px) * smoothstep(-1.00, -0.86, u) * smoothstep(1.10, 0.94, u) * visD);
     forceSh = smoothstep(-0.0078, -0.0064, dH) * vis;                                        // the shadow the hair lays on the forehead
-  }
-  if (u_points == 0 && (region == 10.0 || region == 11.0)) {       // the mitten reads as fingers: three drawn lines from the knuckles to the tips
-    float fz = abs(fract(v_la.z / 0.021 + 0.5) - 0.5) * 0.021;
-    base = mix(base, S(0.60, 0.31, 0.29), 0.9 * line(fz, 0.0011, fwidth(v_la.z) + 1e-6) * smoothstep(0.084, 0.096, v_la.y) * step(abs(v_la.z), 0.031) * (1.0 - smoothstep(0.150, 0.162, v_la.y)));
+    // polish: by DAY the face is shaded by design, not by the mesh. She is always lit from the front; the shapes are: the hair's shadow falling away from the
+    // light (under the fringe, beside the temple on the sun's side), a small shadow under the nose tip, and ONE crescent of tone along the cheek away from the sun
+    // (it hugs the contour and never crosses the face; none when the sun is in front of her or straight behind). A white key takes this from the first daylight
+    // (the catch's own sunrise, 229.6-231); a coloured key (Act C's low gold sun) keeps the form shading until full day.
+    float kTf = max(max(u_keyCol.r, u_keyCol.g), u_keyCol.b) - min(min(u_keyCol.r, u_keyCol.g), u_keyCol.b), dayF = mix(smoothstep(0.02, 0.25, u_sunAmt), smoothstep(0.35, 0.75, u_sunAmt), min(1.0, 4.0 * kTf));
+    if (dayF > 0.0) {
+      vec3 L = normalize(v_hl); float az = atan(L.x, L.z), sd = az >= 0.0 ? 1.0 : -1.0, aaz = abs(az), sw = max(1.2 * px, 0.0011);
+      float fr = smoothstep(-sw, sw, hairD(h + vec3(clamp(L.x, -0.6, 0.6), max(L.y, 0.35), 0.0) * 0.0105) + 0.0006);
+      float cont = 0.086 + 0.62 * min(0.0, h.y - 0.015), wC = 0.021 * smoothstep(0.45, 1.20, aaz) * (1.0 - smoothstep(2.35, 2.95, aaz)) * smoothstep(0.085, 0.020, h.y);
+      float cheek = smoothstep(-sw, sw, -sd * h.x - (cont - wC)) * step(0.0005, wC);
+      vec2 nsq = vec2((h.x + sd * 0.0030 * min(1.0, aaz * 1.6)) / 0.0068, (h.y - (F_NY - 0.0046)) / 0.0027); float nsh = aa((1.0 - length(nsq)) * 0.0027, px) * (1.0 - smoothstep(0.0016, 0.0036, v_fpx));
+      faceD = vec2(max(max(fr, cheek), nsh) * vis, dayF);
+    }
   }
   // ONE shading model: two flat tones with a hard edge; only the world's light changes (night -> sunrise -> day).
   // r3: the silhouette rule. Against the sun (the lens looks toward it, u_sil > 0 round sunrise) every surface, the face included, goes to black; rim and accents stay.
   vec3 diff, glow; float silh = u_sil * smoothstep(0.25, 0.80, dot(-V, normalize(u_sun)));
   if (!head && (part == ${PART.HAIR} || part == ${PART.BUN})) diff = hairLit(v_la, N, N, N, 0.0, V, v_hv, v_hl, lane, 0.0, 2.0, glow);
   else {
-    float fold = (u_points == 0) ? folds(region, fract(v_uv * u_tiles), v_la) : 0.0;
+    vec2 fold2 = (u_points == 0) ? folds(region, fract(v_uv * u_tiles), v_la, v_arm) : vec2(0.0); float fold = fold2.x;
     float ndl = dot(N, u_key) + (skin ? 0.30 : 0.08), aw = fwidth(ndl) * 0.8 + 0.004;
-    float sh = smoothstep(-aw, aw, ndl) * (1.0 - fold) * (1.0 - forceSh), jaw = 0.0;
+    float sh = mix(smoothstep(-aw, aw, ndl) * (1.0 - forceSh), 1.0 - faceD.x, (head && hairM < 1.0 && v_la.z > 0.015) ? faceD.y : 0.0) * (1.0 - fold), jaw = 0.0;
     if (u_points == 0 && (region == 14.0 || region == 0.0)) { float e = v_la.y + 0.110 - 0.30 * v_la.x, ae = fwidth(e) * 0.8 + 0.0008; jaw = smoothstep(-ae, ae, e) * (1.0 - smoothstep(0.062, 0.090, v_la.z)); sh *= 1.0 - jaw; }
-    if (head) { vec3 ng = cross(dFdx(v_la), dFdy(v_la)); ng = normalize(ng + vec3(0.0, 0.0, 1e-12)) * (dot(ng, v_hv) < 0.0 ? -1.0 : 1.0); jaw = smoothstep(0.55, 0.75, -ng.y) * smoothstep(-0.030, -0.040, v_la.y) * (1.0 - hairM); sh *= 1.0 - jaw; }      // ... and the underside of the jaw is in it too (seen from below the face was one pale shape); it leaves the neck when her head tips back (the neck is then in front of the jaw, in the light)      // r3: the jaw's shadow is a SHAPE in the head's frame (it turns with her head; deeper on the side away from the key): the neck sits in it, the collarbone below is lit, so chin, neck and collar separate
+    if (head) { vec3 ng = normalize(v_hn); float ajw = fwidth(ng.y) * 0.8 + 0.02; jaw = smoothstep(0.60 - ajw, 0.60 + ajw, -ng.y) * smoothstep(-0.030, -0.040, v_la.y) * (1.0 - hairM); sh *= 1.0 - jaw; }      /* polish: from the loft's smooth normal (the screen-space one drew the mesh's facets as stray triangles on the jaw) */      // ... and the underside of the jaw is in it too (seen from below the face was one pale shape); it leaves the neck when her head tips back (the neck is then in front of the jaw, in the light)      // r3: the jaw's shadow is a SHAPE in the head's frame (it turns with her head; deeper on the side away from the key): the neck sits in it, the collarbone below is lit, so chin, neck and collar separate
     vec3 nightAmb = u_amb * (skin ? 1.6 : 1.0) * (1.0 - 0.30 * fold) * (1.0 - 0.38 * jaw);       // skin holds a little more of the night's light: a face in shadow tones, not a hole
     float kT = max(max(u_keyCol.r, u_keyCol.g), u_keyCol.b) - min(min(u_keyCol.r, u_keyCol.g), u_keyCol.b), kW = max(u_sunAmt, min(0.85, 2.0 * kT));      // r3: a COLOURED key (keyCol) counts by its own saturation, not only by sunAmt (at sunAmt 0.1-0.3 it barely tinted the jacket); white: as before. Skin takes half the tint
     vec3 lightc = mix(mix(nightAmb, shadeTint(skin ? ${PART.SKIN} : part) * mix(vec3(1.0), vec3(0.86, 0.75, 0.80), jaw), u_sunAmt), skin ? mix(vec3(1.0), u_keyCol, 0.5) : u_keyCol, kW * sh);
+    if (region == 1.0 || region == 2.0 || region == 15.0) lightc *= mix(vec3(1.0), mix(vec3(1.0), vec3(0.44, 0.48, 0.66), u_sunAmt), fold);      // sleeves: a fold is a tone deeper than the form's shadow, so it still reads on the shaded side
     diff = base * lightc * (1.0 - 0.55 * inside * step(2.5, region) * step(region, 4.5)) * (1.0 - 0.92 * silh);
+    diff = mix(diff, vec3(0.030, 0.032, 0.075) * mix(u_amb, vec3(1.0), u_sunAmt), 0.86 * fold2.y * smoothstep(0.3, 0.8, u_sunAmt) * (1.0 - silh));      // the folds' ink strokes (daylight only, like the outline)
     float dirM = smoothstep(-0.2, 0.6, dot(N, u_rimDir)), thr = head ? mix(0.92, 0.84, dirM) : (skin ? mix(0.86, 0.72, dirM) : mix(0.80, 0.60, dirM)), ar = fwidth(fres) * 0.8 + 0.01;
     glow = mix(u_rimCol, lane * dot(u_rimCol, vec3(0.45)), 0.35) * ((head ? 0.30 : 0.50) * smoothstep(thr - ar, thr + ar, fres) * (u_rimBoth + (1.0 - u_rimBoth) * dirM));
     if (hairM > 0.0) { vec3 g2, hc = hairLit(v_la, N, N, N, 0.0, V, v_hv, v_hl, lane, 1.0, 1.0, g2);
