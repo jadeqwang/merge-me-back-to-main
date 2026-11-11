@@ -16,16 +16,17 @@ workstream notes in `fable/notes/`.
 - Round 3 is done (notes `fable/notes/r3_AB.md`, `r3_C.md`, `r3_DE.md`; task list was `fable/NOTES_v3.md`).
 - v4 is rendered with the anime figure: `work_fable/out/v4.mp4`, sheets `work_fable/stills/v4/`, review copy `review/fable_v4/` (pushed).
   Scene-change check against `fable/show/cuts.json`: no unplanned jumps (only flashes on hits at 80.13, 118.4, 153.2, 222.73).
-- Round 4 is done (task list `fable/NOTES_v4.md`; notes `fable/notes/r4_X.md`, `r4_Y.md`). v5 is rendered: `work_fable/out/v5.mp4`,
-  sheets `work_fable/stills/v5/`, review copy `review/fable_v5/` (pushed). X delivery encode of v5:
-  `work_fable/out/deliver/merge_fable_v5_x_1080p.mp4` (2-pass 12M, audio from `inputs/Merge.wav`; remake per version).
-- 4K works (one still tested: `work_fable/stills/v5/uhd_233_crop.jpg`, 1.4 s per frame, so ~50 min for the film). Seen large, the
-  figure was below the bar: mitten hands, small eyes, stray face shadow patches by day, stair-stepped ink, balloon sleeves.
-- Running (since 19:05): figure hero polish, one agent, owns `fable/engine/src/figure_anime/` (+ hand/face defaults in `cast.js`):
-  real hands with fingers in a few shapes, larger eyes, clean daytime face shading, ink anti-aliasing, sleeve folds. Notes
-  `fable/notes/polish.md`, sheets `work_fable/stills/polish/`. If it died, start a fresh agent from that notes file.
-- Next: render v6 (cut script below), review, `review/fable_v6/`, X encode; if it holds up, 4K master
-  (`--res 3840x2160`, same command) and a YouTube upload file. Ask Jade whether to drop older review versions from the branch.
+- Round 4 and the figure hero polish are done (notes `fable/notes/r4_X.md`, `r4_Y.md`, `polish.md`). v6 is rendered:
+  `work_fable/out/v6.mp4`, sheets + 6 fps strips `work_fable/stills/v6/`, review copy `review/fable_v6/` (pushed). X encode of v5 only
+  (`work_fable/out/deliver/`); remake from the final cut with the deliver script (2-pass 12M, audio from `inputs/Merge.wav`).
+- Motion QA of v6 (three Sonnet reviewers on strips) found one regression and two weak shots; a 4K master render was started and
+  STOPPED because of them (no `v6_uhd.mp4` exists; 4K works at ~1 s per frame, `--res 3840x2160`, same command).
+- Running (since 21:20): final fixes, one agent (notes `fable/notes/final_fixes.md`): (1) the sleeve is hard facets in the writing
+  close-up 195-202 since the fold work, and the pencil hand is a block; (2) the salute 179-181 is off-centre; (3) the kick apex
+  177.5 is a dark tangle. If it died, start a fresh agent from that notes file and `work_fable/stills/v6/check_write_salute.jpg`.
+- Next: render v7 (cut script below), check those three shots + scene scan, `review/fable_v7/`; then the 4K master
+  (`work_fable/out/v7_uhd.mp4`), X encode made by downscaling the 4K master to 1080p (thinner ink, clean fingers), YouTube = the 4K
+  file. Ask Jade whether to drop older review versions from the branch.
 - Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
   scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
 
