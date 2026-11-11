@@ -1,10 +1,15 @@
 {
  "branch": "fable/merge",
- "total": 131,
- "head": "a723a45",
+ "total": 136,
+ "head": "57487a8",
  "generated": "2026-11-11",
  "lines": [
-  "* a723a45 (HEAD -> fable/merge, origin/fable/merge) fable polish: hands close into one shape when small (the outline ate separate fingers), fingers at LOD 0 only with a finger-profiled mitten beyond, no new varyings (frame cost back to parity at 142 / 154), sleeve folds staggered and faded in by size, cuff and digit roots without ink blobs, level brows; notes with the A/B frame cost and what is still below the bar",
+  "* 57487a8 (HEAD -> fable/merge, origin/fable/merge) fable final: the jump kick's apex (177.3-177.6) from a low lens (0.2 m up, 2.3 m off, looking up from b102.55): her head and kicking leg against the sky, the copies below her shoulders, the lit flank to the lens, a soft rose high in the western sky while the lens is low; apex and cut times unchanged; notes with the frame cost and what is left",
+  "* d24c6e1 fable final: the salute (178.4-181) frontal and balanced: the lens on her axis, she on the centre line, the 1,023 in a wedge behind her for this shot (troupeSlot), heads a third down, the near rows whole; cut times unchanged",
+  "* f6f6563 fable final: the writing shot (195-202) on mesh LOD 0 (the level of detail measured to her hips, not to her take's origin; casts of 48 or fewer), sleeve folds as soft curved shapes (crescents, thorns; one soft tone step at night, soft terminator and rim on the night jacket), fingers separate at night",
+  "* bb4f0e4 fable: checkpoint (v6 in review, final fixes running before the master)",
+  "* e194108 review: Fable cut v6 (720p) for Jade",
+  "* a723a45 fable polish: hands close into one shape when small (the outline ate separate fingers), fingers at LOD 0 only with a finger-profiled mitten beyond, no new varyings (frame cost back to parity at 142 / 154), sleeve folds staggered and faded in by size, cuff and digit roots without ink blobs, level brows; notes with the A/B frame cost and what is still below the bar",
   "* bea3f2a fable polish: real hands (palm, four fingers, thumb; five authored shapes blended per instance; pencil grip; cuff closes on the wrist), larger almond eyes with iris gradient and one catchlight, a designed daylight face (no shading from mesh normals), a relaxed joy smile, ink with weight, sleeve folds that follow the elbow",
   "* af63ebf fable: checkpoint (v5 in review, figure hero polish running)",
   "* bb48c63 review: Fable cut v5 (720p) for Jade",
@@ -12,11 +17,6 @@
   "* c057669 fable r4 X: notes (items 2-5, Pass Y's request, still weak)",
   "* 39c81c0 fable r4 X: the terminal stand lives (weight shift, a look at the terminal, breath, light wind; loop seam kept by settling the simulation into idle's), credits clear of the road text, C2 nearer (Pass Y's camera), lines 22-24 inside title-safe",
   "* eab9e07 fable r4 X: no hair spikes in a fall (the air goes down with her, back hair may trail up and back but never stand over the crown), the b73 landing is a shape she is in for two frames (face readable after the cut)",
-  "* ca38d64 fable r4 Y: notes (motion check from the clip, still weak, requests)",
-  "* 6ad8d7d fable r4 X: 'I have become' is a gesture, not a T (catch re-authored from 229.6, handover steps and swings once, rise and drop arms-wide given the same life), staging bake tool, notes",
-  "* 4297743 fable r4 Y: items 3, 8, 10 (truck 1.7 m further out, head room at the writing, mirror under the violet runner's feet), pool gains, cuts.json (117.949 -> 116.644), notes with the tested request for 13_catch C2 (item 9)",
-  "* 1389281 fable r4 Y: items 1, 2, 4, 5, 6, 7 (the lift from the water line on b68.1, lyrics inside the title-safe margins, her pool of orange in the wide shots, the salute's frame rises with her, wind clear of her head, home in profile), notes",
-  "* 139003f fable: checkpoint (round 4 running)",
-  "* dca4e1e fable: director's notes for round 4 (from the motion QA of v4)"
+  "* ca38d64 fable r4 Y: notes (motion check from the clip, still weak, requests)"
  ]
 }
