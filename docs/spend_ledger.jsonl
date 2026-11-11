@@ -673,3 +673,4 @@
 {"ts": "2026-10-25T03:23:42Z", "model": "bytedance/seedance-2.5", "tag": "pc_beam_t1", "job": "mergemain/pc_beam_t1-0a8e53006b", "event": "result", "ok": true, "est_usd": 1.8496, "where": "box"}
 {"ts": "2026-10-25T03:24:25Z", "model": "bytedance/seedance-2.5", "tag": "dr_jian_t1", "job": "mergemain/dr_jian_t1-9bf34c78f6", "event": "result", "ok": true, "est_usd": 1.8496, "where": "box"}
 {"ts": "2026-10-25T03:24:27Z", "model": "bytedance/seedance-2.5", "tag": "dr_jian_t2", "job": "mergemain/dr_jian_t2-ddfcbf5ebb", "event": "result", "ok": true, "est_usd": 1.8496, "where": "box"}
+{"ts": "2026-11-11T03:56:47Z", "model": "bytedance/seedance-2.5", "tag": "fbl_write", "job": "mergemain/fbl_write-826fc24df3", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}

@@ -16,17 +16,21 @@ workstream notes in `fable/notes/`.
 - Round 3 is done (notes `fable/notes/r3_AB.md`, `r3_C.md`, `r3_DE.md`; task list was `fable/NOTES_v3.md`).
 - v4 is rendered with the anime figure: `work_fable/out/v4.mp4`, sheets `work_fable/stills/v4/`, review copy `review/fable_v4/` (pushed).
   Scene-change check against `fable/show/cuts.json`: no unplanned jumps (only flashes on hits at 80.13, 118.4, 153.2, 222.73).
-- Round 4 and the figure hero polish are done (notes `fable/notes/r4_X.md`, `r4_Y.md`, `polish.md`). v6 is rendered:
-  `work_fable/out/v6.mp4`, sheets + 6 fps strips `work_fable/stills/v6/`, review copy `review/fable_v6/` (pushed). X encode of v5 only
-  (`work_fable/out/deliver/`); remake from the final cut with the deliver script (2-pass 12M, audio from `inputs/Merge.wav`).
-- Motion QA of v6 (three Sonnet reviewers on strips) found one regression and two weak shots; a 4K master render was started and
-  STOPPED because of them (no `v6_uhd.mp4` exists; 4K works at ~1 s per frame, `--res 3840x2160`, same command).
-- Running (since 21:20): final fixes, one agent (notes `fable/notes/final_fixes.md`): (1) the sleeve is hard facets in the writing
-  close-up 195-202 since the fold work, and the pencil hand is a block; (2) the salute 179-181 is off-centre; (3) the kick apex
-  177.5 is a dark tangle. If it died, start a fresh agent from that notes file and `work_fable/stills/v6/check_write_salute.jpg`.
-- Next: render v7 (cut script below), check those three shots + scene scan, `review/fable_v7/`; then the 4K master
-  (`work_fable/out/v7_uhd.mp4`), X encode made by downscaling the 4K master to 1080p (thinner ink, clean fingers), YouTube = the 4K
-  file. Ask Jade whether to drop older review versions from the branch.
+- v7 is the current code-drawn cut (final fixes in: smooth sleeve + pencil grip in the writing close-up, symmetric salute, readable
+  kick; notes `fable/notes/final_fixes.md`): `work_fable/out/v7.mp4`, sheets `work_fable/stills/v7/`, review copy `review/fable_v7/`.
+- Running since ~22:10: the 4K master of v7, `work_fable/out/v7_uhd.mp4` (log `v7_uhd.log`, ~1 s per frame). When done: X encode by
+  downscaling it to 1080p (deliver script pattern: 2-pass 12M, maxrate 16M, High@4.1, audio from `inputs/Merge.wav`, AAC 256k,
+  faststart); the 4K file is the YouTube upload.
+- VIDEO-MODEL TEST (Jade asked 2026-11-10 evening, approved $25, then went to bed: "check on the experiment in the morning"):
+  feed the code render to Seedance 2.5 as `reference_videos` + her character sheet (`inputs/character_sheet.png`) to redraw the
+  character as hand-drawn anime. Inputs: `review/fable_v7/seedance_test/in_{write,become,day}.mp4` (public raw GitHub URLs, needed by
+  the model). Specs `media/gen/specs/fbl_*.json` (git-ignored); tool `tools/gen/gen.py` run with
+  `/home/jade/Documents/1-music-shipped/moongazing/.venv/bin/python`; outputs land in `media/gen/fbl_*`. Price ~$0.97/s at 720p with
+  a video reference. `fbl_write` was submitted first (job `mergemain/fbl_write-826fc24df3`); submit `fbl_become` and `fbl_day` only
+  after seeing its real cost, total <= $25. After each run commit `docs/spend_ledger.jsonl`. Then make side-by-side strips
+  (code | Seedance) for Jade and write a verdict: likeness to the sheet, motion lock on pinned beats, flicker, hands, text damage.
+  Do NOT restyle the film beyond the test without her decision.
+- Ask Jade whether to drop older review versions (v1-v6, 92 MB each) from the branch.
 - Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
   scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
 
