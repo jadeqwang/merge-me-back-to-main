@@ -674,3 +674,11 @@
 {"ts": "2026-10-25T03:24:25Z", "model": "bytedance/seedance-2.5", "tag": "dr_jian_t1", "job": "mergemain/dr_jian_t1-9bf34c78f6", "event": "result", "ok": true, "est_usd": 1.8496, "where": "box"}
 {"ts": "2026-10-25T03:24:27Z", "model": "bytedance/seedance-2.5", "tag": "dr_jian_t2", "job": "mergemain/dr_jian_t2-ddfcbf5ebb", "event": "result", "ok": true, "est_usd": 1.8496, "where": "box"}
 {"ts": "2026-11-11T03:56:47Z", "model": "bytedance/seedance-2.5", "tag": "fbl_write", "job": "mergemain/fbl_write-826fc24df3", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}
+{"ts": "2026-11-11T04:02:00Z", "model": "bytedance/seedance-2.5", "tag": "fbl_write", "job": "mergemain/fbl_write-826fc24df3", "event": "result", "ok": true, "est_usd": 5.8462, "where": "box"}
+{"ts": "2026-11-11T04:02:20Z", "model": "bytedance/seedance-2.5", "tag": "fbl_become", "job": "mergemain/fbl_become-a88226e2a6", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}
+{"ts": "2026-11-11T04:02:20Z", "model": "bytedance/seedance-2.5", "tag": "fbl_day", "job": "mergemain/fbl_day-e2bc66ba90", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}
+{"ts": "2026-11-11T04:05:42Z", "model": "bytedance/seedance-2.5", "tag": "fbl_become", "job": "mergemain/fbl_become-a88226e2a6", "event": "result", "ok": false, "est_usd": 0, "where": "box"}
+{"ts": "2026-11-11T04:05:42Z", "model": "bytedance/seedance-2.5", "tag": "fbl_day", "job": "mergemain/fbl_day-e2bc66ba90", "event": "result", "ok": false, "est_usd": 0, "where": "box"}
+{"ts": "2026-11-11T04:06:04Z", "model": "bytedance/seedance-2.5", "tag": "fbl_day", "job": "mergemain/fbl_day-3bc1fdd03c", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}
+{"ts": "2026-11-11T04:12:21Z", "model": "bytedance/seedance-2.5", "tag": "fbl_day", "job": "mergemain/fbl_day-3bc1fdd03c", "event": "result", "ok": true, "est_usd": 5.8462, "where": "box"}
+{"ts": "2026-11-11T04:12:38Z", "model": "bytedance/seedance-2.5", "tag": "fbl_become", "job": "mergemain/fbl_become-b979f049a3", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}
