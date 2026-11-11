@@ -1,6 +1,6 @@
 # Final-fix pass before the master render, 2026-11-10
 
-Brief: three exact fixes on the Fable cut v6. Status line (kept current): **items 1 and 2 done and checked; item 3 open. Not pushed.**
+Brief: three exact fixes on the Fable cut v6. Status line (kept current): **items 1, 2 and 3 done and checked (stills and strips; not watched as video). `cuts.json` unchanged. Not pushed. Open points: the last section.**
 
 Files touched: `fable/engine/src/figure_anime/shade.js`, `figure.js`; `fable/show/seq/10_drop.js`, `actC_form.js`. `fig=classic` (`fable/engine/src/figure/`) is not touched.
 
@@ -74,3 +74,38 @@ from 0.8-2.4 m north of her axis), and to her south there is nothing for 4.8 m (
 Checked: `i2_salute_02s.jpg` (178.4-181 / 0.2 s), `i2_salute_01s.jpg` (178.4-179.5 / 0.1 s), 1080p stills 178.6, 179.0, 179.6 (`dev/s_check.jpg`).
 Left: 178.4-178.8 (the low landing pose before the rise): the troupe is a low band across the middle, sky above and 35 % of empty mirror (reflections) below;
 she is 2 % right of centre there (she is still coming back from the landing). The far rows are cut by both frame edges (by design, from row 8).
+
+## 3. The jump kick's apex, 177.3-177.6 (10 C, the orbit)
+Measured on the take (hero, metres from her cell): it is a CRESCENT kick. Her left foot passes from the south (177.40: 0.7 m toward the old lens, 1.3 m up) over
+her head (177.517: 1.98 m up, straight above her) to the north (177.60); her hips are only 0.26 m higher than standing. The lens stood level (1.15 m), 3 m to her
+south: her leg came at it, then crossed her own head, and behind her at the same height stood the copies in the same kick. Hence the dark tangle and the smear.
+- **The lens sinks and comes in under the kick** (`orbit`, `kickLow`): from b102.55 (176.73) to 0.08 s before the apex it goes from 1.15 m to 0.2 m above the
+  mirror and from 3.0 m to 2.3 m, looking up, 2 degrees wider. The copies are 0.8-2 m further off than she is, so from there they end below her shoulders: her
+  head, her torso and the whole kicking leg stand against the sky (apex: her foot 14 % under the top edge). 6 degrees less round her (72 instead of 78 off east):
+  toward the key's side (the key comes from the south-east: the flank the lens sees is the lit one, cream against the sky).
+- **The sky behind her**: up there it was near-black violet, and her hair and trousers are black and navy. `belt(k, hi)`: while the lens is low a wide, soft rose
+  (centred about 24 degrees up, strength 0.5) is added to the western sky above the rose belt. It comes in with the lens's move (176.73-177.43) and is gone on the cut.
+- After the apex the aim follows her down into the landing (`u5`, 0.42 m by the cut); the lens stays low.
+- The apex time (177.517), the take and the cut (178.383) are unchanged.
+Checked: `i3_kick_30fps.jpg` (177.25-177.75 at 1/30 s), `i3_kick_leadin_01s.jpg` (176.5-177.25), `i3_kick_landing_01s.jpg` (177.75-178.38), 1080p 177.517
+(`dev/s_check.jpg`); before: `dev/kick_before.jpg`.
+
+## Still wrong / not done (exact times)
+- **176.75-177.25**: the sky turns from violet-with-a-belt to rose over half a second while the lens drops: a lighting cue, not a real sky. If it reads as a
+  flicker in motion, lower `0.5 * kickLow(t)` in 10 C's `belt` call (0 = the old sky; the leg is then dark on dark again).
+- **177.3-177.6**: her own row still stands right behind her (0.8 m a body), a staircase of copies down to the right of her hips and legs; only her upper body,
+  head and kicking leg are clear of them. The copies' kicking feet reach about the height of her head.
+- **177.75-178.38**: the landing from the low lens: she sinks to the lower third, sky above her.
+- **178.4-178.8**: see item 2 (the low band of the landing pose under a lot of sky and mirror).
+- **178.383 (the cut)**: the troupe's ground plan changes on it (the word's cells -> the wedge). Not visible on the strips; not judged in motion.
+- **195-202**: the faint pale rim in the notch of the bent elbow; night folds are faint by design.
+- Nothing was watched as video with sound; 1080p / `--mb 4` only on single stills (199, 200.5, 178.6, 179.0, 179.6, 177.517 without `--mb`).
+- `--bench` at 172.5: see item 1 and the numbers below; it cannot resolve a few per cent on this machine.
+
+## Frame cost at 172.5, final tree against the code before this pass (e194108)
+`--bench 172.5 --res 1920x1080`, one process per run, the two versions alternating (the four files checked out and back), ms per sub-sample:
+after 25.9 / 21.7 / 18.6 / 22.1 (and 27.5 / 29.7 / 29.5 / 31.4 / 27.8 earlier in the day), before 18.5 / 27.0 / 29.5 / 25.9 (and 24.4 / 26.3 / 24.6 / 31.9).
+Means 26.0 and 26.0: no difference that this bench can see (either version runs 18.5-31.9 from one process to the next). Nothing in the pass adds work at 172.5:
+the crowd's LOD buckets are the same, the kick's sky term is one `exp` per sky pixel times 0, the wedge exists only from 178.383.
+`fig=classic`, 36 / 198 / 243 at 720p: byte-identical to HEAD before the pass, checked again on the final tree. It also renders 177.517 and 179.6 (the new
+lens and the wedge are the sequence's, so both figures get them).
