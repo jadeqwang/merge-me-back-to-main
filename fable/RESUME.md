@@ -16,14 +16,16 @@ workstream notes in `fable/notes/`.
 - Round 3 is done (notes `fable/notes/r3_AB.md`, `r3_C.md`, `r3_DE.md`; task list was `fable/NOTES_v3.md`).
 - v4 is rendered with the anime figure: `work_fable/out/v4.mp4`, sheets `work_fable/stills/v4/`, review copy `review/fable_v4/` (pushed).
   Scene-change check against `fable/show/cuts.json`: no unplanned jumps (only flashes on hits at 80.13, 118.4, 153.2, 222.73).
-- Motion QA of v4 is done (6 fps strips `work_fable/stills/v4/qa/`, reports there); no pops or broken faces. Round-4 task list:
-  `fable/NOTES_v4.md`.
-- Running (since 18:15): round 4, two agents. Pass X (tracks, figure, seq 13/14/16; notes `fable/notes/r4_X.md`): the T-pose at
-  "I have become" 232.7-236.5 re-authored as a living gesture (the most important item left), hair spikes at 125.33, terminal not
-  frozen, handover foot slide. Pass Y (seq 01-12; notes `fable/notes/r4_Y.md`): leave the float before the sit-up (117.0), hero
-  findable in the 1,024 shots, framing items to verify. If one died, start a fresh agent on its pass from NOTES_v4 + its notes file.
-- Next: render v5 (cut script below), review sheets, review copy to `review/fable_v5/`; then master (consider 4K: test one
-  3840x2160 still first), encodes for X (2-pass x264 ~12M, maxrate 16M, High@4.1, AAC 256k, faststart) and YouTube.
+- Round 4 is done (task list `fable/NOTES_v4.md`; notes `fable/notes/r4_X.md`, `r4_Y.md`). v5 is rendered: `work_fable/out/v5.mp4`,
+  sheets `work_fable/stills/v5/`, review copy `review/fable_v5/` (pushed). X delivery encode of v5:
+  `work_fable/out/deliver/merge_fable_v5_x_1080p.mp4` (2-pass 12M, audio from `inputs/Merge.wav`; remake per version).
+- 4K works (one still tested: `work_fable/stills/v5/uhd_233_crop.jpg`, 1.4 s per frame, so ~50 min for the film). Seen large, the
+  figure was below the bar: mitten hands, small eyes, stray face shadow patches by day, stair-stepped ink, balloon sleeves.
+- Running (since 19:05): figure hero polish, one agent, owns `fable/engine/src/figure_anime/` (+ hand/face defaults in `cast.js`):
+  real hands with fingers in a few shapes, larger eyes, clean daytime face shading, ink anti-aliasing, sleeve folds. Notes
+  `fable/notes/polish.md`, sheets `work_fable/stills/polish/`. If it died, start a fresh agent from that notes file.
+- Next: render v6 (cut script below), review, `review/fable_v6/`, X encode; if it holds up, 4K master
+  (`--res 3840x2160`, same command) and a YouTube upload file. Ask Jade whether to drop older review versions from the branch.
 - Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
   scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
 
