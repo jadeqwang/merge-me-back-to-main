@@ -94,6 +94,14 @@ quarter of the frame's height, left of centre, the crowd behind and round her, t
 times unchanged. Lines 22 / 23 in C2 and 23 / 24 in C3 and in 14's shot A start at x -0.895 (inside the 5 % box). NOT changed: line 22 in C1 (x -0.93), because
 `12_flight.js` draws the same line with the same number up to the cut on b129 (it would jump 1.75 % of the width there): change both together.
 
+## Verified in motion
+- Every frame (1/30 s), film camera: 236.0-238.2 (the handover and the cut on b137, `h1_handover.jpg`); 125.30-125.77 with motion blur (`l4_land_film.jpg`);
+  201.37-201.63 with motion blur. At 0.3-0.5 s: 229.2-237.5 with the zoomed face row (`f2`, `f3`), 225-229 (`c2_oblique.jpg`).
+- From the rendered clips (`m1_from_clips.jpg`, frames taken out of the three mp4s): the opening and the hold, the terminal stand, the rise and its way down.
+  Frame-to-frame difference in her box, 229-240: no step except the cut itself (236.667); through the hold 1.9-3.2 per frame, the handover 4.6-5.8 rising into
+  the skip. Terminal 265-282.4: 1.6-3.5 per frame, no step (that measure is mostly grain and stars: it shows there is no pop, not how alive she is).
+- NOT watched as video with sound by anyone: all of the above is strips, single frames and numbers.
+
 ## Still weak (exact times)
 - 232.7-236.6: the pose is a gesture now, but her hands are the figure's flat mittens: open palms read, fingers do not.
 - 236.6-237.1: the back foot's step is low (7.5 cm) and seen from the front at trouser-hem height; it reads as a shuffle forward rather than a clear step.
