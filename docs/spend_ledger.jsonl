@@ -682,3 +682,6 @@
 {"ts": "2026-11-11T04:06:04Z", "model": "bytedance/seedance-2.5", "tag": "fbl_day", "job": "mergemain/fbl_day-3bc1fdd03c", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}
 {"ts": "2026-11-11T04:12:21Z", "model": "bytedance/seedance-2.5", "tag": "fbl_day", "job": "mergemain/fbl_day-3bc1fdd03c", "event": "result", "ok": true, "est_usd": 5.8462, "where": "box"}
 {"ts": "2026-11-11T04:12:38Z", "model": "bytedance/seedance-2.5", "tag": "fbl_become", "job": "mergemain/fbl_become-b979f049a3", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}
+{"ts": "2026-11-11T04:57:44Z", "model": "bytedance/seedance-2.5", "tag": "fbl_become", "job": "mergemain/fbl_become-b979f049a3", "event": "result", "ok": true, "est_usd": 5.8462, "where": "box"}
+{"ts": "2026-11-11T04:58:06Z", "model": "bytedance/seedance-2.5", "tag": "fbl_day2", "job": "mergemain/fbl_day2-ffda5a4e83", "event": "submit", "ok": null, "est_usd": 14.514, "where": "box"}
+{"ts": "2026-11-11T05:06:29Z", "model": "bytedance/seedance-2.5", "tag": "fbl_day2", "job": "mergemain/fbl_day2-ffda5a4e83", "event": "result", "ok": true, "est_usd": 5.8462, "where": "box"}
