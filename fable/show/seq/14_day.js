@@ -47,7 +47,7 @@ export default function seq(K) {
       // (r3: the pop is gone, not hidden: she plays `handover` across the cut (actE_morning.js), her arms coming down from the catch's wide hold and her back foot
       // coming up, so the cut lands on her WHOLE, face lit, low and closer on the same axis; no more feet shot.)
       { t0, f: (tt, u) => { const e = sm(u), camera = { pos: [c.x - (3.3 + 0.4 * e), 0.42 + 0.16 * e, c.z + 0.8], target: [c.x + 0.1, 1.02 + 0.04 * e, c.z - 0.6], fov: 38, far: 40000 };
-        return { camera, env: env(t), world: world(), extra: extra(), type: [K.lyric(24, camera, { font: 'hook', x: -0.93, y: 0.08, rows: [1, 2], px: 70, dist: 34, out: bar(138.7), fade: 0.3, ink: 1, reflect: false })], hud: hud(t), flash: 0.45 * Math.exp(-(t - t0) * 4.5) }; } },
+        return { camera, env: env(t), world: world(), extra: extra(), type: [K.lyric(24, camera, { font: 'hook', x: -0.895, y: 0.08, rows: [1, 2], px: 70, dist: 34, out: bar(138.7), fade: 0.3, ink: 1, reflect: false })], hud: hud(t), flash: 0.45 * Math.exp(-(t - t0) * 4.5) }; } },
       { t0: tB, f: () => { const k = camB(t), s = A.soft(t, 0.35), camera = { pos: [WH[0] + k[0], k[1], WH[2] + k[2]], target: [s.x + k[3], k[4], s.z + k[5]], fov: 38, far: 40000 };
         return { camera, env: env(t), world: world(), extra: extra(), hud: hud(t), flash: pop(t) }; } },
       { t0: tB2, f: () => { const k = camB2(t), s = A.soft(t, 0.35), camera = { pos: [C[0] - 3.1, k[1], C[1] + k[0]], target: [s.x + k[3], k[2], s.z], fov: 38, far: 40000 };      // r3: due south of her (was 1.6 m further west): the branch that leaves her at the apex runs east, ACROSS the frame, and is clear of her in three frames (it ran away behind her for a quarter of a second: two bodies in one)

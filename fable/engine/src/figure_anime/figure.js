@@ -367,6 +367,15 @@ export class Figure {
     this.tracks.push({ track, sim, start, frames: track.frames, simMs: performance.now() - t0 }); this.byName[track.name] = id; this.dirty = true; return id;
   }
   trackId(t) { return typeof t === 'number' ? t : (this.byName[t] ?? 0); }
+  // r4: let the simulation of one take arrive in another's. From frame f0 to f1 of `name` its hair, straps and cloth go over (smoothly) to those of `to` at frame
+  // map(f), and are `to`'s from f1 on. Only where the two takes have the same pose (nodes are stored relative to the hips): 16_terminal's stand ends as `idle` one
+  // frame before the film's frame 0, and its hair must hang exactly as on frame 0 for the film to loop, whatever the wind did to it before.
+  settleSim(name, to, map, f0, f1) {
+    const A = this.tracks[this.byName[name]], B = this.tracks[this.byName[to]]; if (!A || !B) return false; const W = SIM.W * 4, FB = B.frames;
+    for (let f = Math.max(0, Math.floor(f0)); f < A.frames; f++) { const u = Math.min(1, Math.max(0, (f - f0) / Math.max(1e-6, f1 - f0))), w = u * u * (3 - 2 * u), g = ((Math.round(map(f)) % FB) + FB) % FB, a = f * W, b = g * W;
+      for (let i = 0; i < W; i++) A.sim[a + i] += (B.sim[b + i] - A.sim[a + i]) * w; }
+    this.dirty = true; return true;
+  }
   _upload() {
     const gl = this.gl, total = this.tracks.reduce((s, t) => s + t.frames, 0), cols = Math.max(1, Math.ceil(total / ATH)), rows = Math.min(ATH, Math.max(1, total)), jw = cols * 42, sw = cols * SIM.W;
     if (sw > gl.getParameter(gl.MAX_TEXTURE_SIZE)) throw new Error('figure: too many track frames for the atlas (' + total + ')');

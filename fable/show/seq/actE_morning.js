@@ -216,3 +216,30 @@ export function makeLift(K) {
     return { pos: [gx - f[0] * R, gy - f[1] * R, gz - f[2] * R], target: [gx, gy, gz], up: [sp * ca, cp, sp * sa], fov, near: Math.max(0.1, R * 0.03), far: R * 8 + 40000, R, pitch: p, horizon: Math.tan(p * rad) / Math.tan((fov * rad) / 2) }; }   // horizon: its NDC y
   return { lift, B, mc, tMain, tMap, tRiser, tHit, X0, X1, Z0, Z1 };
 }
+
+// ---- r4: a small skeleton kit for performances that are MADE at set-up from baked tracks (16_terminal's stand). Quaternions are xyzw, world orientations of the
+// joints' frames; a pose is { P, Q } (world, track space) and { lq, lo } (parent-relative rotation and offset; joint 0 = the hips in the world).
+export const FK = (() => {
+  const PAR = [-1, 0, 1, 2, 3, 2, 5, 6, 7, 2, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19], NJ = 21;
+  const qmul = (a, b) => [a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0], a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]];
+  const qcon = (q) => [-q[0], -q[1], -q[2], q[3]], qnorm = (q) => { const l = Math.hypot(q[0], q[1], q[2], q[3]) || 1; return [q[0] / l, q[1] / l, q[2] / l, q[3] / l]; };
+  const qrot = (q, v) => { const x = q[0], y = q[1], z = q[2], w = q[3], cx = y * v[2] - z * v[1] + w * v[0], cy = z * v[0] - x * v[2] + w * v[1], cz = x * v[1] - y * v[0] + w * v[2]; return [v[0] + 2 * (y * cz - z * cy), v[1] + 2 * (z * cx - x * cz), v[2] + 2 * (x * cy - y * cx)]; };
+  const slerp = (a, b, u) => { let d = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3], s = 1; if (d < 0) { d = -d; s = -1; } let ka = 1 - u, kb = u; if (d < 0.9995) { const th = Math.acos(d), sn = Math.sin(th); ka = Math.sin((1 - u) * th) / sn; kb = Math.sin(u * th) / sn; } return qnorm([0, 1, 2, 3].map((i) => ka * a[i] + s * kb * b[i])); };
+  const axq = (ax, deg) => { const a = (deg * Math.PI) / 360, s = Math.sin(a); return [ax[0] * s, ax[1] * s, ax[2] * s, Math.cos(a)]; };      // a turn of deg about a (unit) axis
+  const vsub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], vdot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], vlen = (a) => Math.hypot(a[0], a[1], a[2]), vunit = (a) => { const l = vlen(a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+  const vcross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const qarc = (u, v) => { const d = vdot(u, v); if (d < -0.99999) return [1, 0, 0, 0]; const c = vcross(u, v); return qnorm([c[0], c[1], c[2], 1 + d]); };
+  // the pose of track tr at track time tt (wrap = true: a loop)
+  function pose(tr, tt, wrap = false) { const D = tr.data, F = tr.frames, f = wrap ? ((tt * tr.fps) % F + F) % F : Math.min(F - 1.001, Math.max(0, tt * tr.fps)), i = Math.floor(f), u = f - i, i1 = wrap ? (i + 1) % F : i + 1, P = [], Q = [];
+    for (let j = 0; j < NJ; j++) { const a = i * 147 + j * 7, b = i1 * 147 + j * 7; P.push([D[a] + (D[b] - D[a]) * u, D[a + 1] + (D[b + 1] - D[a + 1]) * u, D[a + 2] + (D[b + 2] - D[a + 2]) * u]); Q.push(slerp([D[a + 3], D[a + 4], D[a + 5], D[a + 6]], [D[b + 3], D[b + 4], D[b + 5], D[b + 6]], u)); }
+    const lq = [Q[0]], lo = [P[0]]; for (let j = 1; j < NJ; j++) { const c = qcon(Q[PAR[j]]); lq.push(qmul(c, Q[j])); lo.push(qrot(c, vsub(P[j], P[PAR[j]]))); } return { P, Q, lq, lo }; }
+  // world pose from parent-relative rotations and offsets
+  function build(lq, lo) { const P = [lo[0]], Q = [qnorm(lq[0])]; for (let j = 1; j < NJ; j++) { const pq = Q[PAR[j]], r = qrot(pq, lo[j]); P.push([P[PAR[j]][0] + r[0], P[PAR[j]][1] + r[1], P[PAR[j]][2] + r[2]]); Q.push(qnorm(qmul(pq, lq[j]))); } return { P, Q }; }
+  // put the ankle of a leg (th = 13 left, 17 right) on T with the foot and toe turned to Qf, Qt: two bones, the knee toward the thigh's front
+  function legIK(P, Q, th, T, Qf, Qt, loToe) { const sh = th + 1, ft = th + 2, H = P[th], K = P[sh], E = P[ft], a = vlen(vsub(K, H)), b = vlen(vsub(E, K)), d = vsub(T, H), dl = vlen(d), dc = Math.min(a + b - 1e-4, Math.max(Math.abs(a - b) + 1e-4, dl)), n = [d[0] / dl, d[1] / dl, d[2] / dl];
+    const x = (a * a - b * b + dc * dc) / (2 * dc), h = Math.sqrt(Math.max(0, a * a - x * x)), fr = qrot(Q[th], [0, 0, 1]); let pv = vsub(K, H); pv = [pv[0] + 0.25 * fr[0], pv[1] + 0.25 * fr[1], pv[2] + 0.25 * fr[2]]; const pn = vdot(pv, n); pv = vunit([pv[0] - pn * n[0], pv[1] - pn * n[1], pv[2] - pn * n[2]]);
+    const Kn = [H[0] + n[0] * x + pv[0] * h, H[1] + n[1] * x + pv[1] * h, H[2] + n[2] * x + pv[2] * h], Tn = [H[0] + n[0] * dc, H[1] + n[1] * dc, H[2] + n[2] * dc];
+    Q[th] = qnorm(qmul(qarc(vunit(vsub(K, H)), vunit(vsub(Kn, H))), Q[th])); Q[sh] = qnorm(qmul(qarc(vunit(vsub(E, K)), vunit(vsub(Tn, Kn))), Q[sh])); P[sh] = Kn; P[ft] = Tn; Q[ft] = Qf; Q[ft + 1] = Qt; const o = qrot(Qf, loToe); P[ft + 1] = [Tn[0] + o[0], Tn[1] + o[1], Tn[2] + o[2]]; }
+  const write = (data, k, P, Q) => { for (let j = 0; j < NJ; j++) data.set([P[j][0], P[j][1], P[j][2], Q[j][0], Q[j][1], Q[j][2], Q[j][3]], k * 147 + j * 7); };
+  return { PAR, NJ, qmul, qcon, qnorm, qrot, slerp, axq, pose, build, legIK, write };
+})();

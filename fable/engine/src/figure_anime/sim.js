@@ -5,6 +5,7 @@ import { J, NJ, STRIDE, REST_POS, toLocal } from './skeleton.js';
 import { HAIR, LEG } from './body.js';
 
 export const STRAP_N = 8, N_STRAPS = 3;
+const HEMW = [0, 0, 0, 0, 0.1, 0.4, 0.8, 1];          // how much of the wind each ring of a trouser leg feels (hip .. hem) when a take asks for it (hemK)
 const WET_LEN = 0.32;
 export const SIM = (() => { const hair = 0, strap = HAIR.G * HAIR.NODES, lag = strap + N_STRAPS * STRAP_N, leg = lag + 4; return { G: HAIR.G, hair, strap, lag, leg, W: leg + 2 * LEG.NODES }; })();
 
@@ -115,7 +116,7 @@ export function simulate(track, body, opts = {}) {
   }
   // r4: back hair never stands above her head. Seen from the world: a node may be no higher than the top of the head plus 2 cm, and 0.8 m higher per metre it is
   // BEHIND the head (so it can trail up and back at about 40 degrees, a mane, but not rise as a column over the crown). What is over the line is put down and back.
-  let fallPrev = null, fallV = 0, bkx = 0, bkz = -1, bkOk = 0, statF = 0;      // o.stats = { fall: [], clamp: [] } (dev): per frame, how much of the fall air and how far over the line
+  let fallPrev = null, fallV = 0, bkx = 0, bkz = -1, bkOk = 0, statF = 0, wK = 1, hemK = 0;      // o.stats = { fall: [], clamp: [] } (dev): per frame, how much of the fall air and how far over the line
   function noSpike(i) {
     const hy = jp[J.head * 3 + 1] + 0.06 * hYv[1] + 0.096 + 0.02, back = (hx[i] - jp[J.head * 3]) * bkx + (hx[i + 2] - jp[J.head * 3 + 2]) * bkz, over = hx[i + 1] - hy - 0.8 * Math.max(0, back - 0.05); if (over <= 0) return;
     if (o.stats) o.stats.clamp[statF] = Math.max(o.stats.clamp[statF] || 0, over);
@@ -130,6 +131,7 @@ export function simulate(track, body, opts = {}) {
     // it a terminal speed of 1.6 m/s): every back guide stood straight up from the crown for a quarter of a second, two vertical spikes either side of the parting
     // (horns, 125.37-125.55). Now the air goes down with her: while her head descends faster than 1.5 m/s (all of it from 3.5 m/s) the hair's drag is taken against
     // air moving with the head and is much stronger, and the air pushes it back behind her. It still lifts, late and behind her, and never stands (see also `noSpike`).
+    wK = o.windK ? o.windK(ff) : 1; hemK = o.hemK ? o.hemK(ff) : 0;      // r4: the wind over the take (per frame; 16_terminal's stand): hair and straps x windK; the trouser hems feel it only with hemK
     const hY = jp[J.head * 3 + 1], hvY = fallPrev === null ? 0 : (hY - fallPrev) / dt; fallPrev = hY; fallV += (hvY - fallV) * 0.35;
     const fu = Math.min(1, Math.max(0, (-fallV - 1.5) / 2.0)), fall = o.fall * fu * fu * (3 - 2 * fu), fAir = fall * 0.75 * fallV * dt, fDrag = o.drag + 0.10 * fall, fBack = 30 * fall;
     { const l = Math.hypot(fwx, fwz); if (l > 0.3) { bkx = -fwx / l; bkz = -fwz / l; bkOk = 1; } else bkOk = 0; }
@@ -144,7 +146,7 @@ export function simulate(track, body, opts = {}) {
     }
     for (let g = 0; g < G; g++) {
       const gust = 1 + o.gust * (0.6 * Math.sin(time * 1.7 + gseed[g] * 0.2) + 0.4 * Math.sin(time * 4.3 + gseed[g] * 0.5));
-      const ax = o.wind[0] * gust, ay = -o.gravity + o.wind[1] * gust, az = o.wind[2] * gust, b = g * N * 3, pn = pinN[g], bias = 4.0 * frontG[g];
+      const ax = o.wind[0] * gust * wK, ay = -o.gravity + o.wind[1] * gust * wK, az = o.wind[2] * gust * wK, b = g * N * 3, pn = pinN[g], bias = 4.0 * frontG[g];
       if (wW > 0 && guides[g].kind === 0) { // floating: the back hair lies on the surface in a fan round the head, one direction per guide column, swaying a little
         const gd = guides[g], th = ((gd.col / (HAIR.COLS - 1)) * 2 - 1) * 1.72 + 0.06 * (gd.layer - 1.5) + 0.085 * Math.sin(wt * 0.31 + gd.col * 0.9) + 0.045 * Math.sin(wt * 0.73 + g * 1.7);
         const dx = Math.cos(th) * wc[0] + Math.sin(th) * wl[0], dz = Math.cos(th) * wc[1] + Math.sin(th) * wl[1], rx = wo[0] + dx * 0.085, rz = wo[1] + dz * 0.085;
@@ -190,7 +192,7 @@ export function simulate(track, body, opts = {}) {
     // ---- straps ----
     for (let s = 0; s < N_STRAPS; s++) {
       const b = s * STRAP_N * 3, L = straps[s].length / (STRAP_N - 1);
-      for (let n = 1; n < STRAP_N; n++) integ(sx, sp, b + n * 3, o.wind[0] * 0.3, -o.gravity, o.wind[2] * 0.3, 0.03);
+      for (let n = 1; n < STRAP_N; n++) integ(sx, sp, b + n * 3, o.wind[0] * 0.3 * wK, -o.gravity, o.wind[2] * 0.3 * wK, 0.03);
       world(straps[s].bone, straps[s].local, sx, b);
       rotq(straps[s].bone, s === 0 ? [0, -1, 0] : [0, 1, 0], tv);   // a weak preference for lying along the leg (tidy when she is on the ground, calmer on kicks)
       for (let n = 1; n < STRAP_N; n++) { const i = b + n * 3; sx[i] += (sx[b] + tv[0] * L * n - sx[i]) * 0.0012; sx[i + 1] += (sx[b + 1] + tv[1] * L * n - sx[i + 1]) * 0.0012; sx[i + 2] += (sx[b + 2] + tv[2] * L * n - sx[i + 2]) * 0.0012; }
@@ -203,7 +205,8 @@ export function simulate(track, body, opts = {}) {
     for (let c = 0; c < 2; c++) {
       const b = c * LN * 3, lg = legs[c];
       for (let k = 1; k < LN; k++) {
-        const i = b + k * 3; integ(lx, lp, i, o.wind[0] * 0.15, -o.gravity, o.wind[2] * 0.15, 0.03);
+        const hw = hemK > 0 ? 0.15 + hemK * HEMW[k] * (1 + 0.55 * Math.sin(time * 1.9 + c * 2.3) + 0.35 * Math.sin(time * 4.7 + c * 1.1 + k * 0.4)) : 0.15;
+        const i = b + k * 3; integ(lx, lp, i, o.wind[0] * hw, -o.gravity, o.wind[2] * hw, 0.03);
         world(lg.nodes[k].bone, lg.nodes[k].local, lt, 0); const K = LEG.K[k]; lx[i] += (lt[0] - lx[i]) * K; lx[i + 1] += (lt[1] - lx[i + 1]) * K; lx[i + 2] += (lt[2] - lx[i + 2]) * K;
       }
       world(lg.nodes[0].bone, lg.nodes[0].local, lx, b); world(J.hips, lg.hipLocal, lt, 0); lx[b] = (lx[b] + lt[0]) / 2; lx[b + 1] = (lx[b + 1] + lt[1]) / 2; lx[b + 2] = (lx[b + 2] + lt[2]) / 2;
