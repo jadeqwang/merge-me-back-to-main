@@ -23,7 +23,7 @@ const STRAP_COL = [
 ];
 
 export function simulate(track, body, opts = {}) {
-  const o = { wind: [-0.18, 0, 0.04], gust: 0.6, gravity: 9.8, substeps: 3, iters: 5, drag: 0.035, vmax: 7, preroll: 150, ...(track.simOpts || {}), ...((track.meta && track.meta.sim) || {}), ...opts };
+  const o = { wind: [-0.18, 0, 0.04], gust: 0.6, gravity: 9.8, substeps: 3, iters: 5, drag: 0.035, vmax: 7, preroll: 150, fall: 1, ...(track.simOpts || {}), ...((track.meta && track.meta.sim) || {}), ...opts };
   const F = track.frames, D = track.data, G = SIM.G, N = HAIR.NODES, W = SIM.W, LN = LEG.NODES;
   const out = new Float32Array(F * W * 4), guides = body.guides, straps = body.straps, legs = body.legs;
   const loopD = track.loop ? (track.loopDelta || [0, 0]) : [0, 0];
@@ -64,8 +64,8 @@ export function simulate(track, body, opts = {}) {
   // in-place loops (run, walk): the air moves past her instead, so hair and cloth still stream
   const airZ = -(o.airSpeed ?? ((track.loop && track.meta && track.meta.speed > 0.5) ? track.meta.speed * 0.5 : 0)) * dt;
   // verlet step for one node with drag and a speed limit
-  function integ(x, xp, i, ax, ay, az, drag) {
-    let vx = (x[i] - xp[i]) * (1 - drag), vy = (x[i + 1] - xp[i + 1]) * (1 - drag), vz = airZ + (x[i + 2] - xp[i + 2] - airZ) * (1 - drag); const v = Math.hypot(vx, vy, vz);
+  function integ(x, xp, i, ax, ay, az, drag, airY = 0) {
+    let vx = (x[i] - xp[i]) * (1 - drag), vy = airY + (x[i + 1] - xp[i + 1] - airY) * (1 - drag), vz = airZ + (x[i + 2] - xp[i + 2] - airZ) * (1 - drag); const v = Math.hypot(vx, vy, vz);
     if (v > maxStep) { const k = maxStep / v; vx *= k; vy *= k; vz *= k; }
     xp[i] = x[i]; xp[i + 1] = x[i + 1]; xp[i + 2] = x[i + 2]; x[i] += vx + ax * dt2; x[i + 1] += vy + ay * dt2; x[i + 2] += vz + az * dt2;
   }
@@ -113,11 +113,27 @@ export function simulate(track, body, opts = {}) {
     if (over > 0) { const k = -over * 0.8; hx[i] += hZv[0] * k; hx[i + 1] += hZv[1] * k; hx[i + 2] += hZv[2] * k; }      // ... nor further forward than 4.5 cm in front of the ear line: seen in profile a lock blown forward along the cheek was the same moustache
     hp[i] += (hx[i] - hp[i]) * 0.35; hp[i + 1] += (hx[i + 1] - hp[i + 1]) * 0.35; hp[i + 2] += (hx[i + 2] - hp[i + 2]) * 0.35;
   }
+  // r4: back hair never stands above her head. Seen from the world: a node may be no higher than the top of the head plus 2 cm, and 0.8 m higher per metre it is
+  // BEHIND the head (so it can trail up and back at about 40 degrees, a mane, but not rise as a column over the crown). What is over the line is put down and back.
+  let fallPrev = null, fallV = 0, bkx = 0, bkz = -1, bkOk = 0, statF = 0;      // o.stats = { fall: [], clamp: [] } (dev): per frame, how much of the fall air and how far over the line
+  function noSpike(i) {
+    const hy = jp[J.head * 3 + 1] + 0.06 * hYv[1] + 0.096 + 0.02, back = (hx[i] - jp[J.head * 3]) * bkx + (hx[i + 2] - jp[J.head * 3 + 2]) * bkz, over = hx[i + 1] - hy - 0.8 * Math.max(0, back - 0.05); if (over <= 0) return;
+    if (o.stats) o.stats.clamp[statF] = Math.max(o.stats.clamp[statF] || 0, over);
+    const q = Math.min(over, 0.06) * 0.6; hx[i + 1] -= q; hx[i] += bkx * q * 0.7; hx[i + 2] += bkz * q * 0.7; hp[i + 1] += (hx[i + 1] - hp[i + 1]) * 0.3;
+  }
   function step(ff, time) {
     pose(ff); updCol(HC); updCol(SC); rotq(J.head, [1, 0, 0], hXv); rotq(J.head, [0, 1, 0], hYv); rotq(J.head, [0, 0, 1], hZv);
     const cq = J.chest * 4, cy = jp[J.chest * 3 + 1], qx = jq[cq], qy = jq[cq + 1], qz = jq[cq + 2], qw = jq[cq + 3];
     const fwx = 2 * (qx * qz + qw * qy), fwy = 2 * (qy * qz - qw * qx), fwz = 1 - 2 * (qx * qx + qy * qy), lfx = 1 - 2 * (qy * qy + qz * qz), lfy = 2 * (qx * qy + qw * qz), lfz = 2 * (qx * qz - qw * qy);
     // ---- hair ----
+    // r4: a FALL (the b73 landing: she drops 1.2 m and folds into the crouch, her head going down at 5-8 m/s). With the air at rest the hair cannot follow (its drag gives
+    // it a terminal speed of 1.6 m/s): every back guide stood straight up from the crown for a quarter of a second, two vertical spikes either side of the parting
+    // (horns, 125.37-125.55). Now the air goes down with her: while her head descends faster than 1.5 m/s (all of it from 3.5 m/s) the hair's drag is taken against
+    // air moving with the head and is much stronger, and the air pushes it back behind her. It still lifts, late and behind her, and never stands (see also `noSpike`).
+    const hY = jp[J.head * 3 + 1], hvY = fallPrev === null ? 0 : (hY - fallPrev) / dt; fallPrev = hY; fallV += (hvY - fallV) * 0.35;
+    const fu = Math.min(1, Math.max(0, (-fallV - 1.5) / 2.0)), fall = o.fall * fu * fu * (3 - 2 * fu), fAir = fall * 0.75 * fallV * dt, fDrag = o.drag + 0.10 * fall, fBack = 30 * fall;
+    { const l = Math.hypot(fwx, fwz); if (l > 0.3) { bkx = -fwx / l; bkz = -fwz / l; bkOk = 1; } else bkOk = 0; }
+    if (o.stats) { const k = Math.floor(ff); if (fall > (o.stats.fall[k] || 0)) o.stats.fall[k] = fall; statF = k; }
     const wt = ((track.meta && track.meta.song_t0) || 0) + ff / track.fps;   // the fan sways on SONG time, so float -> rise is seamless
     const wW = wNow = waterAt(ff), upx = 2 * (qx * qy - qw * qz), upy = 1 - 2 * (qx * qx + qz * qz), upz = 2 * (qy * qz + qw * qx), ccx = jp[J.chest * 3], ccz = jp[J.chest * 3 + 2];
     if (wW > 0) { // the head's crown and left directions on the water plane
@@ -139,7 +155,7 @@ export function simulate(track, body, opts = {}) {
           integ(hx, hp, i, ax * (1 - wW), ay * (1 - wW) + wW * Math.max(-6, Math.min(6, (ys - hx[i + 1]) * 80)), az * (1 - wW), o.drag + (0.10 - o.drag) * wW);
           hx[i] += (tx - hx[i]) * K; hx[i + 2] += (tz - hx[i + 2]) * K;
         }
-      } else for (let n = pn; n < N; n++) { const i = b + n * 3, sh = hx[i + 1] > cy + 0.07 ? bias * 0.6 : 0; integ(hx, hp, i, ax + fwx * sh, ay + fwy * sh, az + fwz * sh, o.drag); }
+      } else for (let n = pn; n < N; n++) { const i = b + n * 3, sh = hx[i + 1] > cy + 0.07 ? bias * 0.6 : 0; integ(hx, hp, i, ax + fwx * sh + bkx * fBack, ay + fwy * sh, az + fwz * sh + bkz * fBack, fDrag, fAir); }
       for (let n = 0; n < pn; n++) world(J.head, pinL[g][n], hx, b + n * 3);
     }
     for (let it = 0; it < o.iters; it++) {
@@ -166,6 +182,7 @@ export function simulate(track, body, opts = {}) {
             const zmax = -0.105 + Math.max(0, yl - 0.20) * 2.0 + Math.max(0, xl - 0.30) * 4.0;   // just in front of the jacket's back: on a bow the hair slides down her back instead of shedding round her sides
             if (zl > zmax) { const q = (zl - zmax) * 0.6; hx[i] -= fwx * q; hx[i + 1] -= fwy * q; hx[i + 2] -= fwz * q; }
           }
+          if (k0 && wW < 0.5 && bkOk) noSpike(i);
           if (hx[i + 1] < fl) { hx[i + 1] = fl; hp[i] += (hx[i] - hp[i]) * 0.5; hp[i + 2] += (hx[i + 2] - hp[i + 2]) * 0.5; }   // the floor (prone, seated, rolling) with friction
         }
       }

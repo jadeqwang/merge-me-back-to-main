@@ -873,10 +873,18 @@ def land():
         k0.bend("shin" + s, pitch=-46.0 if s == "L" else -24.0)
         k0.bend("foot" + s, pitch=-22.0)
     k0.unpin("legs")
-    k1 = base(0.965, 6.0, heelR=0.05, heelL=0.04)        # touch-down, legs long
-    k1.spine(pitch=8.0)
-    for s in "LR":
-        k1.arm_fk(s, raise_=100.0, fwd=10.0, elbow=22.0)
+    # r4: the cut to this take is ON the impact. The frame after it used to be a T (both arms level) already going down at 8 m/s (the crouch was eased "out3": faster
+    # than the fall itself), so her face was a smear on the first frames she is seen. Now touch-down is a shape (the right arm already reaching for the ground, the
+    # left thrown back and up, her face to the lens) that she is IN for 0.07 s: the legs take the hit (5 cm) before she folds. The fold starts from that near-rest.
+    def touch(y, pitch, spine, head, R, L, heelR, heelL, dz=0.0):
+        p = base(y, pitch, heelR=heelR, heelL=heelL, dz=dz)
+        p.spine(pitch=spine, yaw=-4.0)
+        p.head(pitch=head)
+        p.arm_fk("R", raise_=R[0], fwd=R[1], elbow=R[2])
+        p.arm_fk("L", raise_=L[0], fwd=L[1], elbow=L[2])
+        return p
+    k1 = touch(0.965, 6.0, 8.0, -12.0, (72, 38, 30), (106, -24, 20), 0.05, 0.04)        # touch-down, legs long
+    k1b = touch(0.915, 10.0, 10.0, -15.0, (64, 46, 34), (100, -32, 22), 0.04, 0.02, dz=-0.005)
 
     def crouch(y=0.40, head=14.0, hand_y=0.085, spine=16.0):
         p = base(y, 36.0, heelR=0.075, dz=-0.03)
@@ -896,7 +904,7 @@ def land():
                fingers=(0, 0.15, 1), palm=(0, 1, 0), dir_space="world")
     k6 = k5.copy()
     k6.hips(dy=0.012)
-    keys = [(0.0, k0), (acc, k1, "in"), (acc + 0.21, k2, "out3"), (acc + 0.87, k3, "io"),
+    keys = [(0.0, k0), (acc, k1, "in"), (acc + 0.07, k1b, "lin"), (acc + 0.27, k2, "io"), (acc + 0.87, k3, "io"),
             (acc + 1.15, k4, "io"), (acc + 1.739, k5, "io"), (4.0, k6, "io")]
     m = M.keyframes(keys, overlap=0.04, soften=9.0)
     m = M.breathe(m, period=2.6, depth=1.3, sway=0.0)
