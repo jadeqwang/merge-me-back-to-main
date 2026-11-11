@@ -167,6 +167,7 @@ class StandIn {
 export async function makeCast(E) {
   const { hex } = E; const standin = !!E.param('standin', 0); const only = E.Q.get('tracks');
   const figKind = E.Q.get('fig') === 'classic' ? 'classic' : 'anime', anime = figKind === 'anime', Figure = anime ? FigureAnime : FigureClassic;
+  const hide = E.Q.get('hide');      // HYBRID PLATES (fable/notes/hybrid.md): ?hide=fig draws no body at all (the clean plate); ?hide=refl draws the bodies but not their mirror image. Absent: nothing changes
   const names = (only ? String(only).split(',') : TRACKS).filter((n) => n && !n.startsWith('_'));
   // ---- tracks: loaded once, by both backends (the stand-in only reads the hips)
   const tracks = {}; const tl = performance.now();
@@ -274,11 +275,12 @@ export async function makeCast(E) {
     crowd(id, max = 1024) { let c = crowds.get(id); if (!c) { c = { id, max, n: 0, items: new Array(max),
       put(i, v) { this.items[i] = v; if (i >= this.n) this.n = i + 1; } }; crowds.set(id, c); } return c; },
     drawables(dawn = 0, t = 0, figLight = null) {      // t (song time) and the frame's env.figLight drive the anime figure's default face
+      if (hide === 'fig') return [];
       const live = [...actors.values()].filter((a) => a.live && a.s.visible && a.s.alpha > 0);
       if (fig) { fig.begin(); let n = 0; const mk = anime ? instA : inst; FT = t; DAY = Math.min(1, Math.max(0, (figLight && figLight.sunAmt !== undefined) ? figLight.sunAmt : (dawn - 0.6) / 0.4)); NIGHT = 1 - ss(dawn, 0.1, 0.33);
         for (const a of live) { fig.add(mk(a.s, a.s.lane || a.lane, a.variant, a.seed)); n++; }
         for (const c of crowds.values()) for (let i = 0; i < c.n; i++) { const v = c.items[i]; if (!v || v.visible === false) continue; fig.add(mk({ ...DEF, ...v }, v.lane || 'main', v.variant, i + 1)); n++; }
-        return n ? [fig] : []; }
+        return n ? [hide === 'refl' ? { reflect: false, draw: (ctx) => fig.draw(ctx) } : fig] : []; }
       const list = [];
       if (live.length) { const d = new Float32Array(live.length * STRIDE); live.forEach((a, i) => write(d, i * STRIDE, a.s, laneOf(a.s.lane || a.lane), a.variant === 'violet' ? 1 : 0, dawn)); list.push(impl.drawable(d, live.length)); }
       for (const c of crowds.values()) if (c.n) { const d = new Float32Array(c.n * STRIDE); let n = 0; for (let i = 0; i < c.n; i++) { const v = c.items[i]; if (!v || v.visible === false) continue; write(d, n++ * STRIDE, { ...DEF, ...v }, laneOf(v.lane || 'main'), v.variant === 'violet' ? 1 : 0, dawn); } if (n) list.push(impl.drawable(d, n)); }

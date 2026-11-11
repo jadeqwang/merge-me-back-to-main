@@ -1,0 +1,8 @@
+{
+  "name": "day",
+  "note": "3:56.65 the day dance (14_day A, B, B2): film 236.667-242.708, two cuts inside (240.121, 241.86)",
+  "t0": 236.65,
+  "fps": 24,
+  "frames": 145,
+  "model": "review/fable_v7/seedance_test/out_day_take2.mp4"
+}

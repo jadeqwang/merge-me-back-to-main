@@ -1,0 +1,8 @@
+{
+  "name": "become",
+  "note": "3:50 open arms at sunrise (13_catch C3): film 230.0-236.04, one shot, silhouette to full colour",
+  "t0": 230.0,
+  "fps": 24,
+  "frames": 145,
+  "model": "review/fable_v7/seedance_test/out_become.mp4"
+}
