@@ -30,12 +30,16 @@ workstream notes in `fable/notes/`.
   after seeing its real cost, total <= $25. After each run commit `docs/spend_ledger.jsonl`. Then make side-by-side strips
   (code | Seedance) for Jade and write a verdict: likeness to the sheet, motion lock on pinned beats, flicker, hands, text damage.
   Do NOT restyle the film beyond the test without her decision.
-  TEST RESULTS SO FAR (22:55): `fbl_write` done ($5.85): motion and handwriting locked, but almost no restyle (near copy), lyric/HUD
-  removed. `fbl_day` done ($5.85): fully redrawn from the sheet (big character-quality gain), motion follows pose for pose, but the
-  model pushed in to waist-up (legs cut). Two jobs in the same minute both failed with 7003 (not billed): submit video-reference
-  jobs ONE AT A TIME. `fbl_become` resubmitted alone (job `mergemain/fbl_become-b979f049a3`). Last planned run (keeps total <= $25):
-  the day clip as a 9:16 full-body crop to test whether head-to-feet framing survives. Strips: `work_fable/stills/seedance/*_pairs.jpg`
-  (code left, Seedance right); clips `media/gen/fbl_*.mp4`.
+  TEST DONE (23:20), $23.39 at list price (4 clips x 6.04 s; the spend tool books each at $14.51, so `spend.py` shows $342.38
+  where the refined figure is about $307.70). Verdict and files: `review/fable_v7/seedance_test/README.md` (pushed). Short version:
+  when it redraws, the character is far better than the procedural figure and follows the code render pose for pose; framing holds
+  if the prompt pins it; the night shot from behind was hardly changed; submit ONE job at a time. Flicker not judged (Jade must
+  watch `compare_*.mp4`). NO further generation without Jade's decision: a full conversion is ~150 s of hero shots, ~$145-230.
+- Running since 23:25 (one agent, spends nothing): hybrid composite prototype: her redrawn layer cut out of `out_day_take2.mp4` /
+  `out_become.mp4` and laid over the code-drawn world (plate without the figure, matte, register, upscale, reflection). Outputs
+  `review/fable_v7/seedance_test/hybrid_*.mp4`, scripts `fable/tools/hybrid/`, notes `fable/notes/hybrid.md`.
+- Code-version deliverables exist: 4K master `work_fable/out/v7_uhd.mp4` (8.3 GB), X encode
+  `work_fable/out/deliver/merge_fable_v7_x_1080p.mp4` (429 MB).
 - Ask Jade whether to drop older review versions (v1-v6, 92 MB each) from the branch.
 - Jade's standing asks: checkpoint periodically (an hourly cron in the session does commit + push); mechanical work (renders, encodes,
   scouting) goes to cheaper models or Codex in tmux to save the top model's limit.
