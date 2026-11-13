@@ -13,6 +13,8 @@
 > - Likeness: she is fine with re-using the selfie-turned-art from Orbital Sunrise / Moongazing; those singing clips were generated
 >   from a still plus the music, not filmed, so sung inserts need no filming (and must be generated against the new audio).
 > - The hybrid (Seedance redraw over the code world) was not adopted; recommendation to her was against it as proposed.
+> - **She approved the direction after the proof ("a huge improvement"). The plan for the full rebuild, with the shot table, assets,
+>   budget, tests and the decisions still hers, is `fable/take2/PLAN.md`: start there.** No generation beyond the proof has been done.
 
 (The rest of this file was written 2026-11-11, about 00:45.)
 
