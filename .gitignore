@@ -24,3 +24,6 @@ work/gen_kv_ns.txt
 !review/**
 # fable cut scratch (mocap, tracks, stills, renders)
 work_fable/
+# v3 song analysis scratch (stems, intermediates)
+work_v3/
+analysis_v3/stems/

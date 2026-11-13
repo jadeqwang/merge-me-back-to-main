@@ -1,0 +1,9116 @@
+{
+ "audio": {
+  "file": "inputs/Merge (keychange down).wav",
+  "duration_s": 282.8,
+  "sample_rate": 48000,
+  "channels": 2,
+  "time_base": "seconds from the first sample of \"inputs/Merge (keychange down).wav\" (48 kHz; analysed as the identical copy work_v3/song.wav). NOT interchangeable with analysis_v2/ (inputs/Merge.wav): use analysis_v3/warp_v2_to_v3.json for the old->new time map (see analysis_v3/NOTES.md).",
+  "stems": {
+   "vocals": "analysis_v3/stems/vocals.wav (demucs htdemucs_ft)",
+   "instrumental": "analysis_v3/stems/instrumental.wav (drums+bass+other)",
+   "also": [
+    "analysis_v3/stems/drums.wav",
+    "analysis_v3/stems/bass.wav",
+    "analysis_v3/stems/other.wav",
+    "analysis_v3/stems/vocals_roformer.wav (BS-RoFormer, cleaner, used for alignment checks)"
+   ]
+  }
+ },
+ "tempo": {
+  "suno_claim": 135,
+  "bpm": 139.262,
+  "bpm_mean": 139.262,
+  "bpm_constant_fit": 139.215,
+  "drift": {
+   "note": "NOT CONSTANT (unlike v2, which is 138.00 throughout): smooth accelerando ~137.8 BPM (intro) -> 138.2 (verse 1) -> 138.5-138.8 (bars 33-80) -> 139.0 (build) -> 139.5 (drop) -> 140.6-141.0 (verse 2 to outro), ~140.3-140.7 in the drumless tail. Fitted to kick onsets (2.8 ms rms) and the drumless arp comb with a smoothing spline; cross-checked against the v2 grid carried through an onset-envelope alignment (agreement 1-15 ms in drum sections).",
+   "best_constant_grid_max_error_ms": 633.1,
+   "fixed_135_bpm_grid_max_error_s": 8.73,
+   "warning": "A constant-BPM grid is useless here: the best constant line is off by up to 633 ms. Cut on beats[] / bars[] only."
+  },
+  "curve_per_16_bars": [
+   {
+    "bar": 1,
+    "t": 0.219,
+    "bpm": 137.8
+   },
+   {
+    "bar": 17,
+    "t": 28.087,
+    "bpm": 138.18
+   },
+   {
+    "bar": 33,
+    "t": 55.876,
+    "bpm": 138.54
+   },
+   {
+    "bar": 49,
+    "t": 83.594,
+    "bpm": 138.62
+   },
+   {
+    "bar": 65,
+    "t": 111.295,
+    "bpm": 138.77
+   },
+   {
+    "bar": 81,
+    "t": 138.965,
+    "bpm": 138.99
+   },
+   {
+    "bar": 97,
+    "t": 166.594,
+    "bpm": 139.48
+   },
+   {
+    "bar": 113,
+    "t": 194.125,
+    "bpm": 140.61
+   },
+   {
+    "bar": 129,
+    "t": 221.436,
+    "bpm": 140.98
+   },
+   {
+    "bar": 145,
+    "t": 248.673,
+    "bpm": 140.71
+   },
+   {
+    "bar": 161,
+    "t": 275.964,
+    "bpm": 140.26
+   }
+  ],
+  "meter": "4/4, four-on-the-floor where drums play; bar 1 beat 1 = 0.219 s; 8-bar phrases throughout (every section starts on bar 8n+1); the final hit falls on bar 161 beat 3 (see NOTES)"
+ },
+ "key": {
+  "suno_claim": "B minor (claim for the original render; this version is transposed down 2 semitones)",
+  "estimate": "A minor (relative C major very prominent)",
+  "confidence": "high",
+  "evidence": "v2 harmony transposed down a whole tone throughout, no key change inside the song. Harmonic-stem (other+bass) chroma: C major r=0.777 / A minor r=0.765 (no sharps/flats; v2 gave D major / B minor with the same r pattern); verse blocks best-fit A minor / C major, chorus blocks C major colour; every block's best key is the v2 block key minus 2 semitones or its relative.",
+  "blocks": [
+   {
+    "start": 0,
+    "end": 28.086740745177547,
+    "best": "C major",
+    "r": 0.941,
+    "second": "A minor"
+   },
+   {
+    "start": 28.086740745177547,
+    "end": 69.71602931012784,
+    "best": "C major",
+    "r": 0.824,
+    "second": "A minor"
+   },
+   {
+    "start": 69.71602931012784,
+    "end": 97.45737341595405,
+    "best": "C major",
+    "r": 0.881,
+    "second": "G major"
+   },
+   {
+    "start": 97.45737341595405,
+    "end": 125.13279796973748,
+    "best": "C major",
+    "r": 0.829,
+    "second": "G major"
+   },
+   {
+    "start": 125.13279796973748,
+    "end": 152.78753149044138,
+    "best": "A major",
+    "r": 0.65,
+    "second": "A minor"
+   },
+   {
+    "start": 152.78753149044138,
+    "end": 180.375309013202,
+    "best": "F major",
+    "r": 0.555,
+    "second": "A minor"
+   },
+   {
+    "start": 180.375309013202,
+    "end": 207.81914231260794,
+    "best": "A minor",
+    "r": 0.555,
+    "second": "D major"
+   },
+   {
+    "start": 207.81914231260794,
+    "end": 235.0383615301858,
+    "best": "C major",
+    "r": 0.834,
+    "second": "G major"
+   },
+   {
+    "start": 235.0383615301858,
+    "end": 282.8,
+    "best": "C major",
+    "r": 0.757,
+    "second": "A minor"
+   }
+  ]
+ },
+ "beat_grid": {
+  "convention": "beats[i]: i from 0, bar = i//4+1, beat = i%4+1. zone: anchored = fitted to drum-stem kick onsets (drum sections) or to the plucked-arp onset comb (drumless sections); interpolated = no rhythmic anchor within +-2 beats (15.9-20.3, 56.7-61.9, 71.5-75.8, 91.4-96.6, 103.1-103.5, 202.3-202.7, 204.8-207.0, 209.1-220.6 = Chorus 2 first half, 222.7-235.0 = Chorus 2 second half, 263.6-276.0 = pads after the bar-153 hit; the tempo drifts, so interpolated stretches are less certain than in v2: see NOTES); extrapolated = after 277.25 s (after the final hit).",
+  "fit": {
+   "drum": {
+    "n": 280,
+    "resid_rms_ms": 2.8,
+    "resid_p95_ms": 5.1
+   },
+   "comb": {
+    "n": 185,
+    "resid_rms_ms": 2.5,
+    "resid_p95_ms": 4.4
+   }
+  },
+  "verification": "kick onsets vs grid residual rms 2.8 ms (p95 5.1 ms); arp-comb anchors rms 2.5 ms; downbeat phase = beat_this downbeat vote (222 of 261 on phase 0, 29 on phase 2); every section hit lands on a downbeat within 13 ms (bars 9, 17, 37, 41, 57, 65, 69, 73, 86, 89, 105, 117, 121, 129, 137, 149, 153); independent estimate (v2 grid through an onset alignment) agrees within 7.4 ms mean |diff| (per section in NOTES).",
+  "beats": [
+   {
+    "t": 0.2194,
+    "bar": 1,
+    "beat": 1,
+    "bpm": 136.98,
+    "zone": "anchored"
+   },
+   {
+    "t": 0.6574,
+    "bar": 1,
+    "beat": 2,
+    "bpm": 137.02,
+    "zone": "anchored"
+   },
+   {
+    "t": 1.0953,
+    "bar": 1,
+    "beat": 3,
+    "bpm": 137.06,
+    "zone": "anchored"
+   },
+   {
+    "t": 1.5331,
+    "bar": 1,
+    "beat": 4,
+    "bpm": 137.09,
+    "zone": "anchored"
+   },
+   {
+    "t": 1.9707,
+    "bar": 2,
+    "beat": 1,
+    "bpm": 137.13,
+    "zone": "anchored"
+   },
+   {
+    "t": 2.4083,
+    "bar": 2,
+    "beat": 2,
+    "bpm": 137.17,
+    "zone": "anchored"
+   },
+   {
+    "t": 2.8457,
+    "bar": 2,
+    "beat": 3,
+    "bpm": 137.2,
+    "zone": "anchored"
+   },
+   {
+    "t": 3.283,
+    "bar": 2,
+    "beat": 4,
+    "bpm": 137.24,
+    "zone": "anchored"
+   },
+   {
+    "t": 3.7202,
+    "bar": 3,
+    "beat": 1,
+    "bpm": 137.27,
+    "zone": "anchored"
+   },
+   {
+    "t": 4.1573,
+    "bar": 3,
+    "beat": 2,
+    "bpm": 137.3,
+    "zone": "anchored"
+   },
+   {
+    "t": 4.5943,
+    "bar": 3,
+    "beat": 3,
+    "bpm": 137.34,
+    "zone": "anchored"
+   },
+   {
+    "t": 5.0312,
+    "bar": 3,
+    "beat": 4,
+    "bpm": 137.37,
+    "zone": "anchored"
+   },
+   {
+    "t": 5.468,
+    "bar": 4,
+    "beat": 1,
+    "bpm": 137.4,
+    "zone": "anchored"
+   },
+   {
+    "t": 5.9047,
+    "bar": 4,
+    "beat": 2,
+    "bpm": 137.43,
+    "zone": "anchored"
+   },
+   {
+    "t": 6.3412,
+    "bar": 4,
+    "beat": 3,
+    "bpm": 137.46,
+    "zone": "anchored"
+   },
+   {
+    "t": 6.7777,
+    "bar": 4,
+    "beat": 4,
+    "bpm": 137.49,
+    "zone": "anchored"
+   },
+   {
+    "t": 7.2141,
+    "bar": 5,
+    "beat": 1,
+    "bpm": 137.52,
+    "zone": "anchored"
+   },
+   {
+    "t": 7.6504,
+    "bar": 5,
+    "beat": 2,
+    "bpm": 137.55,
+    "zone": "anchored"
+   },
+   {
+    "t": 8.0866,
+    "bar": 5,
+    "beat": 3,
+    "bpm": 137.58,
+    "zone": "anchored"
+   },
+   {
+    "t": 8.5227,
+    "bar": 5,
+    "beat": 4,
+    "bpm": 137.6,
+    "zone": "anchored"
+   },
+   {
+    "t": 8.9588,
+    "bar": 6,
+    "beat": 1,
+    "bpm": 137.63,
+    "zone": "anchored"
+   },
+   {
+    "t": 9.3947,
+    "bar": 6,
+    "beat": 2,
+    "bpm": 137.66,
+    "zone": "anchored"
+   },
+   {
+    "t": 9.8306,
+    "bar": 6,
+    "beat": 3,
+    "bpm": 137.68,
+    "zone": "anchored"
+   },
+   {
+    "t": 10.2664,
+    "bar": 6,
+    "beat": 4,
+    "bpm": 137.71,
+    "zone": "anchored"
+   },
+   {
+    "t": 10.7021,
+    "bar": 7,
+    "beat": 1,
+    "bpm": 137.73,
+    "zone": "anchored"
+   },
+   {
+    "t": 11.1377,
+    "bar": 7,
+    "beat": 2,
+    "bpm": 137.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 11.5732,
+    "bar": 7,
+    "beat": 3,
+    "bpm": 137.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 12.0087,
+    "bar": 7,
+    "beat": 4,
+    "bpm": 137.8,
+    "zone": "anchored"
+   },
+   {
+    "t": 12.4441,
+    "bar": 8,
+    "beat": 1,
+    "bpm": 137.83,
+    "zone": "anchored"
+   },
+   {
+    "t": 12.8795,
+    "bar": 8,
+    "beat": 2,
+    "bpm": 137.85,
+    "zone": "anchored"
+   },
+   {
+    "t": 13.3147,
+    "bar": 8,
+    "beat": 3,
+    "bpm": 137.87,
+    "zone": "anchored"
+   },
+   {
+    "t": 13.7499,
+    "bar": 8,
+    "beat": 4,
+    "bpm": 137.89,
+    "zone": "anchored"
+   },
+   {
+    "t": 14.185,
+    "bar": 9,
+    "beat": 1,
+    "bpm": 137.91,
+    "zone": "anchored"
+   },
+   {
+    "t": 14.6201,
+    "bar": 9,
+    "beat": 2,
+    "bpm": 137.93,
+    "zone": "anchored"
+   },
+   {
+    "t": 15.0551,
+    "bar": 9,
+    "beat": 3,
+    "bpm": 137.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 15.4901,
+    "bar": 9,
+    "beat": 4,
+    "bpm": 137.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 15.925,
+    "bar": 10,
+    "beat": 1,
+    "bpm": 137.98,
+    "zone": "interpolated"
+   },
+   {
+    "t": 16.3598,
+    "bar": 10,
+    "beat": 2,
+    "bpm": 138.0,
+    "zone": "interpolated"
+   },
+   {
+    "t": 16.7946,
+    "bar": 10,
+    "beat": 3,
+    "bpm": 138.01,
+    "zone": "interpolated"
+   },
+   {
+    "t": 17.2293,
+    "bar": 10,
+    "beat": 4,
+    "bpm": 138.03,
+    "zone": "interpolated"
+   },
+   {
+    "t": 17.664,
+    "bar": 11,
+    "beat": 1,
+    "bpm": 138.05,
+    "zone": "interpolated"
+   },
+   {
+    "t": 18.0987,
+    "bar": 11,
+    "beat": 2,
+    "bpm": 138.06,
+    "zone": "interpolated"
+   },
+   {
+    "t": 18.5333,
+    "bar": 11,
+    "beat": 3,
+    "bpm": 138.07,
+    "zone": "interpolated"
+   },
+   {
+    "t": 18.9678,
+    "bar": 11,
+    "beat": 4,
+    "bpm": 138.09,
+    "zone": "interpolated"
+   },
+   {
+    "t": 19.4023,
+    "bar": 12,
+    "beat": 1,
+    "bpm": 138.1,
+    "zone": "interpolated"
+   },
+   {
+    "t": 19.8368,
+    "bar": 12,
+    "beat": 2,
+    "bpm": 138.11,
+    "zone": "interpolated"
+   },
+   {
+    "t": 20.2712,
+    "bar": 12,
+    "beat": 3,
+    "bpm": 138.12,
+    "zone": "anchored"
+   },
+   {
+    "t": 20.7056,
+    "bar": 12,
+    "beat": 4,
+    "bpm": 138.13,
+    "zone": "anchored"
+   },
+   {
+    "t": 21.14,
+    "bar": 13,
+    "beat": 1,
+    "bpm": 138.14,
+    "zone": "anchored"
+   },
+   {
+    "t": 21.5743,
+    "bar": 13,
+    "beat": 2,
+    "bpm": 138.15,
+    "zone": "anchored"
+   },
+   {
+    "t": 22.0086,
+    "bar": 13,
+    "beat": 3,
+    "bpm": 138.16,
+    "zone": "anchored"
+   },
+   {
+    "t": 22.4429,
+    "bar": 13,
+    "beat": 4,
+    "bpm": 138.17,
+    "zone": "anchored"
+   },
+   {
+    "t": 22.8771,
+    "bar": 14,
+    "beat": 1,
+    "bpm": 138.18,
+    "zone": "anchored"
+   },
+   {
+    "t": 23.3114,
+    "bar": 14,
+    "beat": 2,
+    "bpm": 138.19,
+    "zone": "anchored"
+   },
+   {
+    "t": 23.7456,
+    "bar": 14,
+    "beat": 3,
+    "bpm": 138.19,
+    "zone": "anchored"
+   },
+   {
+    "t": 24.1797,
+    "bar": 14,
+    "beat": 4,
+    "bpm": 138.2,
+    "zone": "anchored"
+   },
+   {
+    "t": 24.6139,
+    "bar": 15,
+    "beat": 1,
+    "bpm": 138.2,
+    "zone": "anchored"
+   },
+   {
+    "t": 25.048,
+    "bar": 15,
+    "beat": 2,
+    "bpm": 138.21,
+    "zone": "anchored"
+   },
+   {
+    "t": 25.4822,
+    "bar": 15,
+    "beat": 3,
+    "bpm": 138.21,
+    "zone": "anchored"
+   },
+   {
+    "t": 25.9163,
+    "bar": 15,
+    "beat": 4,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 26.3504,
+    "bar": 16,
+    "beat": 1,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 26.7845,
+    "bar": 16,
+    "beat": 2,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 27.2186,
+    "bar": 16,
+    "beat": 3,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 27.6527,
+    "bar": 16,
+    "beat": 4,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 28.0867,
+    "bar": 17,
+    "beat": 1,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 28.5208,
+    "bar": 17,
+    "beat": 2,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 28.9549,
+    "bar": 17,
+    "beat": 3,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 29.389,
+    "bar": 17,
+    "beat": 4,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 29.8231,
+    "bar": 18,
+    "beat": 1,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 30.2572,
+    "bar": 18,
+    "beat": 2,
+    "bpm": 138.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 30.6912,
+    "bar": 18,
+    "beat": 3,
+    "bpm": 138.21,
+    "zone": "anchored"
+   },
+   {
+    "t": 31.1254,
+    "bar": 18,
+    "beat": 4,
+    "bpm": 138.21,
+    "zone": "anchored"
+   },
+   {
+    "t": 31.5595,
+    "bar": 19,
+    "beat": 1,
+    "bpm": 138.21,
+    "zone": "anchored"
+   },
+   {
+    "t": 31.9936,
+    "bar": 19,
+    "beat": 2,
+    "bpm": 138.2,
+    "zone": "anchored"
+   },
+   {
+    "t": 32.4278,
+    "bar": 19,
+    "beat": 3,
+    "bpm": 138.2,
+    "zone": "anchored"
+   },
+   {
+    "t": 32.8619,
+    "bar": 19,
+    "beat": 4,
+    "bpm": 138.19,
+    "zone": "anchored"
+   },
+   {
+    "t": 33.2961,
+    "bar": 20,
+    "beat": 1,
+    "bpm": 138.18,
+    "zone": "anchored"
+   },
+   {
+    "t": 33.7303,
+    "bar": 20,
+    "beat": 2,
+    "bpm": 138.18,
+    "zone": "anchored"
+   },
+   {
+    "t": 34.1645,
+    "bar": 20,
+    "beat": 3,
+    "bpm": 138.17,
+    "zone": "anchored"
+   },
+   {
+    "t": 34.5988,
+    "bar": 20,
+    "beat": 4,
+    "bpm": 138.16,
+    "zone": "anchored"
+   },
+   {
+    "t": 35.033,
+    "bar": 21,
+    "beat": 1,
+    "bpm": 138.16,
+    "zone": "anchored"
+   },
+   {
+    "t": 35.4673,
+    "bar": 21,
+    "beat": 2,
+    "bpm": 138.15,
+    "zone": "anchored"
+   },
+   {
+    "t": 35.9016,
+    "bar": 21,
+    "beat": 3,
+    "bpm": 138.14,
+    "zone": "anchored"
+   },
+   {
+    "t": 36.336,
+    "bar": 21,
+    "beat": 4,
+    "bpm": 138.13,
+    "zone": "anchored"
+   },
+   {
+    "t": 36.7703,
+    "bar": 22,
+    "beat": 1,
+    "bpm": 138.12,
+    "zone": "anchored"
+   },
+   {
+    "t": 37.2047,
+    "bar": 22,
+    "beat": 2,
+    "bpm": 138.11,
+    "zone": "anchored"
+   },
+   {
+    "t": 37.6392,
+    "bar": 22,
+    "beat": 3,
+    "bpm": 138.1,
+    "zone": "anchored"
+   },
+   {
+    "t": 38.0736,
+    "bar": 22,
+    "beat": 4,
+    "bpm": 138.09,
+    "zone": "anchored"
+   },
+   {
+    "t": 38.5081,
+    "bar": 23,
+    "beat": 1,
+    "bpm": 138.08,
+    "zone": "anchored"
+   },
+   {
+    "t": 38.9426,
+    "bar": 23,
+    "beat": 2,
+    "bpm": 138.07,
+    "zone": "anchored"
+   },
+   {
+    "t": 39.3772,
+    "bar": 23,
+    "beat": 3,
+    "bpm": 138.06,
+    "zone": "anchored"
+   },
+   {
+    "t": 39.8118,
+    "bar": 23,
+    "beat": 4,
+    "bpm": 138.05,
+    "zone": "anchored"
+   },
+   {
+    "t": 40.2464,
+    "bar": 24,
+    "beat": 1,
+    "bpm": 138.04,
+    "zone": "anchored"
+   },
+   {
+    "t": 40.6811,
+    "bar": 24,
+    "beat": 2,
+    "bpm": 138.02,
+    "zone": "anchored"
+   },
+   {
+    "t": 41.1158,
+    "bar": 24,
+    "beat": 3,
+    "bpm": 138.01,
+    "zone": "anchored"
+   },
+   {
+    "t": 41.5505,
+    "bar": 24,
+    "beat": 4,
+    "bpm": 138.0,
+    "zone": "anchored"
+   },
+   {
+    "t": 41.9853,
+    "bar": 25,
+    "beat": 1,
+    "bpm": 137.98,
+    "zone": "anchored"
+   },
+   {
+    "t": 42.4202,
+    "bar": 25,
+    "beat": 2,
+    "bpm": 137.97,
+    "zone": "anchored"
+   },
+   {
+    "t": 42.855,
+    "bar": 25,
+    "beat": 3,
+    "bpm": 137.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 43.29,
+    "bar": 25,
+    "beat": 4,
+    "bpm": 137.94,
+    "zone": "anchored"
+   },
+   {
+    "t": 43.7249,
+    "bar": 26,
+    "beat": 1,
+    "bpm": 137.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 44.16,
+    "bar": 26,
+    "beat": 2,
+    "bpm": 137.91,
+    "zone": "anchored"
+   },
+   {
+    "t": 44.595,
+    "bar": 26,
+    "beat": 3,
+    "bpm": 137.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 45.0302,
+    "bar": 26,
+    "beat": 4,
+    "bpm": 137.89,
+    "zone": "anchored"
+   },
+   {
+    "t": 45.4653,
+    "bar": 27,
+    "beat": 1,
+    "bpm": 137.89,
+    "zone": "anchored"
+   },
+   {
+    "t": 45.9004,
+    "bar": 27,
+    "beat": 2,
+    "bpm": 137.89,
+    "zone": "anchored"
+   },
+   {
+    "t": 46.3355,
+    "bar": 27,
+    "beat": 3,
+    "bpm": 137.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 46.7707,
+    "bar": 27,
+    "beat": 4,
+    "bpm": 137.91,
+    "zone": "anchored"
+   },
+   {
+    "t": 47.2057,
+    "bar": 28,
+    "beat": 1,
+    "bpm": 137.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 47.6407,
+    "bar": 28,
+    "beat": 2,
+    "bpm": 137.94,
+    "zone": "anchored"
+   },
+   {
+    "t": 48.0757,
+    "bar": 28,
+    "beat": 3,
+    "bpm": 137.97,
+    "zone": "anchored"
+   },
+   {
+    "t": 48.5106,
+    "bar": 28,
+    "beat": 4,
+    "bpm": 138.0,
+    "zone": "anchored"
+   },
+   {
+    "t": 48.9454,
+    "bar": 29,
+    "beat": 1,
+    "bpm": 138.03,
+    "zone": "anchored"
+   },
+   {
+    "t": 49.3801,
+    "bar": 29,
+    "beat": 2,
+    "bpm": 138.07,
+    "zone": "anchored"
+   },
+   {
+    "t": 49.8146,
+    "bar": 29,
+    "beat": 3,
+    "bpm": 138.11,
+    "zone": "anchored"
+   },
+   {
+    "t": 50.249,
+    "bar": 29,
+    "beat": 4,
+    "bpm": 138.16,
+    "zone": "anchored"
+   },
+   {
+    "t": 50.6833,
+    "bar": 30,
+    "beat": 1,
+    "bpm": 138.21,
+    "zone": "anchored"
+   },
+   {
+    "t": 51.1174,
+    "bar": 30,
+    "beat": 2,
+    "bpm": 138.27,
+    "zone": "anchored"
+   },
+   {
+    "t": 51.5514,
+    "bar": 30,
+    "beat": 3,
+    "bpm": 138.34,
+    "zone": "anchored"
+   },
+   {
+    "t": 51.9851,
+    "bar": 30,
+    "beat": 4,
+    "bpm": 138.41,
+    "zone": "anchored"
+   },
+   {
+    "t": 52.4186,
+    "bar": 31,
+    "beat": 1,
+    "bpm": 138.5,
+    "zone": "anchored"
+   },
+   {
+    "t": 52.8518,
+    "bar": 31,
+    "beat": 2,
+    "bpm": 138.59,
+    "zone": "anchored"
+   },
+   {
+    "t": 53.2847,
+    "bar": 31,
+    "beat": 3,
+    "bpm": 138.68,
+    "zone": "anchored"
+   },
+   {
+    "t": 53.7174,
+    "bar": 31,
+    "beat": 4,
+    "bpm": 138.79,
+    "zone": "anchored"
+   },
+   {
+    "t": 54.1497,
+    "bar": 32,
+    "beat": 1,
+    "bpm": 138.88,
+    "zone": "anchored"
+   },
+   {
+    "t": 54.5817,
+    "bar": 32,
+    "beat": 2,
+    "bpm": 138.97,
+    "zone": "anchored"
+   },
+   {
+    "t": 55.0135,
+    "bar": 32,
+    "beat": 3,
+    "bpm": 139.04,
+    "zone": "anchored"
+   },
+   {
+    "t": 55.445,
+    "bar": 32,
+    "beat": 4,
+    "bpm": 139.11,
+    "zone": "anchored"
+   },
+   {
+    "t": 55.8763,
+    "bar": 33,
+    "beat": 1,
+    "bpm": 139.17,
+    "zone": "anchored"
+   },
+   {
+    "t": 56.3074,
+    "bar": 33,
+    "beat": 2,
+    "bpm": 139.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 56.7384,
+    "bar": 33,
+    "beat": 3,
+    "bpm": 139.26,
+    "zone": "interpolated"
+   },
+   {
+    "t": 57.1692,
+    "bar": 33,
+    "beat": 4,
+    "bpm": 139.29,
+    "zone": "interpolated"
+   },
+   {
+    "t": 57.6,
+    "bar": 34,
+    "beat": 1,
+    "bpm": 139.31,
+    "zone": "interpolated"
+   },
+   {
+    "t": 58.0307,
+    "bar": 34,
+    "beat": 2,
+    "bpm": 139.32,
+    "zone": "interpolated"
+   },
+   {
+    "t": 58.4614,
+    "bar": 34,
+    "beat": 3,
+    "bpm": 139.32,
+    "zone": "interpolated"
+   },
+   {
+    "t": 58.892,
+    "bar": 34,
+    "beat": 4,
+    "bpm": 139.31,
+    "zone": "interpolated"
+   },
+   {
+    "t": 59.3227,
+    "bar": 35,
+    "beat": 1,
+    "bpm": 139.29,
+    "zone": "interpolated"
+   },
+   {
+    "t": 59.7535,
+    "bar": 35,
+    "beat": 2,
+    "bpm": 139.27,
+    "zone": "interpolated"
+   },
+   {
+    "t": 60.1843,
+    "bar": 35,
+    "beat": 3,
+    "bpm": 139.23,
+    "zone": "interpolated"
+   },
+   {
+    "t": 60.6153,
+    "bar": 35,
+    "beat": 4,
+    "bpm": 139.18,
+    "zone": "interpolated"
+   },
+   {
+    "t": 61.0464,
+    "bar": 36,
+    "beat": 1,
+    "bpm": 139.13,
+    "zone": "interpolated"
+   },
+   {
+    "t": 61.4776,
+    "bar": 36,
+    "beat": 2,
+    "bpm": 139.06,
+    "zone": "interpolated"
+   },
+   {
+    "t": 61.9091,
+    "bar": 36,
+    "beat": 3,
+    "bpm": 138.99,
+    "zone": "anchored"
+   },
+   {
+    "t": 62.3408,
+    "bar": 36,
+    "beat": 4,
+    "bpm": 138.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 62.7727,
+    "bar": 37,
+    "beat": 1,
+    "bpm": 138.81,
+    "zone": "anchored"
+   },
+   {
+    "t": 63.205,
+    "bar": 37,
+    "beat": 2,
+    "bpm": 138.71,
+    "zone": "anchored"
+   },
+   {
+    "t": 63.6376,
+    "bar": 37,
+    "beat": 3,
+    "bpm": 138.6,
+    "zone": "anchored"
+   },
+   {
+    "t": 64.0705,
+    "bar": 37,
+    "beat": 4,
+    "bpm": 138.49,
+    "zone": "anchored"
+   },
+   {
+    "t": 64.5037,
+    "bar": 38,
+    "beat": 1,
+    "bpm": 138.4,
+    "zone": "anchored"
+   },
+   {
+    "t": 64.9372,
+    "bar": 38,
+    "beat": 2,
+    "bpm": 138.32,
+    "zone": "anchored"
+   },
+   {
+    "t": 65.371,
+    "bar": 38,
+    "beat": 3,
+    "bpm": 138.25,
+    "zone": "anchored"
+   },
+   {
+    "t": 65.805,
+    "bar": 38,
+    "beat": 4,
+    "bpm": 138.19,
+    "zone": "anchored"
+   },
+   {
+    "t": 66.2392,
+    "bar": 39,
+    "beat": 1,
+    "bpm": 138.13,
+    "zone": "anchored"
+   },
+   {
+    "t": 66.6735,
+    "bar": 39,
+    "beat": 2,
+    "bpm": 138.09,
+    "zone": "anchored"
+   },
+   {
+    "t": 67.108,
+    "bar": 39,
+    "beat": 3,
+    "bpm": 138.06,
+    "zone": "anchored"
+   },
+   {
+    "t": 67.5426,
+    "bar": 39,
+    "beat": 4,
+    "bpm": 138.04,
+    "zone": "anchored"
+   },
+   {
+    "t": 67.9773,
+    "bar": 40,
+    "beat": 1,
+    "bpm": 138.03,
+    "zone": "anchored"
+   },
+   {
+    "t": 68.412,
+    "bar": 40,
+    "beat": 2,
+    "bpm": 138.02,
+    "zone": "anchored"
+   },
+   {
+    "t": 68.8467,
+    "bar": 40,
+    "beat": 3,
+    "bpm": 138.03,
+    "zone": "anchored"
+   },
+   {
+    "t": 69.2814,
+    "bar": 40,
+    "beat": 4,
+    "bpm": 138.05,
+    "zone": "anchored"
+   },
+   {
+    "t": 69.716,
+    "bar": 41,
+    "beat": 1,
+    "bpm": 138.07,
+    "zone": "anchored"
+   },
+   {
+    "t": 70.1506,
+    "bar": 41,
+    "beat": 2,
+    "bpm": 138.11,
+    "zone": "anchored"
+   },
+   {
+    "t": 70.585,
+    "bar": 41,
+    "beat": 3,
+    "bpm": 138.14,
+    "zone": "anchored"
+   },
+   {
+    "t": 71.0194,
+    "bar": 41,
+    "beat": 4,
+    "bpm": 138.18,
+    "zone": "anchored"
+   },
+   {
+    "t": 71.4536,
+    "bar": 42,
+    "beat": 1,
+    "bpm": 138.21,
+    "zone": "interpolated"
+   },
+   {
+    "t": 71.8877,
+    "bar": 42,
+    "beat": 2,
+    "bpm": 138.24,
+    "zone": "interpolated"
+   },
+   {
+    "t": 72.3218,
+    "bar": 42,
+    "beat": 3,
+    "bpm": 138.26,
+    "zone": "interpolated"
+   },
+   {
+    "t": 72.7557,
+    "bar": 42,
+    "beat": 4,
+    "bpm": 138.29,
+    "zone": "interpolated"
+   },
+   {
+    "t": 73.1896,
+    "bar": 43,
+    "beat": 1,
+    "bpm": 138.31,
+    "zone": "interpolated"
+   },
+   {
+    "t": 73.6234,
+    "bar": 43,
+    "beat": 2,
+    "bpm": 138.33,
+    "zone": "interpolated"
+   },
+   {
+    "t": 74.0571,
+    "bar": 43,
+    "beat": 3,
+    "bpm": 138.35,
+    "zone": "interpolated"
+   },
+   {
+    "t": 74.4908,
+    "bar": 43,
+    "beat": 4,
+    "bpm": 138.37,
+    "zone": "interpolated"
+   },
+   {
+    "t": 74.9244,
+    "bar": 44,
+    "beat": 1,
+    "bpm": 138.39,
+    "zone": "interpolated"
+   },
+   {
+    "t": 75.358,
+    "bar": 44,
+    "beat": 2,
+    "bpm": 138.4,
+    "zone": "interpolated"
+   },
+   {
+    "t": 75.7915,
+    "bar": 44,
+    "beat": 3,
+    "bpm": 138.41,
+    "zone": "anchored"
+   },
+   {
+    "t": 76.225,
+    "bar": 44,
+    "beat": 4,
+    "bpm": 138.42,
+    "zone": "anchored"
+   },
+   {
+    "t": 76.6585,
+    "bar": 45,
+    "beat": 1,
+    "bpm": 138.43,
+    "zone": "anchored"
+   },
+   {
+    "t": 77.0919,
+    "bar": 45,
+    "beat": 2,
+    "bpm": 138.44,
+    "zone": "anchored"
+   },
+   {
+    "t": 77.5253,
+    "bar": 45,
+    "beat": 3,
+    "bpm": 138.44,
+    "zone": "anchored"
+   },
+   {
+    "t": 77.9587,
+    "bar": 45,
+    "beat": 4,
+    "bpm": 138.45,
+    "zone": "anchored"
+   },
+   {
+    "t": 78.3921,
+    "bar": 46,
+    "beat": 1,
+    "bpm": 138.45,
+    "zone": "anchored"
+   },
+   {
+    "t": 78.8254,
+    "bar": 46,
+    "beat": 2,
+    "bpm": 138.45,
+    "zone": "anchored"
+   },
+   {
+    "t": 79.2588,
+    "bar": 46,
+    "beat": 3,
+    "bpm": 138.44,
+    "zone": "anchored"
+   },
+   {
+    "t": 79.6922,
+    "bar": 46,
+    "beat": 4,
+    "bpm": 138.44,
+    "zone": "anchored"
+   },
+   {
+    "t": 80.1256,
+    "bar": 47,
+    "beat": 1,
+    "bpm": 138.43,
+    "zone": "anchored"
+   },
+   {
+    "t": 80.5591,
+    "bar": 47,
+    "beat": 2,
+    "bpm": 138.42,
+    "zone": "anchored"
+   },
+   {
+    "t": 80.9925,
+    "bar": 47,
+    "beat": 3,
+    "bpm": 138.41,
+    "zone": "anchored"
+   },
+   {
+    "t": 81.426,
+    "bar": 47,
+    "beat": 4,
+    "bpm": 138.4,
+    "zone": "anchored"
+   },
+   {
+    "t": 81.8595,
+    "bar": 48,
+    "beat": 1,
+    "bpm": 138.39,
+    "zone": "anchored"
+   },
+   {
+    "t": 82.2931,
+    "bar": 48,
+    "beat": 2,
+    "bpm": 138.37,
+    "zone": "anchored"
+   },
+   {
+    "t": 82.7267,
+    "bar": 48,
+    "beat": 3,
+    "bpm": 138.36,
+    "zone": "anchored"
+   },
+   {
+    "t": 83.1604,
+    "bar": 48,
+    "beat": 4,
+    "bpm": 138.35,
+    "zone": "anchored"
+   },
+   {
+    "t": 83.5941,
+    "bar": 49,
+    "beat": 1,
+    "bpm": 138.34,
+    "zone": "anchored"
+   },
+   {
+    "t": 84.0278,
+    "bar": 49,
+    "beat": 2,
+    "bpm": 138.33,
+    "zone": "anchored"
+   },
+   {
+    "t": 84.4615,
+    "bar": 49,
+    "beat": 3,
+    "bpm": 138.33,
+    "zone": "anchored"
+   },
+   {
+    "t": 84.8953,
+    "bar": 49,
+    "beat": 4,
+    "bpm": 138.33,
+    "zone": "anchored"
+   },
+   {
+    "t": 85.3291,
+    "bar": 50,
+    "beat": 1,
+    "bpm": 138.33,
+    "zone": "anchored"
+   },
+   {
+    "t": 85.7628,
+    "bar": 50,
+    "beat": 2,
+    "bpm": 138.33,
+    "zone": "anchored"
+   },
+   {
+    "t": 86.1966,
+    "bar": 50,
+    "beat": 3,
+    "bpm": 138.34,
+    "zone": "anchored"
+   },
+   {
+    "t": 86.6303,
+    "bar": 50,
+    "beat": 4,
+    "bpm": 138.35,
+    "zone": "anchored"
+   },
+   {
+    "t": 87.064,
+    "bar": 51,
+    "beat": 1,
+    "bpm": 138.36,
+    "zone": "anchored"
+   },
+   {
+    "t": 87.4976,
+    "bar": 51,
+    "beat": 2,
+    "bpm": 138.37,
+    "zone": "anchored"
+   },
+   {
+    "t": 87.9313,
+    "bar": 51,
+    "beat": 3,
+    "bpm": 138.39,
+    "zone": "anchored"
+   },
+   {
+    "t": 88.3648,
+    "bar": 51,
+    "beat": 4,
+    "bpm": 138.4,
+    "zone": "anchored"
+   },
+   {
+    "t": 88.7983,
+    "bar": 52,
+    "beat": 1,
+    "bpm": 138.43,
+    "zone": "anchored"
+   },
+   {
+    "t": 89.2318,
+    "bar": 52,
+    "beat": 2,
+    "bpm": 138.45,
+    "zone": "anchored"
+   },
+   {
+    "t": 89.6652,
+    "bar": 52,
+    "beat": 3,
+    "bpm": 138.47,
+    "zone": "anchored"
+   },
+   {
+    "t": 90.0985,
+    "bar": 52,
+    "beat": 4,
+    "bpm": 138.48,
+    "zone": "anchored"
+   },
+   {
+    "t": 90.5317,
+    "bar": 53,
+    "beat": 1,
+    "bpm": 138.5,
+    "zone": "anchored"
+   },
+   {
+    "t": 90.965,
+    "bar": 53,
+    "beat": 2,
+    "bpm": 138.52,
+    "zone": "anchored"
+   },
+   {
+    "t": 91.3981,
+    "bar": 53,
+    "beat": 3,
+    "bpm": 138.54,
+    "zone": "interpolated"
+   },
+   {
+    "t": 91.8312,
+    "bar": 53,
+    "beat": 4,
+    "bpm": 138.56,
+    "zone": "interpolated"
+   },
+   {
+    "t": 92.2642,
+    "bar": 54,
+    "beat": 1,
+    "bpm": 138.57,
+    "zone": "interpolated"
+   },
+   {
+    "t": 92.6972,
+    "bar": 54,
+    "beat": 2,
+    "bpm": 138.59,
+    "zone": "interpolated"
+   },
+   {
+    "t": 93.1302,
+    "bar": 54,
+    "beat": 3,
+    "bpm": 138.6,
+    "zone": "interpolated"
+   },
+   {
+    "t": 93.5631,
+    "bar": 54,
+    "beat": 4,
+    "bpm": 138.62,
+    "zone": "interpolated"
+   },
+   {
+    "t": 93.9959,
+    "bar": 55,
+    "beat": 1,
+    "bpm": 138.63,
+    "zone": "interpolated"
+   },
+   {
+    "t": 94.4287,
+    "bar": 55,
+    "beat": 2,
+    "bpm": 138.64,
+    "zone": "interpolated"
+   },
+   {
+    "t": 94.8615,
+    "bar": 55,
+    "beat": 3,
+    "bpm": 138.65,
+    "zone": "interpolated"
+   },
+   {
+    "t": 95.2942,
+    "bar": 55,
+    "beat": 4,
+    "bpm": 138.67,
+    "zone": "interpolated"
+   },
+   {
+    "t": 95.7269,
+    "bar": 56,
+    "beat": 1,
+    "bpm": 138.68,
+    "zone": "interpolated"
+   },
+   {
+    "t": 96.1596,
+    "bar": 56,
+    "beat": 2,
+    "bpm": 138.69,
+    "zone": "interpolated"
+   },
+   {
+    "t": 96.5922,
+    "bar": 56,
+    "beat": 3,
+    "bpm": 138.7,
+    "zone": "anchored"
+   },
+   {
+    "t": 97.0248,
+    "bar": 56,
+    "beat": 4,
+    "bpm": 138.71,
+    "zone": "anchored"
+   },
+   {
+    "t": 97.4574,
+    "bar": 57,
+    "beat": 1,
+    "bpm": 138.71,
+    "zone": "anchored"
+   },
+   {
+    "t": 97.8899,
+    "bar": 57,
+    "beat": 2,
+    "bpm": 138.72,
+    "zone": "anchored"
+   },
+   {
+    "t": 98.3224,
+    "bar": 57,
+    "beat": 3,
+    "bpm": 138.73,
+    "zone": "anchored"
+   },
+   {
+    "t": 98.7549,
+    "bar": 57,
+    "beat": 4,
+    "bpm": 138.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 99.1874,
+    "bar": 58,
+    "beat": 1,
+    "bpm": 138.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 99.6199,
+    "bar": 58,
+    "beat": 2,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 100.0523,
+    "bar": 58,
+    "beat": 3,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 100.4847,
+    "bar": 58,
+    "beat": 4,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 100.9171,
+    "bar": 59,
+    "beat": 1,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 101.3495,
+    "bar": 59,
+    "beat": 2,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 101.7819,
+    "bar": 59,
+    "beat": 3,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 102.2143,
+    "bar": 59,
+    "beat": 4,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 102.6467,
+    "bar": 60,
+    "beat": 1,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 103.0791,
+    "bar": 60,
+    "beat": 2,
+    "bpm": 138.77,
+    "zone": "interpolated"
+   },
+   {
+    "t": 103.5115,
+    "bar": 60,
+    "beat": 3,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 103.9439,
+    "bar": 60,
+    "beat": 4,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 104.3762,
+    "bar": 61,
+    "beat": 1,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 104.8086,
+    "bar": 61,
+    "beat": 2,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 105.241,
+    "bar": 61,
+    "beat": 3,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 105.6734,
+    "bar": 61,
+    "beat": 4,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 106.1058,
+    "bar": 62,
+    "beat": 1,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 106.5382,
+    "bar": 62,
+    "beat": 2,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 106.9706,
+    "bar": 62,
+    "beat": 3,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 107.4031,
+    "bar": 62,
+    "beat": 4,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 107.8355,
+    "bar": 63,
+    "beat": 1,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 108.2679,
+    "bar": 63,
+    "beat": 2,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 108.7003,
+    "bar": 63,
+    "beat": 3,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 109.1328,
+    "bar": 63,
+    "beat": 4,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 109.5652,
+    "bar": 64,
+    "beat": 1,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 109.9976,
+    "bar": 64,
+    "beat": 2,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 110.4301,
+    "bar": 64,
+    "beat": 3,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 110.8625,
+    "bar": 64,
+    "beat": 4,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 111.2949,
+    "bar": 65,
+    "beat": 1,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 111.7274,
+    "bar": 65,
+    "beat": 2,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 112.1598,
+    "bar": 65,
+    "beat": 3,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 112.5923,
+    "bar": 65,
+    "beat": 4,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 113.0247,
+    "bar": 66,
+    "beat": 1,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 113.4572,
+    "bar": 66,
+    "beat": 2,
+    "bpm": 138.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 113.8896,
+    "bar": 66,
+    "beat": 3,
+    "bpm": 138.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 114.3221,
+    "bar": 66,
+    "beat": 4,
+    "bpm": 138.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 114.7545,
+    "bar": 67,
+    "beat": 1,
+    "bpm": 138.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 115.187,
+    "bar": 67,
+    "beat": 2,
+    "bpm": 138.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 115.6194,
+    "bar": 67,
+    "beat": 3,
+    "bpm": 138.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 116.0519,
+    "bar": 67,
+    "beat": 4,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 116.4843,
+    "bar": 68,
+    "beat": 1,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 116.9168,
+    "bar": 68,
+    "beat": 2,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 117.3492,
+    "bar": 68,
+    "beat": 3,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 117.7817,
+    "bar": 68,
+    "beat": 4,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 118.2141,
+    "bar": 69,
+    "beat": 1,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 118.6465,
+    "bar": 69,
+    "beat": 2,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 119.079,
+    "bar": 69,
+    "beat": 3,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 119.5114,
+    "bar": 69,
+    "beat": 4,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 119.9439,
+    "bar": 70,
+    "beat": 1,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 120.3763,
+    "bar": 70,
+    "beat": 2,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 120.8087,
+    "bar": 70,
+    "beat": 3,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 121.2411,
+    "bar": 70,
+    "beat": 4,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 121.6736,
+    "bar": 71,
+    "beat": 1,
+    "bpm": 138.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 122.106,
+    "bar": 71,
+    "beat": 2,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 122.5384,
+    "bar": 71,
+    "beat": 3,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 122.9708,
+    "bar": 71,
+    "beat": 4,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 123.4032,
+    "bar": 72,
+    "beat": 1,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 123.8356,
+    "bar": 72,
+    "beat": 2,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 124.268,
+    "bar": 72,
+    "beat": 3,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 124.7004,
+    "bar": 72,
+    "beat": 4,
+    "bpm": 138.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 125.1328,
+    "bar": 73,
+    "beat": 1,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 125.5652,
+    "bar": 73,
+    "beat": 2,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 125.9976,
+    "bar": 73,
+    "beat": 3,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 126.4299,
+    "bar": 73,
+    "beat": 4,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 126.8623,
+    "bar": 74,
+    "beat": 1,
+    "bpm": 138.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 127.2947,
+    "bar": 74,
+    "beat": 2,
+    "bpm": 138.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 127.727,
+    "bar": 74,
+    "beat": 3,
+    "bpm": 138.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 128.1594,
+    "bar": 74,
+    "beat": 4,
+    "bpm": 138.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 128.5917,
+    "bar": 75,
+    "beat": 1,
+    "bpm": 138.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 129.024,
+    "bar": 75,
+    "beat": 2,
+    "bpm": 138.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 129.4564,
+    "bar": 75,
+    "beat": 3,
+    "bpm": 138.79,
+    "zone": "anchored"
+   },
+   {
+    "t": 129.8887,
+    "bar": 75,
+    "beat": 4,
+    "bpm": 138.79,
+    "zone": "anchored"
+   },
+   {
+    "t": 130.321,
+    "bar": 76,
+    "beat": 1,
+    "bpm": 138.79,
+    "zone": "anchored"
+   },
+   {
+    "t": 130.7533,
+    "bar": 76,
+    "beat": 2,
+    "bpm": 138.79,
+    "zone": "anchored"
+   },
+   {
+    "t": 131.1856,
+    "bar": 76,
+    "beat": 3,
+    "bpm": 138.8,
+    "zone": "anchored"
+   },
+   {
+    "t": 131.6179,
+    "bar": 76,
+    "beat": 4,
+    "bpm": 138.8,
+    "zone": "anchored"
+   },
+   {
+    "t": 132.0501,
+    "bar": 77,
+    "beat": 1,
+    "bpm": 138.8,
+    "zone": "anchored"
+   },
+   {
+    "t": 132.4824,
+    "bar": 77,
+    "beat": 2,
+    "bpm": 138.8,
+    "zone": "anchored"
+   },
+   {
+    "t": 132.9147,
+    "bar": 77,
+    "beat": 3,
+    "bpm": 138.81,
+    "zone": "anchored"
+   },
+   {
+    "t": 133.3469,
+    "bar": 77,
+    "beat": 4,
+    "bpm": 138.81,
+    "zone": "anchored"
+   },
+   {
+    "t": 133.7792,
+    "bar": 78,
+    "beat": 1,
+    "bpm": 138.81,
+    "zone": "anchored"
+   },
+   {
+    "t": 134.2114,
+    "bar": 78,
+    "beat": 2,
+    "bpm": 138.82,
+    "zone": "anchored"
+   },
+   {
+    "t": 134.6436,
+    "bar": 78,
+    "beat": 3,
+    "bpm": 138.82,
+    "zone": "anchored"
+   },
+   {
+    "t": 135.0759,
+    "bar": 78,
+    "beat": 4,
+    "bpm": 138.82,
+    "zone": "anchored"
+   },
+   {
+    "t": 135.5081,
+    "bar": 79,
+    "beat": 1,
+    "bpm": 138.82,
+    "zone": "anchored"
+   },
+   {
+    "t": 135.9403,
+    "bar": 79,
+    "beat": 2,
+    "bpm": 138.83,
+    "zone": "anchored"
+   },
+   {
+    "t": 136.3725,
+    "bar": 79,
+    "beat": 3,
+    "bpm": 138.83,
+    "zone": "anchored"
+   },
+   {
+    "t": 136.8046,
+    "bar": 79,
+    "beat": 4,
+    "bpm": 138.83,
+    "zone": "anchored"
+   },
+   {
+    "t": 137.2368,
+    "bar": 80,
+    "beat": 1,
+    "bpm": 138.84,
+    "zone": "anchored"
+   },
+   {
+    "t": 137.669,
+    "bar": 80,
+    "beat": 2,
+    "bpm": 138.84,
+    "zone": "anchored"
+   },
+   {
+    "t": 138.1011,
+    "bar": 80,
+    "beat": 3,
+    "bpm": 138.84,
+    "zone": "anchored"
+   },
+   {
+    "t": 138.5333,
+    "bar": 80,
+    "beat": 4,
+    "bpm": 138.85,
+    "zone": "anchored"
+   },
+   {
+    "t": 138.9654,
+    "bar": 81,
+    "beat": 1,
+    "bpm": 138.85,
+    "zone": "anchored"
+   },
+   {
+    "t": 139.3975,
+    "bar": 81,
+    "beat": 2,
+    "bpm": 138.85,
+    "zone": "anchored"
+   },
+   {
+    "t": 139.8296,
+    "bar": 81,
+    "beat": 3,
+    "bpm": 138.86,
+    "zone": "anchored"
+   },
+   {
+    "t": 140.2617,
+    "bar": 81,
+    "beat": 4,
+    "bpm": 138.86,
+    "zone": "anchored"
+   },
+   {
+    "t": 140.6938,
+    "bar": 82,
+    "beat": 1,
+    "bpm": 138.86,
+    "zone": "anchored"
+   },
+   {
+    "t": 141.1259,
+    "bar": 82,
+    "beat": 2,
+    "bpm": 138.87,
+    "zone": "anchored"
+   },
+   {
+    "t": 141.558,
+    "bar": 82,
+    "beat": 3,
+    "bpm": 138.87,
+    "zone": "anchored"
+   },
+   {
+    "t": 141.99,
+    "bar": 82,
+    "beat": 4,
+    "bpm": 138.87,
+    "zone": "anchored"
+   },
+   {
+    "t": 142.4221,
+    "bar": 83,
+    "beat": 1,
+    "bpm": 138.88,
+    "zone": "anchored"
+   },
+   {
+    "t": 142.8541,
+    "bar": 83,
+    "beat": 2,
+    "bpm": 138.88,
+    "zone": "anchored"
+   },
+   {
+    "t": 143.2861,
+    "bar": 83,
+    "beat": 3,
+    "bpm": 138.88,
+    "zone": "anchored"
+   },
+   {
+    "t": 143.7181,
+    "bar": 83,
+    "beat": 4,
+    "bpm": 138.89,
+    "zone": "anchored"
+   },
+   {
+    "t": 144.1501,
+    "bar": 84,
+    "beat": 1,
+    "bpm": 138.89,
+    "zone": "anchored"
+   },
+   {
+    "t": 144.5821,
+    "bar": 84,
+    "beat": 2,
+    "bpm": 138.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 145.0141,
+    "bar": 84,
+    "beat": 3,
+    "bpm": 138.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 145.4461,
+    "bar": 84,
+    "beat": 4,
+    "bpm": 138.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 145.878,
+    "bar": 85,
+    "beat": 1,
+    "bpm": 138.91,
+    "zone": "anchored"
+   },
+   {
+    "t": 146.31,
+    "bar": 85,
+    "beat": 2,
+    "bpm": 138.91,
+    "zone": "anchored"
+   },
+   {
+    "t": 146.7419,
+    "bar": 85,
+    "beat": 3,
+    "bpm": 138.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 147.1738,
+    "bar": 85,
+    "beat": 4,
+    "bpm": 138.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 147.6057,
+    "bar": 86,
+    "beat": 1,
+    "bpm": 138.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 148.0376,
+    "bar": 86,
+    "beat": 2,
+    "bpm": 138.93,
+    "zone": "anchored"
+   },
+   {
+    "t": 148.4695,
+    "bar": 86,
+    "beat": 3,
+    "bpm": 138.93,
+    "zone": "anchored"
+   },
+   {
+    "t": 148.9013,
+    "bar": 86,
+    "beat": 4,
+    "bpm": 138.94,
+    "zone": "anchored"
+   },
+   {
+    "t": 149.3332,
+    "bar": 87,
+    "beat": 1,
+    "bpm": 138.94,
+    "zone": "anchored"
+   },
+   {
+    "t": 149.765,
+    "bar": 87,
+    "beat": 2,
+    "bpm": 138.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 150.1969,
+    "bar": 87,
+    "beat": 3,
+    "bpm": 138.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 150.6287,
+    "bar": 87,
+    "beat": 4,
+    "bpm": 138.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 151.0605,
+    "bar": 88,
+    "beat": 1,
+    "bpm": 138.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 151.4923,
+    "bar": 88,
+    "beat": 2,
+    "bpm": 138.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 151.924,
+    "bar": 88,
+    "beat": 3,
+    "bpm": 138.97,
+    "zone": "anchored"
+   },
+   {
+    "t": 152.3558,
+    "bar": 88,
+    "beat": 4,
+    "bpm": 138.97,
+    "zone": "anchored"
+   },
+   {
+    "t": 152.7875,
+    "bar": 89,
+    "beat": 1,
+    "bpm": 138.98,
+    "zone": "anchored"
+   },
+   {
+    "t": 153.2193,
+    "bar": 89,
+    "beat": 2,
+    "bpm": 138.98,
+    "zone": "anchored"
+   },
+   {
+    "t": 153.651,
+    "bar": 89,
+    "beat": 3,
+    "bpm": 138.99,
+    "zone": "anchored"
+   },
+   {
+    "t": 154.0827,
+    "bar": 89,
+    "beat": 4,
+    "bpm": 138.99,
+    "zone": "anchored"
+   },
+   {
+    "t": 154.5144,
+    "bar": 90,
+    "beat": 1,
+    "bpm": 138.99,
+    "zone": "anchored"
+   },
+   {
+    "t": 154.946,
+    "bar": 90,
+    "beat": 2,
+    "bpm": 139.0,
+    "zone": "anchored"
+   },
+   {
+    "t": 155.3777,
+    "bar": 90,
+    "beat": 3,
+    "bpm": 139.0,
+    "zone": "anchored"
+   },
+   {
+    "t": 155.8093,
+    "bar": 90,
+    "beat": 4,
+    "bpm": 139.01,
+    "zone": "anchored"
+   },
+   {
+    "t": 156.241,
+    "bar": 91,
+    "beat": 1,
+    "bpm": 139.01,
+    "zone": "anchored"
+   },
+   {
+    "t": 156.6726,
+    "bar": 91,
+    "beat": 2,
+    "bpm": 139.02,
+    "zone": "anchored"
+   },
+   {
+    "t": 157.1042,
+    "bar": 91,
+    "beat": 3,
+    "bpm": 139.03,
+    "zone": "anchored"
+   },
+   {
+    "t": 157.5357,
+    "bar": 91,
+    "beat": 4,
+    "bpm": 139.03,
+    "zone": "anchored"
+   },
+   {
+    "t": 157.9673,
+    "bar": 92,
+    "beat": 1,
+    "bpm": 139.04,
+    "zone": "anchored"
+   },
+   {
+    "t": 158.3988,
+    "bar": 92,
+    "beat": 2,
+    "bpm": 139.04,
+    "zone": "anchored"
+   },
+   {
+    "t": 158.8304,
+    "bar": 92,
+    "beat": 3,
+    "bpm": 139.05,
+    "zone": "anchored"
+   },
+   {
+    "t": 159.2619,
+    "bar": 92,
+    "beat": 4,
+    "bpm": 139.05,
+    "zone": "anchored"
+   },
+   {
+    "t": 159.6934,
+    "bar": 93,
+    "beat": 1,
+    "bpm": 139.06,
+    "zone": "anchored"
+   },
+   {
+    "t": 160.1248,
+    "bar": 93,
+    "beat": 2,
+    "bpm": 139.07,
+    "zone": "anchored"
+   },
+   {
+    "t": 160.5563,
+    "bar": 93,
+    "beat": 3,
+    "bpm": 139.07,
+    "zone": "anchored"
+   },
+   {
+    "t": 160.9877,
+    "bar": 93,
+    "beat": 4,
+    "bpm": 139.08,
+    "zone": "anchored"
+   },
+   {
+    "t": 161.4191,
+    "bar": 94,
+    "beat": 1,
+    "bpm": 139.09,
+    "zone": "anchored"
+   },
+   {
+    "t": 161.8505,
+    "bar": 94,
+    "beat": 2,
+    "bpm": 139.09,
+    "zone": "anchored"
+   },
+   {
+    "t": 162.2819,
+    "bar": 94,
+    "beat": 3,
+    "bpm": 139.1,
+    "zone": "anchored"
+   },
+   {
+    "t": 162.7132,
+    "bar": 94,
+    "beat": 4,
+    "bpm": 139.11,
+    "zone": "anchored"
+   },
+   {
+    "t": 163.1445,
+    "bar": 95,
+    "beat": 1,
+    "bpm": 139.11,
+    "zone": "anchored"
+   },
+   {
+    "t": 163.5758,
+    "bar": 95,
+    "beat": 2,
+    "bpm": 139.12,
+    "zone": "anchored"
+   },
+   {
+    "t": 164.0071,
+    "bar": 95,
+    "beat": 3,
+    "bpm": 139.13,
+    "zone": "anchored"
+   },
+   {
+    "t": 164.4384,
+    "bar": 95,
+    "beat": 4,
+    "bpm": 139.14,
+    "zone": "anchored"
+   },
+   {
+    "t": 164.8696,
+    "bar": 96,
+    "beat": 1,
+    "bpm": 139.14,
+    "zone": "anchored"
+   },
+   {
+    "t": 165.3008,
+    "bar": 96,
+    "beat": 2,
+    "bpm": 139.15,
+    "zone": "anchored"
+   },
+   {
+    "t": 165.732,
+    "bar": 96,
+    "beat": 3,
+    "bpm": 139.16,
+    "zone": "anchored"
+   },
+   {
+    "t": 166.1632,
+    "bar": 96,
+    "beat": 4,
+    "bpm": 139.17,
+    "zone": "anchored"
+   },
+   {
+    "t": 166.5943,
+    "bar": 97,
+    "beat": 1,
+    "bpm": 139.17,
+    "zone": "anchored"
+   },
+   {
+    "t": 167.0254,
+    "bar": 97,
+    "beat": 2,
+    "bpm": 139.18,
+    "zone": "anchored"
+   },
+   {
+    "t": 167.4565,
+    "bar": 97,
+    "beat": 3,
+    "bpm": 139.19,
+    "zone": "anchored"
+   },
+   {
+    "t": 167.8876,
+    "bar": 97,
+    "beat": 4,
+    "bpm": 139.2,
+    "zone": "anchored"
+   },
+   {
+    "t": 168.3186,
+    "bar": 98,
+    "beat": 1,
+    "bpm": 139.21,
+    "zone": "anchored"
+   },
+   {
+    "t": 168.7496,
+    "bar": 98,
+    "beat": 2,
+    "bpm": 139.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 169.1806,
+    "bar": 98,
+    "beat": 3,
+    "bpm": 139.23,
+    "zone": "anchored"
+   },
+   {
+    "t": 169.6115,
+    "bar": 98,
+    "beat": 4,
+    "bpm": 139.24,
+    "zone": "anchored"
+   },
+   {
+    "t": 170.0425,
+    "bar": 99,
+    "beat": 1,
+    "bpm": 139.24,
+    "zone": "anchored"
+   },
+   {
+    "t": 170.4734,
+    "bar": 99,
+    "beat": 2,
+    "bpm": 139.25,
+    "zone": "anchored"
+   },
+   {
+    "t": 170.9042,
+    "bar": 99,
+    "beat": 3,
+    "bpm": 139.26,
+    "zone": "anchored"
+   },
+   {
+    "t": 171.3351,
+    "bar": 99,
+    "beat": 4,
+    "bpm": 139.27,
+    "zone": "anchored"
+   },
+   {
+    "t": 171.7659,
+    "bar": 100,
+    "beat": 1,
+    "bpm": 139.28,
+    "zone": "anchored"
+   },
+   {
+    "t": 172.1967,
+    "bar": 100,
+    "beat": 2,
+    "bpm": 139.29,
+    "zone": "anchored"
+   },
+   {
+    "t": 172.6274,
+    "bar": 100,
+    "beat": 3,
+    "bpm": 139.3,
+    "zone": "anchored"
+   },
+   {
+    "t": 173.0581,
+    "bar": 100,
+    "beat": 4,
+    "bpm": 139.31,
+    "zone": "anchored"
+   },
+   {
+    "t": 173.4888,
+    "bar": 101,
+    "beat": 1,
+    "bpm": 139.32,
+    "zone": "anchored"
+   },
+   {
+    "t": 173.9195,
+    "bar": 101,
+    "beat": 2,
+    "bpm": 139.33,
+    "zone": "anchored"
+   },
+   {
+    "t": 174.3501,
+    "bar": 101,
+    "beat": 3,
+    "bpm": 139.34,
+    "zone": "anchored"
+   },
+   {
+    "t": 174.7807,
+    "bar": 101,
+    "beat": 4,
+    "bpm": 139.35,
+    "zone": "anchored"
+   },
+   {
+    "t": 175.2113,
+    "bar": 102,
+    "beat": 1,
+    "bpm": 139.36,
+    "zone": "anchored"
+   },
+   {
+    "t": 175.6418,
+    "bar": 102,
+    "beat": 2,
+    "bpm": 139.37,
+    "zone": "anchored"
+   },
+   {
+    "t": 176.0723,
+    "bar": 102,
+    "beat": 3,
+    "bpm": 139.39,
+    "zone": "anchored"
+   },
+   {
+    "t": 176.5027,
+    "bar": 102,
+    "beat": 4,
+    "bpm": 139.4,
+    "zone": "anchored"
+   },
+   {
+    "t": 176.9332,
+    "bar": 103,
+    "beat": 1,
+    "bpm": 139.41,
+    "zone": "anchored"
+   },
+   {
+    "t": 177.3636,
+    "bar": 103,
+    "beat": 2,
+    "bpm": 139.42,
+    "zone": "anchored"
+   },
+   {
+    "t": 177.7939,
+    "bar": 103,
+    "beat": 3,
+    "bpm": 139.43,
+    "zone": "anchored"
+   },
+   {
+    "t": 178.2242,
+    "bar": 103,
+    "beat": 4,
+    "bpm": 139.44,
+    "zone": "anchored"
+   },
+   {
+    "t": 178.6545,
+    "bar": 104,
+    "beat": 1,
+    "bpm": 139.45,
+    "zone": "anchored"
+   },
+   {
+    "t": 179.0848,
+    "bar": 104,
+    "beat": 2,
+    "bpm": 139.47,
+    "zone": "anchored"
+   },
+   {
+    "t": 179.515,
+    "bar": 104,
+    "beat": 3,
+    "bpm": 139.48,
+    "zone": "anchored"
+   },
+   {
+    "t": 179.9452,
+    "bar": 104,
+    "beat": 4,
+    "bpm": 139.49,
+    "zone": "anchored"
+   },
+   {
+    "t": 180.3753,
+    "bar": 105,
+    "beat": 1,
+    "bpm": 139.5,
+    "zone": "anchored"
+   },
+   {
+    "t": 180.8054,
+    "bar": 105,
+    "beat": 2,
+    "bpm": 139.51,
+    "zone": "anchored"
+   },
+   {
+    "t": 181.2355,
+    "bar": 105,
+    "beat": 3,
+    "bpm": 139.52,
+    "zone": "anchored"
+   },
+   {
+    "t": 181.6655,
+    "bar": 105,
+    "beat": 4,
+    "bpm": 139.53,
+    "zone": "anchored"
+   },
+   {
+    "t": 182.0955,
+    "bar": 106,
+    "beat": 1,
+    "bpm": 139.54,
+    "zone": "anchored"
+   },
+   {
+    "t": 182.5255,
+    "bar": 106,
+    "beat": 2,
+    "bpm": 139.56,
+    "zone": "anchored"
+   },
+   {
+    "t": 182.9554,
+    "bar": 106,
+    "beat": 3,
+    "bpm": 139.57,
+    "zone": "anchored"
+   },
+   {
+    "t": 183.3853,
+    "bar": 106,
+    "beat": 4,
+    "bpm": 139.57,
+    "zone": "anchored"
+   },
+   {
+    "t": 183.8152,
+    "bar": 107,
+    "beat": 1,
+    "bpm": 139.58,
+    "zone": "anchored"
+   },
+   {
+    "t": 184.2451,
+    "bar": 107,
+    "beat": 2,
+    "bpm": 139.59,
+    "zone": "anchored"
+   },
+   {
+    "t": 184.6749,
+    "bar": 107,
+    "beat": 3,
+    "bpm": 139.6,
+    "zone": "anchored"
+   },
+   {
+    "t": 185.1047,
+    "bar": 107,
+    "beat": 4,
+    "bpm": 139.61,
+    "zone": "anchored"
+   },
+   {
+    "t": 185.5344,
+    "bar": 108,
+    "beat": 1,
+    "bpm": 139.62,
+    "zone": "anchored"
+   },
+   {
+    "t": 185.9642,
+    "bar": 108,
+    "beat": 2,
+    "bpm": 139.63,
+    "zone": "anchored"
+   },
+   {
+    "t": 186.3939,
+    "bar": 108,
+    "beat": 3,
+    "bpm": 139.64,
+    "zone": "anchored"
+   },
+   {
+    "t": 186.8236,
+    "bar": 108,
+    "beat": 4,
+    "bpm": 139.64,
+    "zone": "anchored"
+   },
+   {
+    "t": 187.2533,
+    "bar": 109,
+    "beat": 1,
+    "bpm": 139.65,
+    "zone": "anchored"
+   },
+   {
+    "t": 187.6829,
+    "bar": 109,
+    "beat": 2,
+    "bpm": 139.66,
+    "zone": "anchored"
+   },
+   {
+    "t": 188.1125,
+    "bar": 109,
+    "beat": 3,
+    "bpm": 139.66,
+    "zone": "anchored"
+   },
+   {
+    "t": 188.5421,
+    "bar": 109,
+    "beat": 4,
+    "bpm": 139.67,
+    "zone": "anchored"
+   },
+   {
+    "t": 188.9717,
+    "bar": 110,
+    "beat": 1,
+    "bpm": 139.68,
+    "zone": "anchored"
+   },
+   {
+    "t": 189.4013,
+    "bar": 110,
+    "beat": 2,
+    "bpm": 139.68,
+    "zone": "anchored"
+   },
+   {
+    "t": 189.8308,
+    "bar": 110,
+    "beat": 3,
+    "bpm": 139.69,
+    "zone": "anchored"
+   },
+   {
+    "t": 190.2604,
+    "bar": 110,
+    "beat": 4,
+    "bpm": 139.69,
+    "zone": "anchored"
+   },
+   {
+    "t": 190.6899,
+    "bar": 111,
+    "beat": 1,
+    "bpm": 139.7,
+    "zone": "anchored"
+   },
+   {
+    "t": 191.1194,
+    "bar": 111,
+    "beat": 2,
+    "bpm": 139.7,
+    "zone": "anchored"
+   },
+   {
+    "t": 191.5489,
+    "bar": 111,
+    "beat": 3,
+    "bpm": 139.71,
+    "zone": "anchored"
+   },
+   {
+    "t": 191.9784,
+    "bar": 111,
+    "beat": 4,
+    "bpm": 139.71,
+    "zone": "anchored"
+   },
+   {
+    "t": 192.4078,
+    "bar": 112,
+    "beat": 1,
+    "bpm": 139.71,
+    "zone": "anchored"
+   },
+   {
+    "t": 192.8373,
+    "bar": 112,
+    "beat": 2,
+    "bpm": 139.72,
+    "zone": "anchored"
+   },
+   {
+    "t": 193.2667,
+    "bar": 112,
+    "beat": 3,
+    "bpm": 139.73,
+    "zone": "anchored"
+   },
+   {
+    "t": 193.6961,
+    "bar": 112,
+    "beat": 4,
+    "bpm": 139.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 194.1255,
+    "bar": 113,
+    "beat": 1,
+    "bpm": 139.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 194.5548,
+    "bar": 113,
+    "beat": 2,
+    "bpm": 139.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 194.984,
+    "bar": 113,
+    "beat": 3,
+    "bpm": 139.8,
+    "zone": "anchored"
+   },
+   {
+    "t": 195.4132,
+    "bar": 113,
+    "beat": 4,
+    "bpm": 139.82,
+    "zone": "anchored"
+   },
+   {
+    "t": 195.8423,
+    "bar": 114,
+    "beat": 1,
+    "bpm": 139.85,
+    "zone": "anchored"
+   },
+   {
+    "t": 196.2714,
+    "bar": 114,
+    "beat": 2,
+    "bpm": 139.88,
+    "zone": "anchored"
+   },
+   {
+    "t": 196.7003,
+    "bar": 114,
+    "beat": 3,
+    "bpm": 139.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 197.1291,
+    "bar": 114,
+    "beat": 4,
+    "bpm": 139.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 197.5578,
+    "bar": 115,
+    "beat": 1,
+    "bpm": 139.99,
+    "zone": "anchored"
+   },
+   {
+    "t": 197.9864,
+    "bar": 115,
+    "beat": 2,
+    "bpm": 140.04,
+    "zone": "anchored"
+   },
+   {
+    "t": 198.4149,
+    "bar": 115,
+    "beat": 3,
+    "bpm": 140.08,
+    "zone": "anchored"
+   },
+   {
+    "t": 198.8432,
+    "bar": 115,
+    "beat": 4,
+    "bpm": 140.13,
+    "zone": "anchored"
+   },
+   {
+    "t": 199.2714,
+    "bar": 116,
+    "beat": 1,
+    "bpm": 140.18,
+    "zone": "anchored"
+   },
+   {
+    "t": 199.6994,
+    "bar": 116,
+    "beat": 2,
+    "bpm": 140.24,
+    "zone": "anchored"
+   },
+   {
+    "t": 200.1272,
+    "bar": 116,
+    "beat": 3,
+    "bpm": 140.29,
+    "zone": "anchored"
+   },
+   {
+    "t": 200.5549,
+    "bar": 116,
+    "beat": 4,
+    "bpm": 140.35,
+    "zone": "anchored"
+   },
+   {
+    "t": 200.9824,
+    "bar": 117,
+    "beat": 1,
+    "bpm": 140.39,
+    "zone": "anchored"
+   },
+   {
+    "t": 201.4098,
+    "bar": 117,
+    "beat": 2,
+    "bpm": 140.42,
+    "zone": "anchored"
+   },
+   {
+    "t": 201.8371,
+    "bar": 117,
+    "beat": 3,
+    "bpm": 140.45,
+    "zone": "anchored"
+   },
+   {
+    "t": 202.2643,
+    "bar": 117,
+    "beat": 4,
+    "bpm": 140.45,
+    "zone": "interpolated"
+   },
+   {
+    "t": 202.6915,
+    "bar": 118,
+    "beat": 1,
+    "bpm": 140.45,
+    "zone": "anchored"
+   },
+   {
+    "t": 203.1187,
+    "bar": 118,
+    "beat": 2,
+    "bpm": 140.44,
+    "zone": "anchored"
+   },
+   {
+    "t": 203.5459,
+    "bar": 118,
+    "beat": 3,
+    "bpm": 140.41,
+    "zone": "anchored"
+   },
+   {
+    "t": 203.9732,
+    "bar": 118,
+    "beat": 4,
+    "bpm": 140.39,
+    "zone": "anchored"
+   },
+   {
+    "t": 204.4006,
+    "bar": 119,
+    "beat": 1,
+    "bpm": 140.38,
+    "zone": "anchored"
+   },
+   {
+    "t": 204.828,
+    "bar": 119,
+    "beat": 2,
+    "bpm": 140.38,
+    "zone": "interpolated"
+   },
+   {
+    "t": 205.2554,
+    "bar": 119,
+    "beat": 3,
+    "bpm": 140.38,
+    "zone": "interpolated"
+   },
+   {
+    "t": 205.6828,
+    "bar": 119,
+    "beat": 4,
+    "bpm": 140.38,
+    "zone": "interpolated"
+   },
+   {
+    "t": 206.1102,
+    "bar": 120,
+    "beat": 1,
+    "bpm": 140.4,
+    "zone": "interpolated"
+   },
+   {
+    "t": 206.5376,
+    "bar": 120,
+    "beat": 2,
+    "bpm": 140.42,
+    "zone": "interpolated"
+   },
+   {
+    "t": 206.9649,
+    "bar": 120,
+    "beat": 3,
+    "bpm": 140.45,
+    "zone": "anchored"
+   },
+   {
+    "t": 207.3921,
+    "bar": 120,
+    "beat": 4,
+    "bpm": 140.49,
+    "zone": "anchored"
+   },
+   {
+    "t": 207.8191,
+    "bar": 121,
+    "beat": 1,
+    "bpm": 140.53,
+    "zone": "anchored"
+   },
+   {
+    "t": 208.2461,
+    "bar": 121,
+    "beat": 2,
+    "bpm": 140.57,
+    "zone": "anchored"
+   },
+   {
+    "t": 208.6729,
+    "bar": 121,
+    "beat": 3,
+    "bpm": 140.62,
+    "zone": "anchored"
+   },
+   {
+    "t": 209.0996,
+    "bar": 121,
+    "beat": 4,
+    "bpm": 140.66,
+    "zone": "interpolated"
+   },
+   {
+    "t": 209.5262,
+    "bar": 122,
+    "beat": 1,
+    "bpm": 140.69,
+    "zone": "interpolated"
+   },
+   {
+    "t": 209.9526,
+    "bar": 122,
+    "beat": 2,
+    "bpm": 140.73,
+    "zone": "interpolated"
+   },
+   {
+    "t": 210.379,
+    "bar": 122,
+    "beat": 3,
+    "bpm": 140.77,
+    "zone": "interpolated"
+   },
+   {
+    "t": 210.8052,
+    "bar": 122,
+    "beat": 4,
+    "bpm": 140.8,
+    "zone": "interpolated"
+   },
+   {
+    "t": 211.2313,
+    "bar": 123,
+    "beat": 1,
+    "bpm": 140.84,
+    "zone": "interpolated"
+   },
+   {
+    "t": 211.6574,
+    "bar": 123,
+    "beat": 2,
+    "bpm": 140.87,
+    "zone": "interpolated"
+   },
+   {
+    "t": 212.0833,
+    "bar": 123,
+    "beat": 3,
+    "bpm": 140.9,
+    "zone": "interpolated"
+   },
+   {
+    "t": 212.5091,
+    "bar": 123,
+    "beat": 4,
+    "bpm": 140.93,
+    "zone": "interpolated"
+   },
+   {
+    "t": 212.9349,
+    "bar": 124,
+    "beat": 1,
+    "bpm": 140.96,
+    "zone": "interpolated"
+   },
+   {
+    "t": 213.3605,
+    "bar": 124,
+    "beat": 2,
+    "bpm": 140.99,
+    "zone": "interpolated"
+   },
+   {
+    "t": 213.7861,
+    "bar": 124,
+    "beat": 3,
+    "bpm": 141.02,
+    "zone": "interpolated"
+   },
+   {
+    "t": 214.2116,
+    "bar": 124,
+    "beat": 4,
+    "bpm": 141.04,
+    "zone": "interpolated"
+   },
+   {
+    "t": 214.637,
+    "bar": 125,
+    "beat": 1,
+    "bpm": 141.07,
+    "zone": "interpolated"
+   },
+   {
+    "t": 215.0623,
+    "bar": 125,
+    "beat": 2,
+    "bpm": 141.09,
+    "zone": "interpolated"
+   },
+   {
+    "t": 215.4876,
+    "bar": 125,
+    "beat": 3,
+    "bpm": 141.11,
+    "zone": "interpolated"
+   },
+   {
+    "t": 215.9128,
+    "bar": 125,
+    "beat": 4,
+    "bpm": 141.13,
+    "zone": "interpolated"
+   },
+   {
+    "t": 216.3379,
+    "bar": 126,
+    "beat": 1,
+    "bpm": 141.15,
+    "zone": "interpolated"
+   },
+   {
+    "t": 216.763,
+    "bar": 126,
+    "beat": 2,
+    "bpm": 141.17,
+    "zone": "interpolated"
+   },
+   {
+    "t": 217.188,
+    "bar": 126,
+    "beat": 3,
+    "bpm": 141.19,
+    "zone": "interpolated"
+   },
+   {
+    "t": 217.613,
+    "bar": 126,
+    "beat": 4,
+    "bpm": 141.2,
+    "zone": "interpolated"
+   },
+   {
+    "t": 218.0379,
+    "bar": 127,
+    "beat": 1,
+    "bpm": 141.22,
+    "zone": "interpolated"
+   },
+   {
+    "t": 218.4628,
+    "bar": 127,
+    "beat": 2,
+    "bpm": 141.23,
+    "zone": "interpolated"
+   },
+   {
+    "t": 218.8876,
+    "bar": 127,
+    "beat": 3,
+    "bpm": 141.24,
+    "zone": "interpolated"
+   },
+   {
+    "t": 219.3124,
+    "bar": 127,
+    "beat": 4,
+    "bpm": 141.25,
+    "zone": "interpolated"
+   },
+   {
+    "t": 219.7372,
+    "bar": 128,
+    "beat": 1,
+    "bpm": 141.26,
+    "zone": "interpolated"
+   },
+   {
+    "t": 220.1619,
+    "bar": 128,
+    "beat": 2,
+    "bpm": 141.27,
+    "zone": "interpolated"
+   },
+   {
+    "t": 220.5866,
+    "bar": 128,
+    "beat": 3,
+    "bpm": 141.28,
+    "zone": "anchored"
+   },
+   {
+    "t": 221.0113,
+    "bar": 128,
+    "beat": 4,
+    "bpm": 141.28,
+    "zone": "anchored"
+   },
+   {
+    "t": 221.436,
+    "bar": 129,
+    "beat": 1,
+    "bpm": 141.29,
+    "zone": "anchored"
+   },
+   {
+    "t": 221.8606,
+    "bar": 129,
+    "beat": 2,
+    "bpm": 141.29,
+    "zone": "anchored"
+   },
+   {
+    "t": 222.2853,
+    "bar": 129,
+    "beat": 3,
+    "bpm": 141.29,
+    "zone": "anchored"
+   },
+   {
+    "t": 222.7099,
+    "bar": 129,
+    "beat": 4,
+    "bpm": 141.3,
+    "zone": "interpolated"
+   },
+   {
+    "t": 223.1346,
+    "bar": 130,
+    "beat": 1,
+    "bpm": 141.3,
+    "zone": "interpolated"
+   },
+   {
+    "t": 223.5592,
+    "bar": 130,
+    "beat": 2,
+    "bpm": 141.29,
+    "zone": "interpolated"
+   },
+   {
+    "t": 223.9839,
+    "bar": 130,
+    "beat": 3,
+    "bpm": 141.29,
+    "zone": "interpolated"
+   },
+   {
+    "t": 224.4085,
+    "bar": 130,
+    "beat": 4,
+    "bpm": 141.29,
+    "zone": "interpolated"
+   },
+   {
+    "t": 224.8332,
+    "bar": 131,
+    "beat": 1,
+    "bpm": 141.28,
+    "zone": "interpolated"
+   },
+   {
+    "t": 225.2579,
+    "bar": 131,
+    "beat": 2,
+    "bpm": 141.28,
+    "zone": "interpolated"
+   },
+   {
+    "t": 225.6826,
+    "bar": 131,
+    "beat": 3,
+    "bpm": 141.27,
+    "zone": "interpolated"
+   },
+   {
+    "t": 226.1073,
+    "bar": 131,
+    "beat": 4,
+    "bpm": 141.26,
+    "zone": "interpolated"
+   },
+   {
+    "t": 226.5321,
+    "bar": 132,
+    "beat": 1,
+    "bpm": 141.25,
+    "zone": "interpolated"
+   },
+   {
+    "t": 226.9568,
+    "bar": 132,
+    "beat": 2,
+    "bpm": 141.24,
+    "zone": "interpolated"
+   },
+   {
+    "t": 227.3817,
+    "bar": 132,
+    "beat": 3,
+    "bpm": 141.23,
+    "zone": "interpolated"
+   },
+   {
+    "t": 227.8065,
+    "bar": 132,
+    "beat": 4,
+    "bpm": 141.21,
+    "zone": "interpolated"
+   },
+   {
+    "t": 228.2314,
+    "bar": 133,
+    "beat": 1,
+    "bpm": 141.2,
+    "zone": "interpolated"
+   },
+   {
+    "t": 228.6563,
+    "bar": 133,
+    "beat": 2,
+    "bpm": 141.18,
+    "zone": "interpolated"
+   },
+   {
+    "t": 229.0813,
+    "bar": 133,
+    "beat": 3,
+    "bpm": 141.16,
+    "zone": "interpolated"
+   },
+   {
+    "t": 229.5064,
+    "bar": 133,
+    "beat": 4,
+    "bpm": 141.14,
+    "zone": "interpolated"
+   },
+   {
+    "t": 229.9315,
+    "bar": 134,
+    "beat": 1,
+    "bpm": 141.12,
+    "zone": "interpolated"
+   },
+   {
+    "t": 230.3566,
+    "bar": 134,
+    "beat": 2,
+    "bpm": 141.1,
+    "zone": "interpolated"
+   },
+   {
+    "t": 230.7818,
+    "bar": 134,
+    "beat": 3,
+    "bpm": 141.08,
+    "zone": "interpolated"
+   },
+   {
+    "t": 231.2071,
+    "bar": 134,
+    "beat": 4,
+    "bpm": 141.06,
+    "zone": "interpolated"
+   },
+   {
+    "t": 231.6325,
+    "bar": 135,
+    "beat": 1,
+    "bpm": 141.03,
+    "zone": "interpolated"
+   },
+   {
+    "t": 232.0579,
+    "bar": 135,
+    "beat": 2,
+    "bpm": 141.01,
+    "zone": "interpolated"
+   },
+   {
+    "t": 232.4834,
+    "bar": 135,
+    "beat": 3,
+    "bpm": 140.98,
+    "zone": "interpolated"
+   },
+   {
+    "t": 232.909,
+    "bar": 135,
+    "beat": 4,
+    "bpm": 140.95,
+    "zone": "interpolated"
+   },
+   {
+    "t": 233.3347,
+    "bar": 136,
+    "beat": 1,
+    "bpm": 140.92,
+    "zone": "interpolated"
+   },
+   {
+    "t": 233.7605,
+    "bar": 136,
+    "beat": 2,
+    "bpm": 140.89,
+    "zone": "interpolated"
+   },
+   {
+    "t": 234.1863,
+    "bar": 136,
+    "beat": 3,
+    "bpm": 140.86,
+    "zone": "interpolated"
+   },
+   {
+    "t": 234.6123,
+    "bar": 136,
+    "beat": 4,
+    "bpm": 140.82,
+    "zone": "interpolated"
+   },
+   {
+    "t": 235.0384,
+    "bar": 137,
+    "beat": 1,
+    "bpm": 140.79,
+    "zone": "anchored"
+   },
+   {
+    "t": 235.4645,
+    "bar": 137,
+    "beat": 2,
+    "bpm": 140.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 235.8908,
+    "bar": 137,
+    "beat": 3,
+    "bpm": 140.72,
+    "zone": "anchored"
+   },
+   {
+    "t": 236.3172,
+    "bar": 137,
+    "beat": 4,
+    "bpm": 140.68,
+    "zone": "anchored"
+   },
+   {
+    "t": 236.7437,
+    "bar": 138,
+    "beat": 1,
+    "bpm": 140.64,
+    "zone": "anchored"
+   },
+   {
+    "t": 237.1703,
+    "bar": 138,
+    "beat": 2,
+    "bpm": 140.63,
+    "zone": "anchored"
+   },
+   {
+    "t": 237.597,
+    "bar": 138,
+    "beat": 3,
+    "bpm": 140.63,
+    "zone": "anchored"
+   },
+   {
+    "t": 238.0236,
+    "bar": 138,
+    "beat": 4,
+    "bpm": 140.65,
+    "zone": "anchored"
+   },
+   {
+    "t": 238.4502,
+    "bar": 139,
+    "beat": 1,
+    "bpm": 140.67,
+    "zone": "anchored"
+   },
+   {
+    "t": 238.8767,
+    "bar": 139,
+    "beat": 2,
+    "bpm": 140.7,
+    "zone": "anchored"
+   },
+   {
+    "t": 239.3032,
+    "bar": 139,
+    "beat": 3,
+    "bpm": 140.72,
+    "zone": "anchored"
+   },
+   {
+    "t": 239.7296,
+    "bar": 139,
+    "beat": 4,
+    "bpm": 140.74,
+    "zone": "anchored"
+   },
+   {
+    "t": 240.1559,
+    "bar": 140,
+    "beat": 1,
+    "bpm": 140.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 240.5821,
+    "bar": 140,
+    "beat": 2,
+    "bpm": 140.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 241.0084,
+    "bar": 140,
+    "beat": 3,
+    "bpm": 140.79,
+    "zone": "anchored"
+   },
+   {
+    "t": 241.4345,
+    "bar": 140,
+    "beat": 4,
+    "bpm": 140.81,
+    "zone": "anchored"
+   },
+   {
+    "t": 241.8606,
+    "bar": 141,
+    "beat": 1,
+    "bpm": 140.83,
+    "zone": "anchored"
+   },
+   {
+    "t": 242.2867,
+    "bar": 141,
+    "beat": 2,
+    "bpm": 140.84,
+    "zone": "anchored"
+   },
+   {
+    "t": 242.7127,
+    "bar": 141,
+    "beat": 3,
+    "bpm": 140.86,
+    "zone": "anchored"
+   },
+   {
+    "t": 243.1386,
+    "bar": 141,
+    "beat": 4,
+    "bpm": 140.87,
+    "zone": "anchored"
+   },
+   {
+    "t": 243.5646,
+    "bar": 142,
+    "beat": 1,
+    "bpm": 140.88,
+    "zone": "anchored"
+   },
+   {
+    "t": 243.9904,
+    "bar": 142,
+    "beat": 2,
+    "bpm": 140.89,
+    "zone": "anchored"
+   },
+   {
+    "t": 244.4163,
+    "bar": 142,
+    "beat": 3,
+    "bpm": 140.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 244.8421,
+    "bar": 142,
+    "beat": 4,
+    "bpm": 140.91,
+    "zone": "anchored"
+   },
+   {
+    "t": 245.2679,
+    "bar": 143,
+    "beat": 1,
+    "bpm": 140.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 245.6937,
+    "bar": 143,
+    "beat": 2,
+    "bpm": 140.93,
+    "zone": "anchored"
+   },
+   {
+    "t": 246.1194,
+    "bar": 143,
+    "beat": 3,
+    "bpm": 140.94,
+    "zone": "anchored"
+   },
+   {
+    "t": 246.5451,
+    "bar": 143,
+    "beat": 4,
+    "bpm": 140.94,
+    "zone": "anchored"
+   },
+   {
+    "t": 246.9708,
+    "bar": 144,
+    "beat": 1,
+    "bpm": 140.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 247.3965,
+    "bar": 144,
+    "beat": 2,
+    "bpm": 140.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 247.8222,
+    "bar": 144,
+    "beat": 3,
+    "bpm": 140.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 248.2478,
+    "bar": 144,
+    "beat": 4,
+    "bpm": 140.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 248.6735,
+    "bar": 145,
+    "beat": 1,
+    "bpm": 140.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 249.0992,
+    "bar": 145,
+    "beat": 2,
+    "bpm": 140.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 249.5248,
+    "bar": 145,
+    "beat": 3,
+    "bpm": 140.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 249.9505,
+    "bar": 145,
+    "beat": 4,
+    "bpm": 140.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 250.3761,
+    "bar": 146,
+    "beat": 1,
+    "bpm": 140.96,
+    "zone": "anchored"
+   },
+   {
+    "t": 250.8018,
+    "bar": 146,
+    "beat": 2,
+    "bpm": 140.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 251.2275,
+    "bar": 146,
+    "beat": 3,
+    "bpm": 140.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 251.6531,
+    "bar": 146,
+    "beat": 4,
+    "bpm": 140.95,
+    "zone": "anchored"
+   },
+   {
+    "t": 252.0788,
+    "bar": 147,
+    "beat": 1,
+    "bpm": 140.94,
+    "zone": "anchored"
+   },
+   {
+    "t": 252.5045,
+    "bar": 147,
+    "beat": 2,
+    "bpm": 140.94,
+    "zone": "anchored"
+   },
+   {
+    "t": 252.9303,
+    "bar": 147,
+    "beat": 3,
+    "bpm": 140.93,
+    "zone": "anchored"
+   },
+   {
+    "t": 253.356,
+    "bar": 147,
+    "beat": 4,
+    "bpm": 140.93,
+    "zone": "anchored"
+   },
+   {
+    "t": 253.7817,
+    "bar": 148,
+    "beat": 1,
+    "bpm": 140.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 254.2075,
+    "bar": 148,
+    "beat": 2,
+    "bpm": 140.92,
+    "zone": "anchored"
+   },
+   {
+    "t": 254.6333,
+    "bar": 148,
+    "beat": 3,
+    "bpm": 140.91,
+    "zone": "anchored"
+   },
+   {
+    "t": 255.0591,
+    "bar": 148,
+    "beat": 4,
+    "bpm": 140.91,
+    "zone": "anchored"
+   },
+   {
+    "t": 255.4849,
+    "bar": 149,
+    "beat": 1,
+    "bpm": 140.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 255.9107,
+    "bar": 149,
+    "beat": 2,
+    "bpm": 140.9,
+    "zone": "anchored"
+   },
+   {
+    "t": 256.3365,
+    "bar": 149,
+    "beat": 3,
+    "bpm": 140.89,
+    "zone": "anchored"
+   },
+   {
+    "t": 256.7624,
+    "bar": 149,
+    "beat": 4,
+    "bpm": 140.88,
+    "zone": "anchored"
+   },
+   {
+    "t": 257.1883,
+    "bar": 150,
+    "beat": 1,
+    "bpm": 140.87,
+    "zone": "anchored"
+   },
+   {
+    "t": 257.6142,
+    "bar": 150,
+    "beat": 2,
+    "bpm": 140.87,
+    "zone": "anchored"
+   },
+   {
+    "t": 258.0402,
+    "bar": 150,
+    "beat": 3,
+    "bpm": 140.86,
+    "zone": "anchored"
+   },
+   {
+    "t": 258.4661,
+    "bar": 150,
+    "beat": 4,
+    "bpm": 140.85,
+    "zone": "anchored"
+   },
+   {
+    "t": 258.8921,
+    "bar": 151,
+    "beat": 1,
+    "bpm": 140.84,
+    "zone": "anchored"
+   },
+   {
+    "t": 259.3181,
+    "bar": 151,
+    "beat": 2,
+    "bpm": 140.83,
+    "zone": "anchored"
+   },
+   {
+    "t": 259.7442,
+    "bar": 151,
+    "beat": 3,
+    "bpm": 140.82,
+    "zone": "anchored"
+   },
+   {
+    "t": 260.1702,
+    "bar": 151,
+    "beat": 4,
+    "bpm": 140.81,
+    "zone": "anchored"
+   },
+   {
+    "t": 260.5963,
+    "bar": 152,
+    "beat": 1,
+    "bpm": 140.8,
+    "zone": "anchored"
+   },
+   {
+    "t": 261.0225,
+    "bar": 152,
+    "beat": 2,
+    "bpm": 140.79,
+    "zone": "anchored"
+   },
+   {
+    "t": 261.4486,
+    "bar": 152,
+    "beat": 3,
+    "bpm": 140.78,
+    "zone": "anchored"
+   },
+   {
+    "t": 261.8748,
+    "bar": 152,
+    "beat": 4,
+    "bpm": 140.77,
+    "zone": "anchored"
+   },
+   {
+    "t": 262.3011,
+    "bar": 153,
+    "beat": 1,
+    "bpm": 140.76,
+    "zone": "anchored"
+   },
+   {
+    "t": 262.7273,
+    "bar": 153,
+    "beat": 2,
+    "bpm": 140.75,
+    "zone": "anchored"
+   },
+   {
+    "t": 263.1536,
+    "bar": 153,
+    "beat": 3,
+    "bpm": 140.73,
+    "zone": "anchored"
+   },
+   {
+    "t": 263.58,
+    "bar": 153,
+    "beat": 4,
+    "bpm": 140.72,
+    "zone": "interpolated"
+   },
+   {
+    "t": 264.0064,
+    "bar": 154,
+    "beat": 1,
+    "bpm": 140.71,
+    "zone": "interpolated"
+   },
+   {
+    "t": 264.4328,
+    "bar": 154,
+    "beat": 2,
+    "bpm": 140.69,
+    "zone": "interpolated"
+   },
+   {
+    "t": 264.8592,
+    "bar": 154,
+    "beat": 3,
+    "bpm": 140.68,
+    "zone": "interpolated"
+   },
+   {
+    "t": 265.2857,
+    "bar": 154,
+    "beat": 4,
+    "bpm": 140.67,
+    "zone": "interpolated"
+   },
+   {
+    "t": 265.7123,
+    "bar": 155,
+    "beat": 1,
+    "bpm": 140.65,
+    "zone": "interpolated"
+   },
+   {
+    "t": 266.1388,
+    "bar": 155,
+    "beat": 2,
+    "bpm": 140.64,
+    "zone": "interpolated"
+   },
+   {
+    "t": 266.5655,
+    "bar": 155,
+    "beat": 3,
+    "bpm": 140.62,
+    "zone": "interpolated"
+   },
+   {
+    "t": 266.9921,
+    "bar": 155,
+    "beat": 4,
+    "bpm": 140.61,
+    "zone": "interpolated"
+   },
+   {
+    "t": 267.4188,
+    "bar": 156,
+    "beat": 1,
+    "bpm": 140.59,
+    "zone": "interpolated"
+   },
+   {
+    "t": 267.8456,
+    "bar": 156,
+    "beat": 2,
+    "bpm": 140.58,
+    "zone": "interpolated"
+   },
+   {
+    "t": 268.2724,
+    "bar": 156,
+    "beat": 3,
+    "bpm": 140.56,
+    "zone": "interpolated"
+   },
+   {
+    "t": 268.6993,
+    "bar": 156,
+    "beat": 4,
+    "bpm": 140.55,
+    "zone": "interpolated"
+   },
+   {
+    "t": 269.1262,
+    "bar": 157,
+    "beat": 1,
+    "bpm": 140.53,
+    "zone": "interpolated"
+   },
+   {
+    "t": 269.5531,
+    "bar": 157,
+    "beat": 2,
+    "bpm": 140.51,
+    "zone": "interpolated"
+   },
+   {
+    "t": 269.9801,
+    "bar": 157,
+    "beat": 3,
+    "bpm": 140.5,
+    "zone": "interpolated"
+   },
+   {
+    "t": 270.4072,
+    "bar": 157,
+    "beat": 4,
+    "bpm": 140.48,
+    "zone": "interpolated"
+   },
+   {
+    "t": 270.8343,
+    "bar": 158,
+    "beat": 1,
+    "bpm": 140.46,
+    "zone": "interpolated"
+   },
+   {
+    "t": 271.2615,
+    "bar": 158,
+    "beat": 2,
+    "bpm": 140.44,
+    "zone": "interpolated"
+   },
+   {
+    "t": 271.6887,
+    "bar": 158,
+    "beat": 3,
+    "bpm": 140.42,
+    "zone": "interpolated"
+   },
+   {
+    "t": 272.116,
+    "bar": 158,
+    "beat": 4,
+    "bpm": 140.4,
+    "zone": "interpolated"
+   },
+   {
+    "t": 272.5433,
+    "bar": 159,
+    "beat": 1,
+    "bpm": 140.39,
+    "zone": "interpolated"
+   },
+   {
+    "t": 272.9707,
+    "bar": 159,
+    "beat": 2,
+    "bpm": 140.37,
+    "zone": "interpolated"
+   },
+   {
+    "t": 273.3981,
+    "bar": 159,
+    "beat": 3,
+    "bpm": 140.35,
+    "zone": "interpolated"
+   },
+   {
+    "t": 273.8257,
+    "bar": 159,
+    "beat": 4,
+    "bpm": 140.33,
+    "zone": "interpolated"
+   },
+   {
+    "t": 274.2532,
+    "bar": 160,
+    "beat": 1,
+    "bpm": 140.31,
+    "zone": "interpolated"
+   },
+   {
+    "t": 274.6809,
+    "bar": 160,
+    "beat": 2,
+    "bpm": 140.29,
+    "zone": "interpolated"
+   },
+   {
+    "t": 275.1086,
+    "bar": 160,
+    "beat": 3,
+    "bpm": 140.26,
+    "zone": "interpolated"
+   },
+   {
+    "t": 275.5363,
+    "bar": 160,
+    "beat": 4,
+    "bpm": 140.24,
+    "zone": "interpolated"
+   },
+   {
+    "t": 275.9642,
+    "bar": 161,
+    "beat": 1,
+    "bpm": 140.22,
+    "zone": "anchored"
+   },
+   {
+    "t": 276.3921,
+    "bar": 161,
+    "beat": 2,
+    "bpm": 140.2,
+    "zone": "anchored"
+   },
+   {
+    "t": 276.82,
+    "bar": 161,
+    "beat": 3,
+    "bpm": 140.27,
+    "zone": "anchored"
+   },
+   {
+    "t": 277.2478,
+    "bar": 161,
+    "beat": 4,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 277.6755,
+    "bar": 162,
+    "beat": 1,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 278.1032,
+    "bar": 162,
+    "beat": 2,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 278.531,
+    "bar": 162,
+    "beat": 3,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 278.9587,
+    "bar": 162,
+    "beat": 4,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 279.3864,
+    "bar": 163,
+    "beat": 1,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 279.8142,
+    "bar": 163,
+    "beat": 2,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 280.2419,
+    "bar": 163,
+    "beat": 3,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 280.6696,
+    "bar": 163,
+    "beat": 4,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 281.0974,
+    "bar": 164,
+    "beat": 1,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 281.5251,
+    "bar": 164,
+    "beat": 2,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 281.9528,
+    "bar": 164,
+    "beat": 3,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   },
+   {
+    "t": 282.3806,
+    "bar": 164,
+    "beat": 4,
+    "bpm": 140.27,
+    "zone": "extrapolated"
+   }
+  ],
+  "beat_times": [
+   0.2194,
+   0.6574,
+   1.0953,
+   1.5331,
+   1.9707,
+   2.4083,
+   2.8457,
+   3.283,
+   3.7202,
+   4.1573,
+   4.5943,
+   5.0312,
+   5.468,
+   5.9047,
+   6.3412,
+   6.7777,
+   7.2141,
+   7.6504,
+   8.0866,
+   8.5227,
+   8.9588,
+   9.3947,
+   9.8306,
+   10.2664,
+   10.7021,
+   11.1377,
+   11.5732,
+   12.0087,
+   12.4441,
+   12.8795,
+   13.3147,
+   13.7499,
+   14.185,
+   14.6201,
+   15.0551,
+   15.4901,
+   15.925,
+   16.3598,
+   16.7946,
+   17.2293,
+   17.664,
+   18.0987,
+   18.5333,
+   18.9678,
+   19.4023,
+   19.8368,
+   20.2712,
+   20.7056,
+   21.14,
+   21.5743,
+   22.0086,
+   22.4429,
+   22.8771,
+   23.3114,
+   23.7456,
+   24.1797,
+   24.6139,
+   25.048,
+   25.4822,
+   25.9163,
+   26.3504,
+   26.7845,
+   27.2186,
+   27.6527,
+   28.0867,
+   28.5208,
+   28.9549,
+   29.389,
+   29.8231,
+   30.2572,
+   30.6912,
+   31.1254,
+   31.5595,
+   31.9936,
+   32.4278,
+   32.8619,
+   33.2961,
+   33.7303,
+   34.1645,
+   34.5988,
+   35.033,
+   35.4673,
+   35.9016,
+   36.336,
+   36.7703,
+   37.2047,
+   37.6392,
+   38.0736,
+   38.5081,
+   38.9426,
+   39.3772,
+   39.8118,
+   40.2464,
+   40.6811,
+   41.1158,
+   41.5505,
+   41.9853,
+   42.4202,
+   42.855,
+   43.29,
+   43.7249,
+   44.16,
+   44.595,
+   45.0302,
+   45.4653,
+   45.9004,
+   46.3355,
+   46.7707,
+   47.2057,
+   47.6407,
+   48.0757,
+   48.5106,
+   48.9454,
+   49.3801,
+   49.8146,
+   50.249,
+   50.6833,
+   51.1174,
+   51.5514,
+   51.9851,
+   52.4186,
+   52.8518,
+   53.2847,
+   53.7174,
+   54.1497,
+   54.5817,
+   55.0135,
+   55.445,
+   55.8763,
+   56.3074,
+   56.7384,
+   57.1692,
+   57.6,
+   58.0307,
+   58.4614,
+   58.892,
+   59.3227,
+   59.7535,
+   60.1843,
+   60.6153,
+   61.0464,
+   61.4776,
+   61.9091,
+   62.3408,
+   62.7727,
+   63.205,
+   63.6376,
+   64.0705,
+   64.5037,
+   64.9372,
+   65.371,
+   65.805,
+   66.2392,
+   66.6735,
+   67.108,
+   67.5426,
+   67.9773,
+   68.412,
+   68.8467,
+   69.2814,
+   69.716,
+   70.1506,
+   70.585,
+   71.0194,
+   71.4536,
+   71.8877,
+   72.3218,
+   72.7557,
+   73.1896,
+   73.6234,
+   74.0571,
+   74.4908,
+   74.9244,
+   75.358,
+   75.7915,
+   76.225,
+   76.6585,
+   77.0919,
+   77.5253,
+   77.9587,
+   78.3921,
+   78.8254,
+   79.2588,
+   79.6922,
+   80.1256,
+   80.5591,
+   80.9925,
+   81.426,
+   81.8595,
+   82.2931,
+   82.7267,
+   83.1604,
+   83.5941,
+   84.0278,
+   84.4615,
+   84.8953,
+   85.3291,
+   85.7628,
+   86.1966,
+   86.6303,
+   87.064,
+   87.4976,
+   87.9313,
+   88.3648,
+   88.7983,
+   89.2318,
+   89.6652,
+   90.0985,
+   90.5317,
+   90.965,
+   91.3981,
+   91.8312,
+   92.2642,
+   92.6972,
+   93.1302,
+   93.5631,
+   93.9959,
+   94.4287,
+   94.8615,
+   95.2942,
+   95.7269,
+   96.1596,
+   96.5922,
+   97.0248,
+   97.4574,
+   97.8899,
+   98.3224,
+   98.7549,
+   99.1874,
+   99.6199,
+   100.0523,
+   100.4847,
+   100.9171,
+   101.3495,
+   101.7819,
+   102.2143,
+   102.6467,
+   103.0791,
+   103.5115,
+   103.9439,
+   104.3762,
+   104.8086,
+   105.241,
+   105.6734,
+   106.1058,
+   106.5382,
+   106.9706,
+   107.4031,
+   107.8355,
+   108.2679,
+   108.7003,
+   109.1328,
+   109.5652,
+   109.9976,
+   110.4301,
+   110.8625,
+   111.2949,
+   111.7274,
+   112.1598,
+   112.5923,
+   113.0247,
+   113.4572,
+   113.8896,
+   114.3221,
+   114.7545,
+   115.187,
+   115.6194,
+   116.0519,
+   116.4843,
+   116.9168,
+   117.3492,
+   117.7817,
+   118.2141,
+   118.6465,
+   119.079,
+   119.5114,
+   119.9439,
+   120.3763,
+   120.8087,
+   121.2411,
+   121.6736,
+   122.106,
+   122.5384,
+   122.9708,
+   123.4032,
+   123.8356,
+   124.268,
+   124.7004,
+   125.1328,
+   125.5652,
+   125.9976,
+   126.4299,
+   126.8623,
+   127.2947,
+   127.727,
+   128.1594,
+   128.5917,
+   129.024,
+   129.4564,
+   129.8887,
+   130.321,
+   130.7533,
+   131.1856,
+   131.6179,
+   132.0501,
+   132.4824,
+   132.9147,
+   133.3469,
+   133.7792,
+   134.2114,
+   134.6436,
+   135.0759,
+   135.5081,
+   135.9403,
+   136.3725,
+   136.8046,
+   137.2368,
+   137.669,
+   138.1011,
+   138.5333,
+   138.9654,
+   139.3975,
+   139.8296,
+   140.2617,
+   140.6938,
+   141.1259,
+   141.558,
+   141.99,
+   142.4221,
+   142.8541,
+   143.2861,
+   143.7181,
+   144.1501,
+   144.5821,
+   145.0141,
+   145.4461,
+   145.878,
+   146.31,
+   146.7419,
+   147.1738,
+   147.6057,
+   148.0376,
+   148.4695,
+   148.9013,
+   149.3332,
+   149.765,
+   150.1969,
+   150.6287,
+   151.0605,
+   151.4923,
+   151.924,
+   152.3558,
+   152.7875,
+   153.2193,
+   153.651,
+   154.0827,
+   154.5144,
+   154.946,
+   155.3777,
+   155.8093,
+   156.241,
+   156.6726,
+   157.1042,
+   157.5357,
+   157.9673,
+   158.3988,
+   158.8304,
+   159.2619,
+   159.6934,
+   160.1248,
+   160.5563,
+   160.9877,
+   161.4191,
+   161.8505,
+   162.2819,
+   162.7132,
+   163.1445,
+   163.5758,
+   164.0071,
+   164.4384,
+   164.8696,
+   165.3008,
+   165.732,
+   166.1632,
+   166.5943,
+   167.0254,
+   167.4565,
+   167.8876,
+   168.3186,
+   168.7496,
+   169.1806,
+   169.6115,
+   170.0425,
+   170.4734,
+   170.9042,
+   171.3351,
+   171.7659,
+   172.1967,
+   172.6274,
+   173.0581,
+   173.4888,
+   173.9195,
+   174.3501,
+   174.7807,
+   175.2113,
+   175.6418,
+   176.0723,
+   176.5027,
+   176.9332,
+   177.3636,
+   177.7939,
+   178.2242,
+   178.6545,
+   179.0848,
+   179.515,
+   179.9452,
+   180.3753,
+   180.8054,
+   181.2355,
+   181.6655,
+   182.0955,
+   182.5255,
+   182.9554,
+   183.3853,
+   183.8152,
+   184.2451,
+   184.6749,
+   185.1047,
+   185.5344,
+   185.9642,
+   186.3939,
+   186.8236,
+   187.2533,
+   187.6829,
+   188.1125,
+   188.5421,
+   188.9717,
+   189.4013,
+   189.8308,
+   190.2604,
+   190.6899,
+   191.1194,
+   191.5489,
+   191.9784,
+   192.4078,
+   192.8373,
+   193.2667,
+   193.6961,
+   194.1255,
+   194.5548,
+   194.984,
+   195.4132,
+   195.8423,
+   196.2714,
+   196.7003,
+   197.1291,
+   197.5578,
+   197.9864,
+   198.4149,
+   198.8432,
+   199.2714,
+   199.6994,
+   200.1272,
+   200.5549,
+   200.9824,
+   201.4098,
+   201.8371,
+   202.2643,
+   202.6915,
+   203.1187,
+   203.5459,
+   203.9732,
+   204.4006,
+   204.828,
+   205.2554,
+   205.6828,
+   206.1102,
+   206.5376,
+   206.9649,
+   207.3921,
+   207.8191,
+   208.2461,
+   208.6729,
+   209.0996,
+   209.5262,
+   209.9526,
+   210.379,
+   210.8052,
+   211.2313,
+   211.6574,
+   212.0833,
+   212.5091,
+   212.9349,
+   213.3605,
+   213.7861,
+   214.2116,
+   214.637,
+   215.0623,
+   215.4876,
+   215.9128,
+   216.3379,
+   216.763,
+   217.188,
+   217.613,
+   218.0379,
+   218.4628,
+   218.8876,
+   219.3124,
+   219.7372,
+   220.1619,
+   220.5866,
+   221.0113,
+   221.436,
+   221.8606,
+   222.2853,
+   222.7099,
+   223.1346,
+   223.5592,
+   223.9839,
+   224.4085,
+   224.8332,
+   225.2579,
+   225.6826,
+   226.1073,
+   226.5321,
+   226.9568,
+   227.3817,
+   227.8065,
+   228.2314,
+   228.6563,
+   229.0813,
+   229.5064,
+   229.9315,
+   230.3566,
+   230.7818,
+   231.2071,
+   231.6325,
+   232.0579,
+   232.4834,
+   232.909,
+   233.3347,
+   233.7605,
+   234.1863,
+   234.6123,
+   235.0384,
+   235.4645,
+   235.8908,
+   236.3172,
+   236.7437,
+   237.1703,
+   237.597,
+   238.0236,
+   238.4502,
+   238.8767,
+   239.3032,
+   239.7296,
+   240.1559,
+   240.5821,
+   241.0084,
+   241.4345,
+   241.8606,
+   242.2867,
+   242.7127,
+   243.1386,
+   243.5646,
+   243.9904,
+   244.4163,
+   244.8421,
+   245.2679,
+   245.6937,
+   246.1194,
+   246.5451,
+   246.9708,
+   247.3965,
+   247.8222,
+   248.2478,
+   248.6735,
+   249.0992,
+   249.5248,
+   249.9505,
+   250.3761,
+   250.8018,
+   251.2275,
+   251.6531,
+   252.0788,
+   252.5045,
+   252.9303,
+   253.356,
+   253.7817,
+   254.2075,
+   254.6333,
+   255.0591,
+   255.4849,
+   255.9107,
+   256.3365,
+   256.7624,
+   257.1883,
+   257.6142,
+   258.0402,
+   258.4661,
+   258.8921,
+   259.3181,
+   259.7442,
+   260.1702,
+   260.5963,
+   261.0225,
+   261.4486,
+   261.8748,
+   262.3011,
+   262.7273,
+   263.1536,
+   263.58,
+   264.0064,
+   264.4328,
+   264.8592,
+   265.2857,
+   265.7123,
+   266.1388,
+   266.5655,
+   266.9921,
+   267.4188,
+   267.8456,
+   268.2724,
+   268.6993,
+   269.1262,
+   269.5531,
+   269.9801,
+   270.4072,
+   270.8343,
+   271.2615,
+   271.6887,
+   272.116,
+   272.5433,
+   272.9707,
+   273.3981,
+   273.8257,
+   274.2532,
+   274.6809,
+   275.1086,
+   275.5363,
+   275.9642,
+   276.3921,
+   276.82,
+   277.2478,
+   277.6755,
+   278.1032,
+   278.531,
+   278.9587,
+   279.3864,
+   279.8142,
+   280.2419,
+   280.6696,
+   281.0974,
+   281.5251,
+   281.9528,
+   282.3806
+  ],
+  "downbeats": [
+   0.2194,
+   1.9707,
+   3.7202,
+   5.468,
+   7.2141,
+   8.9588,
+   10.7021,
+   12.4441,
+   14.185,
+   15.925,
+   17.664,
+   19.4023,
+   21.14,
+   22.8771,
+   24.6139,
+   26.3504,
+   28.0867,
+   29.8231,
+   31.5595,
+   33.2961,
+   35.033,
+   36.7703,
+   38.5081,
+   40.2464,
+   41.9853,
+   43.7249,
+   45.4653,
+   47.2057,
+   48.9454,
+   50.6833,
+   52.4186,
+   54.1497,
+   55.8763,
+   57.6,
+   59.3227,
+   61.0464,
+   62.7727,
+   64.5037,
+   66.2392,
+   67.9773,
+   69.716,
+   71.4536,
+   73.1896,
+   74.9244,
+   76.6585,
+   78.3921,
+   80.1256,
+   81.8595,
+   83.5941,
+   85.3291,
+   87.064,
+   88.7983,
+   90.5317,
+   92.2642,
+   93.9959,
+   95.7269,
+   97.4574,
+   99.1874,
+   100.9171,
+   102.6467,
+   104.3762,
+   106.1058,
+   107.8355,
+   109.5652,
+   111.2949,
+   113.0247,
+   114.7545,
+   116.4843,
+   118.2141,
+   119.9439,
+   121.6736,
+   123.4032,
+   125.1328,
+   126.8623,
+   128.5917,
+   130.321,
+   132.0501,
+   133.7792,
+   135.5081,
+   137.2368,
+   138.9654,
+   140.6938,
+   142.4221,
+   144.1501,
+   145.878,
+   147.6057,
+   149.3332,
+   151.0605,
+   152.7875,
+   154.5144,
+   156.241,
+   157.9673,
+   159.6934,
+   161.4191,
+   163.1445,
+   164.8696,
+   166.5943,
+   168.3186,
+   170.0425,
+   171.7659,
+   173.4888,
+   175.2113,
+   176.9332,
+   178.6545,
+   180.3753,
+   182.0955,
+   183.8152,
+   185.5344,
+   187.2533,
+   188.9717,
+   190.6899,
+   192.4078,
+   194.1255,
+   195.8423,
+   197.5578,
+   199.2714,
+   200.9824,
+   202.6915,
+   204.4006,
+   206.1102,
+   207.8191,
+   209.5262,
+   211.2313,
+   212.9349,
+   214.637,
+   216.3379,
+   218.0379,
+   219.7372,
+   221.436,
+   223.1346,
+   224.8332,
+   226.5321,
+   228.2314,
+   229.9315,
+   231.6325,
+   233.3347,
+   235.0384,
+   236.7437,
+   238.4502,
+   240.1559,
+   241.8606,
+   243.5646,
+   245.2679,
+   246.9708,
+   248.6735,
+   250.3761,
+   252.0788,
+   253.7817,
+   255.4849,
+   257.1883,
+   258.8921,
+   260.5963,
+   262.3011,
+   264.0064,
+   265.7123,
+   267.4188,
+   269.1262,
+   270.8343,
+   272.5433,
+   274.2532,
+   275.9642,
+   277.6755,
+   279.3864,
+   281.0974
+  ]
+ },
+ "bars": [
+  {
+   "bar": 1,
+   "start": 0.219,
+   "end": 1.971,
+   "bpm": 137.04,
+   "phrase8": 1,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 2,
+   "start": 1.971,
+   "end": 3.72,
+   "bpm": 137.18,
+   "phrase8": 1,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 3,
+   "start": 3.72,
+   "end": 5.468,
+   "bpm": 137.32,
+   "phrase8": 1,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 4,
+   "start": 5.468,
+   "end": 7.214,
+   "bpm": 137.45,
+   "phrase8": 1,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 5,
+   "start": 7.214,
+   "end": 8.959,
+   "bpm": 137.56,
+   "phrase8": 1,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 6,
+   "start": 8.959,
+   "end": 10.702,
+   "bpm": 137.67,
+   "phrase8": 1,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 7,
+   "start": 10.702,
+   "end": 12.444,
+   "bpm": 137.77,
+   "phrase8": 1,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 8,
+   "start": 12.444,
+   "end": 14.185,
+   "bpm": 137.86,
+   "phrase8": 1,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 9,
+   "start": 14.185,
+   "end": 15.925,
+   "bpm": 137.93,
+   "phrase8": 2,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 10,
+   "start": 15.925,
+   "end": 17.664,
+   "bpm": 138.01,
+   "phrase8": 2,
+   "phrase16": 1,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 11,
+   "start": 17.664,
+   "end": 19.402,
+   "bpm": 138.07,
+   "phrase8": 2,
+   "phrase16": 1,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 12,
+   "start": 19.402,
+   "end": 21.14,
+   "bpm": 138.11,
+   "phrase8": 2,
+   "phrase16": 1,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 13,
+   "start": 21.14,
+   "end": 22.877,
+   "bpm": 138.16,
+   "phrase8": 2,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 14,
+   "start": 22.877,
+   "end": 24.614,
+   "bpm": 138.19,
+   "phrase8": 2,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 15,
+   "start": 24.614,
+   "end": 26.35,
+   "bpm": 138.21,
+   "phrase8": 2,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 16,
+   "start": 26.35,
+   "end": 28.087,
+   "bpm": 138.22,
+   "phrase8": 2,
+   "phrase16": 1,
+   "zone": "anchored"
+  },
+  {
+   "bar": 17,
+   "start": 28.087,
+   "end": 29.823,
+   "bpm": 138.22,
+   "phrase8": 3,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 18,
+   "start": 29.823,
+   "end": 31.559,
+   "bpm": 138.22,
+   "phrase8": 3,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 19,
+   "start": 31.559,
+   "end": 33.296,
+   "bpm": 138.2,
+   "phrase8": 3,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 20,
+   "start": 33.296,
+   "end": 35.033,
+   "bpm": 138.18,
+   "phrase8": 3,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 21,
+   "start": 35.033,
+   "end": 36.77,
+   "bpm": 138.15,
+   "phrase8": 3,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 22,
+   "start": 36.77,
+   "end": 38.508,
+   "bpm": 138.11,
+   "phrase8": 3,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 23,
+   "start": 38.508,
+   "end": 40.246,
+   "bpm": 138.07,
+   "phrase8": 3,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 24,
+   "start": 40.246,
+   "end": 41.985,
+   "bpm": 138.02,
+   "phrase8": 3,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 25,
+   "start": 41.985,
+   "end": 43.725,
+   "bpm": 137.96,
+   "phrase8": 4,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 26,
+   "start": 43.725,
+   "end": 45.465,
+   "bpm": 137.9,
+   "phrase8": 4,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 27,
+   "start": 45.465,
+   "end": 47.206,
+   "bpm": 137.9,
+   "phrase8": 4,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 28,
+   "start": 47.206,
+   "end": 48.945,
+   "bpm": 137.95,
+   "phrase8": 4,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 29,
+   "start": 48.945,
+   "end": 50.683,
+   "bpm": 138.1,
+   "phrase8": 4,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 30,
+   "start": 50.683,
+   "end": 52.419,
+   "bpm": 138.3,
+   "phrase8": 4,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 31,
+   "start": 52.419,
+   "end": 54.15,
+   "bpm": 138.64,
+   "phrase8": 4,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 32,
+   "start": 54.15,
+   "end": 55.876,
+   "bpm": 139.0,
+   "phrase8": 4,
+   "phrase16": 2,
+   "zone": "anchored"
+  },
+  {
+   "bar": 33,
+   "start": 55.876,
+   "end": 57.6,
+   "bpm": 139.24,
+   "phrase8": 5,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 34,
+   "start": 57.6,
+   "end": 59.323,
+   "bpm": 139.32,
+   "phrase8": 5,
+   "phrase16": 3,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 35,
+   "start": 59.323,
+   "end": 61.046,
+   "bpm": 139.24,
+   "phrase8": 5,
+   "phrase16": 3,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 36,
+   "start": 61.046,
+   "end": 62.773,
+   "bpm": 139.03,
+   "phrase8": 5,
+   "phrase16": 3,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 37,
+   "start": 62.773,
+   "end": 64.504,
+   "bpm": 138.65,
+   "phrase8": 5,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 38,
+   "start": 64.504,
+   "end": 66.239,
+   "bpm": 138.29,
+   "phrase8": 5,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 39,
+   "start": 66.239,
+   "end": 67.977,
+   "bpm": 138.08,
+   "phrase8": 5,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 40,
+   "start": 67.977,
+   "end": 69.716,
+   "bpm": 138.03,
+   "phrase8": 5,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 41,
+   "start": 69.716,
+   "end": 71.454,
+   "bpm": 138.12,
+   "phrase8": 6,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 42,
+   "start": 71.454,
+   "end": 73.19,
+   "bpm": 138.25,
+   "phrase8": 6,
+   "phrase16": 3,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 43,
+   "start": 73.19,
+   "end": 74.924,
+   "bpm": 138.34,
+   "phrase8": 6,
+   "phrase16": 3,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 44,
+   "start": 74.924,
+   "end": 76.659,
+   "bpm": 138.4,
+   "phrase8": 6,
+   "phrase16": 3,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 45,
+   "start": 76.659,
+   "end": 78.392,
+   "bpm": 138.44,
+   "phrase8": 6,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 46,
+   "start": 78.392,
+   "end": 80.126,
+   "bpm": 138.45,
+   "phrase8": 6,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 47,
+   "start": 80.126,
+   "end": 81.859,
+   "bpm": 138.42,
+   "phrase8": 6,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 48,
+   "start": 81.859,
+   "end": 83.594,
+   "bpm": 138.36,
+   "phrase8": 6,
+   "phrase16": 3,
+   "zone": "anchored"
+  },
+  {
+   "bar": 49,
+   "start": 83.594,
+   "end": 85.329,
+   "bpm": 138.33,
+   "phrase8": 7,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 50,
+   "start": 85.329,
+   "end": 87.064,
+   "bpm": 138.34,
+   "phrase8": 7,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 51,
+   "start": 87.064,
+   "end": 88.798,
+   "bpm": 138.38,
+   "phrase8": 7,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 52,
+   "start": 88.798,
+   "end": 90.532,
+   "bpm": 138.46,
+   "phrase8": 7,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 53,
+   "start": 90.532,
+   "end": 92.264,
+   "bpm": 138.53,
+   "phrase8": 7,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 54,
+   "start": 92.264,
+   "end": 93.996,
+   "bpm": 138.59,
+   "phrase8": 7,
+   "phrase16": 4,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 55,
+   "start": 93.996,
+   "end": 95.727,
+   "bpm": 138.65,
+   "phrase8": 7,
+   "phrase16": 4,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 56,
+   "start": 95.727,
+   "end": 97.457,
+   "bpm": 138.69,
+   "phrase8": 7,
+   "phrase16": 4,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 57,
+   "start": 97.457,
+   "end": 99.187,
+   "bpm": 138.73,
+   "phrase8": 8,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 58,
+   "start": 99.187,
+   "end": 100.917,
+   "bpm": 138.75,
+   "phrase8": 8,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 59,
+   "start": 100.917,
+   "end": 102.647,
+   "bpm": 138.76,
+   "phrase8": 8,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 60,
+   "start": 102.647,
+   "end": 104.376,
+   "bpm": 138.77,
+   "phrase8": 8,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 61,
+   "start": 104.376,
+   "end": 106.106,
+   "bpm": 138.76,
+   "phrase8": 8,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 62,
+   "start": 106.106,
+   "end": 107.835,
+   "bpm": 138.75,
+   "phrase8": 8,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 63,
+   "start": 107.835,
+   "end": 109.565,
+   "bpm": 138.75,
+   "phrase8": 8,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 64,
+   "start": 109.565,
+   "end": 111.295,
+   "bpm": 138.75,
+   "phrase8": 8,
+   "phrase16": 4,
+   "zone": "anchored"
+  },
+  {
+   "bar": 65,
+   "start": 111.295,
+   "end": 113.025,
+   "bpm": 138.74,
+   "phrase8": 9,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 66,
+   "start": 113.025,
+   "end": 114.754,
+   "bpm": 138.74,
+   "phrase8": 9,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 67,
+   "start": 114.754,
+   "end": 116.484,
+   "bpm": 138.74,
+   "phrase8": 9,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 68,
+   "start": 116.484,
+   "end": 118.214,
+   "bpm": 138.74,
+   "phrase8": 9,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 69,
+   "start": 118.214,
+   "end": 119.944,
+   "bpm": 138.74,
+   "phrase8": 9,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 70,
+   "start": 119.944,
+   "end": 121.674,
+   "bpm": 138.75,
+   "phrase8": 9,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 71,
+   "start": 121.674,
+   "end": 123.403,
+   "bpm": 138.76,
+   "phrase8": 9,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 72,
+   "start": 123.403,
+   "end": 125.133,
+   "bpm": 138.76,
+   "phrase8": 9,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 73,
+   "start": 125.133,
+   "end": 126.862,
+   "bpm": 138.77,
+   "phrase8": 10,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 74,
+   "start": 126.862,
+   "end": 128.592,
+   "bpm": 138.78,
+   "phrase8": 10,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 75,
+   "start": 128.592,
+   "end": 130.321,
+   "bpm": 138.78,
+   "phrase8": 10,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 76,
+   "start": 130.321,
+   "end": 132.05,
+   "bpm": 138.8,
+   "phrase8": 10,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 77,
+   "start": 132.05,
+   "end": 133.779,
+   "bpm": 138.8,
+   "phrase8": 10,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 78,
+   "start": 133.779,
+   "end": 135.508,
+   "bpm": 138.82,
+   "phrase8": 10,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 79,
+   "start": 135.508,
+   "end": 137.237,
+   "bpm": 138.83,
+   "phrase8": 10,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 80,
+   "start": 137.237,
+   "end": 138.965,
+   "bpm": 138.84,
+   "phrase8": 10,
+   "phrase16": 5,
+   "zone": "anchored"
+  },
+  {
+   "bar": 81,
+   "start": 138.965,
+   "end": 140.694,
+   "bpm": 138.86,
+   "phrase8": 11,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 82,
+   "start": 140.694,
+   "end": 142.422,
+   "bpm": 138.86,
+   "phrase8": 11,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 83,
+   "start": 142.422,
+   "end": 144.15,
+   "bpm": 138.89,
+   "phrase8": 11,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 84,
+   "start": 144.15,
+   "end": 145.878,
+   "bpm": 138.9,
+   "phrase8": 11,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 85,
+   "start": 145.878,
+   "end": 147.606,
+   "bpm": 138.91,
+   "phrase8": 11,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 86,
+   "start": 147.606,
+   "end": 149.333,
+   "bpm": 138.93,
+   "phrase8": 11,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 87,
+   "start": 149.333,
+   "end": 151.06,
+   "bpm": 138.95,
+   "phrase8": 11,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 88,
+   "start": 151.06,
+   "end": 152.787,
+   "bpm": 138.97,
+   "phrase8": 11,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 89,
+   "start": 152.787,
+   "end": 154.514,
+   "bpm": 138.98,
+   "phrase8": 12,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 90,
+   "start": 154.514,
+   "end": 156.241,
+   "bpm": 139.0,
+   "phrase8": 12,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 91,
+   "start": 156.241,
+   "end": 157.967,
+   "bpm": 139.03,
+   "phrase8": 12,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 92,
+   "start": 157.967,
+   "end": 159.693,
+   "bpm": 139.04,
+   "phrase8": 12,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 93,
+   "start": 159.693,
+   "end": 161.419,
+   "bpm": 139.07,
+   "phrase8": 12,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 94,
+   "start": 161.419,
+   "end": 163.144,
+   "bpm": 139.1,
+   "phrase8": 12,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 95,
+   "start": 163.144,
+   "end": 164.87,
+   "bpm": 139.12,
+   "phrase8": 12,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 96,
+   "start": 164.87,
+   "end": 166.594,
+   "bpm": 139.15,
+   "phrase8": 12,
+   "phrase16": 6,
+   "zone": "anchored"
+  },
+  {
+   "bar": 97,
+   "start": 166.594,
+   "end": 168.319,
+   "bpm": 139.19,
+   "phrase8": 13,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 98,
+   "start": 168.319,
+   "end": 170.042,
+   "bpm": 139.22,
+   "phrase8": 13,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 99,
+   "start": 170.042,
+   "end": 171.766,
+   "bpm": 139.26,
+   "phrase8": 13,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 100,
+   "start": 171.766,
+   "end": 173.489,
+   "bpm": 139.3,
+   "phrase8": 13,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 101,
+   "start": 173.489,
+   "end": 175.211,
+   "bpm": 139.33,
+   "phrase8": 13,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 102,
+   "start": 175.211,
+   "end": 176.933,
+   "bpm": 139.38,
+   "phrase8": 13,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 103,
+   "start": 176.933,
+   "end": 178.655,
+   "bpm": 139.43,
+   "phrase8": 13,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 104,
+   "start": 178.655,
+   "end": 180.375,
+   "bpm": 139.47,
+   "phrase8": 13,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 105,
+   "start": 180.375,
+   "end": 182.095,
+   "bpm": 139.52,
+   "phrase8": 14,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 106,
+   "start": 182.095,
+   "end": 183.815,
+   "bpm": 139.56,
+   "phrase8": 14,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 107,
+   "start": 183.815,
+   "end": 185.534,
+   "bpm": 139.6,
+   "phrase8": 14,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 108,
+   "start": 185.534,
+   "end": 187.253,
+   "bpm": 139.62,
+   "phrase8": 14,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 109,
+   "start": 187.253,
+   "end": 188.972,
+   "bpm": 139.66,
+   "phrase8": 14,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 110,
+   "start": 188.972,
+   "end": 190.69,
+   "bpm": 139.68,
+   "phrase8": 14,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 111,
+   "start": 190.69,
+   "end": 192.408,
+   "bpm": 139.71,
+   "phrase8": 14,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 112,
+   "start": 192.408,
+   "end": 194.125,
+   "bpm": 139.72,
+   "phrase8": 14,
+   "phrase16": 7,
+   "zone": "anchored"
+  },
+  {
+   "bar": 113,
+   "start": 194.125,
+   "end": 195.842,
+   "bpm": 139.79,
+   "phrase8": 15,
+   "phrase16": 8,
+   "zone": "anchored"
+  },
+  {
+   "bar": 114,
+   "start": 195.842,
+   "end": 197.558,
+   "bpm": 139.9,
+   "phrase8": 15,
+   "phrase16": 8,
+   "zone": "anchored"
+  },
+  {
+   "bar": 115,
+   "start": 197.558,
+   "end": 199.271,
+   "bpm": 140.06,
+   "phrase8": 15,
+   "phrase16": 8,
+   "zone": "anchored"
+  },
+  {
+   "bar": 116,
+   "start": 199.271,
+   "end": 200.982,
+   "bpm": 140.27,
+   "phrase8": 15,
+   "phrase16": 8,
+   "zone": "anchored"
+  },
+  {
+   "bar": 117,
+   "start": 200.982,
+   "end": 202.691,
+   "bpm": 140.42,
+   "phrase8": 15,
+   "phrase16": 8,
+   "zone": "anchored"
+  },
+  {
+   "bar": 118,
+   "start": 202.691,
+   "end": 204.401,
+   "bpm": 140.42,
+   "phrase8": 15,
+   "phrase16": 8,
+   "zone": "anchored"
+  },
+  {
+   "bar": 119,
+   "start": 204.401,
+   "end": 206.11,
+   "bpm": 140.38,
+   "phrase8": 15,
+   "phrase16": 8,
+   "zone": "anchored"
+  },
+  {
+   "bar": 120,
+   "start": 206.11,
+   "end": 207.819,
+   "bpm": 140.44,
+   "phrase8": 15,
+   "phrase16": 8,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 121,
+   "start": 207.819,
+   "end": 209.526,
+   "bpm": 140.59,
+   "phrase8": 16,
+   "phrase16": 8,
+   "zone": "anchored"
+  },
+  {
+   "bar": 122,
+   "start": 209.526,
+   "end": 211.231,
+   "bpm": 140.75,
+   "phrase8": 16,
+   "phrase16": 8,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 123,
+   "start": 211.231,
+   "end": 212.935,
+   "bpm": 140.88,
+   "phrase8": 16,
+   "phrase16": 8,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 124,
+   "start": 212.935,
+   "end": 214.637,
+   "bpm": 141.0,
+   "phrase8": 16,
+   "phrase16": 8,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 125,
+   "start": 214.637,
+   "end": 216.338,
+   "bpm": 141.1,
+   "phrase8": 16,
+   "phrase16": 8,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 126,
+   "start": 216.338,
+   "end": 218.038,
+   "bpm": 141.18,
+   "phrase8": 16,
+   "phrase16": 8,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 127,
+   "start": 218.038,
+   "end": 219.737,
+   "bpm": 141.23,
+   "phrase8": 16,
+   "phrase16": 8,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 128,
+   "start": 219.737,
+   "end": 221.436,
+   "bpm": 141.28,
+   "phrase8": 16,
+   "phrase16": 8,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 129,
+   "start": 221.436,
+   "end": 223.135,
+   "bpm": 141.29,
+   "phrase8": 17,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 130,
+   "start": 223.135,
+   "end": 224.833,
+   "bpm": 141.29,
+   "phrase8": 17,
+   "phrase16": 9,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 131,
+   "start": 224.833,
+   "end": 226.532,
+   "bpm": 141.27,
+   "phrase8": 17,
+   "phrase16": 9,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 132,
+   "start": 226.532,
+   "end": 228.231,
+   "bpm": 141.23,
+   "phrase8": 17,
+   "phrase16": 9,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 133,
+   "start": 228.231,
+   "end": 229.931,
+   "bpm": 141.17,
+   "phrase8": 17,
+   "phrase16": 9,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 134,
+   "start": 229.931,
+   "end": 231.632,
+   "bpm": 141.09,
+   "phrase8": 17,
+   "phrase16": 9,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 135,
+   "start": 231.632,
+   "end": 233.335,
+   "bpm": 140.99,
+   "phrase8": 17,
+   "phrase16": 9,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 136,
+   "start": 233.335,
+   "end": 235.038,
+   "bpm": 140.87,
+   "phrase8": 17,
+   "phrase16": 9,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 137,
+   "start": 235.038,
+   "end": 236.744,
+   "bpm": 140.74,
+   "phrase8": 18,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 138,
+   "start": 236.744,
+   "end": 238.45,
+   "bpm": 140.64,
+   "phrase8": 18,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 139,
+   "start": 238.45,
+   "end": 240.156,
+   "bpm": 140.7,
+   "phrase8": 18,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 140,
+   "start": 240.156,
+   "end": 241.861,
+   "bpm": 140.79,
+   "phrase8": 18,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 141,
+   "start": 241.861,
+   "end": 243.565,
+   "bpm": 140.85,
+   "phrase8": 18,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 142,
+   "start": 243.565,
+   "end": 245.268,
+   "bpm": 140.9,
+   "phrase8": 18,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 143,
+   "start": 245.268,
+   "end": 246.971,
+   "bpm": 140.94,
+   "phrase8": 18,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 144,
+   "start": 246.971,
+   "end": 248.673,
+   "bpm": 140.95,
+   "phrase8": 18,
+   "phrase16": 9,
+   "zone": "anchored"
+  },
+  {
+   "bar": 145,
+   "start": 248.673,
+   "end": 250.376,
+   "bpm": 140.96,
+   "phrase8": 19,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 146,
+   "start": 250.376,
+   "end": 252.079,
+   "bpm": 140.95,
+   "phrase8": 19,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 147,
+   "start": 252.079,
+   "end": 253.782,
+   "bpm": 140.94,
+   "phrase8": 19,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 148,
+   "start": 253.782,
+   "end": 255.485,
+   "bpm": 140.91,
+   "phrase8": 19,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 149,
+   "start": 255.485,
+   "end": 257.188,
+   "bpm": 140.89,
+   "phrase8": 19,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 150,
+   "start": 257.188,
+   "end": 258.892,
+   "bpm": 140.86,
+   "phrase8": 19,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 151,
+   "start": 258.892,
+   "end": 260.596,
+   "bpm": 140.83,
+   "phrase8": 19,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 152,
+   "start": 260.596,
+   "end": 262.301,
+   "bpm": 140.78,
+   "phrase8": 19,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 153,
+   "start": 262.301,
+   "end": 264.006,
+   "bpm": 140.74,
+   "phrase8": 20,
+   "phrase16": 10,
+   "zone": "anchored"
+  },
+  {
+   "bar": 154,
+   "start": 264.006,
+   "end": 265.712,
+   "bpm": 140.69,
+   "phrase8": 20,
+   "phrase16": 10,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 155,
+   "start": 265.712,
+   "end": 267.419,
+   "bpm": 140.64,
+   "phrase8": 20,
+   "phrase16": 10,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 156,
+   "start": 267.419,
+   "end": 269.126,
+   "bpm": 140.56,
+   "phrase8": 20,
+   "phrase16": 10,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 157,
+   "start": 269.126,
+   "end": 270.834,
+   "bpm": 140.51,
+   "phrase8": 20,
+   "phrase16": 10,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 158,
+   "start": 270.834,
+   "end": 272.543,
+   "bpm": 140.43,
+   "phrase8": 20,
+   "phrase16": 10,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 159,
+   "start": 272.543,
+   "end": 274.253,
+   "bpm": 140.36,
+   "phrase8": 20,
+   "phrase16": 10,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 160,
+   "start": 274.253,
+   "end": 275.964,
+   "bpm": 140.27,
+   "phrase8": 20,
+   "phrase16": 10,
+   "zone": "interpolated"
+  },
+  {
+   "bar": 161,
+   "start": 275.964,
+   "end": 277.675,
+   "bpm": 140.24,
+   "phrase8": 21,
+   "phrase16": 11,
+   "zone": "anchored"
+  },
+  {
+   "bar": 162,
+   "start": 277.675,
+   "end": 279.386,
+   "bpm": 140.28,
+   "phrase8": 21,
+   "phrase16": 11,
+   "zone": "extrapolated"
+  },
+  {
+   "bar": 163,
+   "start": 279.386,
+   "end": 281.097,
+   "bpm": 140.27,
+   "phrase8": 21,
+   "phrase16": 11,
+   "zone": "extrapolated"
+  },
+  {
+   "bar": 164,
+   "start": 281.097,
+   "end": 282.8,
+   "bpm": 140.27,
+   "phrase8": 21,
+   "phrase16": 11,
+   "zone": "extrapolated"
+  }
+ ],
+ "phrases": {
+  "eight_bar": [
+   {
+    "phrase": 1,
+    "start_bar": 1,
+    "start": 0.219
+   },
+   {
+    "phrase": 2,
+    "start_bar": 9,
+    "start": 14.185
+   },
+   {
+    "phrase": 3,
+    "start_bar": 17,
+    "start": 28.087
+   },
+   {
+    "phrase": 4,
+    "start_bar": 25,
+    "start": 41.985
+   },
+   {
+    "phrase": 5,
+    "start_bar": 33,
+    "start": 55.876
+   },
+   {
+    "phrase": 6,
+    "start_bar": 41,
+    "start": 69.716
+   },
+   {
+    "phrase": 7,
+    "start_bar": 49,
+    "start": 83.594
+   },
+   {
+    "phrase": 8,
+    "start_bar": 57,
+    "start": 97.457
+   },
+   {
+    "phrase": 9,
+    "start_bar": 65,
+    "start": 111.295
+   },
+   {
+    "phrase": 10,
+    "start_bar": 73,
+    "start": 125.133
+   },
+   {
+    "phrase": 11,
+    "start_bar": 81,
+    "start": 138.965
+   },
+   {
+    "phrase": 12,
+    "start_bar": 89,
+    "start": 152.787
+   },
+   {
+    "phrase": 13,
+    "start_bar": 97,
+    "start": 166.594
+   },
+   {
+    "phrase": 14,
+    "start_bar": 105,
+    "start": 180.375
+   },
+   {
+    "phrase": 15,
+    "start_bar": 113,
+    "start": 194.125
+   },
+   {
+    "phrase": 16,
+    "start_bar": 121,
+    "start": 207.819
+   },
+   {
+    "phrase": 17,
+    "start_bar": 129,
+    "start": 221.436
+   },
+   {
+    "phrase": 18,
+    "start_bar": 137,
+    "start": 235.038
+   },
+   {
+    "phrase": 19,
+    "start_bar": 145,
+    "start": 248.673
+   },
+   {
+    "phrase": 20,
+    "start_bar": 153,
+    "start": 262.301
+   },
+   {
+    "phrase": 21,
+    "start_bar": 161,
+    "start": 275.964
+   }
+  ],
+  "sixteen_bar": [
+   {
+    "phrase": 1,
+    "start_bar": 1,
+    "start": 0.219
+   },
+   {
+    "phrase": 2,
+    "start_bar": 17,
+    "start": 28.087
+   },
+   {
+    "phrase": 3,
+    "start_bar": 33,
+    "start": 55.876
+   },
+   {
+    "phrase": 4,
+    "start_bar": 49,
+    "start": 83.594
+   },
+   {
+    "phrase": 5,
+    "start_bar": 65,
+    "start": 111.295
+   },
+   {
+    "phrase": 6,
+    "start_bar": 81,
+    "start": 138.965
+   },
+   {
+    "phrase": 7,
+    "start_bar": 97,
+    "start": 166.594
+   },
+   {
+    "phrase": 8,
+    "start_bar": 113,
+    "start": 194.125
+   },
+   {
+    "phrase": 9,
+    "start_bar": 129,
+    "start": 221.436
+   },
+   {
+    "phrase": 10,
+    "start_bar": 145,
+    "start": 248.673
+   },
+   {
+    "phrase": 11,
+    "start_bar": 161,
+    "start": 275.964
+   }
+  ]
+ },
+ "sections": [
+  {
+   "name": "Intro",
+   "start": 0.0,
+   "end": 28.087,
+   "start_bar": 1,
+   "end_bar": 16,
+   "bars": 16,
+   "vocal_start": null,
+   "loudness_db": -21.8,
+   "energy_0_1": 0.37,
+   "description": "Pads + plucked arp fading in (mix > -40 dBFS from 0.65 s). Low synth bass audible in bars 1-4 (~1.2-6.9 s; only faint in v2) and again from bar 7 beat 3 (~11.3). NO soft hat/snare pattern in bars 5-7 (v2 had one from bar 5). Drum pickup in bar 8, then bar 9 (14.18): kick hit + rolling bass. Bars 13-16: bass out by ~24.5, pads; a sustained low tone in both vocal stems 25.8 -> 28.6 (starts ~2.5 s later than in v2, see adlibs). No lyric.",
+   "parts": [
+    {
+     "name": "Intro A - pads/arp fade-in, low bass bars 1-4",
+     "start": 0.0,
+     "end": 14.185,
+     "start_bar": 1
+    },
+    {
+     "name": "Intro B - kick hit + rolling bass (bar 9), pads from bar 13",
+     "start": 14.185,
+     "end": 28.087,
+     "start_bar": 9
+    }
+   ]
+  },
+  {
+   "name": "Verse 1",
+   "start": 28.087,
+   "end": 55.876,
+   "start_bar": 17,
+   "end_bar": 32,
+   "bars": 16,
+   "vocal_start": 28.675,
+   "loudness_db": -21.1,
+   "energy_0_1": 0.42,
+   "description": "Kick/bass hit on bar 17 (28.10); soft low vocal starts 28.68. No steady drums. Bass under the verse (louder than in v2)."
+  },
+  {
+   "name": "Pre-Chorus",
+   "start": 55.876,
+   "end": 69.716,
+   "start_bar": 33,
+   "end_bar": 40,
+   "bars": 8,
+   "vocal_start": 54.77,
+   "loudness_db": -21.3,
+   "energy_0_1": 0.4,
+   "description": "Vocal pickup \"And every\" starts 54.77 - before the bar line. Bass fades out during bar 33 (v2: out from bar 34 beat 4). Kick hit on bar 37 (62.77) under the held \"from\"; filter riser 64.9 -> 69.72 (bars 38-40)."
+  },
+  {
+   "name": "Chorus 1",
+   "start": 69.716,
+   "end": 97.457,
+   "start_bar": 41,
+   "end_bar": 56,
+   "bars": 16,
+   "vocal_start": 69.45,
+   "loudness_db": -19.6,
+   "energy_0_1": 0.53,
+   "description": "Hit on bar 41 (69.720); \"Merge\" scoops in at 69.45, before the bar. Stripped chorus: no steady kick and, unlike v2, NO second kick hit at bar 52. Bass bars 41-54, out from ~94.0 (bar 54 beat 3). Last line \"Nothing that I lived can come undone\" (\"undone\" held to ~99.0)."
+  },
+  {
+   "name": "Breakdown",
+   "start": 97.457,
+   "end": 125.133,
+   "start_bar": 57,
+   "end_bar": 72,
+   "bars": 16,
+   "vocal_start": 102.522,
+   "loudness_db": -19.8,
+   "energy_0_1": 0.52,
+   "description": "Hit/crash on bar 57 (97.445). Strings/pads; \"Branch... and wander...\" 102.52, \"Merge... and return...\" 109.31; wordless \"Ahh... ahh...\" 111.74-125.6. Second half (bars 65-72) is a BUILD: kick hit + 16th hats from bar 65 (111.30), snare crescendo from 116.48, 32nd-note snare roll bar 72 (123.29-124.71). Same arrangement as v2 (kick pulse in bars 70-72 louder).",
+   "parts": [
+    {
+     "name": "Breakdown A - strings, \"Branch/Merge\" lines",
+     "start": 97.457,
+     "end": 111.295,
+     "start_bar": 57
+    },
+    {
+     "name": "Breakdown B - first build: hats + snare crescendo under \"Ahh\"",
+     "start": 111.295,
+     "end": 125.133,
+     "start_bar": 65
+    }
+   ]
+  },
+  {
+   "name": "Build Up",
+   "start": 125.133,
+   "end": 152.787,
+   "start_bar": 73,
+   "end_bar": 88,
+   "bars": 16,
+   "vocal_start": null,
+   "loudness_db": -16.7,
+   "energy_0_1": 0.68,
+   "description": "Full kick + bass slam on bar 73 (125.13, strongest bar-line onset of the song). Four-on-the-floor groove bars 73-85, NO VOCAL (RoFormer vocal stem < -60 dB 126-171 s; whisper hallucinated \"Bye\"/\"Oh my God\" here). Bar 86 (147.60): bass out, kick continues to ~150.5 then fades while snare/hats continue; snare build 150.85 -> drop; mix brightens into the drop. Same as v2.",
+   "parts": [
+    {
+     "name": "Build Up A - full-drum groove (impact 125.13), no vocal",
+     "start": 125.133,
+     "end": 147.606,
+     "start_bar": 73
+    },
+    {
+     "name": "Build Up B - bass out, kick fading, snare build + riser",
+     "start": 147.606,
+     "end": 152.787,
+     "start_bar": 86
+    }
+   ]
+  },
+  {
+   "name": "Instrumental Drop",
+   "start": 152.787,
+   "end": 180.375,
+   "start_bar": 89,
+   "end_bar": 104,
+   "bars": 16,
+   "vocal_start": null,
+   "loudness_db": -15.7,
+   "energy_0_1": 0.77,
+   "description": "DROP IMPACT 152.79 (bar 89 downbeat). Full kick/bass + lead + strings. Sustained wordless \"ooh\" layer in the vocal stems 172.54-180.3 (bars 100-104, as in v2; adlib, not a lyric). Bass thins out in bar 104; 16th snare fill 179.09-180.38 into Verse 2."
+  },
+  {
+   "name": "Verse 2",
+   "start": 180.375,
+   "end": 207.819,
+   "start_bar": 105,
+   "end_bar": 120,
+   "bars": 16,
+   "vocal_start": 181.403,
+   "loudness_db": -16.2,
+   "energy_0_1": 0.65,
+   "description": "Impact on bar 105 (180.38), vocal 181.40. Improvised high melody (high notes on THE 184.66, I 189.81, THAT 196.46 held to 197.27, BE 203.52). Sung OVER full drums bars 105-116; bar 117 (200.99): one more kick HIT on the downbeat (v2: no hit), then drums + bass out (by ~201.3) for the last line.",
+   "parts": [
+    {
+     "name": "Verse 2 A - over full drums",
+     "start": 180.375,
+     "end": 200.982,
+     "start_bar": 105
+    },
+    {
+     "name": "Verse 2 B - hit on bar 117, then drums out",
+     "start": 200.982,
+     "end": 207.819,
+     "start_bar": 117
+    }
+   ]
+  },
+  {
+   "name": "Chorus 2",
+   "start": 207.819,
+   "end": 235.038,
+   "start_bar": 121,
+   "end_bar": 136,
+   "bars": 16,
+   "vocal_start": 207.58,
+   "loudness_db": -19.2,
+   "energy_0_1": 0.56,
+   "description": "HIT on bar 121 (207.82): kick + bass return (v2 had NO hit here: pads only until bar 129). \"Merge\" scoops in at 207.58, 0.24 s before the bar; \"ME\" 209.88. No steady kick bars 122-128; bass under bars 121-133, out from ~229.5 (v2: bass bars 129-136). No kick/snare pickup before bar 129 (v2 had one). Hit on bar 129 (221.44). Filter riser bars 135-136 (231.6-235.04), snare pickup 234.58. Last line \"Every life I've lived, I have become\"."
+  },
+  {
+   "name": "Outro",
+   "start": 235.038,
+   "end": 282.8,
+   "start_bar": 137,
+   "end_bar": 164,
+   "bars": 28,
+   "vocal_start": 234.158,
+   "loudness_db": -17.2,
+   "energy_0_1": 0.63,
+   "description": "\"Back to main\" #1 is a pickup at 234.16 (end of Chorus 2). Bar 137 (235.04) full-drum outro drop; \"main\" held to ~238.0 and then NO wordless vocalise (v2 had one 238.66-248.97: the v3 vocal stems are silent ~238.5-247.7). \"Back to main\" #2 at 247.76, \"main\" held to ~251.2 (v2 ~4 s longer). Bar 149 (255.49): last kick, drums + bass out: arp alone. NEW: faint high sustained tone (~C5) in the vocal stems 260.85-264.3. Riser into bar 153: kick + bass hit 262.300, arp stops, then pads + bass sustain with chord changes on bars 155/157/159. NEW: FINAL HIT 276.82 (kick + last chord change) on bar 161 BEAT 3 - 2 beats later than the 2-bar chord rhythm predicts (v2: chord change on the bar-161 downbeat, no hit). Fade to < -40 dBFS at 282.23; file ends 282.800.",
+   "parts": [
+    {
+     "name": "Outro A - final drop with held vocal",
+     "start": 235.038,
+     "end": 255.485,
+     "start_bar": 137
+    },
+    {
+     "name": "Outro B - drums out, arp alone",
+     "start": 255.485,
+     "end": 262.301,
+     "start_bar": 149
+    },
+    {
+     "name": "Outro C - last section hit, pads + bass, final hit bar 161 beat 3, fade",
+     "start": 262.301,
+     "end": 282.8,
+     "start_bar": 153
+    }
+   ]
+  }
+ ],
+ "events": [
+  {
+   "t": 0.645,
+   "bar": 1,
+   "beat": 1.97,
+   "type": "start",
+   "label": "first audible sound (pad/arp fade-in; mix < -40 dBFS before 0.65)"
+  },
+  {
+   "t": 14.18,
+   "bar": 8,
+   "beat": 4.99,
+   "type": "hit",
+   "label": "kick hit + rolling bass (Intro B)"
+  },
+  {
+   "t": 25.8,
+   "bar": 15,
+   "beat": 3.73,
+   "type": "texture",
+   "label": "sustained low tone in the vocal stems begins (swells to ~-35 dB by 27; see adlibs)"
+  },
+  {
+   "t": 28.1,
+   "bar": 17,
+   "beat": 1.03,
+   "type": "hit",
+   "label": "kick/bass hit on Verse 1 downbeat"
+  },
+  {
+   "t": 28.675,
+   "bar": 17,
+   "beat": 2.36,
+   "type": "vocal",
+   "label": "first vocal (\"I split...\")"
+  },
+  {
+   "t": 62.765,
+   "bar": 36,
+   "beat": 4.98,
+   "type": "hit",
+   "label": "kick hit mid Pre-Chorus (under held \"from\")"
+  },
+  {
+   "t": 64.934,
+   "bar": 38,
+   "beat": 1.99,
+   "type": "riser",
+   "label": "filter riser into Chorus 1 (other-stem >3.5 kHz band rises ~+29 dB)",
+   "end": 69.72
+  },
+  {
+   "t": 69.72,
+   "bar": 41,
+   "beat": 1.01,
+   "type": "hit",
+   "label": "Chorus 1 downbeat hit"
+  },
+  {
+   "t": 97.445,
+   "bar": 56,
+   "beat": 4.97,
+   "type": "hit",
+   "label": "crash, Breakdown start"
+  },
+  {
+   "t": 111.295,
+   "bar": 65,
+   "beat": 1.0,
+   "type": "build",
+   "label": "build 1 starts: kick hit + 16th-note hats"
+  },
+  {
+   "t": 116.48,
+   "bar": 67,
+   "beat": 4.99,
+   "type": "snare_roll",
+   "label": "snare crescendo starts (build 1)",
+   "end": 124.715
+  },
+  {
+   "t": 118.21,
+   "bar": 68,
+   "beat": 4.99,
+   "type": "hit",
+   "label": "kick pulse returns (bar 69) + vocal leaps up (\"ahh\" #2 at 118.20)"
+  },
+  {
+   "t": 123.293,
+   "bar": 71,
+   "beat": 4.74,
+   "type": "snare_roll",
+   "label": "32nd-note snare roll (bar 72)",
+   "end": 124.715
+  },
+  {
+   "t": 125.13,
+   "bar": 72,
+   "beat": 4.99,
+   "type": "impact",
+   "label": "BIGGEST bar-line impact: full kick + bass slam, Build Up start",
+   "strength_x_median": 11.4
+  },
+  {
+   "t": 147.159,
+   "bar": 85,
+   "beat": 3.97,
+   "type": "riser",
+   "label": "mix brightening into the drop",
+   "end": 152.79
+  },
+  {
+   "t": 147.605,
+   "bar": 85,
+   "beat": 5.0,
+   "type": "drums_out",
+   "label": "bass out (bar 86); kick continues to ~150.5 then fades, snare/hats continue"
+  },
+  {
+   "t": 150.85,
+   "bar": 87,
+   "beat": 4.51,
+   "type": "snare_roll",
+   "label": "snare build (16ths) into the drop",
+   "end": 152.79
+  },
+  {
+   "t": 152.79,
+   "bar": 89,
+   "beat": 1.01,
+   "type": "drop",
+   "label": "INSTRUMENTAL DROP IMPACT (bar 89 downbeat)",
+   "strength_x_median": 10.1,
+   "mix_onset": 152.795
+  },
+  {
+   "t": 172.54,
+   "bar": 100,
+   "beat": 2.8,
+   "type": "texture",
+   "label": "wordless sustained \"ooh\" layer in the vocal stems (not a lyric)",
+   "end": 180.28
+  },
+  {
+   "t": 178.008,
+   "bar": 103,
+   "beat": 3.5,
+   "type": "drums_out",
+   "label": "bass thins out (bar 104; weaker change than in v2)",
+   "end": 180.38
+  },
+  {
+   "t": 179.09,
+   "bar": 104,
+   "beat": 2.01,
+   "type": "snare_roll",
+   "label": "16th-note snare fill into Verse 2",
+   "end": 180.38
+  },
+  {
+   "t": 180.38,
+   "bar": 105,
+   "beat": 1.01,
+   "type": "impact",
+   "label": "Verse 2 downbeat impact (full drums)",
+   "strength_x_median": 7.5
+  },
+  {
+   "t": 200.99,
+   "bar": 117,
+   "beat": 1.02,
+   "type": "hit",
+   "label": "kick hit on bar 117, then drums + bass cut (by ~201.3): stripped end of Verse 2"
+  },
+  {
+   "t": 207.825,
+   "bar": 121,
+   "beat": 1.01,
+   "type": "hit",
+   "label": "Chorus 2 downbeat HIT: kick + bass return (v2: no hit here)",
+   "strength_x_median": 3.4
+  },
+  {
+   "t": 219.736,
+   "bar": 127,
+   "beat": 5.0,
+   "type": "riser",
+   "label": "high-band riser into bar 129 (weaker than in v2: bass/pads already playing)",
+   "end": 221.44
+  },
+  {
+   "t": 221.44,
+   "bar": 129,
+   "beat": 1.01,
+   "type": "hit",
+   "label": "hit, Chorus 2 second half",
+   "strength_x_median": 2.5
+  },
+  {
+   "t": 229.5,
+   "bar": 133,
+   "beat": 3.98,
+   "type": "drums_out",
+   "label": "bass out (bar 133 beat 4) for the rest of Chorus 2"
+  },
+  {
+   "t": 231.628,
+   "bar": 134,
+   "beat": 4.99,
+   "type": "riser",
+   "label": "filter riser into the outro drop (bars 135-136)",
+   "end": 235.045
+  },
+  {
+   "t": 234.62,
+   "bar": 136,
+   "beat": 4.02,
+   "type": "pickup",
+   "label": "snare pickup (bar 136 beat 4)"
+  },
+  {
+   "t": 235.045,
+   "bar": 137,
+   "beat": 1.02,
+   "type": "impact",
+   "label": "Outro drop impact (full drums return)",
+   "strength_x_median": 6.0
+  },
+  {
+   "t": 255.49,
+   "bar": 149,
+   "beat": 1.01,
+   "type": "drums_out",
+   "label": "last kick (bar 149), then drums + bass out; arp alone; vocal ended ~251.2"
+  },
+  {
+   "t": 260.85,
+   "bar": 152,
+   "beat": 1.6,
+   "type": "texture",
+   "label": "NEW in v3: faint high sustained tone (~C5) in the vocal stems, into the last section hit",
+   "end": 264.3
+  },
+  {
+   "t": 261.018,
+   "bar": 152,
+   "beat": 1.99,
+   "type": "riser",
+   "label": "riser into the bar-153 hit",
+   "end": 262.3
+  },
+  {
+   "t": 262.3,
+   "bar": 152,
+   "beat": 5.0,
+   "type": "impact",
+   "label": "last section hit (bar 153): kick + bass; arp stops, pads + bass sustain",
+   "strength_x_median": 3.5
+  },
+  {
+   "t": 276.82,
+   "bar": 161,
+   "beat": 3.0,
+   "type": "impact",
+   "label": "NEW in v3: FINAL HIT (kick + last chord change) on bar 161 BEAT 3; then sustain and fade",
+   "strength_x_median": 2.4
+  },
+  {
+   "t": 282.23,
+   "bar": 164,
+   "beat": 3.65,
+   "type": "end",
+   "label": "mix below -40 dBFS (fade-out end); file ends 282.800"
+  }
+ ],
+ "key_moments": {
+  "drop_impact": {
+   "t": 152.79,
+   "bar": 89,
+   "note": "Instrumental Drop; preceded by bass-out / kick-fading build 147.60-152.79 with snare build 150.85-152.79"
+  },
+  "biggest_impact": {
+   "t": 125.13,
+   "bar": 73,
+   "note": "start of Build Up; strongest bar-line onset among section starts (11.4x median), full kick+bass slam after the 32nd-note snare roll"
+  },
+  "snare_roll_1": {
+   "start": 116.48,
+   "roll_32nd": [
+    123.293,
+    124.715
+   ],
+   "end": 125.13
+  },
+  "snare_roll_2": {
+   "start": 150.85,
+   "end": 152.79
+  },
+  "filter_riser_1": {
+   "start": 147.159,
+   "end": 152.79
+  },
+  "filter_riser_2": {
+   "start": 231.628,
+   "end": 235.045
+  },
+  "noise_riser": {
+   "start": 179.09,
+   "end": 180.38
+  },
+  "silences": "no digital/full-mix silence inside the song (mix never < -40 dBFS between 0.65 and 282.23 s); the \"gaps\" are drums-out passages: ~201.3-207.82 (end of Verse 2), 255.49-262.30 (arp only), 262.30-276.82 (pads + bass only)."
+ },
+ "lyrics": {
+  "method": "Known lyric text force-aligned per line on the vocal stems with 4 CTC runs (torchaudio MMS_FA + wav2vec2-large-960h, each on demucs htdemucs_ft and BS-RoFormer vocals; median start) cross-checked with stable-ts/whisper-large-v3 alignment; starts snapped to syllable onsets (energy/pitch) within -90/+50 ms; sibilant onsets backtracked to the start of frication; line starts and ambiguous words corrected by visual inspection of spectrogram + pitch panels (work_v3/overrides.json; every v2 override re-checked on the v3 audio, values measured in v3). Search windows = v2 windows mapped by musical position, +-0.2 s. Word ends = next word start, or the end of the sustained note (RoFormer RMS > max(peak-20, -40) dB).",
+  "lines": [
+   {
+    "id": 1,
+    "section": "Verse 1",
+    "text": "I split myself a thousand ways",
+    "kind": "lead",
+    "start": 28.675,
+    "end": 32.37,
+    "start_pos": {
+     "bar": 17,
+     "beat": 2.36
+    },
+    "words": [
+     {
+      "w": "I",
+      "start": 28.675,
+      "end": 28.73
+     },
+     {
+      "w": "split",
+      "start": 28.735,
+      "end": 29.154
+     },
+     {
+      "w": "myself",
+      "start": 29.164,
+      "end": 30.265
+     },
+     {
+      "w": "a",
+      "start": 30.275,
+      "end": 30.421
+     },
+     {
+      "w": "thousand",
+      "start": 30.431,
+      "end": 31.297
+     },
+     {
+      "w": "ways",
+      "start": 31.307,
+      "end": 32.37
+     }
+    ],
+    "flags": [
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 2,
+    "section": "Verse 1",
+    "text": "Down every road the night could hold",
+    "kind": "lead",
+    "start": 33.654,
+    "end": 40.165,
+    "start_pos": {
+     "bar": 20,
+     "beat": 1.82
+    },
+    "words": [
+     {
+      "w": "Down",
+      "start": 33.654,
+      "end": 34.244
+     },
+     {
+      "w": "every",
+      "start": 34.254,
+      "end": 34.731
+     },
+     {
+      "w": "road",
+      "start": 34.741,
+      "end": 36.173
+     },
+     {
+      "w": "the",
+      "start": 36.183,
+      "end": 36.527
+     },
+     {
+      "w": "night",
+      "start": 36.537,
+      "end": 37.734
+     },
+     {
+      "w": "could",
+      "start": 37.744,
+      "end": 38.522
+     },
+     {
+      "w": "hold",
+      "start": 38.532,
+      "end": 40.165
+     }
+    ],
+    "flags": [
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 3,
+    "section": "Verse 1",
+    "text": "Each one a light I sent ahead",
+    "kind": "lead",
+    "start": 42.399,
+    "end": 46.365,
+    "start_pos": {
+     "bar": 25,
+     "beat": 1.95
+    },
+    "words": [
+     {
+      "w": "Each",
+      "start": 42.399,
+      "end": 42.946
+     },
+     {
+      "w": "one",
+      "start": 42.956,
+      "end": 43.197
+     },
+     {
+      "w": "a",
+      "start": 43.207,
+      "end": 43.466
+     },
+     {
+      "w": "light",
+      "start": 43.476,
+      "end": 44.181
+     },
+     {
+      "w": "I",
+      "start": 44.191,
+      "end": 44.469
+     },
+     {
+      "w": "sent",
+      "start": 44.479,
+      "end": 45.048
+     },
+     {
+      "w": "ahead",
+      "start": 45.058,
+      "end": 46.365
+     }
+    ],
+    "flags": [
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 4,
+    "section": "Verse 1",
+    "text": "Each one a story to unfold",
+    "kind": "lead",
+    "start": 47.637,
+    "end": 54.065,
+    "start_pos": {
+     "bar": 28,
+     "beat": 1.99
+    },
+    "words": [
+     {
+      "w": "Each",
+      "start": 47.637,
+      "end": 48.132
+     },
+     {
+      "w": "one",
+      "start": 48.142,
+      "end": 48.395
+     },
+     {
+      "w": "a",
+      "start": 48.405,
+      "end": 48.48
+     },
+     {
+      "w": "story",
+      "start": 48.485,
+      "end": 50.435
+     },
+     {
+      "w": "to",
+      "start": 50.445,
+      "end": 51.747
+     },
+     {
+      "w": "unfold",
+      "start": 51.757,
+      "end": 54.065
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "fricative_onset",
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 5,
+    "section": "Pre-Chorus",
+    "text": "And every branch remembers",
+    "kind": "lead",
+    "start": 54.77,
+    "end": 58.92,
+    "start_pos": {
+     "bar": 32,
+     "beat": 2.44
+    },
+    "words": [
+     {
+      "w": "And",
+      "start": 54.77,
+      "end": 55.005
+     },
+     {
+      "w": "every",
+      "start": 55.015,
+      "end": 55.753
+     },
+     {
+      "w": "branch",
+      "start": 55.763,
+      "end": 57.12
+     },
+     {
+      "w": "remembers",
+      "start": 57.13,
+      "end": 58.92
+     }
+    ],
+    "flags": [
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'And' voiced onset 54.77 (v2 54.66 -> mapped 54.77)"
+   },
+   {
+    "id": 6,
+    "section": "Pre-Chorus",
+    "text": "Where I started from",
+    "kind": "lead",
+    "start": 60.0,
+    "end": 66.025,
+    "start_pos": {
+     "bar": 35,
+     "beat": 2.57
+    },
+    "words": [
+     {
+      "w": "Where",
+      "start": 60.0,
+      "end": 60.613
+     },
+     {
+      "w": "I",
+      "start": 60.623,
+      "end": 60.7
+     },
+     {
+      "w": "started",
+      "start": 60.705,
+      "end": 62.184
+     },
+     {
+      "w": "from",
+      "start": 62.194,
+      "end": 66.025
+     }
+    ],
+    "flags": [
+     "fricative_onset",
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'Where' glide voiced from 60.00 (v2 59.93 -> mapped 60.00; CTC 60.11)"
+   },
+   {
+    "id": 7,
+    "section": "Chorus 1",
+    "text": "Merge me back to main",
+    "kind": "lead",
+    "start": 69.45,
+    "end": 75.743,
+    "start_pos": {
+     "bar": 40,
+     "beat": 4.39
+    },
+    "words": [
+     {
+      "w": "Merge",
+      "start": 69.45,
+      "end": 71.807
+     },
+     {
+      "w": "me",
+      "start": 71.817,
+      "end": 72.046
+     },
+     {
+      "w": "back",
+      "start": 72.056,
+      "end": 72.62
+     },
+     {
+      "w": "to",
+      "start": 72.63,
+      "end": 72.924
+     },
+     {
+      "w": "main",
+      "start": 72.934,
+      "end": 75.743
+     }
+    ],
+    "flags": [
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'Merge' scoop voiced from 69.45 (v2 69.42 -> mapped 69.45; CTC 69.65 = vowel)"
+   },
+   {
+    "id": 8,
+    "section": "Chorus 1",
+    "text": "Every road I ran becomes the one",
+    "kind": "lead",
+    "start": 75.758,
+    "end": 82.02,
+    "start_pos": {
+     "bar": 44,
+     "beat": 2.92
+    },
+    "words": [
+     {
+      "w": "Every",
+      "start": 75.758,
+      "end": 76.605
+     },
+     {
+      "w": "road",
+      "start": 76.615,
+      "end": 77.928
+     },
+     {
+      "w": "I",
+      "start": 77.938,
+      "end": 78.147
+     },
+     {
+      "w": "ran",
+      "start": 78.157,
+      "end": 78.776
+     },
+     {
+      "w": "becomes",
+      "start": 78.786,
+      "end": 79.649
+     },
+     {
+      "w": "the",
+      "start": 79.659,
+      "end": 80.15
+     },
+     {
+      "w": "one",
+      "start": 80.16,
+      "end": 82.02
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'one': v2 convention (v2 80.154 sits 0.22 s before the vowel/formant change at 80.38; v3 shows the same change at 80.37, mapped v2 = 80.16). v3 CTC put it on the formant change (80.55). Low confidence (+-0.2 s), legato"
+   },
+   {
+    "id": 9,
+    "section": "Chorus 1",
+    "text": "Fold me in again",
+    "kind": "lead",
+    "start": 83.545,
+    "end": 89.415,
+    "start_pos": {
+     "bar": 48,
+     "beat": 4.89
+    },
+    "words": [
+     {
+      "w": "Fold",
+      "start": 83.545,
+      "end": 85.695
+     },
+     {
+      "w": "me",
+      "start": 85.705,
+      "end": 86.322
+     },
+     {
+      "w": "in",
+      "start": 86.332,
+      "end": 86.693
+     },
+     {
+      "w": "again",
+      "start": 86.703,
+      "end": 89.415
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 10,
+    "section": "Chorus 1",
+    "text": "Nothing that I lived can come undone",
+    "kind": "lead",
+    "start": 89.43,
+    "end": 98.985,
+    "start_pos": {
+     "bar": 52,
+     "beat": 2.46
+    },
+    "words": [
+     {
+      "w": "Nothing",
+      "start": 89.43,
+      "end": 90.484
+     },
+     {
+      "w": "that",
+      "start": 90.494,
+      "end": 91.522
+     },
+     {
+      "w": "I",
+      "start": 91.532,
+      "end": 91.861
+     },
+     {
+      "w": "lived",
+      "start": 91.871,
+      "end": 92.6
+     },
+     {
+      "w": "can",
+      "start": 92.61,
+      "end": 92.949
+     },
+     {
+      "w": "come",
+      "start": 92.959,
+      "end": 93.688
+     },
+     {
+      "w": "undone",
+      "start": 93.698,
+      "end": 98.985
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'N' of 'Nothing' voiced from 89.43 (v2 89.46 -> mapped 89.44; CTC 89.59)"
+   },
+   {
+    "id": 11,
+    "section": "Breakdown",
+    "text": "Branch... and wander...",
+    "kind": "lead",
+    "start": 102.522,
+    "end": 106.655,
+    "start_pos": {
+     "bar": 59,
+     "beat": 4.71
+    },
+    "words": [
+     {
+      "w": "Branch",
+      "start": 102.522,
+      "end": 103.555
+     },
+     {
+      "w": "and",
+      "start": 103.565,
+      "end": 103.876
+     },
+     {
+      "w": "wander",
+      "start": 103.886,
+      "end": 106.655
+     }
+    ],
+    "flags": [
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 12,
+    "section": "Breakdown",
+    "text": "Merge... and return...",
+    "kind": "lead",
+    "start": 109.31,
+    "end": 111.725,
+    "start_pos": {
+     "bar": 63,
+     "beat": 4.41
+    },
+    "words": [
+     {
+      "w": "Merge",
+      "start": 109.31,
+      "end": 110.351
+     },
+     {
+      "w": "and",
+      "start": 110.361,
+      "end": 110.658
+     },
+     {
+      "w": "return",
+      "start": 110.668,
+      "end": 111.725
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'Merge' voiced from 109.31 (v2 109.43 -> mapped 109.31; CTC 109.52)"
+   },
+   {
+    "id": 13,
+    "section": "Breakdown",
+    "text": "Ahh... ahh...",
+    "kind": "wordless",
+    "start": 111.74,
+    "end": 125.6,
+    "start_pos": {
+     "bar": 65,
+     "beat": 2.03
+    },
+    "words": [
+     {
+      "w": "Ahh",
+      "start": 111.74,
+      "end": 118.17
+     },
+     {
+      "w": "ahh",
+      "start": 118.2,
+      "end": 125.6
+     }
+    ],
+    "flags": [
+     "manual_wordless"
+    ],
+    "note": "Wordless: no aligner/ASR output. Same melody as v2 (2 semitones lower). Ahh #1 = drop to the low note right after 'return' (111.74, measured; mapped v2 111.74), leaps at 113.91 and 116.53; Ahh #2 = leap up at 118.20 (bar 69 downbeat; mapped v2 118.19), held and fading out by ~125.6 (< -40 dB from ~124.95). Boundary 'return'/Ahh #1 is musical, not phonetic (medium-low confidence)."
+   },
+   {
+    "id": 16,
+    "section": "Verse 2",
+    "text": "This branch may never find the way",
+    "kind": "lead",
+    "start": 181.403,
+    "end": 186.97,
+    "start_pos": {
+     "bar": 105,
+     "beat": 3.39
+    },
+    "words": [
+     {
+      "w": "This",
+      "start": 181.403,
+      "end": 181.797
+     },
+     {
+      "w": "branch",
+      "start": 181.807,
+      "end": 182.415
+     },
+     {
+      "w": "may",
+      "start": 182.425,
+      "end": 182.904
+     },
+     {
+      "w": "never",
+      "start": 182.914,
+      "end": 183.533
+     },
+     {
+      "w": "find",
+      "start": 183.543,
+      "end": 184.655
+     },
+     {
+      "w": "the",
+      "start": 184.665,
+      "end": 185.149
+     },
+     {
+      "w": "way",
+      "start": 185.159,
+      "end": 186.97
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 17,
+    "section": "Verse 2",
+    "text": "Back to the place where I began",
+    "kind": "lead",
+    "start": 187.634,
+    "end": 191.46,
+    "start_pos": {
+     "bar": 109,
+     "beat": 1.89
+    },
+    "words": [
+     {
+      "w": "Back",
+      "start": 187.634,
+      "end": 188.023
+     },
+     {
+      "w": "to",
+      "start": 188.033,
+      "end": 188.327
+     },
+     {
+      "w": "the",
+      "start": 188.337,
+      "end": 188.53
+     },
+     {
+      "w": "place",
+      "start": 188.606,
+      "end": 189.32
+     },
+     {
+      "w": "where",
+      "start": 189.33,
+      "end": 189.799
+     },
+     {
+      "w": "I",
+      "start": 189.809,
+      "end": 190.028
+     },
+     {
+      "w": "began",
+      "start": 190.038,
+      "end": 191.46
+     }
+    ],
+    "flags": [
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 18,
+    "section": "Verse 2",
+    "text": "And maybe something that I learned",
+    "kind": "lead",
+    "start": 194.737,
+    "end": 199.985,
+    "start_pos": {
+     "bar": 113,
+     "beat": 2.42
+    },
+    "words": [
+     {
+      "w": "And",
+      "start": 194.737,
+      "end": 194.932
+     },
+     {
+      "w": "maybe",
+      "start": 194.942,
+      "end": 195.546
+     },
+     {
+      "w": "something",
+      "start": 195.556,
+      "end": 196.449
+     },
+     {
+      "w": "that",
+      "start": 196.459,
+      "end": 197.27
+     },
+     {
+      "w": "I",
+      "start": 197.28,
+      "end": 197.56
+     },
+     {
+      "w": "learned",
+      "start": 197.57,
+      "end": 199.985
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "same improvisation as v2: 'some-thing that' on the high note 196.0-197.27; 'I' = drop to the low note 197.28 (mapped v2 197.30); 'learned' = step up 197.57 (mapped 197.59). MMS/wav2vec2 squeezed 'I learned' into 196.9-197.05 (wrong). 'that' kept at the fused 196.46 (RMS dip; mapped v2 196.31)"
+   },
+   {
+    "id": 19,
+    "section": "Verse 2",
+    "text": "Comes home to who I'll be again",
+    "kind": "lead",
+    "start": 200.0,
+    "end": 204.995,
+    "start_pos": {
+     "bar": 116,
+     "beat": 2.7
+    },
+    "words": [
+     {
+      "w": "Comes",
+      "start": 200.0,
+      "end": 200.849
+     },
+     {
+      "w": "home",
+      "start": 200.859,
+      "end": 202.215
+     },
+     {
+      "w": "to",
+      "start": 202.41,
+      "end": 202.62
+     },
+     {
+      "w": "who",
+      "start": 202.63,
+      "end": 203.231
+     },
+     {
+      "w": "I'll",
+      "start": 203.241,
+      "end": 203.507
+     },
+     {
+      "w": "be",
+      "start": 203.517,
+      "end": 204.026
+     },
+     {
+      "w": "again",
+      "start": 204.036,
+      "end": 204.995
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'who' = new voiced note 202.63 (mapped v2 203.56 -> 202.65; CTC 202.84)"
+   },
+   {
+    "id": 20,
+    "section": "Chorus 2",
+    "text": "Merge me back to main",
+    "kind": "lead",
+    "start": 207.58,
+    "end": 212.23,
+    "start_pos": {
+     "bar": 120,
+     "beat": 4.44
+    },
+    "words": [
+     {
+      "w": "Merge",
+      "start": 207.58,
+      "end": 209.873
+     },
+     {
+      "w": "me",
+      "start": 209.883,
+      "end": 210.112
+     },
+     {
+      "w": "back",
+      "start": 210.122,
+      "end": 210.686
+     },
+     {
+      "w": "to",
+      "start": 210.696,
+      "end": 210.99
+     },
+     {
+      "w": "main",
+      "start": 211.0,
+      "end": 212.23
+     }
+    ],
+    "flags": [
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'Merge' scoop voiced from 207.58 after a breath 207.4-207.55. NOT where v2 maps (207.14): in v3 the scoop starts 0.24 s before the bar-121 hit (207.82), in v2 0.69 s before bar 121. CTC 207.76"
+   },
+   {
+    "id": 21,
+    "section": "Chorus 2",
+    "text": "Every road I ran becomes the one",
+    "kind": "lead",
+    "start": 213.801,
+    "end": 219.665,
+    "start_pos": {
+     "bar": 124,
+     "beat": 3.04
+    },
+    "words": [
+     {
+      "w": "Every",
+      "start": 213.801,
+      "end": 214.582
+     },
+     {
+      "w": "road",
+      "start": 214.592,
+      "end": 215.884
+     },
+     {
+      "w": "I",
+      "start": 215.894,
+      "end": 216.029
+     },
+     {
+      "w": "ran",
+      "start": 216.039,
+      "end": 216.717
+     },
+     {
+      "w": "becomes",
+      "start": 216.727,
+      "end": 217.57
+     },
+     {
+      "w": "the",
+      "start": 217.58,
+      "end": 218.15
+     },
+     {
+      "w": "one",
+      "start": 218.16,
+      "end": 219.665
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'one': v2 convention as line 8 (mapped v2 = 218.16; vowel/formant change 218.30; CTC 218.55). Low confidence"
+   },
+   {
+    "id": 22,
+    "section": "Chorus 2",
+    "text": "Fold me in again",
+    "kind": "lead",
+    "start": 221.353,
+    "end": 225.89,
+    "start_pos": {
+     "bar": 128,
+     "beat": 4.8
+    },
+    "words": [
+     {
+      "w": "Fold",
+      "start": 221.353,
+      "end": 223.542
+     },
+     {
+      "w": "me",
+      "start": 223.552,
+      "end": 224.091
+     },
+     {
+      "w": "in",
+      "start": 224.101,
+      "end": 224.52
+     },
+     {
+      "w": "again",
+      "start": 224.53,
+      "end": 225.89
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 23,
+    "section": "Chorus 2",
+    "text": "Every life I've lived, I have become",
+    "kind": "lead",
+    "start": 227.403,
+    "end": 234.143,
+    "start_pos": {
+     "bar": 132,
+     "beat": 3.05
+    },
+    "words": [
+     {
+      "w": "Every",
+      "start": 227.403,
+      "end": 228.231
+     },
+     {
+      "w": "life",
+      "start": 228.241,
+      "end": 229.405
+     },
+     {
+      "w": "I've",
+      "start": 229.415,
+      "end": 229.733
+     },
+     {
+      "w": "lived",
+      "start": 229.743,
+      "end": 230.566
+     },
+     {
+      "w": "I",
+      "start": 230.576,
+      "end": 230.766
+     },
+     {
+      "w": "have",
+      "start": 230.776,
+      "end": 231.2
+     },
+     {
+      "w": "become",
+      "start": 231.21,
+      "end": 234.143
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 24,
+    "section": "Outro",
+    "text": "Back to main...",
+    "kind": "lead",
+    "start": 234.158,
+    "end": 238.04,
+    "start_pos": {
+     "bar": 136,
+     "beat": 2.93
+    },
+    "words": [
+     {
+      "w": "Back",
+      "start": 234.158,
+      "end": 234.597
+     },
+     {
+      "w": "to",
+      "start": 234.607,
+      "end": 234.801
+     },
+     {
+      "w": "main",
+      "start": 234.811,
+      "end": 238.04
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "whisper_diff"
+    ]
+   },
+   {
+    "id": 25,
+    "section": "Outro",
+    "text": "Back to main...",
+    "kind": "lead",
+    "start": 247.762,
+    "end": 251.175,
+    "start_pos": {
+     "bar": 144,
+     "beat": 2.86
+    },
+    "words": [
+     {
+      "w": "Back",
+      "start": 247.762,
+      "end": 248.14
+     },
+     {
+      "w": "to",
+      "start": 248.15,
+      "end": 248.26
+     },
+     {
+      "w": "main",
+      "start": 248.27,
+      "end": 251.175
+     }
+    ],
+    "flags": [
+     "ctc_spread",
+     "manual_start",
+     "whisper_diff"
+    ],
+    "note": "'to' = RMS dip + t-burst 248.15-248.25, 'main' = voicing resumes 248.27 (same pattern as v2 250.01/250.30, but tighter; wav2vec2/CTC put 'main' on the pitch drop 249.17). 'main' held to ~251.6 (v2: to ~255.9)"
+   }
+  ],
+  "adlibs": [
+   {
+    "start": 25.8,
+    "end": 28.6,
+    "text": "(sustained low tone in both vocal stems, swelling into \"I split\"; probably a hummed pickup or vocal pad, no consonants)",
+    "kind": "hum",
+    "lip_sync": false,
+    "note": "-50 dB at 25.9, ~-35 dB 27-28.5 (RoFormer); starts ~2.5 s later than in v2 (23.2); uncertain whether it is the singer"
+   },
+   {
+    "start": 172.54,
+    "end": 180.28,
+    "text": "(wordless sustained \"ooh\" layer in the drop, bars 100-104; flat pitch then glide down ~176.4; abrupt start)",
+    "kind": "wordless",
+    "lip_sync": false,
+    "note": "as in v2 (2 semitones lower); both separators put it in the vocal stem; no consonants; could be a vocal-chop/choir pad rather than the lead - do not lip-sync unless intended"
+   },
+   {
+    "start": 260.85,
+    "end": 264.3,
+    "text": "(NEW in v3: faint high sustained tone ~C5 in the vocal stems into the last section hit; no consonants)",
+    "kind": "wordless",
+    "lip_sync": false,
+    "note": "-35 to -55 dB (RoFormer), whisper hallucinated \"Thank you for watching\" on it; probably a pad/vocal texture, not a sung line"
+   }
+  ],
+  "vs_lyric_sheet": [
+   "Same words, same line order and the same 22 sung lines as v2 (faster-whisper on the v3 vocal stem, with and without prompt, plus windowed re-transcription). ASR mishearings such as \"Back to Maine/me\", \"Branch and wonder\", \"This French\", \"something that I love\", \"Nothing that I left\" are breathy-vowel artefacts as in v2; windowed ASR gives \"Nothing that I lived can come undone\".",
+   "\"Back to main...\" is sung TWICE (234.16, 247.76), as in v2.",
+   "NO wordless vocalise after the first held \"main\" (v2 had one, 238.66-248.97): the held \"main\" ends ~238.0 and the vocal stems are silent until \"Back to main\" #2.",
+   "\"Ahh... ahh...\" = two long wordless notes 111.74-118.17 and 118.20-125.6 (leap up on bar 69); no consonants, boundary to \"return\" is musical.",
+   "No vocal in the Build Up (RoFormer stem < -60 dB 126-171 s); the ASR outputs \"Bye\" / \"Oh my God\" there are hallucinations.",
+   "Unlisted: low sustained tone in the vocal stems 25.8-28.6 before the first line, a wordless \"ooh\" layer 172.54-180.28 in the drop, and (new) a faint high tone 260.85-264.3 before the last section hit (adlibs, lip_sync false).",
+   "Verse 2 improvisation as in v2: high notes on THE (184.66), I (189.81), THAT (196.46-197.27, held), BE (203.52). Chorus 2 \"ME\" emphasised (209.88).",
+   "No extra chorus repeats; choruses are not doubled."
+  ],
+  "held_notes": [
+   {
+    "word": "unfold",
+    "line": 4,
+    "start": 51.757,
+    "end": 54.065,
+    "dur": 2.31
+   },
+   {
+    "word": "from",
+    "line": 6,
+    "start": 62.194,
+    "end": 66.025,
+    "dur": 3.83
+   },
+   {
+    "word": "Merge",
+    "line": 7,
+    "start": 69.45,
+    "end": 71.807,
+    "dur": 2.36
+   },
+   {
+    "word": "main",
+    "line": 7,
+    "start": 72.934,
+    "end": 75.743,
+    "dur": 2.81
+   },
+   {
+    "word": "Fold",
+    "line": 9,
+    "start": 83.545,
+    "end": 85.695,
+    "dur": 2.15
+   },
+   {
+    "word": "again",
+    "line": 9,
+    "start": 86.703,
+    "end": 89.415,
+    "dur": 2.71
+   },
+   {
+    "word": "undone",
+    "line": 10,
+    "start": 93.698,
+    "end": 98.985,
+    "dur": 5.29
+   },
+   {
+    "word": "wander",
+    "line": 11,
+    "start": 103.886,
+    "end": 106.655,
+    "dur": 2.77
+   },
+   {
+    "word": "Ahh",
+    "line": 13,
+    "start": 111.74,
+    "end": 118.17,
+    "dur": 6.43
+   },
+   {
+    "word": "ahh",
+    "line": 13,
+    "start": 118.2,
+    "end": 125.6,
+    "dur": 7.4
+   },
+   {
+    "word": "learned",
+    "line": 18,
+    "start": 197.57,
+    "end": 199.985,
+    "dur": 2.42
+   },
+   {
+    "word": "Merge",
+    "line": 20,
+    "start": 207.58,
+    "end": 209.873,
+    "dur": 2.29
+   },
+   {
+    "word": "Fold",
+    "line": 22,
+    "start": 221.353,
+    "end": 223.542,
+    "dur": 2.19
+   },
+   {
+    "word": "become",
+    "line": 23,
+    "start": 231.21,
+    "end": 234.143,
+    "dur": 2.93
+   },
+   {
+    "word": "main",
+    "line": 24,
+    "start": 234.811,
+    "end": 238.04,
+    "dur": 3.23
+   },
+   {
+    "word": "main",
+    "line": 25,
+    "start": 248.27,
+    "end": 251.175,
+    "dur": 2.91
+   }
+  ],
+  "spot_check": {
+   "n": 21,
+   "median_abs_ms": 24.0,
+   "mean_abs_ms": 44.8,
+   "p90_abs_ms": 110.0,
+   "max_abs_ms": 140.0,
+   "bias_ms": -9.2,
+   "rows": [
+    {
+     "line": 2,
+     "w": "Down",
+     "predicted": 33.654,
+     "measured": 33.639,
+     "err_ms": 15,
+     "feature": "rms"
+    },
+    {
+     "line": 2,
+     "w": "night",
+     "predicted": 36.537,
+     "measured": 36.527,
+     "err_ms": 10,
+     "feature": "hf"
+    },
+    {
+     "line": 4,
+     "w": "story",
+     "predicted": 48.485,
+     "measured": 48.425,
+     "err_ms": 60,
+     "feature": "hf"
+    },
+    {
+     "line": 5,
+     "w": "branch",
+     "predicted": 55.763,
+     "measured": 55.768,
+     "err_ms": -5,
+     "feature": "rms"
+    },
+    {
+     "line": 6,
+     "w": "started",
+     "predicted": 60.705,
+     "measured": 60.672,
+     "err_ms": 33,
+     "feature": "hf"
+    },
+    {
+     "line": 7,
+     "w": "back",
+     "predicted": 72.056,
+     "measured": 72.066,
+     "err_ms": -10,
+     "feature": "rms"
+    },
+    {
+     "line": 8,
+     "w": "becomes",
+     "predicted": 78.786,
+     "measured": 78.886,
+     "err_ms": -100,
+     "feature": "hf"
+    },
+    {
+     "line": 9,
+     "w": "Fold",
+     "predicted": 83.545,
+     "measured": 83.535,
+     "err_ms": 10,
+     "feature": "rms"
+    },
+    {
+     "line": 10,
+     "w": "lived",
+     "predicted": 91.871,
+     "measured": 92.011,
+     "err_ms": -140,
+     "feature": "hf"
+    },
+    {
+     "line": 10,
+     "w": "can",
+     "predicted": 92.61,
+     "measured": 92.51,
+     "err_ms": 100,
+     "feature": "hf"
+    },
+    {
+     "line": 10,
+     "w": "come",
+     "predicted": 92.959,
+     "measured": 92.954,
+     "err_ms": 5,
+     "feature": "hf"
+    },
+    {
+     "line": 16,
+     "w": "never",
+     "predicted": 182.914,
+     "measured": 182.849,
+     "err_ms": 65,
+     "feature": "hf"
+    },
+    {
+     "line": 17,
+     "w": "place",
+     "predicted": 188.606,
+     "measured": 188.716,
+     "err_ms": -110,
+     "feature": "rms"
+    },
+    {
+     "line": 18,
+     "w": "something",
+     "predicted": 195.556,
+     "measured": 195.615,
+     "err_ms": -59,
+     "feature": "rms"
+    },
+    {
+     "line": 19,
+     "w": "home",
+     "predicted": 200.859,
+     "measured": 200.978,
+     "err_ms": -119,
+     "feature": "rms"
+    },
+    {
+     "line": 20,
+     "w": "back",
+     "predicted": 210.122,
+     "measured": 210.107,
+     "err_ms": 15,
+     "feature": "rms"
+    },
+    {
+     "line": 23,
+     "w": "lived",
+     "predicted": 229.743,
+     "measured": 229.723,
+     "err_ms": 20,
+     "feature": "hf"
+    },
+    {
+     "line": 23,
+     "w": "have",
+     "predicted": 230.776,
+     "measured": 230.8,
+     "err_ms": -24,
+     "feature": "rms"
+    },
+    {
+     "line": 23,
+     "w": "become",
+     "predicted": 231.21,
+     "measured": 231.205,
+     "err_ms": 5,
+     "feature": "rms"
+    },
+    {
+     "line": 24,
+     "w": "Back",
+     "predicted": 234.158,
+     "measured": 234.148,
+     "err_ms": 10,
+     "feature": "hf"
+    },
+    {
+     "line": 25,
+     "w": "Back",
+     "predicted": 247.762,
+     "measured": 247.737,
+     "err_ms": 25,
+     "feature": "hf"
+    }
+   ],
+   "method": "independent onset on the demucs vocal stem (steepest 2-8 kHz or broadband rise, backtracked) vs predicted start; |err|>90 ms cases are b/p words where the prediction marks lip closure and the measure marks the burst/vowel"
+  }
+ }
+}

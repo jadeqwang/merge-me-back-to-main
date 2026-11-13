@@ -1,4 +1,20 @@
-# Handoff: the Fable cut of "Merge" (written 2026-11-11, about 00:45)
+# Handoff: the Fable cut of "Merge"
+
+> **Update 2026-11-13 (read before the text below, which describes the state on 2026-11-11).**
+> - Jade asked for a review of every cut against her shipped videos (`~/Documents/1-music-shipped`). Verdict given to her: v7 is not at
+>   that standard and polish will not get it there; the shipped films give nearly every line its own picture, in a hand-made medium,
+>   about something specific and true, at 2-3 times v7's cut rate. Proposed: a "take two" with v7 as animatic and engine, her real
+>   lives as illustrated plates (one medium per life), the renderer drawing type, lanes and graph over them.
+> - The song changed: `inputs/Merge (keychange down).wav` is the current audio (confirmed by Jade). 2 semitones lower, tempo drifts
+>   137.8 to about 141 BPM, so `analysis_v2` does not fit. New map: `analysis_v3/` (NOTES.md there; `warp_v2_to_v3.json` maps old
+>   beat times to new). Chorus 2 now opens with a hit on bar 121; there is a new last kick at 276.82 s. v7 has NOT been re-timed.
+> - She approved a 26 s proof (cap $40; about $21.5 spent): bars 28-43, in `fable/proof/` (code, prompts, NOTES.md),
+>   data in `work_fable/proof/`, review copy and README in `review/fable_proof/`. Waiting for her verdict on it.
+> - Likeness: she is fine with re-using the selfie-turned-art from Orbital Sunrise / Moongazing; those singing clips were generated
+>   from a still plus the music, not filmed, so sung inserts need no filming (and must be generated against the new audio).
+> - The hybrid (Seedance redraw over the code world) was not adopted; recommendation to her was against it as proposed.
+
+(The rest of this file was written 2026-11-11, about 00:45.)
 
 For the next Claude session picking this up. Read this file first; it replaces the top of `fable/RESUME.md` as the entry point.
 Then `fable/SPEC.md` (concept, rules, timeline) only as far as you need it.
