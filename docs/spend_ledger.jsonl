@@ -1067,3 +1067,12 @@
 {"ts": "2026-11-14T06:41:19Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_fork_t1", "job": "mergemain/t2_day_fork_t1-fbfc361475", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T06:41:20Z", "model": "bytedance/seedance-2.5", "tag": "t2_root_light_t1", "job": "mergemain/t2_root_light_t1-6c366747e6", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T06:41:21Z", "model": "bytedance/seedance-2.5", "tag": "t2_like_sing2_a", "job": "mergemain/t2_like_sing2_a-07c3f6ff99", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:48:33Z", "model": "bytedance/seedance-2.5", "tag": "t2_c2_lookup_t1", "job": "mergemain/t2_c2_lookup_t1-87a5509442", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:48:33Z", "model": "bytedance/seedance-2.5", "tag": "t2_c2_hands_t1", "job": "mergemain/t2_c2_hands_t1-fdca9021fc", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:48:35Z", "model": "bytedance/seedance-2.5", "tag": "t2_patch_settle_t1", "job": "mergemain/t2_patch_settle_t1-29de6757f8", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:49:24Z", "model": "bytedance/seedance-2.5", "tag": "t2_catch_t1", "job": "mergemain/t2_catch_t1-5abe4b8b6c", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:49:25Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_fork_t1", "job": "mergemain/t2_day_fork_t1-fbfc361475", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:50:14Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_run_t1", "job": "mergemain/t2_day_run_t1-c14019c6c9", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:50:15Z", "model": "bytedance/seedance-2.5", "tag": "t2_root_light_t1", "job": "mergemain/t2_root_light_t1-6c366747e6", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:50:15Z", "model": "bytedance/seedance-2.5", "tag": "t2_like_sing2_a", "job": "mergemain/t2_like_sing2_a-07c3f6ff99", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:53:19Z", "model": "bytedance/seedance-2.5", "tag": "t2_patch_hold_t1", "job": "mergemain/t2_patch_hold_t1-ed88b846be", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}

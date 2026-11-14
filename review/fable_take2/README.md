@@ -29,4 +29,4 @@ Render again: `fable/take2/tools/render_film.sh animatic_vN`. Checks: `fable/tak
 - `film_v1.mp4`: the whole film with sound, review readout on. The two sung likeness shots are cards here (likeness clips stay local).
 - Sections with more bitrate: `section1_v1.mp4` (bars 1-17), `section2_v3.mp4` (16-57), `section3_v3.mp4` (56-89), `section4_v2.mp4` (88-121), `section5_v1.mp4` (120-end).
 - Orchestra looks for bars 81-84: `orchestra_v1.mp4` (solid) and `orchestra_v1_light.mp4`; `orchestra_v1_sheet.jpg` compares them.
-- Nothing here has been watched at speed with sound by anyone but Jade; all checks were on stills, contact sheets and measurements.
+- Nobody has yet watched film v1 at speed with sound; all checks so far were on stills, contact sheets and measurements.
