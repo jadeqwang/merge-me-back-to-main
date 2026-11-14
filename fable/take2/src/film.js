@@ -28,6 +28,7 @@ const PROOF_PLATES = '/work_fable/proof/plates';
 const V7DIR = Q.get('v7dir') || '/work_fable/take2/v7/full';
 const HUD = Q.get('hud') !== '0', USE_V7 = Q.get('v7') !== '0', USE_PAPER = Q.get('paper') !== '0', ALLCARDS = Q.get('cards') === '1', LANES = Q.get('lanes') !== '0';
 const PROOFBUG = Q.get('proofbug') === '1', LIKENESS = Q.get('likeness') !== '0';
+const ORCH_V7 = Q.get('orch') === 'v7';   // film v2: ?orch=v7 = the orchestra bars as v1 (3D through the paper look), not the orch_* plates
 let OUTRO = null, MAPF = null;
 const canvas = document.getElementById('c'); canvas.width = W; canvas.height = H;
 const g = canvas.getContext('2d', { willReadFrequently: true, alpha: false });
@@ -183,7 +184,7 @@ function lyrics(t, eff, s) {
   for (const l of LYR) {
     if (!on(t, l.t0) || t > l.out) continue;
     const la = 1 - clamp01((t - l.out + 0.2) / 0.2), place = eff === 'card' ? 'strip' : 'low', Lx = layoutLine(l, place, s && s.opt && s.opt.lyr, s && s.t1);
-    if (place === 'low' && Lx.region) { const B = Lx.box, p = 50 * S; g.save(); g.filter = `blur(${Math.round(36 * S)}px)`; g.fillStyle = `rgba(5,6,26,${0.42 * la})`; g.fillRect(B.x - p, B.y - p, B.w + 2 * p, B.h + 2 * p); g.restore(); }   // a soft dark cloud behind the words only
+    if (place === 'low' && Lx.region) { const B = Lx.box, p = 50 * S; g.save(); g.filter = `blur(${Math.round(36 * S)}px)`; g.fillStyle = `rgba(5,6,26,${(s.opt.lyr.cloud || 0.42) * la})`; g.fillRect(B.x - p, B.y - p, B.w + 2 * p, B.h + 2 * p); g.restore(); }   // a soft dark cloud behind the words only
     else if (place === 'low') { const gr = g.createLinearGradient(0, Lx.top - 60 * S, 0, H); gr.addColorStop(0, 'rgba(5,6,26,0)'); gr.addColorStop(1, `rgba(5,6,26,${0.5 * la})`); g.fillStyle = gr; g.fillRect(0, Lx.top - 60 * S, W, H - Lx.top + 60 * S); }
     setFont(Lx.f); if (Lx.slab) g.letterSpacing = `${-0.01 * parseFloat(Lx.f.font.split(' ')[1])}px`;
     for (const q of Lx.words) { const w = l.words[q.wi]; if (!on(t, w.start)) continue;
@@ -247,6 +248,9 @@ const CROPS = { b: { z: 1.55, f: [[0.3, 0.35], [0.7, 0.6], [0.55, 0.3], [0.35, 0
 function scene(t) {
   const s = shotAt(t); const sc = { t, s, eff: effKind(s), imgs: [] };
   if (sc.eff === 'v7') { const k = v7Index(t, s); if (k < 0) sc.eff = 'card'; else { sc.imgs.push({ url: v7Url(k, s), v7: true }); if (s.opt.windows) sc.wins = windowUrls(s, t); } }
+  // film v2: a v7 shot that dissolves into a plate (opt.tail {id, at (song s), clip0, frames}): orchestra shot 1, the 3D arrival into orch_1
+  const tl = s.opt && s.opt.tail; if (sc.eff === 'v7' && tl && !ORCH_V7 && PLATE[tl.id] && on(t, tl.at)) { sc.tail = []; plateDraw({ t0: tl.at, t1: s.t1, opt: { clip0: tl.clip0, push: 0 } }, t, tl.id, sc.tail);
+    const a = clamp01((fr(t, tl.at) + 1) / tl.frames); sc.tail.forEach((im) => (im.alpha = (im.alpha === undefined ? 1 : im.alpha) * a)); }
   if (sc.eff === 'plate') plateDraw(s, t, s.src, sc.imgs);
   if (sc.eff === 'kit') for (const u of KITX.need(s, t)) sc.imgs.push({ url: u });
   if (sc.eff === 'code' && s.opt.code === 'mapfold') for (const u of MAPF.need(s, t)) sc.imgs.push({ url: u });
@@ -679,6 +683,7 @@ function draw(t, sc) {
       g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ...(sec.stroke ? { stroke: sec.stroke } : {}), ink: [...(sec.ink || INKS), ...(extraInk || [])], seed: 1000 + s.i, t, ...lk }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else g.drawImage(b, 0, 0, W, H);
     if (sc.wins) windows(t, sc);
+    if (sc.tail) drawImgs(sc.tail);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
   if (s.opt && s.opt.white && sc.eff === 'plate') { const f = fr(t, s.t0); if (f <= 1) { g.fillStyle = `rgba(255,250,240,${f === 0 ? 0.85 : 0.4})`; g.fillRect(0, 0, W, H); } }   // 2-frame white flash (impact, snare)
@@ -693,7 +698,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.win || []), ...(sc.wins || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc);
   const z = s.opt && s.opt.toFrame0; if (z) { const t0 = T.duration - z; if (t > t0) {   // the end: cross to the film's own frame 0 (the last frame equals it)
     if (!F0) { const c = document.createElement('canvas'); c.width = W; c.height = H; const keep = g.getImageData(0, 0, W, H); const s0 = scene(0); READY.clear();
@@ -713,7 +718,9 @@ async function boot() {
   SH = resolveShots(T);
   for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.strands && s.opt.strands.window) await findPlate(s.opt.strands.window); if (s.kind === 'code' && s.opt.lives) for (const id of s.opt.lives) await findPlate('det_' + id); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); if (s.opt && s.opt.base) { await findPlate(s.opt.base); await findPlate(s.opt.top); } if (s.opt && s.opt.windows) for (const id of s.opt.windows.lives) await findPlate(id); if (s.opt && s.opt.code === 'mapfold') { for (const id of s.opt.lives) await findPlate(id); await findPlate(s.opt.her); } }
   // film v2: a shot whose opt.next = { id, opt } switches to plate `id` (with `opt` merged over its own) when that plate has landed
-  for (const s of SH) if (s.opt && s.opt.next && (await findPlate(s.opt.next.id))) { s.src = s.opt.next.id; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
+  // next.kind: the shot's kind changes too (an orchestra v7 shot becomes a plate); next.flag 'orch': not with ?orch=v7
+  for (const s of SH) if (s.opt && s.opt.next && !(s.opt.next.flag === 'orch' && ORCH_V7) && (await findPlate(s.opt.next.id))) { s.src = s.opt.next.id; if (s.opt.next.kind) s.kind = s.opt.next.kind; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
+  for (const s of SH) if (s.opt && s.opt.tail && !ORCH_V7) await findPlate(s.opt.tail.id);
   // film v2: plates replaced by id everywhere the film uses them (shots.js PLATE_ALIAS), when the new plate exists
   for (const [k, a] of Object.entries(PLATE_ALIAS || {})) { const p = await findPlate(a.id); if (p) PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; }
   const vm = await json(`${V7DIR}/meta.json`);

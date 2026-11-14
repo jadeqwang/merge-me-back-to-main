@@ -57,10 +57,11 @@ const STANCE = [['stance_bow', 'bow stance punch'], ['stance_horse', 'horse stan
 // film v2: the moving stance clips (plates_v2 wiring: settled from bow 1.5, horse 2.0, drop2 2.25 s; stance_drop_v2 not delivered yet, its
 // settle point is a guess of 1.5 s until its wiring row exists). clip0 = settle - 0.11 s, so she settles about a quarter beat after the
 // bar line and holds, moving, through the beat
-const STANCE_V2 = [['stance_bow_v2', 1.5], ['stance_horse_v2', 2.0], ['stance_drop_v2', 1.5], ['stance_drop2_v2', 2.25]];
+const STANCE_V2 = [['stance_bow_v2', 1.5], ['stance_horse_v2', 2.0], ['stance_drop_v2', 1.0], ['stance_drop2_v2', 2.25]];   // drop_v2: use 0.5-5.0, holds from 1.0
 // beat 3 of b77-80 (film v2): four close inserts instead of the stances (Jade: mix it up with writing poems and playing instruments).
 // clip0 measured on the clips: the piano chord lands at about 0.85-1.0 s, the guitar strum crosses the strings at about 1.0 s
-const INSERT = [['ins_violin', 'violin: the bow arm, a down-bow, the wrist leading', { clip0: 2.5, speed: 1.25 }], ['ins_poem', 'a pen finishing a line in a notebook, the hand lifts', { clip0: 3.4 }],
+const INSERT = [['ins_violin', 'violin: the bow arm, a down-bow, the wrist leading', { clip0: 1.0, speed: 1.25 }],   // take 2 (warm wood violin): use 1.0-4.75
+  ['ins_poem', 'a pen finishing a line in a notebook, the hand lifts', { clip0: 3.4 }],
   ['ins_piano', 'both hands land a chord', { clip0: 0.82 }], ['ins_guitar', 'a strum on an acoustic guitar (the RNA band)', { clip0: 0.95 }]];
 
 const S = [];
@@ -232,8 +233,16 @@ for (let k = 0; k < 4; k++) {
 // frames from their own folder (opt.v7dir); paper: the orchestra look (opt.paperLook, src/film.js PAPER_LOOKS; ?orchpaper=light|solid|default).
 // Shot 8 holds one beat into bar 85 to show the hit (the frames run to bar 85 beat 2); seq 09 starts on beat 2.
 const ORCH = ['above', 'side_low_violins', 'above_behind', 'timpani', 'conductor_view', 'basses_side', 'high_wide', 'last_wide'];
-for (let k = 0; k < 8; k++) { const b = 81 + (k >> 1), a = k % 2 ? [b, 3] : b, e = k === 7 ? [85, 2] : k % 2 ? b + 1 : [b, 3];
-  V(a, e, 'orchestra ' + ORCH[k], `The orchestra of Jades (${k + 1} of 8): ${ORCH[k].replace(/_/g, ' ')}.`, { row: 'b81-84', opt: { v7dir: '/work_fable/take2/v7/orchestra', paperLook: 'orch' } }); }
+// film v2: the eight shots use the cel plates orch_1..8 raw (no paper pass), time-scaled per notes/orchestra.md revision 3 wiring so the
+// strokes land on beats: [clip0, speed]. Shot 1 stays the 3D arrival (solid paper look) and dissolves over 5 frames at 139.60 into orch_1
+// from 1.0 s (opt.tail); shot 8 is orch_8 to b84 beat 3.5, then the 3D for the rise and the bar-85 hit. ?orch=v7: the v1 route.
+const ORCH_PLATE = [null, [0.65, 1.45], [1.5, 1.2], [1.55, 1.25], [0.4, 0.93], [1.8, 1.35], [0.3, 1], [0.3, 1]];
+const OV = { v7dir: '/work_fable/take2/v7/orchestra', paperLook: 'orch' };
+for (let k = 0; k < 8; k++) { const b = 81 + (k >> 1), a = k % 2 ? [b, 3] : b, e = k === 7 ? [84, 3.5] : k % 2 ? b + 1 : [b, 3];
+  const o = k === 0 ? { ...OV, tail: { id: 'orch_1', at: 139.60, clip0: 1.0, frames: 5 } }
+    : { ...OV, next: { id: 'orch_' + (k + 1), kind: 'plate', flag: 'orch', opt: { clip0: ORCH_PLATE[k][0], speed: ORCH_PLATE[k][1], push: 0 } } };
+  V(a, e, 'orchestra ' + ORCH[k], `The orchestra of Jades (${k + 1} of 8): ${ORCH[k].replace(/_/g, ' ')}.`, { row: 'b81-84', opt: o }); }
+V([84, 3.5], [85, 2], 'orchestra rise', 'The orchestra of Jades (8 of 8, end): the rise and the bar-85 hit (3D).', { row: 'b81-84', opt: { ...OV } });
 V([85, 2], 87, 'seq 09', 'Bass out in b86, snare build: all drop into a low stance; the view skims east.', { row: 'b85-88' });
 for (let k = 0; k < 12; k++) { const half = k >= 4, bar = half ? 88 : 87, beat = half ? 1 + (k - 4) / 2 : 1 + k;
   const nk = k + 1, to = nk === 12 ? 89 : nk >= 4 ? [88, 1 + (nk - 4) / 2] : [87, 1 + nk];
@@ -245,7 +254,8 @@ section('drop');
 V(89, 90, '2:32', 'Butterfly kick at its apex against the huge sun.', { row: 'b89' });
 // film v2: the inserts as one sentence in motion (v2 ids: 1 fist, 2 palm, 3 eyes, 4 hair whip, 5 landing). [fallback (v1 still), v2 clip,
 // what, clip map]; ranges from plates_v2 wiring (drop_hero_1_v2 not delivered: the v1 fist still, v1 drop_hero_2, until it lands)
-const DROP = [['drop_hero_2', 'drop_hero_1_v2', 'the fist closes', { clip0: 0 }], ['drop_hero_3', 'drop_hero_2_v2', 'the open palm rises until the sun sits behind it', { clip0: 1.3, clip1: 2.9 }],
+const DROP = [['drop_hero_2', 'drop_hero_1_v2', 'the fist closes', { clip0: 2.0, clip1: 3.6 }],   // fist: curling 2.0, closed by 3.5 (measured): closed at the end of the two beats
+  ['drop_hero_3', 'drop_hero_2_v2', 'the open palm rises until the sun sits behind it', { clip0: 1.3, clip1: 2.9 }],
   ['drop_hero_1', 'drop_hero_3_v2', 'her eyes open, the sun in them', { clip0: 0.7, clip1: 2.2 }]];
 for (let k = 0; k < 3; k++) {
   V(90 + k, [90 + k, 3], 'seq 10', 'The unison phrase, low and wide, the thousand in silhouette.', { row: 'b90-92' });
@@ -339,7 +349,8 @@ shot(141, 143, 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances d
 P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true } });
 // film v2: the second likeness shot is dropped (Jade: "it doesn't look like me"); plate wave_run (plates agent) instead: drawn Jade sprints
 // at the lens out of a breaking wave of the twelve lane colours. A card until work_fable/take2/plates/wave_run lands. Slab low.
-P(145, 147, 'wave_run', 'missing', 'Drawn Jade sprints at the lens on the orange road of main, hair streaming, out of a breaking wave made of the twelve lane colours (ribbons of written lanes curling over). Slab BACK TO MAIN low.', { row: 'b145-146', opt: { push: 0.02 } });
+P(145, 147, 'wave_run', 'missing', 'Drawn Jade sprints at the lens on the orange road of main, hair streaming, out of a breaking wave made of the twelve lane colours (ribbons of written lanes curling over). Slab BACK TO MAIN low.', { row: 'b145-146', opt: { clip0: 1.4, clip1: 4.8, push: 0,
+    lyr: { y: 'bottom', x0: 0.03, x1: 0.97, align: 'center', cloud: 0.62 } } });   // take 2 (plates_v2: 1.4-4.8): BACK TO MAIN low across the trousers band (y 0.75-0.97), cream on a darker cloud
 shot(147, 149, 'S+C', 'code', 'aerial', 'missing', 'Aerial pull-back: the road, the town, the new forks.', { row: 'b147-148', opt: { code: 'aerial', lives: LIFE } });
 
 // ------------------------------------------------------------------ Outro B and C: bars 149-164
