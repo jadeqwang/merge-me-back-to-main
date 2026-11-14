@@ -4,6 +4,8 @@ Owner: orchestra agent. Paths: `fable/show/seq/orchestra.js` (new), small hooks 
 `fable/show/props.js`, `fable/engine/src/figure_anime/{figure,shade}.js`; this note; `review/fable_take2/orchestra_3d_sheet.jpg`,
 `review/fable_take2/orchestra_3d_preview.mp4`. Dev data (git-ignored): `work_fable/take2/orchestra_dev/`, frames `work_fable/take2/v7/orchestra/`.
 
+## Revision 2 (2026-11-13, 23:20): see the section at the end; it supersedes the counts, shots and frame range below.
+
 ## State (2026-11-13, 23:00): DONE, first version. Looked at on stills and frame strips only; nobody has watched it at speed with sound.
 
 ## What it is
@@ -84,3 +86,57 @@ Identity: new t 60, 137.5, 147.0, 230 (mb 4, notype nohud) rendered before and a
 - Pop at the bar 81 cut: hero and wushu turn to face east, audience switches to `idle`; at b85 back to seq 08 (everyone standing): a hard
   continuity jump the edit must accept.
 - Not watched at speed with sound.
+
+## Revision 2 (director's review of the first sheet), 2026-11-13 23:20
+Done, committed. Looked at on stills only (raw and through the film's paper pass); nobody has watched it at speed with sound.
+- **All 1,024 play or do wushu.** Massed orchestra of 985 (`massedSeating()` in orchestra.js): rows of arcs round the podium, 3.0 m
+  outward, 1.05 m apart. Band A (15 rows) 1st violins front left, 2nd violins, violas centre-right, cellos front right (outer 4 rows on the
+  right: basses); band B (5) harps far left, horns, flutes|oboes then clarinets|bassoons in the centre, basses (2 rows) then trombones on
+  the right; band C (2) horns, trumpets, trombones, tubas; band D (last row) timpani in the middle, percussion either side; one grand
+  piano at the left edge. Counts: vn1 132, vn2 126, va 126, vc 72, db 70, fl 36, ob 36, cl 27, bn 27, hn 89, tp 41, tb 107, tu 24,
+  timp 6, perc 42, harp 23, piano 1 (= 985). Wushu: the hero + row of 6 + two wing blocks of 16 (4 x 4, 2.2 m) = 39. Outer radius 26.5 m.
+  The 255 copies of bar 81 fill the row, the wings and the innermost 217 seats; the copies of bar 82 are born seated in the next seats
+  (timpani, percussion and inner basses first, for shots 4 and 6); the copies of bar 83 in the outermost seats. No standing idle figures.
+- **Per-shot clutter**: chairs and stands only in shots 2, 4, 6 (shot 1: faint chairs). In wides (1, 3, 5, 7, 8) instruments draw only
+  the strong silhouettes (bows, cello/bass bodies and necks, harp frame, piano lid and rim, timpani/drum rims, brass bells, cymbals; wind
+  tubes faint) and the stroke layer is at 0.45 (`orchpg`).
+- **Look in these bars**: `env.dawn 0` (night sky, no purple), ground with no reflection (`reflGain 0, f0 0, ripple 0`, near-black
+  base), no world lights or road text (main's orange line stays), figures lit as at blue hour via `env.figLight` (ambient 0.42, `orchamb`).
+  Props drawable `reflect: false`. Consequence: the sky and mirror change on the bar-81 cut (purple, reflective -> black).
+- **Shot 1**: flights 0.36 s with a short comet tail (22 % of the path), the arrivals land standing and sit down over 0.30 s; the inner
+  desks are seated by about 139.7 s (beat 2.7 of bar 81).
+- **Continuity**: the hero is exactly as before (her own take, place, facing; the podium is a flat outline on the ground, no step);
+  the row and the wings keep the original facing and turn with the original spin (old 141.0-142.2), which turns them toward the
+  orchestra; the conductor's view is shot 5 only. From bar 84 beat 3.5 every seated player rises with her instrument (strings, winds,
+  brass, harp: a rise segment in their tracks; basses and percussion already stand; the pianist does not rise): on bar 85 all stand.
+  The old bow lift / hit on the downbeat of bar 85 is gone for seated strings (basses and percussion keep it).
+- **Shots** (same cut points): 1 above (high three-quarter from audience left), 2 side_low_violins, 3 above_behind (lower and closer:
+  over the 1st violin rows, 2.3 m up, 6.6 m out), 4 timpani (over the shoulder of the middle timpanist, toward the podium),
+  5 conductor_view (in the aisle behind the front desks, at head height, at the hero and the row facing the lens), 6 basses_side,
+  7 high_wide (top-down, 46 m), 8 last_wide (from over the audience side, 14 m up; the players rise).
+- Frames: `work_fable/take2/v7/orchestra/` now 4143..4394 (138.1-146.5 s, a superset of what was asked, so the preview can start
+  in bar 80); `meta.json` first 4143, n 252; hooks.json regenerated (all 221 in-window frames; the concertmaster is in frame in 1-5, 7, 8).
+- Identity: new t 60, 137.5, 147.0, 230 PNG md5 identical to the baseline again; orchestra frame 4150 (bar 80) byte-identical to full/.
+- Preview `review/fable_take2/orchestra_3d_preview.mp4`: **paper pass applied**, rendered by the film page itself
+  (`node fable/take2/tools/render.mjs --q "v7dir=/work_fable/take2/v7/orchestra&hud=0" --mp4 ... --range 138.533:146.31 --audio ...`,
+  18 s for 234 frames, then x264 15 Mb/s, 15.9 MB). It starts at bar 80 beat 4, not 80.5: the film has a missing-plate card on bar 80
+  beats 3-4 (stance frame). Shots in it follow the film's current table (b81-84 as two shots per bar), with the orchestra frames.
+  The sheet's paper stills are from the same page.
+
+### Paper pass: which shots read (stills only)
+- Read: 1 (the fan of seated desks, the row and the hero), 2, 4 (timpanist's back with the disc, drum rims), 5 (the hero in her stance
+  between the row, backs in the foreground), 7 (the fan of the massed seating is unmistakable), 8 (fan of players, row, podium).
+- Weak: 6 (basses: the necks read, the rest is a field of hatching), and **3 still does not fully work**: the backs are large white
+  shapes now, but from above and three-quarter they overlap into one hatched mass and the pale-blue disc does not survive the pass (it
+  is hatched like the white; it is neither dark nor saturated enough to be kept as an ink).
+- Paper options I would want for this sequence (not applied; paper.js not touched), tested with fx.mjs on shot 3:
+  `{ solid: 0.55, layers: 2, hatch: 12, thresholds: [0.2, 0.45, 0.7] }` on the Build's black paper and inks: the white backs fill in as
+  rubbed solid shapes and the hatching thins; this did more for shot 3 than any engine change. For the disc to survive, either a
+  `keep` colour (pass the disc's pale blue as an ink with a lower `inkSat`, ~0.12) or a mask; engine side, the disc could be drawn more
+  saturated in these bars (not done).
+
+### Weak / missing (rev 2)
+- Look jump on the bar-81 cut (purple mirror -> black night) and on the bar-85 cut back.
+- Poses procedural, approximate grips; winds/brass no final accent; pianist on mocap; harps rise with the harp in their arms (instrument
+  lifts with them for half a beat, as do cellos).
+- Shot 3 as above; shot 6 weak through the pass.
