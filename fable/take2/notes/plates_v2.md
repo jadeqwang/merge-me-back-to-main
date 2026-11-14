@@ -74,7 +74,7 @@ with `wave_run3_knees` as the last frame too.
   jeans; piano wrong keys; guitar letterboxed); attempt 2 passed (guitar cropped from a drawn frame: `ins_guitar_b1c`).
 - `ins_piano`, `ins_guitar`, `drop_hero_2_v2`, `_3_v2`, `_4_v2`, `_5_v2`: accepted t1, intaken. Guitar's grey fretting sleeve and
   sturdy hands read acceptably in motion; no third still.
-- `drop_hero_1_v2`: t2 only (t1 used a wrong last frame and is discarded); pending. New drop stills: `drop_hand_open`, `drop_eyes_closed` (edits, first frames toward the approved v1 stills),
+- `drop_hero_1_v2`: t2 accepted, intaken (t1 used a wrong last frame and is discarded). New drop stills: `drop_hand_open`, `drop_eyes_closed` (edits, first frames toward the approved v1 stills),
   `drop_sun_only` -> `drop_palm_sun` (palm rises over the sun, no rays), `drop_land_clean` (v1 landing with the burst rays removed).
 
 ## Wiring
@@ -98,3 +98,4 @@ with `wave_run3_knees` as the last frame too.
 | `drop_hero_3_v2` | v1 `drop_hero_1` (eyes) as hero 3 | 0.5-3.0 (eyes open 0.75-2.25, gold glints from 2.5) | none (full-frame face) | |
 | `drop_hero_4_v2` | v1 `drop_hero_4` (hair whip) | 1.0-3.5 (whip), falls by 4.75 | right of the hair, x 0.75-1.0 | patch on the near arm |
 | `drop_hero_5_v2` | v1 `drop_hero_5` (landing) | 0.0-2.25 (squat, strap swing, dust); dust thins to 4.0 | upper band y 0.0-0.35 is black trousers/black | no rays |
+| `drop_hero_1_v2` (take 2) | v1 `drop_hero_2` (fist) as the brief's hero 1 | 1.0-4.5 (closes 1.0-3.75, held after) | black right half x 0.65-1.0 | small gold motion flicks at the knuckles 1.5-4.25 (from the v1 fist still), not burst rays |
