@@ -89,3 +89,6 @@ structure as `band` including the look-back, so it replaces `band` everywhere in
 
 Update (Jade, same day): at 0:28 the drawn Jade sings "I split myself a thousand ways": `main_face_v2` (bar 17, sung, song-locked)
 and, if one attempt works, `main_split_v2` (bar 18, the copies singing as they split).
+
+Update (Jade, same day): the face on the wushu life plate (0:34) does not read as her. `wushu_v3`: same picture, her head
+three-quarter to the viewer, the film's one face (large eyes, round cheeks, curtain bangs) in woodblock line. Replaces `wushu_v2`.
