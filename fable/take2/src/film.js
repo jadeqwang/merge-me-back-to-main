@@ -14,7 +14,7 @@ import { resolveShots, SECTIONS, FLOAT } from '../shots.js';
 import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
-import { scriptPaths, drawScript } from './script.js';
+import { scriptPaths, drawScript, penAt } from './script.js';
 import { makeProof } from './proofscene.js';
 
 const Q = new URLSearchParams(location.search);
@@ -482,8 +482,15 @@ function tiles(t, sc) {
 // ---------------------------------------------------------------- Step 4: the handwriting and the settle into stars (verse 2)
 const SETTLE_OK = {};
 function handPaths(sc) { const H0 = sc.s.opt.hand, a = plateToScreen(sc.imgs[0], H0.at[0], H0.at[1]); return scriptPaths(H0.text, { x: a.x, y: a.y, size: H0.size * H }); }
+// the pencil tip in vio_write (o.track [[clip s, x, y], ..], plate fractions, measured per frame): the pen point of the ink sits on it
+function tipAt(sc, o, c) { const K = o.track; let i = 0; while (i < K.length - 2 && c > K[i + 1][0]) i++; const a = K[i], b = K[i + 1], u = clamp01((c - a[0]) / (b[0] - a[0]));
+  return plateToScreen(sc.imgs[0], lerp(a[1], b[1], u), lerp(a[2], b[2], u)); }
 function hand(t, sc) {
-  const s = sc.s, o = s.opt.hand, P = handPaths(sc), VIOC = '#9B6BFF', wd = 4.5 * S;
+  const s = sc.s, o = s.opt.hand, P0 = handPaths(sc), VIOC = '#9B6BFF', wd = 4.5 * S;
+  let P = P0;
+  const shift = (Q, dx, dy) => ({ ...Q, strokes: Q.strokes.map((st) => st.map((p) => ({ x: p.x + dx, y: p.y + dy }))), box: { ...Q.box, x: Q.box.x + dx, y: Q.box.y + dy } });
+  if (o.track) { const cm = clipMap(s), c = o.release ? (o.release.trackAt ?? o.track[o.track.length - 1][0]) : cm.c0 + (t - s.t0) * cm.sp;
+    const u = o.release ? 1 : clamp01((seg(t, s.t0, s.t1) - o.write[0]) / (o.write[1] - o.write[0])), pp = penAt(P0, P0.len * u), tip = tipAt(sc, o, c); P = shift(P0, tip.x - pp.x, tip.y - pp.y); }
   if (!o.release) { const u = clamp01((seg(t, s.t0, s.t1) - o.write[0]) / (o.write[1] - o.write[0]));
     if (u <= 0) return; const pen = drawScript(g, P, { upto: P.len * u, color: VIOC, width: wd, glow: 22 * S });
     if (pen) { g.save(); g.globalCompositeOperation = 'lighter'; glowAt(pen.x, pen.y, 26 * S, VIOC, 0.9); g.restore(); } return; }
@@ -497,31 +504,33 @@ function hand(t, sc) {
   else { const f = fr(t, ta); if (f <= 1) { g.fillStyle = `rgba(235,225,255,${f === 0 ? 0.8 : 0.4})`; g.fillRect(0, 0, W, H); }   // the hit
     g.save(); g.globalCompositeOperation = 'lighter'; glowAt(c2.x, c2.y, (30 + 60 * Math.max(0, 1 - f / 20)) * S, VIOC, 0.5 + 0.5 * Math.max(0, 1 - f / 20)); g.restore(); }
 }
-// vio_still: her outline settles into the star field: stars appear along the edge of her matte (more and more through the shot) and her
-// figure dims toward the sky; all the stars twinkle (12 fps steps, seeded per star)
+// vio_still: she becomes stars. Her figure stays at full brightness; along her outline star points break away (each edge cell gets its own
+// moment through the three bars), drift outward from her centre and settle among the sky's stars, twinkling (12 fps steps). The matte
+// also took the dish and its ring, so only the part inside settle.poly (plate fractions, set by hand on the clip) counts as her.
+// The sky's brightest star cells twinkle too.
 let SETC = null;
 function settle(t, sc) {
-  const m = READY.get(sc.settle); if (!m) return; const u = ease.io(seg(t, sc.s.t0, sc.s.t1)), im = sc.imgs[0], cr = cover(m.width, m.height, W, H, im.zoom || 1, im.fo[0], im.fo[1]);
-  const gw = 192, gh = 108; if (!SETC) { SETC = document.createElement('canvas'); SETC.width = gw; SETC.height = gh; }
-  const x0 = (sc.s.opt.settle.x0 || 0) * W;   // the matte also takes the dish: only the part right of x0 is her
-  const x = SETC.getContext('2d', { willReadFrequently: true }); x.clearRect(0, 0, gw, gh); x.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, gw, gh); x.clearRect(0, 0, Math.round(x0 * gw / W), gh);
+  const m = READY.get(sc.settle); if (!m) return; const u = seg(t, sc.s.t0, sc.s.t1), im = sc.imgs[0], cr = cover(m.width, m.height, W, H, im.zoom || 1, im.fo[0], im.fo[1]);
+  const gw = 240, gh = 135; if (!SETC) { SETC = document.createElement('canvas'); SETC.width = gw; SETC.height = gh; }
+  const x = SETC.getContext('2d', { willReadFrequently: true }); x.save(); x.clearRect(0, 0, gw, gh);
+  const poly = sc.s.opt.settle.poly; if (poly) { x.beginPath(); poly.forEach(([px, py], k) => { const q = plateToScreen(im, px, py); const X = q.x * gw / W, Y = q.y * gh / H; if (k) x.lineTo(X, Y); else x.moveTo(X, Y); }); x.closePath(); x.clip(); }
+  x.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, gw, gh); x.restore();
   const A = x.getImageData(0, 0, gw, gh).data, al = (i, j) => (i < 0 || j < 0 || i >= gw || j >= gh ? 0 : A[(j * gw + i) * 4 + 3]);
-  // dim the figure (her own matte, darkened) toward the night
-  if (!FANC) { FANC = document.createElement('canvas'); FANC.width = W; FANC.height = H; }
-  const fc = FANC.getContext('2d'); fc.setTransform(1, 0, 0, 1, 0, 0); fc.globalCompositeOperation = 'source-over'; fc.clearRect(0, 0, W, H); fc.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, W, H); fc.clearRect(0, 0, x0, H);
-  fc.globalCompositeOperation = 'source-in'; fc.fillStyle = '#05050C'; fc.fillRect(0, 0, W, H); g.save(); g.globalAlpha = 0.55 * u; g.drawImage(FANC, 0, 0); g.restore();
+  let cx = 0, cy = 0, nn = 0; for (let j = 0; j < gh; j += 2) for (let i = 0; i < gw; i += 2) if (al(i, j) >= 128) { cx += i; cy += j; nn++; } if (!nn) return; cx /= nn; cy /= nn;
   const step = Math.floor(t * 12 + 1e-6); g.save(); g.globalCompositeOperation = 'lighter';
-  for (let j = 1; j < gh - 1; j++) for (let i = 1; i < gw - 1; i++) { const a = al(i, j); if (a < 128) continue;
+  for (let j = 1; j < gh - 1; j++) for (let i = 1; i < gw - 1; i++) { if (al(i, j) < 128) continue;
     if (al(i - 1, j) >= 128 && al(i + 1, j) >= 128 && al(i, j - 1) >= 128 && al(i, j + 1) >= 128) continue;   // edge cells only
-    const h = mulberry32(i * 7349 + j * 9157)(); if (h > u * 0.85) continue;
-    const tw = 0.55 + 0.45 * Math.sin(step * 0.9 + h * 40), px = (i + 0.5) * W / gw, py = (j + 0.5) * H / gh;
-    glowAt(px, py, (3 + 5 * h) * S * (0.8 + 0.4 * tw), h < 0.3 ? '#9B6BFF' : '#EDE6FF', 0.7 * tw); }
-  // the sky's stars keep twinkling: glints on the plate's brightest cells above the horizon, outside her
+    const r = mulberry32(i * 7349 + j * 9157), h = r(), born = 0.05 + 0.75 * h, k = clamp01((u - born) / 0.35); if (k <= 0) continue;
+    let dx = i - cx, dy = j - cy; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l; const drift = (25 + 70 * r()) * S * ease.out(k);
+    const tw = 0.55 + 0.45 * Math.sin(step * 0.9 + h * 40), px = (i + 0.5) * W / gw + dx * drift, py = (j + 0.5) * H / gh + dy * drift;
+    const rad = (2.5 + 4 * r()) * S * (0.8 + 0.4 * tw), a = (k < 0.15 ? k / 0.15 : 1) * 0.8 * tw;
+    glowAt(px, py, rad, h < 0.25 ? '#9B6BFF' : '#EDE6FF', a); }
+  // the sky keeps twinkling: glints on the plate's brightest cells above the horizon, outside her
   const pb = READY.get(im.url); x.clearRect(0, 0, gw, gh); x.drawImage(pb, 0, 0, gw, gh); const P = x.getImageData(0, 0, gw, gh).data;
-  for (let j = 1; j < gh * 0.45; j++) for (let i = 1; i < gw - 1; i++) { const o = (j * gw + i) * 4; if (P[o] < 150 || al(i, j) > 20) continue;
-    const r0 = mulberry32(i * 3301 + j * 7919)(); if (r0 > 0.35) continue; const tw = Math.max(0, Math.sin(step * 0.7 + r0 * 60)); if (tw < 0.3) continue;
-    const px = (i + 0.5) * W / gw, py = (j + 0.5) * H / gh, r = (2 + 5 * tw) * S;
-    g.strokeStyle = `rgba(240,236,255,${0.6 * tw})`; g.lineWidth = 1.2 * S; g.beginPath(); g.moveTo(px - r * 1.6, py); g.lineTo(px + r * 1.6, py); g.moveTo(px, py - r * 1.6); g.lineTo(px, py + r * 1.6); g.stroke(); glowAt(px, py, r, '#EDE6FF', 0.5 * tw); }
+  for (let j = 1; j < gh * 0.45; j++) for (let i = 1; i < gw - 1; i++) { const o = (j * gw + i) * 4; if (P[o] < 150) continue;
+    const r0 = mulberry32(i * 3301 + j * 7919)(); if (r0 > 0.25) continue; const tw = Math.max(0, Math.sin(step * 0.7 + r0 * 60)); if (tw < 0.3) continue;
+    const px = (i + 0.5) * W / gw, py = (j + 0.5) * H / gh, rr = (2 + 5 * tw) * S;
+    g.strokeStyle = `rgba(240,236,255,${0.6 * tw})`; g.lineWidth = 1.2 * S; g.beginPath(); g.moveTo(px - rr * 1.6, py); g.lineTo(px + rr * 1.6, py); g.moveTo(px, py - rr * 1.6); g.lineTo(px, py + rr * 1.6); g.stroke(); glowAt(px, py, rr, '#EDE6FF', 0.5 * tw); }
   g.restore();
 }
 

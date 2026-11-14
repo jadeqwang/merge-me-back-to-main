@@ -248,13 +248,16 @@ P(113, 114, 'vio_pencil', 'missing', 'She draws a pencil from her bun.', { row: 
 // (frame fraction), write = [from, to] fraction of the shot; placed so the pen ends at her pencil tip (about 0.5-0.6, 0.07 in vio_write) and
 // the line runs left of it in the empty sky above the dish; on vio_release the finished line lifts off and arcs up and over to the sunrise
 // on the right (to), arriving on the bar 117 downbeat with a flash
-const HAND = { text: 'docs: start here', at: [0.21, 0.19], size: 0.045 };   // below the chip   
+// track: the pencil tip in vio_write per 4 frames (the yellow pencil's left end, minus the graphite point), plate fractions; the ink's pen
+// point sits on it while writing, its end after (and where vio_release takes it from)
+const HAND = { text: 'docs: start here', at: [0.21, 0.19], size: 0.04, track: [[0, 0.522, 0.122], [1.0, 0.522, 0.125], [1.5, 0.534, 0.117], [2.0, 0.548, 0.111], [2.5, 0.562, 0.106],
+  [3.0, 0.572, 0.103], [3.5, 0.586, 0.096], [4.0, 0.601, 0.091], [4.5, 0.614, 0.085], [5.0, 0.615, 0.084]] };   
 P(114, 116, 'vio_write', 'missing', 'She writes in the air. The handwriting docs: start here is drawn in code, in violet light. ctx 99%.',
   { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 99%'], row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, write: [0.05, 0.92] } } });
 P(116, 118, 'vio_release', 'missing', 'She lets the line of light go; it lifts off east. Hit on b117, then the drums cut. ctx 100%.',
-  { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, release: { to: [0.93, 0.5], top: 0.04, arrive: 117 } } } });
+  { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, release: { to: [0.93, 0.5], top: 0.04, arrive: 117, trackAt: 3.46 } } } });
 P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of her figure settle into the star field. Chip: detached, not merged. The stars keep twinkling.',
-  { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, settle: { matte: '/work_fable/take2/kit/vio_still', x0: 0.55 } } });
+  { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
 
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');
