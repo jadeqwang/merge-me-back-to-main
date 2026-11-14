@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merge take two: Step 0 test results</title>
+<style>
+:root{--bg:#f7f4ee;--ink:#1c1a26;--mute:#5d5a6b;--line:#d9d3c6;--ok:#1f7a4d;--warn:#a05a00;--bad:#a3262a;--card:#fffdf8}
+@media (prefers-color-scheme:dark){:root{--bg:#12121a;--ink:#ece8df;--mute:#a09cab;--line:#30303c;--ok:#5fd39a;--warn:#f0b35a;--bad:#ff8a8a;--card:#1a1a24}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:28px;margin:0 0 6px}h2{font-size:20px;margin:0 0 8px}
+p{margin:8px 0}.mute{color:var(--mute)}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:18px 0}
+.v{font-weight:700}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+video,img{max-width:100%;border-radius:6px;display:block;margin:10px 0;background:#000}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:760px){.two{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:15px}td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+code{font-family:ui-monospace,monospace;font-size:14px}ul{margin:6px 0 6px 20px;padding:0}
+</style></head><body><main>
+<h1>Merge, take two: Step 0 test results</h1>
+<p class="mute">2026-11-13. The ten tests of plan section 9, plus the diagnosis of the running-shot discontinuity. Nothing here has been watched at speed with sound by anyone: every verdict below comes from stills, strips and measurements. Please play the clips.</p>
+
+<section><h2>Summary</h2>
+<table>
+<tr><th>Test</th><th>Verdict</th><th>What it means for the plan</th></tr>
+<tr><td>Running-shot discontinuity</td><td class="v ok">Diagnosed</td><td>It is in the generated clip, not the compositor: she takes the same step twice. Replace the clip; gait is now measured on every running clip.</td></tr>
+<tr><td>1. Patchwork Jade</td><td class="v ok">Works</td><td>One figure in many mediums reads as one woman, and the settle into clean cel animates. The face needs a closer match to the sheet.</td></tr>
+<tr><td>2. Runner kit</td><td class="v warn">Half works</td><td>Cut-outs hold on pencil and on pixel art, in motion. But the video model zooms in until her feet leave the frame, so the kit needs stills with more margin.</td></tr>
+<tr><td>3. Sung insert</td><td class="v warn">Your call</td><td>She sings the line in both versions. The expression is pained in both, which is wrong for this moment, and the jacket version slims her face. Sync was not measured reliably; four lag variants each are ready for your ear.</td></tr>
+<tr><td>4. Crossing</td><td class="v ok">Works</td><td>She runs into the doorway and the doorway grows into the life's plate.</td></tr>
+<tr><td>5. v7 re-timed</td><td class="v ok">Works</td><td>The whole of v7 now renders on the new song's timing with its own type and HUD off. Its lyrics written along the roads are still in the picture.</td></tr>
+<tr><td>6. On twos</td><td class="v ok">Done before</td><td>You saw no big difference; decided per shot.</td></tr>
+<tr><td>7. Written lane</td><td class="v ok">Works</td><td>Readable from sparse to solid, and along the merge curves.</td></tr>
+<tr><td>8. Paper pass</td><td class="v warn">Black paper works, white does not yet</td><td>Gold on black holds the kick and the crowd. On white paper the image falls apart. Both still look partly like a filter.</td></tr>
+<tr><td>9. Main on paper</td><td class="v ok">Works</td><td>Flat cel on black paper, even stride. First take wrote RARE EARTH on her chest; fixed in the retake by a prompt change now applied to every clip.</td></tr>
+<tr><td>10. Glyph pass</td><td class="v ok">Works on a still</td><td>The open-source stage screen shows real lines from this repo's <code>git log</code>. The audience reads weakly. Not yet seen moving.</td></tr>
+</table>
+<p><b>Spend.</b> This step: $11.61 (9 stills, 9 clips). Project total: $399.45 of the $600 cap; about $200 left.</p>
+</section>
+
+<section><h2>The discontinuity in the running shot</h2>
+<p>You noticed a small jump at the end of the proof. I checked the source clip frame by frame. Her stride repeats every 14 frames until frame 65; then frames 65 to 71 and frames 72 to 78 are the same step: the same foot lands twice. That is 2.7 to 3.2 s into the clip, 72.4 to 72.9 s in the song, half a second before the proof ends.</p>
+<img src="t0_hero_stutter_source_frames.jpg" alt="Source frames 65 to 78 of the chorus clip: the top row and the bottom row show the same step">
+<p>The on-twos version shows half the frames, which is why it hides the jump better. Separately, the proof cross-blended 24 fps frames into 30 fps, which made sharpness pulse six times a second (measured: every fifth frame is sharp, the four between are blends). That is not the jump you saw, but it softens fast legs, so the new compositor shows the nearest frame and blends only when a clip is slowed.</p>
+<p>The replacement clip (test 9) was measured the same way: its stride stays at 14 to 16 frames throughout, with no repeated step.</p>
+</section>
+
+<section><h2>1. Patchwork Jade <span class="v ok">works</span></h2>
+<p>The poster frame for "Every life I've lived, I have become", and its settle into the clean, fully coloured Jade.</p>
+<video controls src="t1_patchwork_settle.mp4"></video>
+<div class="two"><img src="still_patchwork_a1.jpg" alt="Patchwork still"><img src="still_resolve_a1.jpg" alt="Resolved clean cel still"></div>
+<ul><li>Costume: patch on her left arm, one chest band, no lettering on the front. The resolved still gave her an orange belt (the sheet's is black) and a drawn border; both to be fixed in the real plate.</li>
+<li>The face is a generic anime face, not yet the sheet's. The real plate will be built from an approved main-Jade still so the face is hers.</li>
+<li>She is small in the frame; the real plate will be closer.</li></ul>
+</section>
+
+<section><h2>2. Runner kit <span class="v warn">half works</span></h2>
+<p>Two runners, coloured pencil and pixel art, cut out and placed over a ground with their written lanes.</p>
+<video controls src="t2_runner_kit.mp4"></video>
+<ul><li>The cut-outs are clean on both mediums in every frame I checked, hair included.</li>
+<li>The video model pushed in on both clips, so her legs leave the frame. The stills need a smaller figure with more margin.</li>
+<li>First takes wrote RARE EARTH on her side and moved the patch between arms as she twisted. The pencil retake (shown) fixes that with a prompt change. The pixel runner shown is still the first take and still has those faults, plus a mint mark on the jacket back that breaks your no-stripe rule. It would not be used.</li></ul>
+</section>
+
+<section><h2>3. Sung insert, "Back to main" <span class="v warn">your call</span></h2>
+<p>These clips contain your likeness, so they are on this machine only and are not committed to the public repo. Folder: <code>review/fable_take2/step0/likeness_local/</code>.</p>
+<div class="two">
+<div><p><b>A.</b> Your traced likeness redrawn in the Merge jacket, in daylight.</p><video controls src="likeness_local/like_a_lag0.mp4"></video></div>
+<div><p><b>B.</b> The approved Orbital Sunrise trace itself, unchanged.</p><video controls src="likeness_local/like_b_lag0.mp4"></video></div></div>
+<ul><li>Both sing the line and hold "main" for about three seconds.</li>
+<li>Both look pained: furrowed brows. The plan asks for tender and euphoric. A retake would ask for an open, glad face.</li>
+<li>A slims and evens your face compared with the trace. B is your approved drawing, but it has pink headphones, a tight selfie framing and no Merge jacket.</li>
+<li>My automatic lip-sync measurement did not work on these drawings, so sync is unmeasured. Lag variants for each: <code>like_a_lag-80.mp4</code>, <code>lag0</code>, <code>lag80</code>, <code>lag160</code> (picture later by that many milliseconds), and the same for B.</li></ul>
+</section>
+
+<section><h2>4. Crossing <span class="v ok">works</span></h2>
+<p>Bars 21 to 22. A branch Jade in flat cel runs her lane to a doorway; the doorway grows to fill the frame and the picture is her life in its own medium.</p>
+<video controls src="t4_crossing.mp4"></video>
+<ul><li>Jacket back: plain white, blue circle, RARE EARTH, no stripe. Mint bands. Patch on her left arm.</li>
+<li>This composite was made with a quick script; the film compositor will redo the wipe and add the written lane.</li>
+<li>The lab plate shows a dark edge on its right side for one frame as the doorway opens; to be cropped.</li></ul>
+</section>
+
+<section><h2>5. v7 re-timed to the new song <span class="v ok">works</span></h2>
+<p>The drop, bars 88 to 105, rendered through the old-to-new time map with v7's lyric type and HUD off.</p>
+<video controls src="t5_v7_drop_retimed.mp4"></video>
+<img src="t5_sync_strip.jpg" alt="Sync strip: bars 89, 97, 100, 105; re-timed above, not re-timed below">
+<ul><li>Top row re-timed, bottom row not. Re-timed, the cut to night lands on the bar 105 downbeat frame. Without the map v7 is 380 ms out at the drop and 617 ms out by bar 105.</li>
+<li>The whole film is rendered this way as plates (8,484 frames, 1080p).</li>
+<li>v7 writes some lyrics along its roads as part of the picture. Those are still there and will need hiding or covering where they clash with the new type.</li></ul>
+</section>
+
+<section><h2>6. On twos <span class="v ok">done</span></h2>
+<p>Already in <code>review/fable_proof/</code>: <code>merge_proof_r2_1080p.mp4</code> beside <code>merge_proof_r2_on_twos_1080p.mp4</code>. You saw no big difference, so it is a per-shot choice.</p>
+</section>
+
+<section><h2>7. Written lane <span class="v ok">works</span></h2>
+<video controls src="t7_written_lane.mp4"></video>
+<div class="two"><img src="t7_lane_density.jpg" alt="Lane density from sparse to solid"><img src="t7_lane_curves.jpg" alt="Written lanes along the bar 38 merge curves"></div>
+<p>The lane text is your commit messages. Text is 22 px cap height here, just under the 24 px rule for labels; it will be raised for close shots.</p>
+</section>
+
+<section><h2>8. Paper pass <span class="v warn">black paper works, white does not yet</span></h2>
+<p>v7 frames redrawn as strokes on paper. Left to right: v7, black paper, white paper.</p>
+<video controls src="t8_paper_kick.mp4"></video>
+<img src="t8_paper_above.jpg" alt="MAIN spelled by bodies: v7, black paper, white paper">
+<ul><li>Gold on black keeps the kick, the sun and the crowd, and gives the two-colour sunrise the plan asks for.</li>
+<li>On white paper the sun and the figure nearly vanish. MAIN from above reads on both.</li>
+<li>It still looks partly like a filter over CG. It is acceptable for silhouettes and crowds; I would not put it on a close figure.</li>
+<li>It runs slower than hoped, which matters only for render time.</li></ul>
+</section>
+
+<section><h2>9. Main on black paper <span class="v ok">works</span></h2>
+<p>The chorus hero redone as flat cel on black paper, to replace the neon version.</p>
+<video controls src="t9_hero_on_black_paper.mp4"></video>
+<img src="still_hero_paper_a2.jpg" alt="Hero still on black paper">
+<ul><li>Patch on her left arm, one chest band, blue dot, orange headphones. No lettering on the chest in this take.</li>
+<li>Even stride, no repeated step (measured).</li>
+<li>The orange line under her feet from the still does not survive in the clip; the code will draw main as a written lane there anyway.</li>
+<li>The drawn coloured lines stand in for lanes; in the film they would be written lanes.</li></ul>
+</section>
+
+<section><h2>10. Glyph pass <span class="v ok">works on a still</span></h2>
+<p>The open-source plate. Left: the image model's imitation. Right: the engine's glyph pass, every character real, her figure untouched.</p>
+<img src="t10_glyph_open_source.jpg" alt="Open-source plate: source and glyph pass">
+<ul><li>The screen carries real lines from this repo's <code>git log</code> and your commit messages.</li>
+<li>The audience is hard to read as people. A moving version was still rendering when this page was written.</li></ul>
+</section>
+
+<section><h2>What I would change in the plan because of these tests</h2>
+<ul>
+<li>Every clip prompt now names where lettering may appear for that view. Saying "RARE EARTH stays as drawn" made the model write it on the front.</li>
+<li>Every running clip gets the gait measurement before it is accepted.</li>
+<li>Runner kit stills: smaller figure, more margin, and judged again before the other eleven are made.</li>
+<li>Paper pass on black paper only, for now. Day scenes from v7 need another approach or stay as night and sunrise silhouettes.</li>
+<li>The sung insert needs your decision on which likeness (A or B, or B redrawn with the Merge jacket) and a retake for expression.</li>
+</ul></section>
+</main></body></html>

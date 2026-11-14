@@ -1,0 +1,58 @@
+{
+ "_note": "Take-two stills. Tests of PLAN section 9 first. Rules built in by gen_stills.py: no stripe on the jacket back, one face, patch on her left arm, lane colour the only strong colour on a branch, no model-drawn readable text.",
+ "stills": [
+  {
+   "id": "patchwork",
+   "lane": "orange",
+   "view": "front",
+   "style": "A single hand-made illustration on white paper in which ONE figure is drawn in many different art mediums at once, like a patchwork: her figure is divided into about ten irregular patches with soft torn-paper seams between them, and each patch is rendered in a different medium: opaque gouache paint; coloured pencil hatching; woodblock print with bold black key lines; fine pen-and-ink stippling; thin plotter lines on pale green graph paper; sumi ink wash; airbrush; two-colour risograph halftone dots; square 16-bit pixel art; wax crayon; and white-line scratchboard on black. The outline of her figure is continuous and correct through every patch: it is one drawing of one woman, not a collage of different people.",
+   "scene": "She stands three-quarter length, from the knees up, in the centre of the picture, calm, arms relaxed and slightly open at her sides, palms forward, looking straight at the viewer with her eyes open. Her face is divided by only one seam, running down beside her nose, so that both eyes, the brows, the nose and the mouth stay clear and are exactly her features in both halves; the other patches cover her hair, jacket, arms, top and trousers. Each patch carries a little of its own colour: rose pink, golden yellow, coral red, mint green, cyan, magenta, blue, violet, with orange for the bands of her jacket. The background is plain white paper with only faint pencil construction lines."
+  },
+  {
+   "id": "runner_pencil",
+   "lane": "golden yellow",
+   "view": "side",
+   "style": "A coloured-pencil drawing: fine layered graphite and coloured-pencil hatching, visible pencil strokes, restrained colour.",
+   "scene": "A full-length figure of her running, exactly side-on, in mid stride with both feet off the ground, arms pumping, long hair and trouser straps streaming behind her to the right. Her whole body from the top of her head to the soles of her trainers is inside the picture with space around it. The background is a completely plain, flat, even, empty light grey with nothing else in it: no ground line, no shadow, no texture, no scenery."
+  },
+  {
+   "id": "runner_pixel",
+   "lane": "mint green",
+   "view": "side",
+   "style": "16-bit pixel art with crisp square pixels and a limited palette, like a sprite from a 1990s console game, drawn large.",
+   "scene": "A full-length figure of her running, exactly side-on, in mid stride with both feet off the ground, arms pumping, long hair and trouser straps streaming behind her to the right. Her whole body from the top of her head to the soles of her trainers is inside the picture with space around it. The background is a completely plain, flat, even, empty mid grey with nothing else in it: no ground line, no shadow, no texture, no scenery."
+  },
+  {
+   "id": "cross_wetlab",
+   "lane": "mint green",
+   "view": "back",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no glow effects, no 3D; light is drawn as hand-made strokes of coloured pencil and white gel pen on the black paper.",
+   "scene": "Night, on bare black paper. She runs away from us along a single straight thin mint-green line drawn on the black paper, which leads from the bottom right of the picture to a tall narrow doorway standing alone in the dark on the left side of the picture. The doorway is an upright rectangle of warm ivory paper-coloured light, and inside it, drawn in very fine black pen-and-ink lines on ivory paper, are the branching shapes of neurons like an old histology plate. Short hand-drawn strokes of ivory light fan out from the doorway onto the black paper. She is in mid stride, about one third of the picture's height, right of centre, her hair swinging."
+  },
+  {
+   "id": "hero_paper",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and gel pen.",
+   "scene": "Night, on bare black paper. She sprints straight toward the viewer with a long powerful stride, full length, her whole body in the picture, a little right of centre and about three quarters of the picture's height, hair and trouser straps flying behind her, her expression open and determined, lips closed. Under her feet one straight orange line, drawn with a single confident stroke of orange pencil, runs from the far distance behind her to the bottom of the picture. From the left and right, eleven other thin hand-drawn lines in rose pink, golden yellow, coral, mint green, cyan, magenta, blue and violet curve in across the black paper and join the orange line behind her. The lines are plain thin drawn strokes with no glow. A few small white gel-pen dots of stars in the upper part. Nothing else: the black paper is mostly empty."
+  },
+  {
+   "id": "like_first",
+   "raw": true,
+   "refs": [
+    "/home/jade/Documents/1-music-shipped/orbital-sunrise-video/media/chars/jade_src/jade_trace_jacket_hp_1.jpg",
+    "inputs/character_sheet.png"
+   ],
+   "prompt": "Make a wide 16:9 graphite and coloured-pencil drawing on white paper, in exactly the drawing style of the first image: fine pencil lines and hatching, only a few areas of flat coloured pencil. It shows the woman of the first image: keep her face, head shape, glasses, high forehead, centre-parted long hair and features exactly as drawn in the first image; do not beautify, slim or restyle her. She is framed chest-up in the centre, facing the viewer, lips closed, calm, in bright daylight. She wears the jacket of the second image (the character sheet): a white cropped bomber jacket with one orange band across the front of the chest and one orange band around each upper arm, a small pale-blue circle on the chest, a black top underneath, and on her LEFT upper arm (the right side of the picture) a round white patch with a black ring reading 1420 MHz; orange headphones rest around her neck. Behind her, drawn lightly in pencil on the white paper, a straight road runs to the horizon under an open sky, with one orange pencil line along the road. The picture fills the whole frame with no border. No caption, no signature, no other text."
+  },
+  {
+   "id": "resolve",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/patchwork_a1.jpg",
+    "inputs/character_sheet.png"
+   ],
+   "prompt": "Edit the first image. Keep the same woman in exactly the same pose, the same framing, the same size and position in the picture, the same outline. Change only how she is drawn: the patchwork of different art mediums and the torn-paper seams are gone, and she is now drawn in ONE clean style, a flat cel-shaded anime drawing with a clean inked line and her true full colours, exactly as on the character sheet (the second image): black hair, a white cropped bomber jacket with one orange band across the front of the chest and one orange band around each upper arm, a small pale-blue circle on the chest, a round white 1420 MHz patch with a black ring on her LEFT upper arm (the right side of the picture), a black top, navy cargo trousers with orange straps, orange headphones round her neck. Her face is the character sheet's face: large very dark brown eyes, soft straight brows, calm, lips closed, eyes open, looking at the viewer. Behind her, in place of the white paper, a simple bright morning: a pale blue sky with a few soft flat clouds and warm daylight, drawn in the same flat cel style on white paper. The picture fills the whole frame. No text other than 1420 MHz on the patch."
+  }
+ ]
+}
