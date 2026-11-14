@@ -4,6 +4,10 @@
 //   node fable/tools/render.mjs --show ... --sheet 0:30:2:out.jpg[:cols]            (timestamped contact sheet)
 //   node fable/tools/render.mjs --show ... --from 0 --to 28 --mp4 out.mp4 [--workers 3] [--audio] [--mb 4]
 // Options: --res 1920x1080  --fps 30  --mb N (motion-blur/AA sub-samples; default 1 for stills and sheets, 4 for mp4)  --shutter 0.5
+//          --warp analysis_v3/warp_v2_to_v3.json  time map: --from/--to/--stills/--sheet times are NEW song time; the show renders at the OLD time (beats table inverted,
+//                      piecewise linear by beat index, end slopes extrapolated; motion-blur sub-samples are spread in new time then mapped); --audio then muxes the NEW audio
+//          --frames DIR  (with --from/--to) write f_%05d.jpg (frame k = from*fps + k, numbered from 0 at new time 0) plus meta.json instead of an mp4; --jpgq 2 (ffmpeg qscale, lower = better)
+//          plate flags (page query, any show): --q "notype=1&nohud=1" switch off the show's own lyric type / HUD + overlay
 //          --q "k=v&k=v" (page query)  --crf 14  --preset slow  --verify (render the first frame twice and compare hashes)
 // Frames travel page -> harness as raw RGBA in one binary WebSocket message (no base64, no PNG encode in the page).
 import http from 'node:http';
@@ -32,6 +36,8 @@ const FPS = +(args.fps || 30);
 const SHOW = args.show || '/fable/show/lookdev_world.js';
 const MIME = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.html': 'text/html', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.ttf': 'font/ttf', '.otf': 'font/otf', '.woff2': 'font/woff2', '.bin': 'application/octet-stream' };
 
+const WARP = args.warp ? JSON.parse(fs.readFileSync(path.resolve(ROOT, args.warp), 'utf8')).beats.map((b) => [b.new, b.old]) : null;   // [[new, old], ...] monotone
+const AUDIO = WARP ? path.join(ROOT, 'inputs', 'Merge (keychange down).wav') : path.join(ROOT, 'inputs', 'Merge.mp3');
 const frames = new Map();   // "wid:i" -> Buffer
 function serve() {
   return new Promise((resolve) => {
@@ -64,6 +70,9 @@ async function openPage(port, wid = 0) {
   const q = `show=${encodeURIComponent(SHOW)}&w=${W}&h=${H}&fps=${FPS}&wid=${wid}${args.q ? '&' + args.q : ''}`;
   await page.goto(`http://127.0.0.1:${port}/fable/engine/index.html?${q}`, { waitUntil: 'load' });
   await page.waitForFunction('window.ENGINE && (window.ENGINE.ready === true || window.ENGINE.error)', { timeout: 240000 });
+  if (WARP) await page.evaluate((B) => { const n = B.length;       // new time -> old time; outside the table, extrapolate with the end slopes (the show clamps at the old film's end)
+    window.ENGINE.warp = (x) => { let i; if (x <= B[0][0]) i = 0; else if (x >= B[n - 1][0]) i = n - 2; else { let lo = 0, hi = n - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (B[m][0] <= x) lo = m; else hi = m; } i = lo; }
+      return B[i][1] + (x - B[i][0]) * (B[i + 1][1] - B[i][1]) / (B[i + 1][0] - B[i][0]); }; }, WARP);
   const err = await page.evaluate(() => window.ENGINE.error); if (err) { await browser.close(); throw new Error('engine: ' + err); }
   return { browser, page };
 }
@@ -112,22 +121,24 @@ async function main() {
     const rows = Math.ceil(n / cols);
     const r = spawnSync(FF, ['-y', '-v', 'error', '-framerate', '1', '-i', path.join(dir, 't_%04d.png'), '-vf', `tile=${cols}x${rows}:padding=4:margin=4`, '-frames:v', '1', '-q:v', '2', out]); if (r.status !== 0) throw new Error(String(r.stderr));
     fs.rmSync(dir, { recursive: true }); console.log(`sheet ${n} frames -> ${out}`);
-  } else if (args.mp4) {
-    const out = path.resolve(args.mp4); fs.mkdirSync(path.dirname(out), { recursive: true });
+  } else if (args.mp4 || args.frames) {
+    const FR = args.frames ? path.resolve(args.frames) : null; const out = FR || path.resolve(args.mp4); fs.mkdirSync(FR || path.dirname(out), { recursive: true });
     const f0 = Math.round(+(args.from || 0) * FPS), f1 = Math.round(+(args.to || 10) * FPS), N = Math.max(1, Math.min(+(args.workers || 1), f1 - f0)); const mb = +(args.mb || 4);
     let tEval = 0, tPipe = 0; const dir = fs.mkdtempSync(path.join(WORK, 'seg-')); const per = Math.ceil((f1 - f0) / N); let done = 0; const tStart = Date.now();
     const jobs = [...Array(N)].map(async (_, w) => {
       const a = f0 + w * per, b = Math.min(f1, a + per); if (a >= b) return null; const seg = path.join(dir, `seg_${String(w).padStart(3, '0')}.mp4`);
       const { browser, page } = await openPage(port, w);
-      const ff = spawn(FF, ['-y', '-v', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${W}x${H}`, '-r', String(FPS), '-i', 'pipe:0', '-vf', VF, '-c:v', 'libx264', '-preset', args.preset || 'slow', '-crf', String(args.crf || 14), ...TAGS, '-r', String(FPS), seg], { stdio: ['pipe', 'inherit', 'inherit'] });
+      const ff = FR ? spawn(FF, ['-y', '-v', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${W}x${H}`, '-r', String(FPS), '-i', 'pipe:0', '-vf', 'vflip,scale=out_color_matrix=bt709:out_range=pc,format=yuvj420p', '-c:v', 'mjpeg', '-q:v', String(args.jpgq || 2), '-start_number', String(a), path.join(FR, 'f_%05d.jpg')], { stdio: ['pipe', 'inherit', 'inherit'] })
+        : spawn(FF, ['-y', '-v', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${W}x${H}`, '-r', String(FPS), '-i', 'pipe:0', '-vf', VF, '-c:v', 'libx264', '-preset', args.preset || 'slow', '-crf', String(args.crf || 14), ...TAGS, '-r', String(FPS), seg], { stdio: ['pipe', 'inherit', 'inherit'] });
       for (let f = a; f < b; f++) { const s = Date.now(); const buf = await frame(page, f / FPS, f, w, mb); const s2 = Date.now(); if (!ff.stdin.write(buf)) await new Promise((r) => ff.stdin.once('drain', r)); done++; tEval += s2 - s; tPipe += Date.now() - s2;
         if (w === 0 && (f - a) % 30 === 0) process.stdout.write(`  ${done}/${f1 - f0} frames  ${(done / ((Date.now() - tStart) / 1000)).toFixed(2)} fps total  (last frame ${Date.now() - s} ms)\n`); }
       ff.stdin.end(); await new Promise((r) => ff.on('close', r)); await browser.close(); return seg;
     });
     const segs = (await Promise.all(jobs)).filter(Boolean);
+    if (FR) { fs.rmSync(dir, { recursive: true }); const sec = (Date.now() - tStart) / 1000; console.log(`frames ${f1 - f0} (${f0}..${f1 - 1}) in ${sec.toFixed(1)} s = ${((f1 - f0) / sec).toFixed(2)} fps (${N} workers, mb ${mb}) -> ${FR}`); srv.close(); return; }
     const list = path.join(dir, 'list.txt'); fs.writeFileSync(list, segs.map((s) => `file '${s}'`).join('\n'));
     const a = ['-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', list];
-    if (args.audio) a.push('-ss', String(f0 / FPS), '-t', String((f1 - f0) / FPS), '-i', path.join(ROOT, 'inputs', 'Merge.mp3'), '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '320k');
+    if (args.audio) a.push('-ss', String(f0 / FPS), '-t', String((f1 - f0) / FPS), '-i', AUDIO, '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '320k');
     a.push('-c:v', 'copy', ...TAGS, '-movflags', '+faststart', out);
     const r = spawnSync(FF, a); if (r.status !== 0) throw new Error(String(r.stderr));
     fs.rmSync(dir, { recursive: true });

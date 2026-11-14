@@ -17,6 +17,7 @@ import { Capsule } from './shapes.js';
 
 const Q = new URLSearchParams(location.search);
 const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080), FPS = +(Q.get('fps') || 30);
+const NOTYPE = Q.get('notype') === '1', NOHUD = Q.get('nohud') === '1';   // plate mode: switch off the show's own lyric type / HUD+overlay (everything typeset); the picture is otherwise identical
 const canvas = document.getElementById('c'); canvas.width = W; canvas.height = H; canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
 const gl = canvas.getContext('webgl2', { antialias: false, alpha: false, depth: false, stencil: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
 window.ENGINE = { ready: false, error: null };
@@ -84,7 +85,7 @@ async function boot() {
     const tc = F.clock ?? ts;                                // frame().clock: the shader clock (stars, ripples, fibres), when a show wants it to differ from song time (actE: the last frame = frame 0)
     const sp = skyParams(dawn, env.sun || {}, tc, pxAngle);
     const list = (F.drawables || []).slice();
-    if (F.type) for (const d of F.type) list.push(type.line(d, ts));
+    if (F.type && !NOTYPE) for (const d of F.type) list.push(type.line(d, ts));
     const base = { gl, W, H, camPos: cam.pos, fovY: cam.fovY, focusDist: cam.focusDist, aperture: cam.aperture, dawn, t: tc, near: cam.near, far: cam.far, env, sunDir: sp.uSunDir };
     // 1. planar reflection: the same draws through the mirrored view
     const rctx = { ...base, reflect: true, view: cam.viewR, proj: cam.proj, viewProj: cam.viewProjR };
@@ -111,19 +112,21 @@ async function boot() {
   }
 
   // render one output frame at song time t. opts: {mb: sub-samples, shutter: fraction of the frame interval (0.5 = 180 deg)}
+  // time map: window.ENGINE.warp (set by the harness, --warp) maps NEW song time -> OLD show time. t is new time; sub-samples are spread in new time, then mapped.
+  const wp = (x) => (window.ENGINE.warp ? window.ENGINE.warp(x) : x);
   function render(t, opts = {}) {
     const N = Math.max(1, opts.mb ?? +(Q.get('mb') || 1)); const shutter = opts.shutter ?? +(Q.get('shutter') || 0.5);
     post.beginAccum();
     for (let i = 0; i < N; i++) {
-      const ts = N > 1 ? t + ((i + 0.5) / N - 0.5) * (shutter / FPS) : t;
+      const ts = wp(N > 1 ? t + ((i + 0.5) / N - 0.5) * (shutter / FPS) : t);
       const jx = N > 1 ? rng.halton(i, 2) - 0.5 : 0, jy = N > 1 ? rng.halton(i, 3) - 0.5 : 0;
       const F = show.frame(ts);
       renderScene(F, ts, jx, jy);
       post.accumulate(scene.color, 1 / N);
     }
-    const F0 = show.frame(t);
-    let hc = F0.hud ? hud.draw({ ink: ((F0.env && F0.env.dawn) || 0) > 0.5 ? 1 : 0, ...F0.hud }, t, engine) : null;
-    if (F0.overlay) { if (!hc) hc = hud.clear(); F0.overlay(hud.g, W, H, t); }     // 2D overlay drawn crisp over the graded frame (terminal card, credits)
+    const F0 = show.frame(wp(t));
+    let hc = F0.hud && !NOHUD ? hud.draw({ ink: ((F0.env && F0.env.dawn) || 0) > 0.5 ? 1 : 0, ...F0.hud }, wp(t), engine) : null;
+    if (F0.overlay && !NOHUD) { if (!hc) hc = hud.clear(); F0.overlay(hud.g, W, H, wp(t)); }     // 2D overlay drawn crisp over the graded frame (terminal card, credits)
     post.finish((F0.env && F0.env.grade) || {}, hc, Math.round(t * FPS));
     const err = gl.getError(); if (err) console.log('gl error 0x' + err.toString(16) + ' at t=' + t);
   }
