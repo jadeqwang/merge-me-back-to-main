@@ -10,6 +10,8 @@ Tool change: `gen_clips.py` gained `extra["audio"]` (adds `reference_audios` and
 
 ## Spend
 
+- Close of my part: TOTAL $525.40 of $600 cap  (894 billed items; list-price estimates) (whole project, list-price estimates). My lines (tags `t2_<id>`): about $34 (about 32 stills, 26 clips including the discarded fist take 1). No cap change was needed.
+
 - Start: $480.10 (whole project). After group (a)+(b) stills and clips plus group (c) queued: $513.17 (whole project; includes the
   orchestra agent's spend in the same window). My own lines are tagged `t2_<plate id>`.
 
@@ -62,16 +64,18 @@ from the tree). **root** (proof plate, child from behind): the frost grows from 
 Stills (one ref `day_jade_a1`): `wave_run2_a1`/`a2` full length and scowling; `wave_run3_a1` large, towering saturated ribbon wave
 with crest and spray, white paper to the edge, but an open-mouth grin and framed to the shins. Fixed by one expression-only edit
 (`wave_run3_face_a1`, lips closed) and a free crop to knees-up: `wave_run3_knees.jpg`. Clip `t2_wave_run_t2` (low camera retreating,
-"framing stays from the knees up for the whole shot") ACCEPTED and intaken as plate `wave_run` (replaces take 1 in the folder):
+"framing stays from the knees up for the whole shot") ACCEPTED and intaken as plate `wave_run` (take 1 kept as plate `wave_run_t1`):
 framing held mid-thigh up for all 5 s, she sprints at the lens, arms pumping, hair streaming; the ribbon wave surges behind and its
 white spray rises round her from 2.5 s; no grey band; lips closed; patch on her left arm.
 
 ## Group (c) (in progress)
 
 - `stance_bow_v2`, `stance_horse_v2`, `stance_drop2_v2`: accepted, intaken (arrival swing and dust, then the stance holds exactly).
-- `stance_drop_v2` (from `stance_empty_a1`): t1 rejected (model zoomed in, legs cut off from 0.25 s); t2 with the still as first and
-  last frame submitted, not reviewed.
-- `ins_violin`, `ins_poem`: accepted, intaken. Insert stills: attempt 1 failed for all four (violin two crossed arms; poem light
+- `stance_drop_v2` (from `stance_empty_a1`): t1 rejected (model zoomed in, legs cut off from 0.25 s); t2 (still as first and last frame)
+  ACCEPTED, intaken: whole figure in frame, holds from 1.0, dust gone by 2.5; frame 0 is off-pose.
+- `ins_violin`: t1 read as a black violin on black (director); kept as plate `ins_violin_t1`. New still `ins_violin_warm_a1`
+  (edit of `ins_violin_b1`: amber varnish, rim light, strings and f-holes) and clip t2 accepted, intaken as `ins_violin`.
+- `ins_poem`: accepted, intaken. Insert stills: attempt 1 failed for all four (violin two crossed arms; poem light
   jeans; piano wrong keys; guitar letterboxed); attempt 2 passed (guitar cropped from a drawn frame: `ins_guitar_b1c`).
 - `ins_piano`, `ins_guitar`, `drop_hero_2_v2`, `_3_v2`, `_4_v2`, `_5_v2`: accepted t1, intaken. Guitar's grey fretting sleeve and
   sturdy hands read acceptably in motion; no third still.
@@ -91,7 +95,7 @@ white spray rises round her from 2.5 s; no grey band; lips closed; patch on her 
 | `stance_bow_v2` | `stance_bow` (b73-76 impact, beat 3 of b77-80) | 0.0-5.0; settled hold from 1.5 | black paper either side of her (x 0.0-0.25, x 0.75-1.0) | figure about 0.8 of frame height |
 | `stance_horse_v2` | `stance_horse` | 0.0-5.0; dust gone and still from 2.0 | same | big cartoon dust puffs 0-2.0 s |
 | `stance_drop2_v2` | `stance_drop2` | 0.25-5.0; settled from 2.25 | upper left x 0.0-0.4, y 0.0-0.4 | frame 0 sits slightly off; start at 0.25 |
-| `ins_violin` | new insert, beat 3 of b77-80 | 2.5-4.75 is the clearest bow travel (hand moves out to the right) | upper left above the strings x 0.0-0.45, y 0.0-0.30 | one bow, one hand throughout |
+| `ins_violin` (take 2, warm wood) | new insert, beat 3 of b77-80 | 1.0-4.75 steady down-bow (hand travels out to the right) | upper right x 0.55-1.0, y 0.0-0.25 | old black-violin take is `ins_violin_t1` |
 | `ins_poem` | new insert, beat 3 of b77-80 | 0.0-5.0, writing all through; small pencil lift about 3.75 | upper left x 0.0-0.3 (black) | page lines faint and unreadable |
 | `ins_piano` | new insert, beat 3 of b77-80 | 0.0-1.9 (lift, chord lands about 1.0-1.25); the view shifts at 2.0 | upper left black x 0.0-0.35, y 0.0-0.25 | |
 | `ins_guitar` | new insert (RNA band), beat 3 of b77-80 | strums 0.75-1.25, 2.5-3.0, 4.25-4.75 | little free area; small chip at upper left only | fretting sleeve greyish |
@@ -101,3 +105,4 @@ white spray rises round her from 2.5 s; no grey band; lips closed; patch on her 
 | `drop_hero_5_v2` | v1 `drop_hero_5` (landing) | 0.0-2.25 (squat, strap swing, dust); dust thins to 4.0 | upper band y 0.0-0.35 is black trousers/black | no rays |
 | `drop_hero_1_v2` (take 2) | v1 `drop_hero_2` (fist) as the brief's hero 1 | 1.0-4.5 (closes 1.0-3.75, held after) | black right half x 0.65-1.0 | small gold motion flicks at the knuckles 1.5-4.25 (from the v1 fist still), not burst rays |
 | `wave_run` (take 2) | second likeness shot b145-146 (`like_sing2`) | 1.4-4.8 (spray builds 2.5-5.0); whole 0-5.0 usable | slab low over her waist/trousers band y 0.75-0.97, or upper corners x 0.0-0.2 / x 0.8-1.0, y 0.0-0.3 (ribbons, busy) | do not mirror (patch); take 1 row above is void |
+| `stance_drop_v2` (take 2) | `stance_drop` (empty-stance still) | 0.5-5.0; clean hold from 2.5 | black paper upper right x 0.6-1.0, y 0.0-0.35 | do not use frame 0 (off-pose) |

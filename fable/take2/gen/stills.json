@@ -807,6 +807,14 @@
     "work_fable/take2/stills/wave_run3_a1.jpg"
    ],
    "prompt": "Edit this picture; keep everything exactly as it is, in the same cel-shaded coloured-pencil style: the same woman, pose, clothes, hair, wave, road and framing. Change only her expression: her lips are CLOSED, her face calm, open and glad, eyes bright and determined, brows relaxed, no grin, no teeth, no frown. No other change. No text."
+  },
+  {
+   "id": "ins_violin_warm",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/ins_violin_b1.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same flat cel-shaded drawing on black paper: the same framing, the same single bow, the same bow hand and white sleeve with the thin orange cuff band, the same black background. Change only the violin: it is no longer black. It is a warm wooden violin with glowing amber-orange and honey varnish, the wood grain faintly visible, clearly lit: a warm rim of light catches the edge of its body and the curve of its shoulders, and a cool blue pencil rim on the far edge; the two f-holes are dark and crisp, the pale maple bridge and the four silver strings are clearly visible. The violin stands out brightly against the black paper. No other change. No text, no logo."
   }
  ]
 }
