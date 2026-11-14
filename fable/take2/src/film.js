@@ -83,7 +83,7 @@ async function findPlate(id) {
 }
 // runner kit cut-outs (shots.js kind 'kit'): KIT[shot id] = [{ ...runner, meta }] for the runners whose cut-out exists
 const KIT = {};
-async function findKit(s) { const out = [];
+async function findKit(s) { const out = []; if (s.opt.kit.off) { KIT[s.id] = null; return; }
   for (const r of s.opt.kit.runners) { const m = await json(`${r.dir}/meta.json`); if (m && m.n && (await exists(`${r.dir}/rgba/f_${String(m.n).padStart(4, '0')}.png`))) out.push({ ...r, meta: m }); }
   KIT[s.id] = out.length ? out : null; }
 const plateUrl = (p, i) => `${p.dir}/frames/f_${String(i + 1).padStart(4, '0')}.jpg`;

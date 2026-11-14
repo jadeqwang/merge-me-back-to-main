@@ -97,20 +97,20 @@ section('verse1');
 // (work_fable/take2/stills/) and on the clips that had landed; see notes/compositor.md "Step 2".
 P(17, 18, 'main_face', 'missing', 'Close three-quarter on her face, eyes open, calm.', { row: 'b17', opt: { lyr: { x0: 0.05, x1: 0.47, align: 'left' } } });
 P(18, 19, 'main_split', 'missing', 'She steps apart into two, then four (Banach-Tarski: each keeps a whole body). The copies\' bands take lane colours.',
-  { row: 'b18', opt: { clip0: 0.5, clip1: 3.5, push: 0.02 } });
+  { row: 'b18', opt: { clip0: 0.5, clip1: 3.2, push: 0.02 } });   // director: one figure to 0.7 s, two by 1.0, four apart by 2.8
 V(19, 20, 'seq 01', 'From above and behind: eight, sixteen, more run out along their lanes.',
   { code: 'V7', alt: 'K runners + C', row: 'b19', opt: { v7crop: [0.3, 0.0, 0.7, 0.7] } });   // v7's own road lyric (I SPLIT MYSELF...) runs along the bottom left: cropped out
 const CROSS = [
-  ['cross_wushu', 'Wushu (woodblock)', 'wushu', { reach: 2.5, door: [0.41, 0.125, 0.582, 0.66] }],   // clip: whole figure inside the door outline from 2.25 s
+  ['cross_wushu', 'Wushu (woodblock)', 'wushu', { reach: 3.5, door: [0.41, 0.125, 0.582, 0.66] }],   // clip: whole figure inside the door outline from 2.25 s
   ['cross_wetlab', 'neuron lab (ink)', 'wetlab', { reach: 3.0, door: [0.29, 0.10, 0.44, 0.74] }],   // measured on the clip: front half through the door at 3.0 s
-  ['cross_ames', 'wind tunnel (painting)', 'ames', { reach: 3.0, door: [0.20, 0.09, 0.43, 0.80] }],   // clip: half through at 2.75 s, in at 3.25 s
-  ['cross_hackerhouses', 'hacker houses (pixel)', 'chezjj', { reach: 2.8, door: [0.20, 0.07, 0.38, 0.50] }],   // clip: at the door's edge 2.25 s, inside and glowing at 3.0 s
+  ['cross_ames', 'wind tunnel (painting)', 'ames', { reach: 2.7, door: [0.20, 0.09, 0.43, 0.80] }],   // clip: half through at 2.75 s, in at 3.25 s
+  ['cross_hackerhouses', 'hacker houses (pixel)', 'chezjj', { reach: 2.7, door: [0.20, 0.07, 0.38, 0.50] }],   // clip: at the door's edge 2.25 s, inside and glowing at 3.0 s
 ];
 CROSS.forEach(([id, m, life, c], i) =>
   P(20 + i, 21 + i, id, 'missing', `Crossing ${i + 1} of 4: a cel-drawn branch-Jade runs her lane toward a doorway of light; as she crosses, the whole picture turns into her medium: ${m}.`,
     { code: 'P+C', row: 'b20-23', opt: { push: 0, cross: { life, at: 0.58, end: 0.84, maxSpeed: 1.5, life0: 1.0, ...c }, lyr: { x0: 0.04, x1: 0.5, align: 'left' } } }));
 P(24, 25, 'cross_violet', 'missing', 'The fifth road has no doorway: the violet one runs out into engraved dark, and she keeps going.', { row: 'b24' });
-P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { row: 'b25', opt: { clip0: 1.5, lyr: { y: 'top' } } });   // the spark kindles at about 2.2-3.0 s of the clip
+P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { row: 'b25', opt: { clip0: 2.0, clip1: 4.5, lyr: { y: 'top' } } });   // the light appears from about 2.2 s (director: use 2.0-4.5)
 P(26, 27, 'main_release', 'missing', 'She opens her hands; the light leaves along the lane.',
   { code: 'P+C', row: 'b26', opt: { lyr: { x0: 0.04, x1: 0.55, align: 'left' },
     lane: { pts: [[0, 0.425], [0.04, 0.417], [0.111, 0.399], [0.181, 0.379], [0.331, 0.338], [0.548, 0.275], [0.595, 0.265]], color: '#FF3D7F', text: 'piano', cap: 30, scroll: -9,
@@ -134,7 +134,7 @@ PR(41, 43, 'E:hero', 'Main Jade sprints at us on the orange line as the coloured
 // draws on black paper: thirteen written lanes in perspective (far = a hairline, near = readable), each runner on her lane at her
 // lane's scale; dir = the cut-out folder (rgba/f_%04d.png + meta.json). A card until the first runner's cut-out exists.
 shot(43, 44, 'K+C', 'kit', 'runner_kit', 'missing', 'Side-on: the twelve run in parallel on their lanes, each drawn in her own medium, main in front.',
-  { row: 'b43', ov: ['chip:runner kit 2 of 13 (partial)'], opt: { lyr: { y: 'top', top: 0.13, x0: 0.03, x1: 0.52, align: 'left' }, kit: {
+  { row: 'b43', ov: ['chip:runner kit 2 of 13 (partial)'], opt: { lyr: { y: 'top', top: 0.13, x0: 0.03, x1: 0.52, align: 'left' }, kit: { off: true,   // director 2026-11-13: runner_main take 1 is cropped at the feet and is being retaken: b43 stays a card (remove off to build it)
     lanes: ['piano', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'violin', 'sandstorm', 'home', 'violet', 'main'],
     runners: [{ id: 'runner_pencil', dir: '/work_fable/take2/tests/kit/runner_pencil', lane: 'violin', x: 0.84, clip0: 0.4 },
       { id: 'runner_main', dir: '/work_fable/take2/kit/runner_main', lane: 'main', x: 0.67, clip0: 0 }] } } });
@@ -148,7 +148,7 @@ P(51, 53, 'fold_chest', 'missing', 'Hands crossed at her chest; a fan of twelve 
 P(53, 54, 'look_back', 'missing', "She stops and looks back over her shoulder: the same look as the lives'.", { row: 'b53', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });
 V(54, 56, 'night world', 'Wide: every road still glows to the horizon; along them the twelve worlds as small lit windows; commit nodes lock on, one per beat.',
   { code: 'V7+P+C', ov: ['plate thumbnails (to do)', 'commit nodes per beat (to do)'], row: 'b54-55', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' } } });
-P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { clip0: 1.8, push: 0, lyr: { y: 'top' } } });   // clip: the pull-out runs 0-4 s; from 1.8 s she is small enough for the slab above her
+P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { clip0: 0, clip1: 3.0, push: 0, lyr: { y: 'top' } } });   // the whole pull-out (close on the jacket back to the wide by 3 s); the slab sits over the sky and, early, her hair/back (no face)
 
 // ------------------------------------------------------------------ Breakdown A: bars 57-64 (crash on b57, strings)
 section('break_a');
