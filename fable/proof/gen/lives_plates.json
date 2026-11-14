@@ -1,47 +1,105 @@
 {
- "_note": "Still plates for the 25 s proof (bars 28-43). One medium per life. {LANE} = the life's lane colour name; CHAR/COMP/TAIL are added by gen_stills.py.",
+ "_note": "Still plates for the 25 s proof (bars 28-43). One medium per life. {LANE} = the life's lane colour name; CHAR/COMP/TAIL are added by gen_stills.py. 2026-11-13 Jade's notes applied: no band on the jacket back; one face design; child hair half-up with side-swept bangs, seated properly at the piano; violin = first chair of the first violins; home shows the kids from behind; bandmates as in vibesong; 'open source' and 'hacker houses' in place of the project names; no readable model text. Colour restraint (agreed with Jade 2026-11-13): each branch is one medium on a near-monochrome ground with its lane colour as the only strong colour.",
  "plates": [
-  {"id":"piano","lane":"rose pink","age":"toddler",
-   "style":"A hand-painted gouache illustration in the manner of a mid-century children's picture book: opaque matte paint, visible brush texture, soft rounded shapes, warm lamplight, a limited palette of cream, walnut brown, deep teal and dusty rose.",
-   "scene":"A living room in the evening. A toddler not yet three years old has just climbed up onto the bench of an upright piano that towers over her; open sheet music on the stand; one small hand reaches up to press a key, her feet dangle far above the pedals. She is seen from behind in three-quarter rear view with her face turned in profile toward the keys."},
-  {"id":"violin","lane":"golden yellow","age":"schoolgirl",
-   "style":"A coloured-pencil drawing on cream paper: fine layered hatching, visible pencil strokes, the tooth of the paper showing through, restrained colour, unfinished edges where the drawing fades into bare paper.",
-   "scene":"A school orchestra rehearsal, seen from inside the second violin section. A girl of about twelve, seated on an orchestra chair in the second row of violins, plays the violin, bow in mid-stroke, eyes on the music stand in front of her, her headphones resting around her neck and not on her ears; around her the other young players and their stands are sketched more lightly, and far off a conductor's raised arms are only a few loose lines. She is seen from behind in three-quarter rear view with her face in profile."},
-  {"id":"wushu","lane":"coral red","age":"adult",
-   "style":"A traditional East Asian woodblock print: bold carved black key lines, flat areas of colour with visible wood grain and slight misregistration, on warm handmade paper; a limited palette of ink black, indigo, pale grey and coral red.",
-   "scene":"A competition floor in a gymnasium. She holds a deep bow stance with a straight punch, the long-fist form of wushu, weight low, back straight; behind her on a diagonal four teammates in identical white jackets hold exactly the same stance in perfect unison. She is seen in three-quarter rear view with her face in profile along her punching arm."},
-  {"id":"wetlab","lane":"mint green","age":"adult",
-   "style":"A scientific ink drawing in the manner of an early-1900s histology plate: very fine black and sepia pen lines and stippling on aged ivory paper, hand-ruled margins, exquisite patient linework.",
-   "scene":"A tissue-culture laboratory. She sits at a bench looking down into a microscope, one hand on the focus knob. Above and around her, filling the upper half of the picture as if the paper itself showed what she sees, neurons are drawn large like a botanical plate: cell bodies with long branching dendrites and axons reaching across the page, a few of the cell bodies tinted mint green. She is seen in three-quarter rear view with her face in profile at the eyepiece."},
-  {"id":"phd","lane":"cyan","age":"adult",
-   "style":"A pen-plotter drawing on pale green graph paper: single-weight technical ink lines in black with one cyan pen, precise and slightly mechanical, cross-hatching made of parallel plotted strokes.",
-   "scene":"A hearing-research laboratory. She stands at a rack of amplifiers and an oscilloscope, one hand holding a long strip of chart paper that spills across the picture; through a window in a sound booth behind her a volunteer sits with earphones and small electrodes on the scalp. Across the upper part of the picture runs one great continuous waveform, the brain's electrical answer to a spoken syllable, drawn as plotted traces. She is seen in three-quarter rear view with her face in profile reading the trace."},
-  {"id":"poet","lane":"magenta","age":"adult",
-   "style":"Sumi ink wash on rice paper: wet grey washes, dry-brush blacks, generous areas of empty paper, a single accent colour.",
-   "scene":"Night in a small graduate-student apartment. She sits at a desk by a window typing on a manual typewriter; lab notebooks are stacked on the floor; the typed pages lifting off the desk drift up toward the window and, as they rise, turn into a flight of ink-brushed birds. The typed lines on the pages are only rows of tiny ink marks. She is seen in three-quarter rear view with her face in profile over the typewriter, her face lit by the pale light from the window and drawn clearly with a few fine brush lines, not left in shadow."},
-  {"id":"ames","lane":"bright blue","age":"adult",
-   "style":"A 1970s space-agency concept painting, fully painted with no pencil lines: airbrushed gouache and acrylic, smooth luminous gradients, strong shafts of light, crisp engineering forms, a saturated palette of deep teal, sky blue, cream and warm amber highlights, optimistic, with the slight grain of an offset print.",
-   "scene":"Inside the largest wind tunnel in the world: a wall of six enormous fan rotors towering like cathedral windows, tiny technicians on gantries for scale. She stands on the floor of the test section facing the fans, leaning slightly into the wind, her long hair, her trouser legs and the straps on her trousers streaming sideways. She is seen in three-quarter rear view with her face in profile."},
-  {"id":"band","lane":"coral red","age":"adult",
-   "style":"A two-colour risograph print like a hand-made gig poster: coral and navy inks on off-white paper, coarse halftone dots, slight misregistration between the two inks, grainy solid areas.",
-   "scene":"A tiny club stage. She plays an acoustic guitar at a microphone, mid-strum; two bandmates are looser halftone shapes beside her, one with an electric guitar and one with an acoustic guitar; through the open back door of the club a van is parked in the alley. She is seen in three-quarter rear view from the back of the stage with her face in profile at the microphone, the small crowd beyond her."},
-  {"id":"chezjj","lane":"mint green","age":"adult",
-   "style":"Detailed side-view pixel art in the manner of a 16-bit era adventure game: crisp square pixels, a rich limited palette, cosy night lighting from many screens.",
-   "scene":"The big living room of a shared hacker house at two in the morning, every light on: people working at laptops on sofas, on the stairs, at a long kitchen table beyond; whiteboards covered in diagrams, cables, pizza boxes, a sleeping cat. In the foreground she sits cross-legged on the floor at a low table with a laptop, typing. She is a large character sprite seen in three-quarter rear view with her face in profile lit by the screen."},
-  {"id":"sandstorm","lane":"cyan","age":"adult",
-   "style":"The whole picture is made of monospaced text characters on a black terminal screen, like detailed ANSI and ASCII art: letters, digits and punctuation of different densities build every shape and tone; colours are cyan, white and a little amber.",
-   "scene":"A conference stage. She stands at a lectern with an open laptop, one arm raised toward a huge projection screen behind her that shows a terminal window; in the foreground the dark heads of an audience, some with hands raised in applause. She is seen in three-quarter rear view with her face in profile looking up at the screen."},
-  {"id":"home","lane":"rose pink","age":"adult",
-   "style":"A wax-crayon and chalk-pastel drawing on dark blue construction paper: confident textured strokes, the paper showing between them, warm lamp yellows against the blue.",
-   "scene":"A downstairs play room late at night; a round wall clock shows half past ten: its short hour hand points halfway between ten and eleven and its long minute hand points straight down at six. She kneels on the rug beside a desk lamp, holding up a grapefruit as the Sun in one hand while her other hand moves a small blue ball around it; chalk ellipses of orbits hang in the air around the fruit; crayon drawings of planets are taped to the wall; two small empty beanbag chairs face her. She is seen in three-quarter rear view with her face in profile looking at the little blue ball."},
-  {"id":"violet","lane":"violet","age":"adult","hair":"bun",
-   "style":"A scratchboard engraving: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky.",
-   "scene":"Deep night far from any city. A large radio telescope dish points at the Milky Way; she sits alone on the rim of the dish with a notebook on her knee, writing with a pencil, the stars engraved in thousands of tiny cuts above her. She is seen in three-quarter rear view with her face in profile bent over the notebook."},
-  {"id":"root","lane":"orange","age":"child5",
-   "style":"A watercolour and gouache illustration with white ink for the frost: soft wet washes of night blue, a small warm glow, delicate opaque white linework.",
-   "scene":"Night. A small girl of about five stands at a dark window, seen from behind, one palm pressed flat against the cold glass. From the warm spot under her hand, frost crystals grow across the pane in white ink, branching and branching again like a great tree until they fill the window. A lamp behind the viewer gives her a soft warm edge."},
-  {"id":"hero","lane":"orange","age":"adult","front":true,
-   "style":"A Japanese anime key visual: clean cel shading with two tones, crisp ink outlines, painted background, exactly the drawing style of the reference character sheet.",
-   "scene":"Before dawn on an endless dark mirror-smooth plain under a deep blue sky with the first band of light on the horizon. She sprints straight toward the viewer along a glowing orange line of light that runs along the ground from the horizon to the foreground; from both sides other lines of light in rose, gold, mint, cyan, blue and magenta curve in across the plain and join the orange line behind her. Low wide-angle view; her long hair and the straps of her trousers fly behind her; her expression is open, determined and joyful. She is in the right half of the picture, full figure, large; the left third of the picture is calm dark sky."}
+  {
+   "id": "piano",
+   "lane": "rose pink",
+   "age": "toddler",
+   "style": "A hand-painted gouache illustration in the manner of a mid-century children's picture book: opaque matte paint, visible brush texture, soft rounded shapes, warm lamplight, a limited palette of cream, walnut brown, deep teal and dusty rose.",
+   "scene": "A living room in the evening. A little girl not yet three years old sits properly on the bench of an upright piano that towers over her; the piano stands on the LEFT side of the picture and she faces it, so she faces left: back straight, both small hands on the keys, playing, her feet dangling far above the pedals; open sheet music on the stand, a floor lamp beside the piano. She is seen from behind in three-quarter rear view with her face turned in profile toward the keys."
+  },
+  {
+   "id": "violin",
+   "lane": "golden yellow",
+   "age": "schoolgirl",
+   "style": "A coloured-pencil drawing on cream paper: fine layered hatching, visible pencil strokes, the tooth of the paper showing through, restrained colour, unfinished edges where the drawing fades into bare paper.",
+   "scene": "A school orchestra rehearsal. A girl of about twelve is the first chair of the first violins: she sits in the outside seat of the front desk, nearest the conductor's podium, playing the violin with her bow in mid-stroke and her eyes on the music stand in front of her, her headphones resting around her neck and not on her ears; behind her the rest of the first violins and the other young players are sketched more lightly, and at the podium the conductor's raised arms are only a few loose lines. She is seen from behind in three-quarter rear view with her face in profile."
+  },
+  {
+   "id": "wushu",
+   "lane": "coral red",
+   "age": "adult",
+   "style": "A traditional East Asian woodblock print: bold carved black key lines, flat areas of colour with visible wood grain and slight misregistration, on warm handmade paper; a limited palette of ink black, indigo, pale grey and coral red.",
+   "scene": "A competition floor in a gymnasium. She holds a deep bow stance with a straight punch, the long-fist form of wushu, weight low, back straight; behind her on a diagonal four teammates in identical white jackets hold exactly the same stance in perfect unison. She is seen in three-quarter rear view with her face in profile along her punching arm."
+  },
+  {
+   "id": "wetlab",
+   "lane": "mint green",
+   "age": "adult",
+   "style": "A scientific ink drawing in the manner of an early-1900s histology plate: very fine black and sepia pen lines and stippling on aged ivory paper, hand-ruled margins, exquisite patient linework.",
+   "scene": "A tissue-culture laboratory. She sits at a bench looking down into a microscope, one hand on the focus knob; the microscope and the bench are on the LEFT side of her and she faces left. Above and around her, filling the upper half of the picture as if the paper itself showed what she sees, neurons are drawn large like a botanical plate: cell bodies with long branching dendrites and axons reaching across the page, a few of the cell bodies tinted mint green. She is seen in three-quarter rear view with her face in profile at the eyepiece."
+  },
+  {
+   "id": "phd",
+   "lane": "cyan",
+   "age": "adult",
+   "style": "A pen-plotter drawing on pale green graph paper: single-weight technical ink lines in black with one cyan pen, precise and slightly mechanical, cross-hatching made of parallel plotted strokes.",
+   "scene": "A hearing-research laboratory. She stands at a rack of amplifiers and an oscilloscope, one hand holding a long strip of chart paper that spills across the picture; through a window in a sound booth behind her a volunteer sits with earphones and small electrodes on the scalp. Across the upper part of the picture runs one great continuous waveform, the brain's electrical answer to a spoken syllable, drawn as plotted traces. She is seen in three-quarter rear view with her face in profile reading the trace."
+  },
+  {
+   "id": "poet",
+   "lane": "magenta",
+   "age": "adult",
+   "style": "Sumi ink wash on rice paper: wet grey washes, dry-brush blacks, generous areas of empty paper, a single accent colour.",
+   "scene": "Night in a small graduate-student apartment. The desk and the window are on the LEFT side of the picture; she sits at the desk facing left, typing on a manual typewriter; lab notebooks are stacked on the floor; the typed pages lifting off the desk drift up toward the window and, as they rise, turn into a flight of ink-brushed birds. The typed lines on the pages are only rows of tiny ink marks. She is seen in three-quarter rear view with her face in profile over the typewriter, her face lit by the pale light from the window and drawn clearly with a few fine brush lines, not left in shadow. Her hair is parted in the centre and swept back from a tall clear forehead: no fringe, no bangs."
+  },
+  {
+   "id": "ames",
+   "lane": "bright blue",
+   "age": "adult",
+   "style": "A 1970s space-agency concept painting, fully painted with no pencil lines, in a single hue: smooth airbrushed gouache in shades of one cool grey-teal from near-black to ivory, strong shafts of pale light, crisp engineering forms, the slight grain of an offset print. The only strong colour in the whole picture is bright blue, used only for her arm bands, straps and headphones.",
+   "scene": "Inside the largest wind tunnel in the world: a wall of six enormous fan rotors towering like cathedral windows, tiny technicians on gantries for scale. She stands on the floor of the test section facing the fans, leaning slightly into the wind, her long hair, her trouser legs and the straps on her trousers streaming sideways. She is seen in three-quarter rear view with her face in profile."
+  },
+  {
+   "id": "band",
+   "lane": "coral red",
+   "age": "adult",
+   "style": "A two-colour risograph print like a hand-made gig poster: coral and navy inks on off-white paper, coarse halftone dots, slight misregistration between the two inks, grainy solid areas.",
+   "scene": "A tiny club stage. She sings into a microphone on a stand while strumming an acoustic guitar. Her two bandmates stand beside her as looser halftone shapes: one is a tall young man with short black hair in a pale vertically striped button-up shirt with the sleeves rolled, playing a natural-wood electric guitar; the other is a young man with curly dark hair under a flat cap, strumming an acoustic guitar. Through the open back door of the club a van is parked in the alley. She is seen in three-quarter rear view from the back of the stage with her face in profile at the microphone, the small crowd beyond her. The circle on the back of her jacket is printed as a pale, light tint, much lighter than the navy ink, never a dark disc."
+  },
+  {
+   "id": "chezjj",
+   "lane": "mint green",
+   "age": "adult",
+   "style": "Detailed side-view pixel art in the manner of an early handheld game console: crisp square pixels in only four shades of one colour, from deep navy to pale blue-grey, cosy night lighting from many screens. The only strong colour in the whole picture is mint green, used only for her arm bands, straps and headphones and for the glow of the screens.",
+   "scene": "The big living room of a shared hacker house at two in the morning, every light on: people working at laptops on sofas, on the stairs, at a long kitchen table beyond; whiteboards covered in boxes and arrows with no writing at all, cables, pizza boxes, a sleeping cat. In the foreground she sits cross-legged on the floor at a low table with a laptop, typing; the laptop lids are plain with no logos or symbols on them; every screen in the room glows with abstract bars of light, never readable text. She is a large character sprite seen in three-quarter rear view with her face in profile lit by the screen."
+  },
+  {
+   "id": "sandstorm",
+   "lane": "cyan",
+   "age": "adult",
+   "style": "The whole picture is made of small monospaced text characters on a black terminal screen, like detailed ANSI and ASCII art: dots, dashes, slashes and block characters of different densities build every shape and tone; no columns of falling digits; colours are cyan, white and a little amber.",
+   "scene": "A conference stage at an open-source software talk. She stands at a lectern with an open laptop, one arm raised toward a huge projection screen behind her; the screen is a plain glowing rectangle with a simple window frame and nothing written in it, left empty; in the foreground the dark heads of an audience, some with hands raised in applause. She is seen in three-quarter rear view with her face in profile looking up at the screen."
+  },
+  {
+   "id": "home",
+   "lane": "rose pink",
+   "age": "adult",
+   "style": "A wax-crayon and chalk-pastel drawing on dark blue construction paper: confident textured strokes, the paper showing between them, warm lamp yellows against the blue.",
+   "scene": "A downstairs play room late at night; a round wall clock shows half past ten: its short hour hand points halfway between ten and eleven and its long minute hand points straight down at six. Everyone is seen from behind, facing a wall where crayon drawings of planets are taped. She kneels on the rug beside a desk lamp, holding up a grapefruit as the Sun in one hand while her other hand moves a small blue ball around it; chalk ellipses of orbits hang in the air around the fruit. Beside her, nearer the viewer, two children sit on beanbag chairs with their backs to the viewer, watching the little blue ball: an older boy of seven, tall for his age, with very dark brown hair, and a younger girl of four with light brown curly hair. Only the backs of the children's heads and shoulders are seen; their faces are never visible. She is seen in three-quarter rear view with her face in profile looking at the little blue ball."
+  },
+  {
+   "id": "violet",
+   "lane": "violet",
+   "age": "adult",
+   "hair": "bun",
+   "style": "A scratchboard engraving: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky.",
+   "scene": "Deep night far from any city. A large radio telescope dish points at the Milky Way; she sits alone on the rim of the dish with a notebook on her knee, writing with a pencil, the stars engraved in thousands of tiny cuts above her. She is seen in three-quarter rear view with her face in profile bent over the notebook."
+  },
+  {
+   "id": "root",
+   "lane": "orange",
+   "age": "child5",
+   "style": "A watercolour and gouache illustration with white ink for the frost: soft wet washes of night blue, a small warm glow, delicate opaque white linework.",
+   "scene": "Night. A small girl of about five stands at a dark window, seen from behind, one palm pressed flat against the cold glass. From the warm spot under her hand, frost crystals grow across the pane in white ink, branching and branching again like a great tree until they fill the window. A lamp behind the viewer gives her a soft warm edge."
+  },
+  {
+   "id": "hero",
+   "lane": "orange",
+   "age": "adult",
+   "front": true,
+   "style": "A Japanese anime key visual: clean cel shading with two tones, crisp ink outlines, painted background, exactly the drawing style of the reference character sheet.",
+   "scene": "Before dawn on an endless dark mirror-smooth plain under a deep blue sky with the first band of light on the horizon. She sprints straight toward the viewer along a glowing orange line of light that runs along the ground from the horizon to the foreground; from both sides other lines of light in rose, gold, mint, cyan, blue and magenta curve in across the plain and join the orange line behind her. Low wide-angle view; her long hair and the straps of her trousers fly behind her; her expression is open, determined and joyful. She is in the right half of the picture, full figure, large; the left third of the picture is calm dark sky."
+  }
  ]
 }

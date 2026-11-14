@@ -32,6 +32,43 @@ The song is one self splitting into branches and merging back. The film shows th
 6. **The film is a loop.** Frame 0 is the child's palm on the frost window. The last image is the same window, with the light the
    violet branch sent home showing up in the frost.
 
+### The look (agreed with Jade, 2026-11-13)
+
+What works in the proof and is kept:
+
+- **The medium means something.** Each life is drawn the way that life drew or recorded itself: the neuron lab as a histology plate,
+  the PhD on chart paper, the band as a gig poster, the violet branch as scratchboard (white cut out of black: you see a branch by
+  its own light).
+- **The jacket is the logo.** White takes any medium; the blue circle and RARE EARTH read at once in all twelve. That constant is
+  what lets the styles vary.
+- **Paper.** Light grounds and visible paper, so the film looks made by a hand and the night sections mean something.
+
+What changes from the first proof:
+
+1. **Colour restraint; colour is the merge variable.** A branch is one medium on a near-monochrome ground, with its lane colour as
+   the only strong colour (bands, straps, headphones, the lane, at most one object). Only the merged Jade gets every colour. Full
+   colour is held back until "Every life I've lived, I have become" and the day that follows, so it is earned, as in Rewind. The
+   sunrise drop is two colours, gold and black. (The wind tunnel and the hacker house were restyled this way on 2026-11-13; the
+   home plate is still multi-colour crayon and should follow.)
+2. **Main gets a material.** No neon tubes and no gradient sky. Main's world is drawn on paper as in Orbital Sunrise: black paper
+   for night, white paper for day. Main Jade is the sheet's flat cel with an inked line, on that paper, with light drawn as strokes.
+3. **The lanes are written.** A lane is a line of text in its colour: a thin bright line from far off, readable commit messages up
+   close, written under her feet as she runs. Sparse text, then dense, then solid colour at the merge: v6's rule that density is
+   how merged she is.
+4. **Drawn things move on twos.** Plates are stepped to 12 frames a second in the compositor so they read as drawn and lose the
+   video model's smoothness. The machine layer (type, lanes, chips, graph) stays on ones. To be tested first; it is free.
+5. **v7 renders are never shown raw.** Every V7 source in the shot table goes through a paper pass in the compositor (line and
+   tone redrawn on black or white paper), the way Orbital redrew its plates in pencil. Silhouettes and crowds suit this.
+
+Glyph (text) art, after the ASCII reference in `inputs/mmorpg_ascii.png`, v6 and the Opus cuts:
+
+- **Use it where the text is true:** the build's `git log` with her real commit messages; the written lanes; the download in the
+  breakdown (memory arriving along each strand as readable lines); the open-source life, rendered by the engine's real glyph pass
+  (v6's `engine/src/textlook.js` on branch `claude/v6-text`) instead of the image model's imitation, so every character is real.
+- **Keep it alive, as in the reference:** colour from the lane palette, depth, motion.
+- **Do not use it** for her face or body (it costs the likeness), as a skin over everything, at sizes a phone or X's compression
+  turns to mush, or as falling columns of characters.
+
 ## 3. Rules (binding)
 
 From the shipped films, Jade's recorded notes, and the proof.
@@ -46,16 +83,23 @@ From the shipped films, Jade's recorded notes, and the proof.
    word. Never over a face or hands. Sizes at 1080p: verse lyric cap height 64 px or more, chorus slab 100 px or more, chips and
    labels 24 px or more.
 6. No text drawn by an image model is shown. Screens, whiteboards, sheet music titles, clocks and handwriting that can be read are
-   drawn in code or painted out. (The proof breaks this in the Sandstorm and Chez JJ plates; fix in the rebuild.)
+   drawn in code or painted out. (The first proof broke this in the open-source and hacker-house plates; the corrected plates leave those screens empty for the code to fill.)
 7. True when paused: commit messages, dates, counts, the clock at 10:30, a legal orchestra seating, a real wushu stance.
-8. Costume audit on every plate and clip: round `1420 MHz` patch on her LEFT upper arm only; pale-blue circle and `RARE EARTH` on the
-   jacket back; one band across chest and back and one on each upper arm; band, straps and headphones in the branch's lane colour
-   (orange for main); headphones round the neck unless the scene says otherwise.
-9. Her kids are never shown and never photo-referenced. The home plate uses two empty beanbags. (Jade can change this: section 10.)
+8. Costume audit on every plate and clip: round `1420 MHz` patch on her LEFT upper arm only; the jacket BACK is plain white with
+   only the pale-blue circle and `RARE EARTH` (no band or stripe across the back: Jade, 2026-11-13); one band across the front of
+   the chest and one round each upper arm; bands, straps and headphones in the branch's lane colour (orange for main); headphones
+   round the neck unless the scene says otherwise.
+9. Her kids are never photo-referenced and their faces are never shown. In the home plate they are seen from behind (Jade,
+   2026-11-13): an older boy of seven with dark brown hair and a younger girl of four with light brown curly hair.
 10. Nothing frozen: every shot has movement, from its first frame.
 11. Anime Jade never lip-syncs (mouth closed, as in Rewind). Only her traced likeness sings, in the outro.
 12. Expression: calm, hopeful, "never an ad smile". The look-back is a quiet look of recognition.
+    One face in every medium: the character sheet's face (oval, tall clear forehead, centre parting with no fringe, large very dark
+    eyes, soft straight brows). The medium changes the rendering, never the features. Jade as a child: hair half up and half down
+    with side-swept bangs.
 13. Tone: tender, euphoric, epic. No fear framing.
+    Style rules are in "The look" above and are binding: one strong colour per branch, written lanes, paper, drawn things on twos,
+    no raw v7 renders, no glyph faces.
 14. Public repo: code and docs only, plus review videos under `review/` (each under 100 MB). Never print or commit the values in
     `work/cf_account_id.txt` and `work/gen_kv_ns.txt`; grep the outgoing diff before every push. Never deploy or touch Workers or KV.
 15. Jade's details are private in any request to an outside service. Her own photos may be sent to models; her kids' photos never.
@@ -105,8 +149,13 @@ Work needed in code before any section can be finished:
 3. **Cut-outs.** Reuse the matte step of `fable/tools/hybrid/hybrid.py` for K layers; check it on pencil and pixel-art figures.
 4. **Medium overlays for merges.** A small set of compositor effects that lay a medium over part of a plate inside a mask (pencil
    hatch, halftone, woodcut grain, pixel blocks), for the moments when a branch's medium "shows" in main Jade.
-5. **Code-drawn readable text** over plates: terminal on the Sandstorm screen, the handwriting `docs: start here`, the wall clock.
+5. **Code-drawn readable text** over plates: terminal on the open-source stage screen, the handwriting `docs: start here`, the wall clock.
 6. **Use `still.jpg`** (the 2K still) for near-static full-frame shots so they are sharper than the 720p clip.
+7. **Written lanes.** Replace the proof's solid lane lines with lines of set text (mono, lane colour) that hold up from thin line to
+   readable words, on straight lanes and on the merge curves.
+8. **On twos.** A per-plate hold so drawn sources update at 12 fps while overlays stay at 30.
+9. **Paper pass for V7 sources** (and the black-paper and white-paper grounds for main's world).
+10. **Glyph pass.** Port v6's `textlook.js` so a plate can be rendered in real characters (the open-source life, the build).
 
 Generation tooling (unchanged from the proof): `fable/proof/gen/gen_stills.py` (stills through `tools/gen/cf.py`), `gen_clips.py`
 (specs) and `tools/gen/gen.py submit|wait` (video queue), `intake.sh` (frames, meta, review strip). Run with
@@ -116,6 +165,8 @@ each run.
 ## 6. Shot table
 
 Times are seconds in the new audio (`analysis_v3`). `b17` means bar 17; a bar is about 1.72 s. Source codes as in section 5.
+Read the table with "The look" in mind: every lane is a written line, every V7 source goes through the paper pass, main's world
+is black paper at night and white paper by day, and full colour waits for the end of chorus 2.
 "exists" means the proof already has it. New plate names are working ids.
 
 ### Intro A: bars 1-8, 0:00-0:14 (pads and arp, no drums)
@@ -142,12 +193,12 @@ Times are seconds in the new audio (`analysis_v3`). `b17` means bar 17; a bar is
 | b17 | 28.09 hit | I split myself (28.68) | Close three-quarter on her face, eyes open, calm. | P `main_face` (new) |
 | b18 | 29.8 | a thousand ways | She steps apart into two, then four (Banach-Tarski: each keeps a whole body). The copies' bands take lane colours. | P `main_split` (new) |
 | b19 | 31.6 | | From above and behind: eight, sixteen, more run out along their lanes. | K runners + C, or V7 seq 01 |
-| b20-23 | 33.3-40.2 | Down every road the night could hold (33.65) | Four crossings, one per bar: a cel-drawn branch-Jade runs her lane toward a doorway of light; as she crosses, the whole picture turns into her medium. Wushu (woodblock), neuron lab (ink), wind tunnel (painting), Chez JJ (pixel). | P `cross_*` (4 new) wiped by C into the life plates |
+| b20-23 | 33.3-40.2 | Down every road the night could hold (33.65) | Four crossings, one per bar: a cel-drawn branch-Jade runs her lane toward a doorway of light; as she crosses, the whole picture turns into her medium. Wushu (woodblock), neuron lab (ink), wind tunnel (painting), hacker houses (pixel). | P `cross_*` (4 new) wiped by C into the life plates |
 | b24 | 40.2 | | The fifth road has no doorway: the violet one runs out into engraved dark, and she keeps going. | P `cross_violet` (new) |
 | b25 | 42.0 | Each one a light (42.40) | Close on cupped hands; a light kindles. | P `main_light` (new) |
 | b26 | 43.7 | I sent ahead | She opens her hands; the light leaves along the lane. | P `main_release` (new) + C |
 | b27 | 45.5 | | The light races down the rose lane and becomes the lamp in the piano room. | V7 lane shot, match cut |
-| b28-32 | 47.2-55.9 | Each one a story to unfold (47.64) | Ten lives, one plate each, 4, 4, 2, 2, 2, 2, 1, 1, 1, 1 beats: piano, violin, wushu, neuron lab, PhD, poet, wind tunnel, band, Chez JJ, Sandstorm. Lane line and chip on each. | P x10 (exist) |
+| b28-32 | 47.2-55.9 | Each one a story to unfold (47.64) | Ten lives, one plate each, 4, 4, 2, 2, 2, 2, 1, 1, 1, 1 beats: piano, violin, wushu, neuron lab, PhD, poet, wind tunnel, band, hacker houses, open source. Lane line and chip on each. | P x10 (exist) |
 
 ### Pre-chorus: bars 33-40, 0:56-1:10
 
@@ -268,7 +319,7 @@ stillness (three bars), the terminal (7 s).
 |---|---|---|
 | Root (the child) | `root_fork`, `root_face`, `root_light` | 3 P |
 | Main Jade, cel | `main_palm`, `main_face`, `main_split`, `main_light`, `main_release`, `hero_feet`, `fold_reach`, `fold_chest`, `look_back`, `main_back_wide`, `float_top`, `float_face`, `float_hand`, `rise`, `drop_face`, `c2_lookup`, `c2_hands`, `catch`, `day_run`, `day_fork` | 20 P |
-| Crossings | `cross_wushu`, `cross_wetlab`, `cross_ames`, `cross_chezjj`, `cross_violet` | 5 P |
+| Crossings | `cross_wushu`, `cross_wetlab`, `cross_ames`, `cross_hackerhouses`, `cross_violet` | 5 P |
 | Runner kit | twelve runners, one per medium, plus main, on a flat ground | 13 P (matted to K) |
 | Details | `det_*`, one per life | 12 S |
 | Stances and drop inserts | `stance_*` x4, `drop_hero_*` x5 | 9 S |
@@ -276,7 +327,7 @@ stillness (three bars), the terminal (7 s).
 | Patchwork | `patch_1-3`; `patchwork`, `resolve` | 3 S, 2 P |
 | The town | `facade_*`, one per life | 12 S |
 | Likeness | `like_sing1`, `like_sing2` | 2 L |
-| Retakes of proof plates | poet (no fringe), Sandstorm (head-only turn; screen text painted out), Chez JJ (whiteboards painted out) | 3 P |
+| Proof plates, redone 2026-11-13 after Jade's notes | all twelve lives and the root: jacket back, one face, her corrections (see section 10) | done in the proof budget |
 
 Totals: 55 plates (still plus clip), 36 stills, 2 sung clips. Reused: the 14 proof plates and about 110 s of v7 renders.
 
@@ -295,7 +346,7 @@ Unit prices from the proof: a still $0.134; a 5 s clip at 720p $1.156; a sung cl
 | Tests in section 9 | $10 |
 | **Planned** | **about $125** |
 
-Proposed cap for take two: **$180**, leaving about $55 of the $600 untouched. The proof ran at $0.80 per second of film; this plan
+Jade lifted the proposed $180 cap on 2026-11-13 (see section 10); the tools still enforce the $600 project cap. The proof ran at $0.80 per second of film; this plan
 works out lower per second because the drop, the build and the graph stay code-drawn.
 
 ## 9. Tests to run before committing to the whole table
@@ -310,19 +361,43 @@ Each is small. Run them first, show Jade, then generate in bulk.
    likeness, lip-sync, and whether the jacket matches. Make lag variants for Jade to choose by ear.
 4. **Crossing** (about $1.5): one cel-to-medium doorway shot with the wipe along the lane.
 5. **v7 re-timed** (free): render the drop through the time map with type and HUD off; check sync against the new audio on a strip.
+6. **On twos** (free): the proof with plates held at 12 fps beside the current one.
+7. **Written lane** (free): one lane as text across a full-frame plate and through the grid's merge curves.
+8. **Paper pass** (free): the kick against the sun and the 1,024 from above, redrawn on paper.
+9. **Main on paper** (about $2): the chorus hero redone as flat cel on black paper with written lanes, to replace the neon version.
+10. **Glyph pass** (free): the open-source plate in real characters.
 
-## 10. Decisions for Jade
+## 10. Decisions
 
-1. **Do the twelve read as one person?** Her face is drawn differently in each medium in the proof. If not, the fix is one face
-   design carried through every medium (the medium changes the rendering, not the features), at the cost of some of the variety.
-2. **The reveal at bar 137.** Is her traced likeness from Orbital Sunrise the right image for "main is reality", and should it be
+**Made by Jade on 2026-11-13** (all applied to the proof plates and the prompts in `fable/proof/gen/`):
+
+- **Faces must be consistent.** One face design in every medium (rule 12). Method that worked: for each life, an edited "looking
+  back" still with the sheet's face, used as the last frame of the clip, so the video model does not invent a face.
+- **Jacket back:** no stripe, only the blue dot and RARE EARTH (rule 8). Every first-round plate failed this; all were redone.
+- **Names:** the Sandstorm life is "my life in open source" (`jade/open-source`); the Chez JJ life is "my life in hacker houses"
+  (`jade/hacker-houses`). Use these names everywhere, including on screen.
+- **Violin:** she was first chair, first violin. Chip: `first chair, first violin`; plate: the outside seat of the front desk.
+- **Kids:** shown from behind in the home plate: an older boy (7) with dark brown hair, a younger girl (4) with light brown curly
+  hair. No faces, no photo references.
+- **Little Jade** (piano, frost window): hair half up and half down with side-swept bangs; at the piano she sits properly while she
+  plays and turns round.
+- **The band:** the bandmates may follow the vibesong project's descriptions: one tall with short black hair, a pale striped shirt
+  with rolled sleeves and a natural-wood electric guitar; one with curly dark hair under a flat cap and an acoustic guitar. Text
+  descriptions only; their photos are not sent to models.
+- **Art style:** agreed as written in "The look" (section 2): colour restraint, a material for main, written lanes, drawn things on
+  twos, glyph art only where the text is true.
+- **Budget:** "no need to cap it so low, it can go higher." The $180 figure in section 8 is no longer a cap; the working limit is
+  the project cap enforced by the tools ($600 in total, about $200 left). Ask before going past that.
+
+**Still open:**
+
+1. **The reveal at bar 137.** Is her traced likeness from Orbital Sunrise the right image for "main is reality", and should it be
    held back until then (recommended), or also appear earlier as in Orbital?
-3. **Home.** Two empty beanbags instead of the kids: keep, or show them from behind, stylised?
-4. **The lives.** Twelve are in the table. Cloudflare is not one of them. Any to add, drop or reword? Commit messages are in `fable/proof/lives.js`.
-5. **Budget.** $180 cap for take two?
-6. **Credits.** Proposed: "Animated by Fable 5.2 and a supporting cast of models", naming only the models that made the cut (Nano
+2. **The lives.** Twelve are in the table; Cloudflare is not one of them. Any to add, drop or reword? Commit messages are in
+   `fable/proof/lives.js`.
+3. **Credits.** Proposed: "Animated by Fable 5.2 and a supporting cast of models", naming only the models that made the cut (Nano
    Banana Pro, Seedance 2.5), the mocap sources (CMU, ACCAD), Suno for the arrangement, fonts.
-7. **The click track.** `analysis_v3/click_check.wav` has not been listened to. A minute of her ear on it before the cut is locked.
+4. **The click track.** `analysis_v3/click_check.wav` has not been listened to. A minute of her ear on it before the cut is locked.
 
 ## 11. Order of work
 
@@ -360,10 +435,11 @@ and stills, and approves every plate before it is animated. Commit and push at e
 
 | Risk | What would show it | Fallback |
 |---|---|---|
-| Twelve faces, not one person | Jade's reaction to the proof | one face design across mediums; fewer close-ups of branch faces |
+| Twelve faces, not one person | confirmed by Jade; fixed with one face design and a last-frame still per clip | fewer close-ups of branch faces |
 | Generated wushu looks wrong | stance stills | keep all martial arts in v7's mocap silhouettes; inserts are faces and hands only |
 | The sung likeness fails her gate | test 3 | hold on a still of her likeness with drawn-on motion, no lip-sync |
 | The patchwork frame is a mess | test 1 | build it in code from matted runner stills |
 | 720p plates look soft full-frame | watching the proof at speed | use the 2K still for static shots; upscale clips with the hybrid tool's upscaler |
 | v7 crowds clash with painted plates | step 1 animatic | grade and grain pass over V7 plates; keep them to silhouette, top-down and night |
+| Written lanes or glyphs turn to mush after X's compression | a test encode at X's bitrate, watched on a phone | larger type; fewer, thicker lines; keep readable text to close shots |
 | Budget | ledger after step 2 | drop the town facades to six; reuse proof plates in more places |

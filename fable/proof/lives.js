@@ -4,15 +4,15 @@
 export const MAIN = '#FF7A1A';
 export const LIVES = [
   { id: 'piano',     branch: 'jade/piano',                    msg: 'climbed onto the piano bench before I was three', color: '#FF3D7F', tone: 'light' },
-  { id: 'violin',    branch: 'jade/violin',                   msg: 'second violins, school orchestra',                 color: '#FFD23F', tone: 'light' },
+  { id: 'violin',    branch: 'jade/violin',                   msg: 'first chair, first violin',                        color: '#FFD23F', tone: 'light' },
   { id: 'wushu',     branch: 'jade/wushu',                    msg: 'bronze, group set',                                color: '#FF6B5E', tone: 'light' },
   { id: 'wetlab',    branch: 'jade/wet-lab',                  msg: 'kept the neurons alive, first paper 2005',         color: '#3DDC97', tone: 'light' },
   { id: 'phd',       branch: 'jade/phd',                      msg: 'how the brain listens, 2010',                      color: '#22D3EE', tone: 'light' },
   { id: 'poet',      branch: 'jade/poet',                     msg: 'wrote poems between experiments',                  color: '#E24BD6', tone: 'light' },
   { id: 'ames',      branch: 'jade/nasa-ames',                msg: 'stood in the wind of the giant tunnel',            color: '#3D8BFF', tone: 'dark' },
   { id: 'band',      branch: 'jade/robot-ninja-apocalypse',   msg: 'three chords and a van',                           color: '#FF6B5E', tone: 'dark' },
-  { id: 'chezjj',    branch: 'jade/chez-jj',                  msg: 'a full house at 2am, everyone shipping',           color: '#3DDC97', tone: 'dark' },
-  { id: 'sandstorm', branch: 'jade/sandstorm',                msg: 'the live demo worked',                             color: '#22D3EE', tone: 'dark' },
+  { id: 'chezjj',    branch: 'jade/hacker-houses',            msg: 'a full house at 2am, everyone shipping',           color: '#3DDC97', tone: 'dark' },
+  { id: 'sandstorm', branch: 'jade/open-source',              msg: 'the live demo worked',                             color: '#22D3EE', tone: 'dark' },
   { id: 'home',      branch: 'jade/home',                     msg: 'taught the Copernican model at 10:30pm',           color: '#FF3D7F', tone: 'dark' },
   { id: 'violet',    branch: 'jade/1420-mhz',                 msg: 'listened to hydrogen',                             color: '#9B6BFF', tone: 'dark' },
 ];

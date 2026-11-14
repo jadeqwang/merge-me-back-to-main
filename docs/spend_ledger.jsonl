@@ -739,3 +739,60 @@
 {"ts": "2026-11-13T20:48:57Z", "model": "bytedance/seedance-2.5", "tag": "pf_sandstorm_t2", "job": "mergemain/pf_sandstorm_t2-d7ac50b9f9", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-13T20:54:04Z", "model": "bytedance/seedance-2.5", "tag": "pf_sandstorm_t2", "job": "mergemain/pf_sandstorm_t2-d7ac50b9f9", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-13T20:56:07Z", "model": "bytedance/seedance-2.5", "tag": "pf_wetlab_t2", "job": "mergemain/pf_wetlab_t2-bb4e923d6b", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-13T23:45:21Z", "model": "google/nano-banana-pro", "tag": "proof_wushu", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:45:21Z", "model": "google/nano-banana-pro", "tag": "proof_violin", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:45:26Z", "model": "google/nano-banana-pro", "tag": "proof_piano", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:45:46Z", "model": "google/nano-banana-pro", "tag": "proof_phd", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:45:55Z", "model": "google/nano-banana-pro", "tag": "proof_poet", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:46:01Z", "model": "google/nano-banana-pro", "tag": "proof_wetlab", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:46:20Z", "model": "google/nano-banana-pro", "tag": "proof_ames", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:46:29Z", "model": "google/nano-banana-pro", "tag": "proof_band", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:46:37Z", "model": "google/nano-banana-pro", "tag": "proof_chezjj", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:46:51Z", "model": "google/nano-banana-pro", "tag": "proof_sandstorm", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:46:55Z", "model": "google/nano-banana-pro", "tag": "proof_home", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:47:06Z", "model": "google/nano-banana-pro", "tag": "proof_violet", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:47:30Z", "model": "google/nano-banana-pro", "tag": "proof_root", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:49:12Z", "model": "google/nano-banana-pro", "tag": "proof_piano", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:49:16Z", "model": "google/nano-banana-pro", "tag": "proof_poet", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:49:24Z", "model": "google/nano-banana-pro", "tag": "proof_wetlab", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:49:44Z", "model": "google/nano-banana-pro", "tag": "proof_chezjj", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:49:45Z", "model": "google/nano-banana-pro", "tag": "proof_band", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:49:56Z", "model": "google/nano-banana-pro", "tag": "proof_sandstorm", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:52:43Z", "model": "google/nano-banana-pro", "tag": "proof_fix_chezjj", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:53:33Z", "model": "google/nano-banana-pro", "tag": "proof_turn_piano", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:53:46Z", "model": "google/nano-banana-pro", "tag": "proof_turn_wushu", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:53:49Z", "model": "google/nano-banana-pro", "tag": "proof_turn_violin", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:54:10Z", "model": "google/nano-banana-pro", "tag": "proof_turn_wetlab", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:54:18Z", "model": "google/nano-banana-pro", "tag": "proof_turn_poet", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:54:20Z", "model": "google/nano-banana-pro", "tag": "proof_turn_phd", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:54:49Z", "model": "google/nano-banana-pro", "tag": "proof_turn_ames", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:54:50Z", "model": "google/nano-banana-pro", "tag": "proof_turn_chezjj", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:54:56Z", "model": "google/nano-banana-pro", "tag": "proof_turn_band", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:55:22Z", "model": "google/nano-banana-pro", "tag": "proof_turn_home", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:55:24Z", "model": "google/nano-banana-pro", "tag": "proof_turn_violet", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:55:58Z", "model": "google/nano-banana-pro", "tag": "proof_turn_sandstorm", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-13T23:56:39Z", "model": "bytedance/seedance-2.5", "tag": "pf_piano_t3", "job": "mergemain/pf_piano_t3-c3aa60cf4d", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-13T23:56:40Z", "model": "bytedance/seedance-2.5", "tag": "pf_wetlab_t3", "job": "mergemain/pf_wetlab_t3-b6c729efb5", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:01:11Z", "model": "bytedance/seedance-2.5", "tag": "pf_piano_t3", "job": "mergemain/pf_piano_t3-c3aa60cf4d", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:13Z", "model": "bytedance/seedance-2.5", "tag": "pf_wetlab_t3", "job": "mergemain/pf_wetlab_t3-b6c729efb5", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:39Z", "model": "bytedance/seedance-2.5", "tag": "pf_violin_t3", "job": "mergemain/pf_violin_t3-d193a39f88", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:41Z", "model": "bytedance/seedance-2.5", "tag": "pf_wushu_t3", "job": "mergemain/pf_wushu_t3-a2ff0cb2d1", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:42Z", "model": "bytedance/seedance-2.5", "tag": "pf_phd_t3", "job": "mergemain/pf_phd_t3-2b1d976cf9", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:44Z", "model": "bytedance/seedance-2.5", "tag": "pf_poet_t3", "job": "mergemain/pf_poet_t3-158b26bade", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:45Z", "model": "bytedance/seedance-2.5", "tag": "pf_band_t3", "job": "mergemain/pf_band_t3-f57871fac1", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:47Z", "model": "bytedance/seedance-2.5", "tag": "pf_sandstorm_t3", "job": "mergemain/pf_sandstorm_t3-b501a62043", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:48Z", "model": "bytedance/seedance-2.5", "tag": "pf_home_t3", "job": "mergemain/pf_home_t3-bb081e16bb", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:50Z", "model": "bytedance/seedance-2.5", "tag": "pf_violet_t3", "job": "mergemain/pf_violet_t3-3e638f4637", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:02:51Z", "model": "bytedance/seedance-2.5", "tag": "pf_root_t3", "job": "mergemain/pf_root_t3-5fdff09d9e", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:06:24Z", "model": "google/nano-banana-pro", "tag": "proof_ames", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T00:07:07Z", "model": "google/nano-banana-pro", "tag": "proof_chezjj", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T00:07:42Z", "model": "bytedance/seedance-2.5", "tag": "pf_wushu_t3", "job": "mergemain/pf_wushu_t3-a2ff0cb2d1", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:08:33Z", "model": "bytedance/seedance-2.5", "tag": "pf_poet_t3", "job": "mergemain/pf_poet_t3-158b26bade", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:10:01Z", "model": "google/nano-banana-pro", "tag": "proof_fix_chezjj", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T00:10:15Z", "model": "bytedance/seedance-2.5", "tag": "pf_violin_t3", "job": "mergemain/pf_violin_t3-d193a39f88", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:10:33Z", "model": "google/nano-banana-pro", "tag": "proof_turn_chezjj", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T00:10:41Z", "model": "google/nano-banana-pro", "tag": "proof_turn_ames", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T00:11:02Z", "model": "bytedance/seedance-2.5", "tag": "pf_ames_t3", "job": "mergemain/pf_ames_t3-48929d40f1", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:11:04Z", "model": "bytedance/seedance-2.5", "tag": "pf_chezjj_t3", "job": "mergemain/pf_chezjj_t3-13bde9ed95", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:11:06Z", "model": "bytedance/seedance-2.5", "tag": "pf_phd_t3", "job": "mergemain/pf_phd_t3-2b1d976cf9", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T00:11:40Z", "model": "bytedance/seedance-2.5", "tag": "pf_root_t3", "job": "mergemain/pf_root_t3-5fdff09d9e", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}

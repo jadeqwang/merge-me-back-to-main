@@ -8,22 +8,27 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")
 sys.path.insert(0, os.path.join(ROOT, "tools", "gen")); import cf
 SPEC = json.load(open(os.path.join(os.path.dirname(__file__), "lives_plates.json")))["plates"]
 SHEET = "inputs/character_sheet.png"
+FACE = ("Her face is the face of the reference sheet and is the same in every picture, whatever the medium: an oval face with a tall clear forehead, hair parted in the centre with no fringe, "
+        "large very dark brown eyes with a clear double eyelid, soft straight brows, a small straight nose, natural closed lips, no makeup. The medium changes how the lines and tones are made, never her features. ")
+CHILD_FACE = ("She is the same person as a small child: a round soft face, the same large very dark brown eyes. Her black hair is half up and half down: the top section tied back in a small ponytail at the crown, "
+              "the rest loose to her shoulders, with side-swept bangs across her forehead. ")
 def char(p):
     lane = p["lane"]; age = p["age"]
     who = {"adult": "She is the woman from the reference character sheet",
            "schoolgirl": "She is the woman from the reference character sheet as a girl of about twelve",
-           "toddler": "She is the woman from the reference character sheet as a toddler, with a short black bob",
-           "child5": "She is the woman from the reference character sheet as a five-year-old, with black hair to her shoulders"}[age]
+           "toddler": "She is the woman from the reference character sheet as a little girl not yet three",
+           "child5": "She is the woman from the reference character sheet as a five-year-old"}[age]
     hair = ("black hair twisted up into a loose bun with two yellow pencils crossed through it" if p.get("hair") == "bun"
-            else "long straight black hair to her waist with a centre parting" if age in ("adult", "schoolgirl") else None)
+            else "long straight black hair to her waist with a centre parting and no fringe" if age in ("adult", "schoolgirl") else None)
     size = " in a small size that is a little too big for her" if age in ("toddler", "child5") else ""
     s = (f"{who}, drawn entirely in this picture's medium" + (f": {hair}" if hair else "") + ". "
-         f"She wears the outfit of the reference sheet{size}: a white cropped bomber jacket with one {lane} band across the chest and back and around each upper arm; "
-         f"on the back of the jacket a large pale-blue circle with the words RARE EARTH in small black capitals beneath it; "
-         f"on her LEFT upper arm a round white patch with a black ring reading 1420 MHz; very wide navy cargo trousers with {lane} straps hanging from the belt; "
+         + (CHILD_FACE if age in ("toddler", "child5") else FACE)
+         + f"She wears the outfit of the reference sheet{size}: a white cropped bomber jacket with one {lane} band across the FRONT of the chest and one {lane} band around each upper arm. "
+         f"The BACK of the jacket is plain white with NO band and NO stripe across it: the only things on the back are a large pale-blue circle and, beneath it, the words RARE EARTH in small black capitals. "
+         f"On her LEFT upper arm a round white patch with a black ring reading 1420 MHz; very wide navy cargo trousers with {lane} straps hanging from the belt; "
          f"chunky white trainers; {lane} headphones resting around her neck. ")
     if lane != "orange":
-        s += f"The band, straps and headphones are {lane}, not orange, and they are the strongest colour in the picture. "
+        s += f"The arm bands, straps and headphones are {lane}, not orange, and they are the strongest colour in the picture. "
     return s
 COMP = ("Wide 16:9 picture. She faces toward the LEFT side of the picture, so the arm nearer the viewer is her left arm, the one that carries the round 1420 MHz patch; her right arm has no patch. She is large in the frame, right of centre, at least half the height of the picture, and the back of her jacket with the pale-blue circle is clearly visible. "
         "The picture fills the whole frame from edge to edge with no blank margin or bar; the bottom edge and the upper-left corner are simple, uncluttered areas. ")
