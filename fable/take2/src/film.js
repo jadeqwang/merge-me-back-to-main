@@ -92,9 +92,20 @@ function cover(iw, ih, w, h, zoom = 1, fx = 0.5, fy = 0.5) {
 }
 
 // v7: the old code-drawn film re-timed to the new audio, an image sequence; file f_%05d.jpg is new song time index/fps
-let V7 = null;
-function v7Index(t) { if (!V7) return -1; const k = Math.round(t * V7.fps); return k >= V7.first && k < V7.first + V7.n ? k : -1; }
-const v7Url = (k) => `${V7DIR}/f_${String(k).padStart(5, '0')}.jpg`;
+// per-shot folders (shots.js opt.v7dir, e.g. the orchestra) load their own meta.json into V7S; the global one is V7
+let V7 = null; const V7S = {};
+const v7Of = (s) => (s && s.opt && s.opt.v7dir ? V7S[s.opt.v7dir] : V7);
+function v7Index(t, s) { const V = v7Of(s); if (!V) return -1; const k = Math.round(t * V.fps); return k >= V.first && k < V.first + V.n ? k : -1; }
+const v7Url = (k, s) => `${s && s.opt && s.opt.v7dir && V7S[s.opt.v7dir] ? s.opt.v7dir : V7DIR}/f_${String(k).padStart(5, '0')}.jpg`;
+async function loadV7(dir) { const vm = await json(`${dir}/meta.json`); if (!vm || !vm.n) return null;
+  const V = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
+  return (await exists(`${dir}/f_${String(V.first).padStart(5, '0')}.jpg`)) ? V : null; }
+// paper looks per shot (opt.paperLook): 'orch' = the orchestra's look, chosen by ?orchpaper= (default 'solid'):
+//   solid: white jackets as solid light shapes, two hatch layers for mid tones, the pale-blue disc kept as an ink (low inkSat)
+//   light: the raw render with the paper's contour drawn over it (no hatching), then the film's grain
+const ORCH_BLUE = '#9FC3EA';
+const ORCHPAPER = Q.get('orchpaper') || 'solid';
+const PAPER_LOOKS = { orch: { solid: { levels: [0.2, 0.62], gamma: 1, solid: 0.6, layers: 2, hatch: 12, thresholds: [0.2, 0.45, 0.7], inkSat: 0.12, extraInk: [ORCH_BLUE] }, light: { light: true } } };
 
 // effect modules written by another agent: guarded, the film renders without them
 let paperPass = null, glyphPass = null;
@@ -112,7 +123,7 @@ function effKind(s) {
   if (s.kind === 'proof') return 'proof';
   if (ALLCARDS) return 'card';
   if (s.kind === 'plate') return PLATE[s.src] ? 'plate' : 'card';
-  if (s.kind === 'v7') return USE_V7 && V7 ? 'v7' : 'card';
+  if (s.kind === 'v7') return USE_V7 && v7Of(s) ? 'v7' : 'card';
   if (s.kind === 'kit') return KITX && !s.opt.kit.off && KITX.ok(s) ? 'kit' : 'card';
   return 'card';
 }
@@ -218,7 +229,7 @@ function plateDraw(s, t, id, out) {
 }
 function scene(t) {
   const s = shotAt(t); const sc = { t, s, eff: effKind(s), imgs: [] };
-  if (sc.eff === 'v7') { const k = v7Index(t); if (k < 0) sc.eff = 'card'; else sc.imgs.push({ url: v7Url(k), v7: true }); }
+  if (sc.eff === 'v7') { const k = v7Index(t, s); if (k < 0) sc.eff = 'card'; else sc.imgs.push({ url: v7Url(k, s), v7: true }); }
   if (sc.eff === 'plate') plateDraw(s, t, s.src, sc.imgs);
   if (sc.eff === 'kit') for (const u of KITX.need(s, t)) sc.imgs.push({ url: u });
   if (sc.eff === 'plate' && s.opt && s.opt.fan && sc.imgs[0]) { const m = sc.imgs[0].url.match(/f_(\d{4})\.jpg$/); if (m) sc.fan = `${s.opt.fan.matte}/rgba/f_${m[1]}.png`; }
@@ -305,7 +316,7 @@ function hud(t, sc) {
 }
 
 // ---------------------------------------------------------------- crossing wipe and written lanes (Step 2)
-let CROPC = null;
+let CROPC = null, LIGHTC = null;
 // plate fraction (px, py) -> screen, through the first image's cover crop (zoom and focus): overlays stay on the drawn plate
 function plateToScreen(im, px, py) { const b = READY.get(im.url), cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
   return { x: ((px * b.width - cr.sx) / cr.sw) * W, y: ((py * b.height - cr.sy) / cr.sh) * H }; }
@@ -358,8 +369,12 @@ function fan(t, sc) {
     herOnly(); fc.globalCompositeOperation = 'source-atop'; fc.fillStyle = hexA(byId[ids[j]].color, 0.62); fc.fillRect(0, 0, W, H);
     g.save(); g.globalAlpha = 0.55 * open; g.translate(piv.x, piv.y); g.rotate(ang); g.translate(-piv.x, -piv.y); g.drawImage(FANC, 0, 0); g.restore();
   }
+  // the fold flash is a rim pulse AROUND her: her silhouette in the colour, glowing, drawn BEHIND her; then she is drawn on top in
+  // her own colours, so her face and hands are never tinted
+  if (flash) { herOnly(); fc.globalCompositeOperation = 'source-in'; fc.fillStyle = flash.col; fc.fillRect(0, 0, W, H);
+    g.save(); g.globalAlpha = flash.a; g.shadowColor = flash.col; g.shadowBlur = 40 * S;
+    for (const [dx, dy] of [[-6, 0], [6, 0], [0, -6], [0, 6]]) g.drawImage(FANC, dx * S, dy * S); g.restore(); }
   herOnly(); g.drawImage(FANC, 0, 0);
-  if (flash) { fc.globalCompositeOperation = 'source-in'; fc.fillStyle = flash.col; fc.fillRect(0, 0, W, H); g.save(); g.globalAlpha = 0.35 * flash.a; g.shadowColor = flash.col; g.shadowBlur = 30 * S; g.drawImage(FANC, 0, 0); g.restore(); }
 }
 
 // ---------------------------------------------------------------- the frame
@@ -377,7 +392,14 @@ function draw(t, sc) {
     let b = READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = s.opt && s.opt.v7crop;
     if (vc) { if (!CROPC) { CROPC = document.createElement('canvas'); CROPC.width = W; CROPC.height = H; } const x = CROPC.getContext('2d'); x.imageSmoothingQuality = 'high';
       x.drawImage(b, vc[0] * b.width, vc[1] * b.height, vc[2] * b.width, vc[3] * b.height, 0, 0, W, H); b = CROPC; }
-    if (paperPass && USE_PAPER) { g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
+    const look = s.opt && s.opt.paperLook && PAPER_LOOKS[s.opt.paperLook] ? PAPER_LOOKS[s.opt.paperLook][ORCHPAPER] : null;
+    if (paperPass && USE_PAPER && look && look.light) {   // raw frame, the paper pass's contour (no tone) added over it
+      g.drawImage(b, 0, 0, W, H);
+      if (!LIGHTC) { LIGHTC = document.createElement('canvas'); LIGHTC.width = W; LIGHTC.height = H; }
+      const lc = LIGHTC.getContext('2d'); paperPass(lc, b, rect, { paper: 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t, skip: 'h' });
+      g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.6; g.drawImage(LIGHTC, 0, 0); g.restore(); }
+    else if (paperPass && USE_PAPER) { const { extraInk, ...lk } = look || {};
+      g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ink: [...(sec.ink || INKS), ...(extraInk || [])], seed: 1000 + s.i, t, ...lk }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else g.drawImage(b, 0, 0, W, H);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
@@ -408,6 +430,7 @@ async function boot() {
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
+  for (const s of SH) if (s.opt && s.opt.v7dir && !(s.opt.v7dir in V7S)) V7S[s.opt.v7dir] = await loadV7(s.opt.v7dir);
   try { ({ paperPass } = await import('./paper.js')); } catch (e) { console.log('paper.js not loaded (' + String(e).slice(0, 80) + '); v7 shots are raw'); }
   try { ({ glyphPass } = await import('./glyph.js')); } catch (e) { console.log('glyph.js not loaded'); }
   { const KJ = await json('/fable/take2/kit.json'); if (KJ) KITX = makeKit({ g, W, H, S, T, KJ, READY, drawWrittenLane, laneString, glyphPass, byId, MAIN, clamp01, lerp, ease }); }

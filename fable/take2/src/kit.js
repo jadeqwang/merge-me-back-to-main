@@ -33,10 +33,13 @@ export function makeKit(E) {
   }
   const url = (id, i) => `/${KJ[SRC(id)].dir.replace(/\/$/, '')}/rgba/f_${String(i + 1).padStart(4, '0')}.png`;
   // ---- geometry: lane index p (0 far .. n-1 near, fractional while two lanes converge)
-  // a lane runs where its runner's visible figure ends (feet, or the faded cut at the knees/hips), so legs go behind the lane text
-  function geo(o, n) { const hy = (o.head ?? 0.33) * H, far = (o.far ?? 0.5) * H, near = (o.near ?? 1.0) * H, gam = o.gamma ?? 1.25;
+  // depth p (0 far .. n-1 near, fractional while moving): f = (p / (n-1))^gamma; full-figure height lerp(hFar, hNear, f), the lane
+  // (where the visible figure ends: feet, or the faded cut) at lerp(far, near, f); head top = lane - visible part of the figure.
+  // So the front runners are large with their heads high (main in front: head near the top), the far ones small and low.
+  function geo(o, n) { const gam = o.gamma ?? 2.4, far = (o.far ?? 0.5) * H, near = (o.near ?? 0.985) * H, hF = (o.hFar ?? 0.1) * H, hN = (o.hNear ?? 0.86) * H;
     const f = (p) => Math.pow(clamp01(p / Math.max(1, n - 1)), gam);
-    return { laneY: (p, id) => hy + (VIS[SRC(id)] || 1) * (far + (near - far) * f(p) - hy), figH: (p) => far + (near - far) * f(p) - hy, cap: (p) => (6 + 30 * f(p)) * S, headY: hy, f }; }
+    const laneY = (p) => far + (near - far) * f(p), figH = (p) => hF + (hN - hF) * f(p);
+    return { laneY: (p, id) => laneY(p), figH, headY: (p, id) => laneY(p) - (VIS[SRC(id)] || 1) * figH(p), cap: (p) => (6 + 30 * f(p)) * S, f }; }
   // ---- one runner: head top at (x, headY), full-figure height h; split = [idB, angle] draws idB right of a line through the head
   const OC = document.createElement('canvas'); OC.width = W; OC.height = H; const oc = OC.getContext('2d');
   const GA = document.createElement('canvas'), GB = document.createElement('canvas');
@@ -74,50 +77,46 @@ export function makeKit(E) {
     g.fillStyle = PAPER; g.fillRect(0, 0, W, H);
     K.lanes.forEach((L, p) => { const cap = G.cap(p), y = G.laneY(p, L.id) + cap * 0.6;
       laneSeg(() => y, 0, W, laneString(msgs([L.id]), true), col(L.id), cap, 0.2, tt, 4 + 10 * G.f(p));
-      runner(L.id, t, b0, L.x * W, G.headY, G.figH(p)); });
+      runner(L.id, t, b0, L.x * W, G.headY(p, L.id), G.figH(p)); });
   }
-  // ---- 'fuse' (b46-47)
+  // ---- 'fuse' (b46-47). events [beat, laneA, laneB] (beats from the shot start; a fusion lands ON its beat). For each event the
+  // pair comes forward to the front over [bt-1, bt-0.5] (A on the front lane, B just behind it), converges over [bt-0.5, bt] (their
+  // lanes join), is half A / half B (split through the head) for [bt, bt+1], then whole in A's medium and steps back over
+  // [bt+1, bt+1.5]. Front slots alternate between two x places (K.slots) so the next pair can come up while the last one is split.
+  // The rest stand back in their own rank. Lane text density follows how many lives a runner carries.
   function fuseState(s, t) {
-    const K = s.opt.kit, n = K.lanes.length, u = bpos(t) - B0(s);
-    let ents = K.lanes.map((L, i) => ({ lead: L.id, ids: [L.id], lanes: [i], p: i, x: L.x * W, split: null }));
-    const junctions = [];   // { u (beat when the converge starts), x (screen x then), pa, pb, pm, lead, ids }
-    for (const [bt, a, b] of K.events) {
-      if (u < bt) break;
-      const A = ents.find((e) => e.lanes.includes(a)), Bn = ents.find((e) => e.lanes.includes(b)), m = clamp01((u - bt) / 0.5), em = ease.io(m);
-      const pm = (A.p + Bn.p) / 2, xm = (A.x + Bn.x) / 2;
-      junctions.push({ u: bt, x: xm, pa: A.p, pb: Bn.p, pm, A: A.lead, B: Bn.lead, ids: [...A.ids, ...Bn.ids], lanes: [...A.lanes, ...Bn.lanes] });
-      if (m < 1) { A.p = lerp(A.p, pm, em); Bn.p = lerp(Bn.p, pm, em); A.x = lerp(A.x, xm, em); Bn.x = lerp(Bn.x, xm, em); continue; }
-      const since = u - bt - 0.5;
-      ents = ents.filter((e) => e !== A && e !== Bn);
-      ents.push({ lead: A.lead, ids: [...A.ids, ...Bn.ids], lanes: [...A.lanes, ...Bn.lanes], p: pm, x: xm, split: since < 1 ? [A.lead, Bn.lead] : null });
-    }
-    return { ents, junctions, u };
+    const K = s.opt.kit, n = K.lanes.length, u = bpos(t) - B0(s), slots = K.slots || [0.62, 0.84], back = n - 4;
+    let ents = K.lanes.map((L, i) => ({ lead: L.id, ids: [L.id], lanes: [i], base: (i / (n - 1)) * back, bx: L.x, ev: -1, role: 0 }));
+    K.events.forEach(([bt, a, b], k) => { if (u < bt - 1) return;
+      const A = ents.find((e) => e.lanes.includes(a)), Bn = ents.find((e) => e.lanes.includes(b));
+      A.ev = k; A.role = 1; Bn.ev = k; Bn.role = 2;
+      if (u >= bt) { ents = ents.filter((e) => e !== A && e !== Bn);
+        ents.push({ lead: A.lead, ids: [...A.ids, ...Bn.ids], lanes: [...A.lanes, ...Bn.lanes], base: (A.base + Bn.base) / 2, bx: (K.slots || [0.62, 0.84])[k % (K.slots || [0, 0]).length] - 0.08, ev: k, role: 0, split: u < bt + 1 ? [A.lead, Bn.lead] : null }); } });
+    // the ones standing back: ranked by their lane order, packed one lane apart just behind the front (mid-large; never tiny)
+    const rest = ents.filter((e) => true).sort((a, b) => a.base - b.base), top = n - 1.8;
+    rest.forEach((e, r) => { e.base = Math.max(0, top - (rest.length - 1 - r) * 1.0); });
+    for (const e of ents) {
+      let p = e.base, x = e.bx * W;
+      if (e.ev >= 0) { const [bt] = K.events[e.ev], sx = slots[e.ev % slots.length] * W;
+        const wf = ease.io(clamp01((u - (bt - 1)) / 0.5)) * (1 - ease.io(clamp01((u - (bt + 1)) / 0.5)));
+        const conv = ease.io(clamp01((u - (bt - 0.5)) / 0.5)), off = e.role === 1 ? -1 : e.role === 2 ? 1 : 0;
+        p = lerp(e.base, (n - 1) - (e.role === 2 ? 0.9 * (1 - conv) : 0), wf);
+        x = lerp(e.bx * W, sx + off * 0.11 * W * (1 - conv), wf); }
+      e.p = p; e.x = x; }
+    return { ents, u };
   }
   const density = (k) => (k >= 8 ? 1 : k >= 4 ? 0.78 : k >= 2 ? 0.45 : 0.12);
   function fuse(s, t) {
     const K = s.opt.kit, n = K.lanes.length, G = geo(K, n), b0 = B0(s), tt = t - s.t0, st = fuseState(s, t);
-    const v = (K.ground ?? 520) * S, beat = 60 / 138.5, C = v * 0.5 * beat;   // the ground scrolls right at v px/s; a junction's curve is half a beat of ground long
     g.fillStyle = PAPER; g.fillRect(0, 0, W, H);
-    // lanes: each original lane's path, bent at each junction it took part in; drawn up to where its group's lead lane takes over
-    const jx = (j) => j.x + v * (st.u - j.u) * beat;
-    K.lanes.forEach((L, i) => {
-      const js = st.junctions.filter((j) => j.lanes.includes(i));
-      const yOf = (x) => { let p = i; for (const j of js) { const tgt = j.pm, w = sstep((jx(j) - x) / C); p = lerp(p, tgt, w); } return G.laneY(p, L.id) + G.cap(p) * 0.6; };
-      // segments right to left: [x_j, W] with the ids it carried before j; it stops at the first junction where it is not the lead
-      let right = W, ids = [L.id], lead = L.id;
-      for (const j of js) { const xj = jx(j) - C * 0.5;
-        laneSeg(yOf, Math.max(0, xj), right, laneString(msgs(ids), true), col(lead), G.cap(i), density(ids.length), tt, 6);
-        right = Math.max(0, xj); if (j.A !== lead) { right = -1; break; } ids = j.ids; }
-      if (right > 0) { const e = st.ents.find((q) => q.lanes.includes(i)); laneSeg(yOf, 0, right, laneString(msgs(ids), true), col(lead), G.cap(e ? e.p : i), density(ids.length), tt, 6); }
-    });
-    // runners, far to near
-    for (const e of [...st.ents].sort((a, b) => a.p - b.p)) {
-      const h = G.figH(e.p);
+    const order = [...st.ents].sort((a, b) => a.p - b.p);
+    for (const e of order) { const cap = G.cap(e.p), y = G.laneY(e.p, e.lead) + cap * 0.6;
+      laneSeg(() => y, 0, W, laneString(msgs(e.ids), true), col(e.lead), cap, density(e.ids.length), tt, 4 + 10 * G.f(e.p));
+      const h = G.figH(e.p), hy = G.headY(e.p, e.lead);
       if (e.split) { const ang = 0.18;   // the split line through the head, leaning back
-        runner(e.split[0], t, b0, e.x, G.headY, h, { clip: (c, x, y) => { c.moveTo(-W, -H); c.lineTo(x + ang * H, -H); c.lineTo(x - ang * 2 * H, 3 * H); c.lineTo(-W, 3 * H); c.closePath(); } });
-        runner(e.split[1], t, b0, e.x, G.headY, h, { clip: (c, x, y) => { c.moveTo(x + ang * H, -H); c.lineTo(2 * W, -H); c.lineTo(2 * W, 3 * H); c.lineTo(x - ang * 2 * H, 3 * H); c.closePath(); } });
-      } else runner(e.lead, t, b0, e.x, G.headY, h);
-    }
+        runner(e.split[0], t, b0, e.x, hy, h, { clip: (c, x, y) => { c.moveTo(-W, -H); c.lineTo(x + ang * H, -H); c.lineTo(x - ang * 2 * H, 3 * H); c.lineTo(-W, 3 * H); c.closePath(); } });
+        runner(e.split[1], t, b0, e.x, hy, h, { clip: (c, x, y) => { c.moveTo(x + ang * H, -H); c.lineTo(2 * W, -H); c.lineTo(2 * W, 3 * H); c.lineTo(x - ang * 2 * H, 3 * H); c.closePath(); } });
+      } else runner(e.lead, t, b0, e.x, hy, h); }
   }
   // ---- 'one' (b48)
   function one(s, t) {

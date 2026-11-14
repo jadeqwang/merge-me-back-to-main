@@ -133,18 +133,21 @@ section('chorus1');
 PR(41, 43, 'E:hero', 'Main Jade sprints at us on the orange line as the coloured lanes join it. Slab type.', { row: 'b41-42' });
 // b43, b46-47, b48: the runner kit (kind 'kit', drawn by src/kit.js from the cut-outs in work_fable/take2/kit/ and fable/take2/kit.json).
 // lanes far -> near with each runner's head x (frame fraction); every head top on one line (y `head`), the slab above it.
-const KIT_ROW = [['violet', 0.80], ['sandstorm', 0.30], ['chezjj', 0.62], ['wetlab', 0.40], ['home', 0.92], ['piano', 0.12], ['violin', 0.71],
-  ['band', 0.30], ['ames', 0.86], ['poet', 0.08], ['phd', 0.57], ['wushu', 0.76], ['main', 0.40]].map(([id, x]) => ({ id, x }));
+// far -> near; the front four (poet, phd, wushu, main) are large on the right, main in front and largest; the slab keeps to the upper left
+const KIT_ROW = [['violet', 0.30], ['sandstorm', 0.16], ['chezjj', 0.44], ['wetlab', 0.08], ['home', 0.36], ['piano', 0.22], ['violin', 0.47],
+  ['band', 0.12], ['ames', 0.33], ['poet', 0.93], ['phd', 0.80], ['wushu', 0.50], ['main', 0.68]].map(([id, x]) => ({ id, x }));
 shot(43, 44, 'K+C', 'kit', 'runner_kit', 'missing', 'Side-on: the twelve run in parallel on their lanes, each drawn in her own medium, main in front.',
-  { row: 'b43', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'row', lanes: KIT_ROW, head: 0.33, far: 0.5, near: 1.02 } } });
+  { row: 'b43', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.48, align: 'left' }, kit: { mode: 'row', lanes: KIT_ROW } } });
 P(44, 45, 'hero_feet', 'missing', 'Low and close: her trainers strike the orange line.',
   { row: 'b44', opt: { lyr: { y: 'top', x0: 0.04, x1: 0.96, align: 'left' }, lane: { pts: [[0, 0.845], [1, 0.845]], color: '#FF7A1A', text: 'main', cap: 34, scroll: -14 } } });   // written just under the plate's own line (y 0.80-0.81 in the clip)
 V(45, 46, '1:16-1:20', 'From above: the lanes braid into one. Slab type.', { row: 'b45' });
-// fusions on the measured beats: [beat from the shot start, lane a, lane b]; 8 -> 4 on the four beats of b46, 4 -> 2 on beats 1 and 3 of b47
+// fusions on the measured half beats (a fusion lands ON its beat): [beat from the shot start, lane a, lane b]; 8 -> 4 at beats 0.5, 1.5,
+// 2.5, 3.5 of b46, 4 -> 2 at 4.5 and 6.5 (b47 beats 1.5 and 3.5). Each pair comes to the front (src/kit.js 'fuse'), large, so the
+// half-and-half beat reads; slots = the two front x places, alternating.
 shot(46, 48, 'K+C', 'kit', 'runner_fuse', 'missing', 'Runners fuse in pairs, eight to four to two. Where pencil-Jade and gouache-Jade merge, the new runner is half and half for a beat, then whole.',
-  { row: 'b46-47', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'fuse', head: 0.36, far: 0.56, near: 1.02,
-    lanes: [['violin', 0.30], ['piano', 0.52], ['wushu', 0.20], ['wetlab', 0.66], ['phd', 0.36], ['poet', 0.80], ['ames', 0.48], ['band', 0.70]].map(([id, x]) => ({ id, x })),
-    events: [[0, 0, 1], [1, 2, 3], [2, 4, 5], [3, 6, 7], [4, 0, 2], [6, 4, 6]] } } });
+  { row: 'b46-47', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.46, align: 'left' }, kit: { mode: 'fuse', slots: [0.64, 0.86],
+    lanes: [['violin', 0.30], ['piano', 0.52], ['wushu', 0.20], ['wetlab', 0.66], ['phd', 0.36], ['poet', 0.80], ['ames', 0.48], ['band', 0.10]].map(([id, x]) => ({ id, x })),
+    events: [[0.5, 0, 1], [1.5, 2, 3], [2.5, 4, 5], [3.5, 6, 7], [4.5, 0, 2], [6.5, 4, 6]] } } });
 shot(48, 49, 'K+C', 'kit', 'runner_one', 'missing', "One runner: main Jade, the others' mediums flickering across her jacket.",
   { row: 'b48', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.58, align: 'left' }, kit: { mode: 'one', x: 0.74, head: 0.1, near: 1.04, lane: 0.95,
     flick: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'home', 'violet', 'piano'] } } });
@@ -189,11 +192,13 @@ for (let k = 0; k < 4; k++) {
   shot([77 + k, 3], [77 + k, 4], 'S', 'plate', STANCE[k][0], 'missing', `Stance frame on beat 3 (${STANCE[k][1]}).`, { row: 'b77-80' });
   V([77 + k, 4], 78 + k, 'seq 08', 'Frontal formation, after the stance frame.', { row: 'b77-80' });
 }
-for (let k = 0; k < 4; k++) {
-  V(81 + k, [81 + k, 3], 'seq 08 above', '1,024 from above, grid to rings (above).', { row: 'b81-84' });
-  V([81 + k, 3], 82 + k, 'seq 08 side', '1,024, grid to rings (side).', { row: 'b81-84' });
-}
-V(85, 87, 'seq 09', 'Bass out in b86, snare build: all drop into a low stance; the view skims east.', { row: 'b85-88' });
+// b81-84: the orchestra of Jades (v7 seq 08 variant, fable/take2/notes/orchestra.md revision 2), eight shots on the bar and beat 3,
+// frames from their own folder (opt.v7dir); paper: the orchestra look (opt.paperLook, src/film.js PAPER_LOOKS; ?orchpaper=light|solid|default).
+// Shot 8 holds one beat into bar 85 to show the hit (the frames run to bar 85 beat 2); seq 09 starts on beat 2.
+const ORCH = ['above', 'side_low_violins', 'above_behind', 'timpani', 'conductor_view', 'basses_side', 'high_wide', 'last_wide'];
+for (let k = 0; k < 8; k++) { const b = 81 + (k >> 1), a = k % 2 ? [b, 3] : b, e = k === 7 ? [85, 2] : k % 2 ? b + 1 : [b, 3];
+  V(a, e, 'orchestra ' + ORCH[k], `The orchestra of Jades (${k + 1} of 8): ${ORCH[k].replace(/_/g, ' ')}.`, { row: 'b81-84', opt: { v7dir: '/work_fable/take2/v7/orchestra', paperLook: 'orch' } }); }
+V([85, 2], 87, 'seq 09', 'Bass out in b86, snare build: all drop into a low stance; the view skims east.', { row: 'b85-88' });
 for (let k = 0; k < 12; k++) { const half = k >= 4, bar = half ? 88 : 87, beat = half ? 1 + (k - 4) / 2 : 1 + k;
   const nk = k + 1, to = nk === 12 ? 89 : nk >= 4 ? [88, 1 + (nk - 4) / 2] : [87, 1 + nk];
   V([bar, beat], to, 'seq 09', `${half ? 'Two cuts per beat' : 'One cut per beat'}: a three-frame flash of the ${LIFE[k]} plate, then the skim east${k === 11 ? '; the sun\'s rim' : ''}.`,
