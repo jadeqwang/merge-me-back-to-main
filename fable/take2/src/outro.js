@@ -91,7 +91,8 @@ export function makeOutro(E) {
     // the road: main written dense (she is merged), scrolling with the ground
     drawWrittenLane(g, [{ x: 0, y: roadY }, { x: W, y: roadY }], { text: laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true), color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: (scroll / (26 * S / 0.73 * 0.6)) });
     if (o.runner && st.run) { const R = o.runner, c = Math.max(0, t - s.t0), f = Math.min(st.run.n - 1, Math.round(c * st.run.fps)), img = READY.get(`${R.dir}/rgba/f_${String(f + 1).padStart(4, '0')}.png`);
-      if (img) { const h = R.h * H, q = h / img.height, w = img.width * q; g.drawImage(img, R.x * W - w / 2, R.y * H - h, w, h); } }
+      if (img) { const h = R.h * H, q = h / img.height, w = img.width * q, e = R.edge || 0;   // edge: the outer margin of the cut-out is dropped (stray specks)
+        g.drawImage(img, e * img.width, e * img.height, img.width * (1 - 2 * e), img.height * (1 - 2 * e), R.x * W - w / 2 + e * w, R.y * H - h + e * h, w * (1 - 2 * e), h * (1 - 2 * e)); } }
   }
   // ---------------------------------------------------------------- aerial (b147-148)
   function aerial(t, s) {

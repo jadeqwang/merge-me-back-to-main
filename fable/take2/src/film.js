@@ -221,6 +221,7 @@ function vignette() {
 // clip map of a shot: { c0, sp } with clip time = c0 + (t - t0) * sp (see shots.js opt: clip0/clip1/speed, cross)
 function clipMap(s) {
   const o = s.opt || {}, D = s.t1 - s.t0;
+  if (o.songLock && PLATE[s.src] && PLATE[s.src].meta.t0_song !== undefined) return { c0: s.t0 - PLATE[s.src].meta.t0_song, sp: 1 };   // likeness: locked to song time
   if (o.cross) { const x = o.cross, ta = x.at * D, sp = Math.max(1, Math.min(x.maxSpeed || 1.5, x.reach / ta)); return { c0: Math.max(0, x.reach - sp * ta), sp }; }
   if (o.clip1 !== undefined) return { c0: o.clip0 || 0, sp: (o.clip1 - (o.clip0 || 0)) / D };
   return { c0: o.clip0 || 0, sp: o.speed || 1 };
@@ -537,6 +538,12 @@ function settle(t, sc) {
   g.restore();
 }
 
+// c2_lookup: the arriving violet light (the plate's comet is cropped away): from `from` toward `to` (frame fractions), arriving on the shot's
+// end (the b123 downbeat), a point with a short trail
+function comet(t, sc) { const o = sc.s.opt.comet, u = seg(t, sc.s.t0, sc.s.t1), e = ease.in(u);
+  const P = (k) => ({ x: lerp(o.from[0], o.to[0], k) * W, y: lerp(o.from[1], o.to[1], k) * H - Math.sin(k * Math.PI) * 0.04 * H });
+  g.save(); g.globalCompositeOperation = 'lighter'; for (let j = 8; j >= 0; j--) { const p = P(Math.max(0, e - 0.025 * j)); glowAt(p.x, p.y, (6 + 14 * (1 - j / 8) + 18 * e) * S, '#9B6BFF', (1 - j / 9) * 0.8); } g.restore(); }
+
 // ---------------------------------------------------------------- the frame
 function drawImgs(list) {
   for (const im of list) { const b = READY.get(im.url); const cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
@@ -557,6 +564,7 @@ function draw(t, sc) {
     if (s.opt.caption) caption(t, sc);
     if (s.opt.hand) hand(t, sc);
     if (s.opt.forks && OUTRO) OUTRO.forks(t, s, sc.imgs[0]);
+    if (s.opt.comet) comet(t, sc);
     if (s.opt.settle && sc.settle) settle(t, sc);
   }
   else if (sc.eff === 'code') { try { if (s.opt.code === 'gitlog') gitlog(t, s); else if (s.opt.code === 'tiles') tiles(t, sc); else OUTRO.draw(s, t, sc); } catch (e) { console.log('ERROR code ' + e.stack); } }

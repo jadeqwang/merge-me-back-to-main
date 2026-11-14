@@ -339,3 +339,40 @@ Verse 2 (lyrics cream, in the sky; chips as the rows):
 - Render: review/fable_take2/section4_v1.mp4 (151.06-209.526 s = bars 88-121, 32.3 MB), 5 sheets. check.py: 30 clear cuts, mean
   0.41 fr; outliers bu37/bu39 (+2.8 fr, the flash shots as always), dr01 no clear change (v7 into v7 at the drop); type and lyrics
   pass; single frame vs full 11 of 11 identical.
+
+## Step 5: chorus 2, outro A, outro B-C; section 4/3 fixes; the whole film v1 (2026-11-14, night)
+
+Section 4 fixes (section4_v2):
+- vio_still: she stays at full brightness; star points break off her outline (each edge cell at its own moment over the three bars),
+  drift outward from her centre 25-95 px and twinkle among the sky's stars. Her alone: the matte (which also took the dish and its ring)
+  is clipped to a hand-set polygon round her (`settle.poly`, knees and feet included).
+- Handwriting: new d, o, r, e (closed bowls, "here" with an open e and a clear r); x-height 0.04 H; the pen point of the ink sits on
+  the pencil tip measured per 4 frames on vio_write (yellow pencil body's left end; `HAND.track`); on vio_release the line starts where
+  it ended (clip 3.46 s position) and lifts off.
+- section3_v3: re-rendered so b89 has the gold marks.
+
+Chorus 2:
+- c2_lookup cropped left (zoom 1.35, fx 0): the clip has a stray arm at its right edge; slab right.
+- b124-126: kit 'row' with `conv`: runners (mirrored when coming from the left) run in toward main over the bar, accelerating, and fade
+  into her in the last fifth; main hNear 0.6 so her head sits under the slab.
+- b130-131 'fold' (src/outro.js): night_jade still; patchwork2's figure aligned by the two cut-outs' bounding boxes (both matted with
+  tools/matte.py into work_fable/take2/kit/night_jade, patchwork2) shows through twelve patch cells (nearest-seed cells over the figure
+  box), one more per beat for four beats then per half beat; each new patch flashes its life's colour. Black paper kept to b132.
+- patch_hold b132-133; patch_settle b134-136 at clip 0-4.95 slowed (blended), lyric left of her.
+Outro A:
+- like_sing1/2 (code 'L'): used if work_fable/take2/plates/like_sing1|2 exist locally; `?likeness=0` forces the cards. Every committed
+  review file is rendered with likeness=0.
+- b139-142 'town': white paper, two pencil hill lines (parallax 0.18, 0.32), the twelve facades (matte.py cut-outs; sandstorm by a
+  hand-written key keeping its black board) along the road at 0.3 W spacing, 1050 px/s, a chip (26 px) with the branch name under each,
+  the road = main's written lane, merge 0.82 (dense). b141-142 continues the same travel with day_run's cut-out in front.
+- day_fork + forks(): pencil branches continue from eight tip points of the plate's tree. b147-148 'aerial': pull-back (zoom 1.5 to
+  0.62), the road written, the facades small on both sides, pencil forks growing at the road's end.
+Outro B-C:
+- b149-152 'graph': white paper, main + the eleven lives as branches merging into main (labels 28 px), revealed left to right over two
+  bars; bar 151 the violet branch leaves and its dot; bar 152 a dotted arc forward to main, "cherry-pick docs: start here".
+- b153-156 'terminal': the real `git log --graph --format="%h %s"` of fable/merge, captured into fable/take2/data/gitlog.json (199 lines,
+  messages cut at 86 characters), scrolling over 7.5 beats; then "$ git checkout main" typed on beats, "Switched to branch 'main'",
+  "$ git merge" typed on beats. Mono 34 px. 6.83 s.
+- b157-161 'credits': commits, one per beat. **PLACEHOLDER wording from PLAN section 10 item 3, not approved by Jade.**
+- b161.3-end root_light; the last 1.5 s cross to the film's own frame 0 (rendered at t = 0 into a cache): checked, the last frame (8483)
+  equals frame 0 with hud=0 (max diff 0).
