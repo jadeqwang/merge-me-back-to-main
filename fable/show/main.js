@@ -60,6 +60,7 @@ export function frame(t) {
   let s = SEQ[0]; for (const q of SEQ) if (tt >= q.t0) s = q;
   K.cast.begin();
   const F = s.frame(tt, K) || {};
+  if (K.cast.fig) K.cast.fig.noBackBand = !!F.noBackBand;      // take two: the orchestra (bars 81-84) asks for the plain jacket back; every other frame draws the figure as it was
   const env = F.env || {}; const dawn = env.dawn ?? K.world.dawn(tt);
   const out = { camera: F.camera, env: { ...env, dawn, grade: K.grade(dawn, env.grade || {}) }, drawables: [], type: F.type || [], hud: F.hud === undefined ? null : F.hud, overlay: F.overlay, clock: F.clock };
   if (F.world !== false) out.drawables.push(...K.world.draw(tt, F.world || {}));

@@ -35,7 +35,7 @@ void main(){
   o = vec4(vCol*uGain*an*(1. - uInk) + ink*core*min(g, 1.)*uInk, core*min(g, 1.)*uInk);
 }`;
 
-const MAXS = 6000;
+const MAXS0 = 6000;
 const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], mul = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
 const dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; }, len3 = (a) => Math.hypot(a[0], a[1], a[2]);
@@ -48,7 +48,8 @@ const smooth3 = (pts, sub = 5, closed = false) => { const n = pts.length, P = (i
     out.push([0, 1, 2].map((j) => 0.5 * (2 * p1[j] + (-p0[j] + p2[j]) * u + (2 * p0[j] - 5 * p1[j] + 4 * p2[j] - p3[j]) * u2 + (-p0[j] + 3 * p1[j] - 3 * p2[j] + p3[j]) * u3))); } }
   if (!closed) out.push(pts[n - 1]); return out; };
 
-export function makeProps(K) {
+export function makeProps(K, opt = {}) {
+  const MAXS = opt.max ?? MAXS0;                                              // take two: the orchestra asks for more strokes; everyone else gets 6000 as before
   const E = K.E, gl = E.gl, cast = K.cast; const prog = new Program(gl, VS, FS, 'props.lines');
   const vao = gl.createVertexArray(), buf = gl.createBuffer(); gl.bindVertexArray(vao); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, MAXS * 48, gl.DYNAMIC_DRAW);
   for (const [loc, off] of [[0, 0], [1, 16], [2, 32]]) { gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 4, gl.FLOAT, false, 48, off); gl.vertexAttribDivisor(loc, 1); } gl.bindVertexArray(null);

@@ -7,9 +7,11 @@
 // K.shared.actC = the formation and the performance for bars 73-104 (seqs 8, 9, 10 all use it).
 import { seg, lerp, sm } from '../kit.js';
 import { makeActC } from './actC_form.js';
+import { makeOrchestra } from './orchestra.js';
 
 export default function seq(K) {
   const { bar, world: W } = K; const t0 = bar(73), t1 = bar(86); const C = (K.shared.actC = makeActC(K)); const { hx, hz } = C;
+  const ORCH = K.E.Q.get('orch') === '0' ? null : makeOrchestra(K, C);      // take two (notes/orchestra.md): bars 81-84 are the orchestra; ?orch=0 = the film as it was
   const R = (x, y, z) => [hx + x, y, hz + z];
   const camA = K.camPath([
     { t: t0, pos: R(-3.5, 0.66, 0.0), target: R(0, 0.95, 0), fov: 35 }, { t: t0 + 0.28, pos: R(-2.6, 0.40, 0.0), target: R(0, 0.50, 0), fov: 35, stop: true }, { t: t0 + 0.62, pos: R(-2.8, 0.5, 0.0), target: R(0.05, 0.84, 0), fov: 35 }, { t: t0 + 0.82, pos: R(-3.0, 0.56, 0.0), target: R(0.1, 0.88, 0), fov: 35 },      // r3: she is up by 125.95 and has a face now: head room (her crown was on the frame's edge, under the HUD line, 125.9-126.3)
@@ -21,6 +23,7 @@ export default function seq(K) {
   const PG = 0.75;                                  // r4 Y: gain of her pool of orange (C.heroPool) at blue hour
   const world = (t, o = {}) => ({ text: 0.7, flow: 0.1, main: { head: C.mainHead(t) }, ...o });
   return { name: '08_build', t0, t1, frame(t) {
+    if (ORCH && ORCH.on(t)) return ORCH.frame(t);
     const hud = (n) => K.hudMain(t, { count: n });
     return K.cut(t, [
       { t0, f: () => { const n = C.thousand(t); const c = camA(t), imp = Math.exp(-(t - t0) * 2.5), ring = 1 - Math.exp(-(t - t0) * 3.2);

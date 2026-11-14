@@ -167,6 +167,7 @@ export const meshFS = (PARTS) => `#version 300 es
 precision highp float; precision highp int;
 uniform sampler2D u_parts; uniform vec3 u_camPos, u_sun; uniform int u_points; uniform float u_psize, u_tiles, u_hull;
 uniform vec3 u_amb, u_rimCol, u_rimDir, u_key, u_keyCol; uniform float u_rimBoth, u_sunAmt, u_under, u_emis, u_trans, u_faceG, u_sil;
+uniform float u_nbb;      // take two (orchestra, bars 81-84): 1 = no band across the jacket's BACK (PLAN rule 8); 0 everywhere else (the figure as it was)
 in vec3 v_n; in vec3 v_w; in vec2 v_uv; in vec3 v_la; in vec4 v_flags;
 flat in vec4 v_inst; flat in vec4 v_lane; flat in vec4 v_fa; flat in vec4 v_fb; flat in vec3 v_hv; flat in vec3 v_hl; flat in float v_fpx;
 layout(location=0) out vec4 o_col; layout(location=1) out vec4 o_aux;
@@ -249,6 +250,7 @@ void main(){
   int part; float region = floor(v_flags.x + 0.5); bool head = (u_points == 0 && region == 5.0);
   if (u_points == 1) { if (length(gl_PointCoord * 2.0 - 1.0) > 1.0) discard; part = int(v_flags.z + 0.5); }
   else { part = int(texelFetch(u_parts, ivec2(v_uv * u_psize), 0).r * 255.0 + 0.5); if (part == 255) discard; }
+  if (u_nbb > 0.5 && u_points == 0 && region == 15.0 && part == ${PART.STRIPE} && v_la.z < 0.0) part = ${PART.JACKET};      // the chest band stops at the side seams: the back is plain white (disc + RARE EARTH only)
   float solid = v_inst.x, alpha = v_inst.w; vec3 lane = v_lane.rgb;
   if (alpha < 0.999 && ign(gl_FragCoord.xy) > alpha) discard;
   float hairM = 0.0, dH = -1.0;

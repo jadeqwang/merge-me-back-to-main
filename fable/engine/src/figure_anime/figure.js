@@ -441,7 +441,7 @@ export class Figure {
     if (u.u_psize) gl.uniform1f(u.u_psize, this.body.atlas.size);
     if (u['u_hpose[0]']) { gl.uniform4fv(u['u_hpose[0]'], HAND_U.pose); gl.uniform4fv(u['u_hgeo[0]'], HAND_U.geo); gl.uniform1fv(u['u_htw[0]'], HAND_U.tw); }      // the hand's shapes (shade.js handPose)
     const L = this._L; if (u.u_amb) gl.uniform3fv(u.u_amb, L.ambient); if (u.u_rimCol) gl.uniform3fv(u.u_rimCol, L.rimCol); if (u.u_rimDir) gl.uniform3fv(u.u_rimDir, L.rimDir);
-    const f1 = (loc, x) => { if (loc) gl.uniform1f(loc, x); }; f1(u.u_rimBoth, L.rimBoth); f1(u.u_sunAmt, L.sunAmt); f1(u.u_under, L.under); f1(u.u_emis, L.emissive); f1(u.u_trans, L.trans); f1(u.u_fibG, L.fibres); f1(u.u_faceG, L.face); f1(u.u_tiles, this.body.tiles); f1(u.u_sil, L.sil); if (u.u_key) gl.uniform3fv(u.u_key, L.keyDir); if (u.u_keyCol) gl.uniform3fv(u.u_keyCol, L.keyCol);
+    const f1 = (loc, x) => { if (loc) gl.uniform1f(loc, x); }; f1(u.u_rimBoth, L.rimBoth); f1(u.u_sunAmt, L.sunAmt); f1(u.u_under, L.under); f1(u.u_emis, L.emissive); f1(u.u_trans, L.trans); f1(u.u_fibG, L.fibres); f1(u.u_faceG, L.face); f1(u.u_tiles, this.body.tiles); f1(u.u_sil, L.sil); f1(u.u_nbb, this.noBackBand ? 1 : 0); if (u.u_key) gl.uniform3fv(u.u_key, L.keyDir); if (u.u_keyCol) gl.uniform3fv(u.u_keyCol, L.keyCol);
   }
   draw(ctx) {
     const gl = this.gl; if (!this.inst.length || !this.tracks.length) return;
