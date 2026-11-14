@@ -218,3 +218,28 @@ Known: a region lyric does not lay out a word sung in the last 0.15 s of a shot 
 instead; check.py's word-duration check does not see this). The "Merge me back to main" slab re-sets at bar 43 (card strip) and b44
 in its own layout after the proof's stacked one. The 4 fps sheets' timestamp box hides the top of top-placed slabs (sheet only).
 Nobody has watched it at speed with sound.
+
+## Section 2 v2: the runner kit, fusions, one runner, the fan (2026-11-13, night)
+
+- `src/kit.js` (new) draws kind 'kit' shots; per-runner data in `fable/take2/kit.json` from `tools/kitstats.py` (matte bbox, head x,
+  whether the clip cuts the figure, step period, strike frames). Measured step: 7-10 frames (chezjj 7, wushu/phd/poet/ames/band/
+  violin/piano/home 8-8.4, wetlab 9, main 9.6, violet 10). Unison: clip frame = a strike frame + (measured beat position) x step,
+  so every runner strikes on every beat (wrapped by whole strides inside the clip). Nearest frame.
+- Cut figures (wushu, phd, poet, ames, band, main, violin): drawn at a full-figure scale with a visible fraction (VIS in kit.js),
+  the bottom 16% faded out, and their lane laid where the visible figure ends, so legs go behind the lane text (fixes v1's pencil cut edge).
+- Open source (sandstorm): main's cut-out through glyphPass (real JetBrains Mono, its commit messages, cyan ramp), placed far
+  (lane 2 of 13), small.
+- b43 'row': 13 lanes far to near, main in front; no chip. b46-47 'fuse': 8 lives, fusions on beats 0,1,2,3 (8->4) and 4,6 (4->2);
+  converge in half a beat, split runner (diagonal line through the head, A left / B right) for one beat, then whole in A's medium;
+  lanes bend into each other at the junction (scrolling right behind them) and text density follows how many lives a lane carries
+  (merge 0.12 / 0.45 / 0.78 / 1). b48 'one': main large, a horizontal band of another life's cut-out inside her matte per sixteenth,
+  never above 20% of her height (face), shrinking and fading over three beats; beat 4 clean; the lane under her is solid (merge 1).
+- b51-52 fan (`opt.fan`): fold_chest matted (work_fable/take2/kit/fold_chest); twelve copies of her own matte, tinted in each life's
+  colour, rotated about a pivot at her hips; open over beat 1, one folds in per half beat from beat 1.5, colour flash on her outline;
+  she is redrawn on top, so her face is never covered. Lyric for that shot moved to a bottom band.
+- Fixes: a region lyric now lays out every word sung inside the shot (on its word time); main_back_wide shows only the held
+  "UNDONE" (opt.lyr.tail 1) in one row at the very top, above her head.
+- b54-55 thumbnails and commit nodes: NOT done (v7's roads move under the paper pass; placing windows on them needs a track; left).
+- Render: same as v1 with `section2_v2` names (keep frames 870,1040,1335,1960,2130,2215,2365,2465,2630,2900). 38.2 MB.
+  check.py: 36 hard cuts, mean 0.33 fr, 35 within 0.5 (pc03 +1.89, the proof's bar 38); type all pass; no word under 0.6 s;
+  single frame vs full render 10 frames max diff 0. Proof identity with proofbug=1 still 0.
