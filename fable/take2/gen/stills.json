@@ -815,6 +815,131 @@
     "work_fable/take2/stills/ins_violin_b1.jpg"
    ],
    "prompt": "Edit this picture; keep everything exactly as it is in the same flat cel-shaded drawing on black paper: the same framing, the same single bow, the same bow hand and white sleeve with the thin orange cuff band, the same black background. Change only the violin: it is no longer black. It is a warm wooden violin with glowing amber-orange and honey varnish, the wood grain faintly visible, clearly lit: a warm rim of light catches the edge of its body and the curve of its shoulders, and a cool blue pencil rim on the far edge; the two f-holes are dark and crisp, the pale maple bridge and the four silver strings are clearly visible. The violin stands out brightly against the black paper. No other change. No text, no logo."
+  },
+  {
+   "id": "float_hand_close",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/float_hand_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same flat cel-shaded drawing on black paper: the same framing, the same hand and forearm, the same white sleeve with its orange cuff band, the same black water, the same hair at the edge. Change only this: the small warm point of light now lies IN the palm, and her fingers have closed gently and loosely around it, a soft relaxed half-closed hand, not a tight fist; the warm golden-white light shows in the gaps between her curled fingers and over the edge of her thumb, drawn with white gel pen and golden pencil, lighting the inside of her fingers. The rose-pink line on the water ends at her hand. A ring of thin white gel-pen ripples spreads around the hand. The hand is a slender young woman's hand with smooth skin and exactly five fingers. No other change. No text."
+  },
+  {
+   "id": "ins_violin_v3",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/v3refs/orch_2_violinist.jpg"
+   ],
+   "prompt": "A new picture of the same young woman as the reference playing the violin, in the same clean inked anime drawing style but drawn on black paper: A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. Blue hour: a cool blue rim of light along the edges of her figure drawn with blue pencil; the violin is warm amber-orange varnished wood with the grain faintly visible and a warm rim light on its edge, its pale maple bridge, four silver strings and black fingerboard clearly drawn. A close view of one player only, seen from her right front at three-quarters, framed from her chin to her waist: the top edge of the picture crosses her face just above her lips, so only her chin and jaw on the chinrest are seen; the bottom edge crosses her waist. She plays the violin exactly as a trained concert violinist does, as in a close-up photograph from a violin lesson. The violin rests on her LEFT shoulder with her jaw on the chinrest; the violin points forward and away from her toward the RIGHT side of the picture, its scroll at the right. Her LEFT hand holds the neck of the violin near the scroll, at the right of the picture: the palm does not touch the neck, the wrist is straight and not bent back, the thumb rests lightly on the side of the neck opposite the fingers, and the fingers are curved and round, their tips pressing down on the strings on the black fingerboard. Her RIGHT arm, the arm nearest the viewer on the LEFT of the picture, holds the bow at its frog end, close to the violin: the thumb bent and touching the stick under the frog, the fingers draped softly over the stick, the little finger curved and resting on top of the stick. The bow hair lies on the strings in the gap between the bridge and the end of the black fingerboard, closer to the bridge, and the bow crosses the strings at a right angle to them, parallel to the bridge; the bow is never over the fingerboard and never on the far side of the bridge. She is at the start of a down-bow, the bow hand close to the strings, the wrist slightly raised and leading, the elbow bent. There is exactly one bow and exactly one violin; she has exactly two arms and two hands, and both hands are clearly visible. She wears a white cropped bomber jacket with one orange band across the FRONT of the chest and one orange band around each upper arm; a black cropped top under the open jacket; orange headphones resting around her neck. On her LEFT upper arm only (the arm holding the violin, on the RIGHT of the picture) a round white patch with a black ring; her right arm, on the left of the picture, has only the orange band and no patch. There are no words anywhere on the front of her jacket. Her hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone, bare hands, not gloves: no wrinkles, no veins, no rings, no watch, nails short and plain; each hand has exactly five fingers, simply and correctly drawn. Nothing else: no music stand, no other players, the black paper empty around her. The drawing fills the whole 16:9 frame from edge to edge with no border. No caption, no signature, no text, no logo."
+  },
+  {
+   "id": "ins_violin_v3s",
+   "lane": "orange",
+   "view": "none",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. Blue hour: a cool blue rim of light along the edges of her figure drawn with blue pencil; the violin is warm amber-orange varnished wood with the grain faintly visible and a warm rim light on its edge, its pale maple bridge, four silver strings and black fingerboard clearly drawn.",
+   "scene": "A close view of her playing the violin, seen from her right front at three-quarters, framed from her chin to her waist: the top edge of the picture crosses her face just above her lips, so only her chin and jaw resting on the chinrest are seen; the bottom edge crosses her waist. She plays the violin exactly as a trained concert violinist does, as in a close-up photograph from a violin lesson. The violin rests on her LEFT shoulder with her jaw on the chinrest; the violin points forward and away from her toward the RIGHT side of the picture, its scroll at the right. Her LEFT hand holds the neck of the violin near the scroll, at the right of the picture: the palm does not touch the neck, the wrist is straight and not bent back, the thumb rests lightly on the side of the neck opposite the fingers, and the fingers are curved and round, their tips pressing down on the strings on the black fingerboard. Her RIGHT arm, the arm nearest the viewer on the LEFT of the picture, holds the bow at its frog end, close to the violin: the thumb bent and touching the stick under the frog, the fingers draped softly over the stick, the little finger curved and resting on top of the stick. The bow hair lies on the strings in the gap between the bridge and the end of the black fingerboard, closer to the bridge, and the bow crosses the strings at a right angle to them, parallel to the bridge; the bow is never over the fingerboard and never on the far side of the bridge. She is at the start of a down-bow, the bow hand close to the strings, the wrist slightly raised and leading, the elbow bent. There is exactly one bow and exactly one violin; she has exactly two arms and two hands, and both hands are clearly visible. She wears a white cropped bomber jacket with one orange band across the FRONT of the chest and one orange band around each upper arm; a black cropped top under the open jacket; orange headphones resting around her neck. On her LEFT upper arm only (the arm holding the violin, on the RIGHT of the picture) a round white patch with a black ring; her right arm, on the left of the picture, has only the orange band and no patch. There are no words anywhere on the front of her jacket. Her hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone, bare hands, not gloves: no wrinkles, no veins, no rings, no watch, nails short and plain; each hand has exactly five fingers, simply and correctly drawn. Nothing else: no music stand, the black paper empty around her."
+  },
+  {
+   "id": "drop_pubu",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/stance_drop_a1.jpg"
+   ],
+   "prompt": "A new close picture of the same woman holding exactly the same wushu drop stance as in the reference, with the same legs in the same positions, the same facing and the same sides: her LEFT leg, on the RIGHT of the picture, bent in a full deep squat with the whole foot flat and the heel down; her RIGHT leg stretched out perfectly straight toward the LEFT edge of the picture, low and close to the ground, the whole sole of that foot flat on the ground and the toes pointing forward. A LOW camera at ground level, close in front of her, shows only her legs and feet, from her hips down: the wide hems of her trousers, an orange strap hanging from her belt, her two chunky white trainers on one level gold ground line. Redraw it in a different style: a flat cel-shaded anime drawing with a clean inked line on black paper, at sunrise: the only colours in the whole picture are GOLD and BLACK, plus the white of her trainers and the orange of the strap; her very wide trousers are black, outlined with thin gold pencil lines; light is drawn only as hand-made strokes of golden pencil; no gradients, no glow, no bloom, no 3D. A few small soft puffs of dust drawn with light gold pencil hatching rise from the ground at her soles. No rays, no burst lines, no impact lines. Her upper body and face are not in the picture. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "vio_empty",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/v3refs/vio_still_f0121.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same scratchboard engraving style of fine white lines on black: the same framing, the same radio telescope dish and its rim and lattice, the same mountains, the same Milky Way and stars, every line in the same place. Change only one thing: remove the seated woman completely, with her headphones, jacket, trousers, straps and shoes, so the curved rim of the dish where she sat is empty; draw the rim, the lattice and the starry sky continuing where she was, in the same engraved lines. Nothing new is added. No other change. No text."
+  },
+  {
+   "id": "drop_air",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/drop_pubu_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep the same flat cel-shaded gold-and-black drawing on black paper, the same low camera, the same framing, the same level gold ground line, the same black trousers with gold pencil outlines, the same straps and white trainers. Change only the moment: this is a split second BEFORE she lands. She is dropping down out of a jump into the stance: both feet are still in the air, clearly above the gold ground line with a gap of black under each sole; her legs are already opening into the shape of the stance, the leg on the LEFT of the picture reaching out long and low toward the left, the leg on the RIGHT of the picture bending under her; her hips are higher than in the original; the straps and trouser hems fly upward from the fall. No dust yet: the ground is clean. No rays, no burst lines. No text."
+  },
+  {
+   "id": "wushu_v3",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/wushu_v2_a2c.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same woodblock print: the same composition, the same window light, the same three flat grey teammates behind her, the same stance, the same punching arm and fist, the same clothes and colours, the same floor. Change only her head and face: her head turns a little toward the viewer into a three-quarter view, so we see both of her eyes, while her eyes still look along her arm at her leading fist. Redraw her face as the face of an anime heroine, carved in the same bold woodblock key lines with flat colour: an oval face with soft, rounded cheeks and a gently rounded chin; LARGE, very dark brown eyes, wide and clear, with a clear double eyelid and a highlight in each eye, about twice the size they are now; soft straight brows; a small, short, straight nose drawn with one small line; small natural closed lips; no makeup. Her long straight black hair is parted in the centre with soft curtain bangs falling to either side of her forehead, framing her face, the rest streaming behind her as now. The face is calm and focused. No other change. No text."
+  },
+  {
+   "id": "wushu_v3h",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/wushu_v3_a2.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same woodblock print: the same composition, face, eyes, expression, clothes, stance, fist, teammates, light and floor. Change only her hairline: she has NO straight fringe across her forehead. Her long straight black hair is parted exactly in the centre of her head, and the two halves fall away to either side, each with one soft curtain lock that sweeps down past her temple and cheek, so her tall clear forehead is visible in the middle between the two locks. The rest of her hair streams behind her as now. No other change. No text."
+  },
+  {
+   "id": "facade_wushu_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/v3refs/wushu/ref.jpg"
+   ],
+   "prompt": "A traditional East Asian woodblock print: bold carved black key lines, flat areas of colour with visible wood grain and slight misregistration, on warm handmade paper; a limited palette of ink black, warm sandstone ochre, pale grey and coral red. A drawing of the real building in the reference photograph, faithful to its architecture so that anyone who knows it recognises it at once: Roble Gym at Stanford, a Spanish-revival gymnasium: smooth sandstone-coloured stucco walls, a low-pitched red clay tile roof, a tall gable end with a row of three tall round-arched windows divided into small panes, and the lower wings beside it with their own small gables. Use the photograph ONLY for the building's shape and details: leave out everything else in it (no trees, no bicycles, no cars, no people, no sky, no street, no signs). Draw it as one single subject, seen straight on from the front like a flat piece of stage scenery, standing alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it. There is no lettering of any kind: no signs, no names, no numbers, no logos; any sign or name on the real building is left blank. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, a window, a light), is coral red. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_phd_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/v3refs/phd/ref.jpg"
+   ],
+   "prompt": "A pen-plotter drawing on pale green graph paper: single-weight technical ink lines in black with one cyan pen, precise and slightly mechanical, cross-hatching made of parallel plotted strokes. A drawing of the real building in the reference photograph, faithful to its architecture so that anyone who knows it recognises it at once: the Frances Searle Building at Northwestern University, a 1970s brutalist building of board-formed concrete: heavy angular concrete masses with vertical ribbed texture, a long low cantilevered concrete band over a deep recessed dark entrance, a taller block with a row of glass panels rising behind it. Use the photograph ONLY for the building's shape and details: leave out everything else in it (no trees, no bicycles, no cars, no people, no sky, no street, no signs). Draw it as one single subject, seen straight on from the front like a flat piece of stage scenery, standing alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it. There is no lettering of any kind: no signs, no names, no numbers, no logos; any sign or name on the real building is left blank. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, a window, a light), is cyan. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_wetlab_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/v3refs/wetlab/ref.jpg"
+   ],
+   "prompt": "A scientific ink drawing in the manner of an early-1900s histology plate: very fine black and sepia pen lines and stippling on aged ivory paper, exquisite patient linework. A drawing of the real building in the reference photograph, faithful to its architecture so that anyone who knows it recognises it at once: the 1959 Stanford medical school building by Edward Durell Stone: a tall flat facade made entirely of pale cast-concrete screen blocks in an interlocking square key pattern, divided into tall bays by slender plain white columns, with warm light glowing through the pierced screens, round flat hanging lamps under the overhang and plain doors at the base. Use the photograph ONLY for the building's shape and details: leave out everything else in it (no trees, no bicycles, no cars, no people, no sky, no street, no signs). Draw it as one single subject, seen straight on from the front like a flat piece of stage scenery, standing alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it. There is no lettering of any kind: no signs, no names, no numbers, no logos; any sign or name on the real building is left blank. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, a window, a light), is mint green. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_ames_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/v3refs/ames/ref.jpg"
+   ],
+   "prompt": "A 1970s space-agency concept painting, fully painted with no pencil lines, in a single hue: smooth airbrushed gouache in shades of one cool grey-teal from near-black to ivory, crisp engineering forms, the slight grain of an offset print. A drawing of the real building in the reference photograph, faithful to its architecture so that anyone who knows it recognises it at once: Hangar One at Moffett Field, the enormous streamlined airship hangar: a very long, tall, white-walled body with sloping ribbed sides, a great rounded dark roof like the back of a whale, long rows of small dark windows along its sides and a row of skylights along the roof, the rounded end facing us; huge and simple, dwarfing the small control tower at its foot. Use the photograph ONLY for the building's shape and details: leave out everything else in it (no trees, no bicycles, no cars, no people, no sky, no street, no signs). Draw it as one single subject, seen straight on from the front like a flat piece of stage scenery, standing alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it. There is no lettering of any kind: no signs, no names, no numbers, no logos; any sign or name on the real building is left blank. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, a window, a light), is bright blue. Its scale is immense: draw it long and wide, filling the width of the picture. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_band_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/v3refs/band/ref.jpg"
+   ],
+   "prompt": "A two-colour risograph print like a hand-made gig poster: coral and navy inks on off-white paper, coarse halftone dots, slight misregistration between the two inks, grainy solid areas. A drawing of the real building in the reference photograph, faithful to its architecture so that anyone who knows it recognises it at once: the original Hacker Dojo building on South Whisman Road in Mountain View: a plain low flat-roofed light-industrial unit with pebbled concrete walls, a white boxy upper frame around a wide window over a set of bright red double glass doors, a plain blank panel where the sign was, a low tilt-up wall beside it. Use the photograph ONLY for the building's shape and details: leave out everything else in it (no trees, no bicycles, no cars, no people, no sky, no street, no signs). Draw it as one single subject, seen straight on from the front like a flat piece of stage scenery, standing alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it. There is no lettering of any kind: no signs, no names, no numbers, no logos; any sign or name on the real building is left blank. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, a window, a light), is coral red. A guitar case leans against the wall by the door. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_home_v2",
+   "raw": true,
+   "refs": [],
+   "prompt": "A chalk and pale pastel drawing on dark blue construction paper: confident textured strokes with the paper showing between them, drawn mostly in chalk white and pale blue-grey, with the warm light of a lamp and a television glowing in soft pastel. One single subject, seen straight on from the side like an open doll's house or a stage set: a cut-away modern living room, a box-shaped room with its front wall removed so we see inside, with a flat ceiling, a plain back wall with one wide window at night, and a clean floor line. Inside: a long low modern sofa, a low coffee table, a television on a low media cabinet glowing softly, a floor lamp casting a warm pool of light, a rug; two game controllers lying on the rug and one on the sofa cushion, their cables loose; a couple of cushions, a small plant. Modern and modest, tidy but lived in. No people at all. The room stands alone in the middle of the picture on a plain, empty, flat WHITE background, its floor on one straight level line, about two thirds of the picture's height and wider than it is tall; nothing else around it. There is no lettering of any kind: no signs, no names, no numbers, nothing on the television screen but soft coloured light. The subject is nearly monochrome and its only strong colour, used once or twice (a cushion, the lamp shade), is rose pink. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "band_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/refs/band.jpg"
+   ],
+   "prompt": "Edit this picture; keep the same two-colour risograph print (coral and navy inks on off-white paper, coarse halftone dots, slight misregistration) and keep the three musicians exactly as they are: the same woman in the white jacket seen from behind with her guitar at the microphone, her face in profile singing, the same pale-blue circle and the same patch on her arm; the same two bandmates with their guitars beside her, in the same places and poses. Change only the place around them: they are not in a bar or club and there is no stage. They play on the bare concrete floor INSIDE a hackerspace: a big open light-industrial room with an exposed ceiling of steel trusses, ducts and long fluorescent strip lights; plain walls with blank whiteboards covered in scribbled diagrams and arrows but no readable words; folding tables pushed back against the walls with laptops, a soldering iron, coils of wire and small circuit boards on them; a few office chairs. Replace the crowd on the left with a few people standing casually and watching, two of them holding closed laptops under their arms, drawn as simple halftone shapes like the bandmates. Replace the open back door and the van with more of the room: a roll-up loading door, closed, and more tables. No bar, no drinks, no stage lights, no signs, no posters, no logos, no readable writing anywhere except RARE EARTH and 1420 MHz on her jacket as before. Same framing and composition. No other change."
+  },
+  {
+   "id": "band_v2_turn",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/band_v2_a2.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same two-colour risograph print: the same room, the same people watching, the same two bandmates, her same body, jacket, guitar, microphone, framing. Change only her head: she has stopped singing and turned ONLY her head over her left shoulder to look back at the viewer, her shoulders and back still facing away, so the back of her jacket with the pale-blue circle and RARE EARTH stays in view. Her face is now seen in three-quarter view looking straight at the viewer: an oval face with a tall clear forehead, her long straight black hair parted in the centre with no fringe, large very dark brown eyes with a clear double eyelid, soft straight brows, a small straight nose, natural closed lips with the faintest smile; a calm, quiet look of recognition; no makeup. Drawn in the same halftone and ink as the rest. No other change. No text."
   }
  ]
 }
