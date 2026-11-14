@@ -8,6 +8,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")
 M = "a flat cel-shaded anime drawing with a clean inked line, flat colours and coloured-pencil texture, at blue hour"
 KEEP = ("Animate the first frame exactly as drawn: same framing, same composition, the same people in the same places, and the same hand-made medium in every frame. "
         f"It is {M} and must stay that throughout, never photographic and never 3D. ")
+WIDE = "The picture stays a wide 16:9 landscape frame with exactly the framing of the first frame: no crop, no zoom, no reframing onto one person. "   # take 2 on: t1 of orch_2 came back portrait 720x1280
 END = (" Every player is the same young woman with the same face as drawn; faces do not change, nobody smiles or speaks, lips stay closed. "
        "The number of people stays exactly the same: nobody appears, disappears or merges. {L} One continuous shot, no cut. No captions, no subtitles, no added text.")
 NOTEXT = "There is no lettering anywhere: no writing on the jackets, sleeves or music stands."
@@ -26,8 +27,17 @@ C = {  # id: (still, action, lettering)
  "orch_3": ("orch_3_b1", "The seated violinists, seen from behind, play together in perfect unison, about two bow changes per second, every bow turning at the same moment, the wrist leading and the elbow following. "
             "The women standing at the front hold their wushu stance perfectly still; only hair and sleeves stir. The camera is locked off.", NOTEXT),
  "orch_1": ("orch_1_a1", "All the seated players play together in unison, their bows moving at the same moment, about two bow changes per second. The women standing near the glowing podium hold their wushu stance, only hair and sleeves stirring. The camera is locked off.", NOTEXT),
- "orch_7": ("orch_7_b1", "Seen from directly above, the whole fan of seated players plays together; the bows move together in unison, a small even shimmer of movement across the rows. Nobody leaves their seat. The camera is locked off, looking straight down,.", NOTEXT),
+ "orch_7": ("orch_7_b1", "Seen from directly above, the whole fan of seated players plays together; the bows move together in unison, a small even shimmer of movement across the rows. Nobody leaves their seat. The camera is locked off, looking straight down.", NOTEXT),
  "orch_8": ("orch_8_b1", "The whole fan of seated players plays together; the bows move together in unison across all the rows. Nobody leaves their seat. The camera is locked off.", NOTEXT),
+}
+# take 2 actions (where take 1 was weak); used when --take=2 and the id is here
+ACT2 = {   # (orch_2 entry added for take 3; take 2 of orch_2 used its take-1 action with WIDE)
+ "orch_2": "The violinists play a slow, singing passage together in perfect unison with long, sweeping, clearly visible bow strokes: on each down-bow the bow travels its whole length, from the frog to the tip, the right hand moving far out to the right of the picture and the right arm opening out from the elbow; on each up-bow the hand comes all the way back to the strings near the left shoulder. One bow change about every two thirds of a second, steady and even, every bow in the row turning at the same moment. "
+           "The bow stays crossing the strings at a right angle, close to the bridge. " + BOW +
+           "Their heads rest on the violins and their bodies sway very slightly with the music; their eyes stay on the music. The camera is locked off.",
+ "orch_6": "The double bass players play a slow, heavy, accented passage together, in perfect unison: big, clearly visible bow strokes using the whole length of the bow, the bow hand travelling far out to the side on each down-bow and back close to the strings on each up-bow, one bow change about every half second, steady and even. "
+           "With every down-bow each player leans her whole upper body into the instrument, and eases back on the up-bow, so the whole line of basses rocks together like one body. " + BOW.replace("Their left hands", "Their left hands, high on the necks,") +
+           "Behind them the seated cellists bow together in the same rhythm. The camera is locked off.",
 }
 def ref(src, out):
     os.makedirs(os.path.dirname(out), exist_ok=True)
@@ -43,6 +53,8 @@ if __name__ == "__main__":
     os.makedirs(os.path.join(ROOT, "media/gen/specs"), exist_ok=True)
     for w in want:
         i, _, alt = w.partition("="); st, action, L = C[i]; st = alt or st
+        if take != "1": action = ACT2.get(i, action)
+        action = WIDE + action      # every spec written after orch_2 t1 came back portrait (orch_2/4/5/6 t1 were sent without it)
         ref(still(st), os.path.join(ROOT, f"work_fable/take2/refs/{i}.jpg"))
         inp = {"prompt": KEEP + action + END.format(L=L), "image": f"file:work_fable/take2/refs/{i}.jpg", "duration": 5, "resolution": "720p",
                "use_virtual_avatar": True, "aspect_ratio": "16:9", "camera_fixed": True}

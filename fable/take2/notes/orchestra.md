@@ -174,4 +174,51 @@ weak layer and would prefer the layer itself made better (e.g. with a video mode
 - Decisions not in the brief: shot 5's hero **conducts** (the brief asks for the conductor's beat; in the 3D she does the `build` wushu
   take); the row beside her keeps the wushu stance. Small figures carry the pale-blue circle only (no RARE EARTH, no sleeve patch) so no
   model text appears at sizes where it would garble; RARE EARTH is only asked for on the timpanist.
-- Spend after the stills: see the running totals below.
+- Spend after the stills: $492.22 project total (`spend.py`).
+
+### 3. Clips (video model, image to video from the chosen stills) and intake (done; checked on strips, not watched at speed)
+- Spec writer `fable/take2/gen/orch_clips.py` (own file, not `gen_clips.py`): Seedance 2.5, 5 s, 720p, `camera_fixed`; first frame
+  `work_fable/take2/refs/orch_<k>.jpg`. From orch_2 t2 on, every prompt starts with a WIDE sentence (keep the 16:9 framing).
+  `ACT2` holds the stronger take-2/3 actions (orch_6 t2, orch_2 t3).
+- 11 clips, all done on first submit, no requeue: orch_2 t1 (unusable: came back PORTRAIT 720x1280, reframed on one player), t2 (landscape,
+  but the bow hand travels ~1 % of the frame and the pose snaps at 1.00-1.08 s), **t3 used** (long strokes asked for); orch_4 t1; orch_5 t1;
+  orch_6 t1 (bows small and irregular, flat 1.8-2.8 s), **t2 used**; orch_1, orch_3, orch_7, orch_8 t1.
+  Clips: `media/gen/t2_orch_<k>_t<n>_<hash>.mp4`.
+- Plates (intake.sh, 121 frames at 24 fps, 1280x720): `work_fable/take2/plates/orch_1` .. `orch_8`; strips `work_fable/take2/strips/orch_<k>.jpg`.
+- Review: strips every 0.25 s with the last second `work_fable/take2/dev/v2_orch/strips/orch_<k>_t<n>.jpg`, stroke crops `o2t3_bow12.jpg`,
+  `orch_4_t1_stroke.jpg`, `o5_cond.jpg`, `o6t2_bow.jpg`; **clip sheet `work_fable/take2/dev/v2_orch/clips_sheet.jpg`** (each plate at
+  frames 1/31/61/91/121). Measurement: skin-blob tracking of the bow/beat hand and motion-energy autocorrelation (scratch scripts, not
+  kept in the repo: the method is gait.py's with a region of interest).
+- What the clips do: timpani (4) is the strongest: a stroke from a loose wrist with an instant rebound, very regular (on twos), one hand
+  only (the other is hidden). Conductor (5): a clear down-up beat with the baton, both arms, row holds the stance. Basses (6): long slow
+  strokes with some lean. Violins (2): one long stroke each way with the bow angle changing, then a stall; vibrato not visible. Wides
+  (1, 3, 7, 8): the crowd holds (no boiling or fusing between frames, layout as in the stills), but they are close to living drawings:
+  3 has a weak 0.52 s bow rhythm, 1 moves in bursts, 7 is almost still after 0.25 s, 8 shimmers. No model text appeared; the timpanist's
+  RARE EARTH stays; last seconds checked on every clip (nothing grows). The clip framing is not exactly the still's (orch_4 opens a
+  little wider); lay anything over the clip's own frames.
+- Spend: $525.40 project total after the clips (`spend.py`, list-price; includes the other agents). This section: 12 stills x $0.134 +
+  11 clips x $1.156 = about **$14.33** of the $45. The cap was not hit; the cap constant was not changed.
+
+### Decided here (not in the brief)
+- Shot 5's hero conducts (baton) instead of the `build` wushu take; the row keeps the stance.
+- Shot 1 stays on the 3D: the shot is the arrival and the video model cannot do it from a still; `orch_1` is delivered so the end of the
+  shot can dissolve into the drawn layer (its still was made from 3D frame 4193 = 139.77 s, so the layout matches the 3D's last frames).
+- Shot 8 has no rise in the clip; the 3D keeps the rise and the bar-85 hit.
+- Small figures carry only the pale-blue circle (no RARE EARTH, no patch) so the model draws no garbled text at small sizes.
+
+### Wiring
+Shots are 0.865 s (two beats of 0.432 s) on the existing cut points (b81, b81.3, ... b84.3). "Play at" = speed factor so that the stroke
+lands on the beat; "range" = clip seconds to use at that speed. Plates are 24 fps; frame = round(t * 24) + 1.
+
+| plate | shot | route | usable clip range (s) | stroke / beat period in the clip | suggested use | fall back to 3D |
+|---|---|---|---|---|---|---|
+| orch_1 | 1 above (138.965-139.830) | 3D (rev 3) | 1.0-5.0 (no clean period) | bursts of bowing ~1.2 s apart | 3D 138.965-~139.60, then dissolve 0.12 s into orch_1 from 1.0 s at 1x | the whole arrival is 3D; the plate is only the settled end |
+| orch_2 | 2 side_low_violins | video (t3) | 0.00-2.40 (stalls 2.4-4.1) | bow change at 1.25 s; half-cycle ~1.2 s | play at 1.45x, range 0.65-1.90: the change lands mid-shot on the beat | none expected |
+| orch_3 | 3 above_behind | video | 1.5-5.0 | ~0.52 s (12-13 frames, weak autocorr 0.3-0.4) | play at 1.2x, any 1.04 s inside the range | if the near-still wide reads as frozen at speed |
+| orch_4 | 4 timpani | video | 0.4-5.0 | strike every 13.0 frames = 0.542 s; contacts 0.50, 1.04, 1.58, 2.13, 2.67, 3.21, 3.75, 4.29, 4.83 | play at 1.25x, range 1.55-2.63: contacts at shot time 0.03 and 0.46 s (on the kicks) | none expected |
+| orch_5 | 5 conductor_view | video | 0.3-5.0 | hands down at 0.40, 1.15, 2.08, 2.75, 3.6, 4.45 (~0.81 s, one down per two beats) | play at 0.93x, range 0.40-1.20: down on beat 1, next at the cut | none expected |
+| orch_6 | 6 basses_side | video (t2) | 0.9-4.9 | bow reversals 1.15, 2.40, 3.55, 4.65 (half-cycle ~1.17 s) | play at 1.35x, range 1.80-2.97: the reversal at 2.40 lands on the shot's second beat | none expected |
+| orch_7 | 7 high_wide | video | 0.3-5.0 | none (almost still after 0.25 s) | 1x | if visible motion is wanted in this shot |
+| orch_8 | 8 last_wide | video | 0.3-5.0 | none clean (shimmer) | 1x until b84 beat 3.5 | from b84 beat 3.5 (rise) and the tail to 146.31 (hit on b85): the clip does not rise |
+
+Type: the orchestra bars carry no type; nothing reserved. No paper pass on the plates (they are the drawn layer).
