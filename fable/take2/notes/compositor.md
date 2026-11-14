@@ -85,6 +85,26 @@ Not yet used in the film itself (the proof range keeps its own lanes; the bar 41
   or `SECTIONS[sec].ink`; the drop passes gold only: "gold and black"). Outro A is set to white paper (day). Stills checked:
   15.0 s (tree + MERGE title + counter) and 153.5 s (the kick against the sun): both drawn.
 - `glyph.js` exists and loads; nothing in the film calls it yet.
+- Paper/ink per section in the animatic (paper.js at commit 3b26997): every section black paper with all lane hues kept as inks
+  (`ink` = MAIN + the twelve lane colours), except the Drop (black paper, gold `#FFB020` only: "gold and black") and Outro A
+  (white paper; it has no v7 shot yet, so unused). Every V7 shot in the animatic goes through the paper pass; none is raw.
+
+## Animatic v1 (whole film, PLAN section 11 step 1)
+
+`fable/take2/tools/render_film.sh animatic_v1` then `.venv/bin/python fable/take2/tools/check.py work_fable/take2/out/film_animatic_v1_master.mp4`.
+Master `work_fable/take2/out/film_animatic_v1_master.mp4` (CRF 16), review encode `review/fable_take2/animatic_v1.mp4` (x264 slow,
+CRF 20 capped 2.4 Mb/s, AAC 192k), sheets `review/fable_take2/animatic_v1_sheet_01..05.jpg` (1 frame per second, 10x6, song time).
+Whole film renders in about 9 minutes with 6 workers (about 16 fps).
+Contents: proof in bars 28-43; v7 re-timed through the paper pass on every V7 shot (58); real plates where they exist (the proof
+plates as flashes and the root, plus any plate an asset agent has put in `work_fable/take2/plates/`, e.g. `cross_wushu`); cards
+for everything else. HUD on.
+
+Lessons from the first full render (19:55): paper.js changed while it ran, so v7 frames of that render did not match frames
+rendered later (the single-frame check caught it: max diff 229). Re-rendered with paper.js frozen at 3b26997. Also: lyric lines
+faded for 0.3 s after their out time and overlapped the next line by 0.2 s on adjacent lines (seen on the sheet at 1:29, "FOLD ME
+IN AGAIN" under "NOTHING"); now a line is opaque until out - 0.2 s and gone by out (out <= next line - 0.1 s, >= last word + 0.8 s).
+A syntax error in a module hangs the harness for 5 minutes (no FILM.error); index.html now reports module errors.
+
 
 ## Shot table: ambiguities and how they were resolved
 
@@ -114,3 +134,19 @@ Breakdown A 6, Breakdown B 34, Build 41, Drop 20, Verse 2 10, Chorus 2 14, Outro
   camera sequences exist. check.py lists them as "not hard cuts by design".
 - First shot starts at t 0 (frame 0, no fade-in), although bar 1 is at 0.219 s. The last shot ends at the end of the audio.
 - Lyric "Ahh... ahh..." (line 13) is drawn as "Ahh ahh" (rule 5: every lyric, no punctuation).
+
+### Check results, animatic v1 (second render, 20:17)
+
+- Size 63.0 MB (282.8 s, 1080p30, video about 1.6 Mb/s, AAC 192k).
+- Cuts: 160 hard cuts checked; 157 within 0.5 frames; mean |error| 0.29 frames. Outliers, all explained: `bu37`, `bu39` (+2.8 fr)
+  are bar 88 shots that open with a 3-frame life-plate flash: the detector takes the larger change at the flash's end; `pc03`
+  (+1.9 fr) is the proof's own bar 38 transition; `bu16`, `bu19`, `dr01` show no clear change (v7 into a card or v7 to v7 where
+  the paper pass changes little), error under 0.4 fr. 23 boundaries are not cuts by design (v7 to v7 on the one sequence; the
+  proof's bar 37 turn and bar 39 iris).
+- Type: verse lyric cap 66, slab cap 105, proof lyrics 67/70/106; every mono label font 24 px or more (card text 30-50 px).
+- Lyrics: 23 lines, 121 words, none opaque for less than 0.6 s.
+- Single frame alone vs full render: 11 frames (plate, cards, proof A/grid/merge, v7 + paper, last), max diff 0 on all.
+- Looked at (all five sheets, by eye): no blank frames; every v7 shot shows v7 through the paper pass; lyrics present on every sung
+  line, including the restored strip lines in bars 32-38. Not watched at speed with sound by anyone.
+- Known: the bar 149-152 graph (v7) is sparse and its labels are not enlarged; v7 frames after about 279.8 s hold v7's last
+  frame (unused: the last shot is a card); counter stays at 1,024 from bar 12.

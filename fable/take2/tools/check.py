@@ -41,7 +41,8 @@ for a, b in zip(shots, shots[1:]):
     proof_soft = b['kind'] == 'proof' and (b['src'] in ('C:turn', 'D:root'))
     lo, hi = int(np.floor(kk)) - 2, int(np.ceil(kk)) + 3; win = diffs[lo:hi]
     if same_v7 or proof_soft: soft.append(f"{b['id']} ({'v7 same sequence' if same_v7 else b['src']})"); continue
-    k = lo + int(np.argmax(win > 0.35 * win.max())); err = ((k0 + k) / FPS - te) * FPS
+    # the biggest change in the window (v7's paper pass re-draws every 1/12 s, so 'first above 35%' caught boil steps)
+    k = lo + int(np.argmax(win)); err = ((k0 + k) / FPS - te) * FPS
     base = float(np.median(diffs[max(0, lo - 8):lo])) if lo > 0 else 0.0
     ok = win.max() > max(1.0, 3 * base)
     rows.append({'id': b['id'], 't': te, 'frame': k0 + k, 'err': round(err, 2), 'diff': round(float(diffs[k]), 1), 'clear': bool(ok)})
@@ -65,12 +66,12 @@ for k, s in info['sizes'].items():
 report['type_fails'] = fails
 
 # ---- 3. lyrics
-print('\n3. lyrics (on screen from the word start to the line out time; the proof draws lines 4-7 inside bars 28-43)')
+print('\n3. lyrics (fully on screen from the word start to the line out time - 0.2 s fade; the proof draws lines 4-7 inside bars 28-43)')
 short = []
 for L in info['lyrics']:
     for wd in L['words']:
         d = L['out'] - wd['start']
-        if d < 0.6 - 1e-6: short.append((L['id'], wd['w'], round(d, 3)))
+        if d - 0.2 < 0.6 - 1e-6: short.append((L['id'], wd['w'], round(d - 0.2, 3)))   # fully opaque until out - 0.2
 print(f"   {len(info['lyrics'])} lines, {sum(len(L['words']) for L in info['lyrics'])} words; words under 0.6 s: {short if short else 'none'}")
 print(f"   last line out at {max(L['out'] for L in info['lyrics']):.2f} s (film ends {info['tStop']:.2f} s)")
 report['lyrics_short'] = short

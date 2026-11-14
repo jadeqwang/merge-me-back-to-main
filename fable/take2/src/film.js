@@ -113,7 +113,7 @@ function buildLyrics() {
     words: l.words.map((w) => ({ w: w.w.replace(/[^A-Za-z0-9'’]/g, ''), start: w.start, end: w.end })).filter((w) => w.w) }));
   L.sort((a, b) => a.words[0].start - b.words[0].start);
   L.forEach((l, i) => { const last = l.words[l.words.length - 1], next = L[i + 1];
-    l.t0 = l.words[0].start; l.out = Math.max(last.start + 0.6, Math.min(last.end + 0.5, next ? next.words[0].start - 0.1 : 1e9)); });
+    l.t0 = l.words[0].start; l.out = Math.max(last.start + 0.8, Math.min(last.end + 0.5, next ? next.words[0].start - 0.1 : 1e9)); });   // out: opaque at least 0.6 s, then a 0.2 s fade
   return L;
 }
 // a line belongs to the proof if it starts inside the proof range (the proof draws it there; the film draws it after bar 43)
@@ -139,8 +139,8 @@ function layoutLine(l, place) {
 function lyrics(t, eff) {
   if (proofOwns(t)) return;
   for (const l of LYR) {
-    if (!on(t, l.t0) || t > l.out + 0.3) continue;
-    const la = 1 - clamp01((t - l.out) / 0.3), place = eff === 'card' ? 'strip' : 'low', Lx = layoutLine(l, place);
+    if (!on(t, l.t0) || t > l.out) continue;
+    const la = 1 - clamp01((t - l.out + 0.2) / 0.2), place = eff === 'card' ? 'strip' : 'low', Lx = layoutLine(l, place);
     if (place === 'low') { const gr = g.createLinearGradient(0, Lx.top - 60 * S, 0, H); gr.addColorStop(0, 'rgba(5,6,26,0)'); gr.addColorStop(1, `rgba(5,6,26,${0.5 * la})`); g.fillStyle = gr; g.fillRect(0, Lx.top - 60 * S, W, H - Lx.top + 60 * S); }
     setFont(Lx.f); if (Lx.slab) g.letterSpacing = `${-0.01 * parseFloat(Lx.f.font.split(' ')[1])}px`;
     for (const q of Lx.words) { const w = l.words[q.wi]; if (!on(t, w.start)) continue;
