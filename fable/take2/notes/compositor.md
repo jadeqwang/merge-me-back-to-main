@@ -467,3 +467,14 @@ Stills: work_fable/take2/dev/v2/{credits,graph,ahh,b100}.jpg, check_lives_grid.j
    Graph b149-152: `cherry-pick HANDOFF.md` (done with items 1-3).
    Checked: stills dev/v2/hand/t3_sheet.jpg (10 times across b114-117), t2_05_crop.png (type at full size), mote.jpg; clip
    dev/v2/vio_v2.mp4 (195.6-203.0) as a strip of the release path every 3 frames up to the b117 frame (hand/release_path.jpg).
+8 (check). wave_run had landed too: b145-146 plays it (clip 0 at speed 1 for now). Its wiring (plates_v2.md: clip 1.4-4.8, slab low
+   y 0.72-0.96) is item 9. Seen on a still (dev/v2/v2_11_wave_run_slab.jpg): the cream slab BACK TO MAIN on the white paper reads
+   weakly and crosses her legs: item 9 should give this shot a lyric region and a darker cloud (or ink-coloured slab on white).
+Boot check (`render.mjs --info`): ca07 mapfold code, ca10 v7 + windows, vb08/vb09 vio_write2/vio_release2, oa05 wave_run plate,
+   22 lyric lines (13 gone), no cards left locally (likeness on).
+Review stills (960 px): work_fable/take2/dev/v2/v2_01..v2_11_*.jpg.
+
+Next (item 9, on the director's message): wire the remaining plates from plates_v2.md and orchestra.md wiring tables (root_face_v2,
+wushu_v2 incl. the b12 flash and proof uses, drop_face_v2 song-locked from 171.8, stance/insert clips, drop_hero_*, orch_1..8),
+mostly with `opt.next` (film.js) so each falls back while missing; then film v2 renders (local likeness, public likeness=0, review
+encode, sheets, check.py), versioned film_v2. Optional, not done: the crease echo at b130-131.
