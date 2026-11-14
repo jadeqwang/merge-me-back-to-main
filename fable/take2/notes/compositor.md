@@ -478,3 +478,28 @@ Next (item 9, on the director's message): wire the remaining plates from plates_
 wushu_v2 incl. the b12 flash and proof uses, drop_face_v2 song-locked from 171.8, stance/insert clips, drop_hero_*, orch_1..8),
 mostly with `opt.next` (film.js) so each falls back while missing; then film v2 renders (local likeness, public likeness=0, review
 encode, sheets, check.py), versioned film_v2. Optional, not done: the crease echo at b130-131.
+
+### Film v2, item 9 part 1: wiring (2026-11-14, commit e1ef25c + notes)
+Mechanisms: `opt.next` (shot switches to a new plate when it exists, with its opt merged); shots.js `PLATE_ALIAS` (film.js boot replaces
+PLATE[id] everywhere the film uses it: crossings, flashes, windows, fold sheet; `focus` = her place in the new plate); shots.js `PROOF_A`
+(proof range: a life's b28-32 A shot from a new plate, `land` clip time put on beat `landBeat`, `side` = her side there; through
+port_proof.py -> proofscene.js `o.aPlates`; the b33-38 grid keeps the old plate, whose bar-37 look-back wushu_v2 does not have).
+- root_face_v2 b5-6: clip 0-3.5 (both blinks, the fog breath), no push.
+- wushu_v2: alias (focus [0.3, 0.3]) -> b12 flash (next: clip 1.0-1.3, the landed punch), b20 doorway, b49 fold sheet, b54 window,
+  b87 flash; b30 A shot via PROOF_A (clip0 = 1.0 - one beat: the punch lands on b30.2; chip and lyric to the right, side 'left').
+  Proof identity: proofbug=1 max 0 on all frames (0,75,100,115,130,300,467,700 and the default 13); film differs from its previous
+  render only at k=115 (inside b30's wushu shot: the whole frame, the new plate) besides the known label changes.
+- b73-76: stance_bow_v2 / stance_horse_v2 / stance_drop2_v2 from settle - 0.11 s (settle 1.5 / 2.0 / 2.25: she settles about a quarter
+  beat after the bar line), push 0.02, white flash kept (bar-line impacts). b75 keeps the old stance_drop still until stance_drop_v2
+  lands (its settle 1.5 is a guess: set it from the wiring row).
+- Beat 3 of b77-80: ins_violin (2.5, speed 1.25), ins_poem (3.4), ins_piano (0.82: the chord lands at the cut), ins_guitar (0.95: the
+  strum crosses the strings at the cut), measured on the clips (dev/v2/w9/piano.jpg, guitar.jpg); no white flash.
+- Drop: b90 fist = v1 drop_hero_2 still until drop_hero_1_v2 lands; b91 drop_hero_2_v2 clip 1.3-2.9; b92 drop_hero_3_v2 0.7-2.2;
+  b102 drop_hero_4_v2 from 1.2 at 1.5x; b103.3 drop_hero_5_v2 from 0.05 (touch-down on the cut, white flash kept). No push.
+- b100: one shot, drop_face_v2 song-locked (t0_song 171.8), whole bar; the v7 "arms wide" half removed. No lyric.
+- Fold fix: fit [0.94, 0.9], zmax 3, viewY 0.47: sheet starts 0.89 W, every folded stack about 0.9 H; the slab overlaps the lower edge.
+  Stills dev/v2/fold/f4_sheet.jpg.
+- Town: fresh still confirms `jade/rare-earth` under the dish (dev/v2/w9/b87_town.jpg; v2_06 predated the rename).
+- Not yet: wave_run take 2 slab layout (waiting), stance_drop_v2, drop_hero_1_v2, orch_*.
+Check clips (hud on, likeness default, sound): dev/v2/check_b73-93.mp4, check_b96-104.mp4; beat sheets (one frame per beat at beat +
+0.25, 6 across, 480 px cells) check_b73-93_beats.jpg, check_b96-104_beats.jpg (scratchpad tool beatsheet.py).
