@@ -72,8 +72,9 @@ with `wave_run3_knees` as the last frame too.
   last frame submitted, not reviewed.
 - `ins_violin`, `ins_poem`: accepted, intaken. Insert stills: attempt 1 failed for all four (violin two crossed arms; poem light
   jeans; piano wrong keys; guitar letterboxed); attempt 2 passed (guitar cropped from a drawn frame: `ins_guitar_b1c`).
-- `ins_piano`, `ins_guitar`, `drop_hero_1_v2` (t2 only; t1 used a wrong last frame and is discarded), `drop_hero_2_v2`..`_5_v2`:
-  submitted, not reviewed. New drop stills: `drop_hand_open`, `drop_eyes_closed` (edits, first frames toward the approved v1 stills),
+- `ins_piano`, `ins_guitar`, `drop_hero_2_v2`, `_3_v2`, `_4_v2`, `_5_v2`: accepted t1, intaken. Guitar's grey fretting sleeve and
+  sturdy hands read acceptably in motion; no third still.
+- `drop_hero_1_v2`: t2 only (t1 used a wrong last frame and is discarded); pending. New drop stills: `drop_hand_open`, `drop_eyes_closed` (edits, first frames toward the approved v1 stills),
   `drop_sun_only` -> `drop_palm_sun` (palm rises over the sun, no rays), `drop_land_clean` (v1 landing with the burst rays removed).
 
 ## Wiring
@@ -91,3 +92,9 @@ with `wave_run3_knees` as the last frame too.
 | `stance_drop2_v2` | `stance_drop2` | 0.25-5.0; settled from 2.25 | upper left x 0.0-0.4, y 0.0-0.4 | frame 0 sits slightly off; start at 0.25 |
 | `ins_violin` | new insert, beat 3 of b77-80 | 2.5-4.75 is the clearest bow travel (hand moves out to the right) | upper left above the strings x 0.0-0.45, y 0.0-0.30 | one bow, one hand throughout |
 | `ins_poem` | new insert, beat 3 of b77-80 | 0.0-5.0, writing all through; small pencil lift about 3.75 | upper left x 0.0-0.3 (black) | page lines faint and unreadable |
+| `ins_piano` | new insert, beat 3 of b77-80 | 0.0-1.9 (lift, chord lands about 1.0-1.25); the view shifts at 2.0 | upper left black x 0.0-0.35, y 0.0-0.25 | |
+| `ins_guitar` | new insert (RNA band), beat 3 of b77-80 | strums 0.75-1.25, 2.5-3.0, 4.25-4.75 | little free area; small chip at upper left only | fretting sleeve greyish |
+| `drop_hero_2_v2` | v1 `drop_hero_3` (palm) as the brief's hero 2 | 0.75-3.5 (palm rises 0.75-2.75, holds) | black sides x 0.0-0.3, x 0.7-1.0 | no rays; sun size steady |
+| `drop_hero_3_v2` | v1 `drop_hero_1` (eyes) as hero 3 | 0.5-3.0 (eyes open 0.75-2.25, gold glints from 2.5) | none (full-frame face) | |
+| `drop_hero_4_v2` | v1 `drop_hero_4` (hair whip) | 1.0-3.5 (whip), falls by 4.75 | right of the hair, x 0.75-1.0 | patch on the near arm |
+| `drop_hero_5_v2` | v1 `drop_hero_5` (landing) | 0.0-2.25 (squat, strap swing, dust); dust thins to 4.0 | upper band y 0.0-0.35 is black trousers/black | no rays |
