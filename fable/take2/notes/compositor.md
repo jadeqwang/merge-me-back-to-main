@@ -433,3 +433,20 @@ Stills: work_fable/take2/dev/v2/{credits,graph,ahh,b100}.jpg, check_lives_grid.j
    the quarter beat before, a lane-colour flash, a node with a light stem. Lyric for this shot: `tail: 4` ("LIVED CAN COME UNDONE",
    three rows under the horizon): with the whole line the slab's rows crossed the horizon and the windows (tried, looked bad).
    Checked: stills dev/v2/n54_{a,b,c}.jpg and the clip dev/v2/night_v2.mp4 (91.9-96.1 s) as a 9-frame strip (night_strip.jpg).
+6. The fold, b49-50 (ca07 is now kind 'code', `src/mapfold.js`, shots.js `MAPFOLD`; fold_reach no longer used). The twelve life plates
+   (proof plates, playing from clip 0.3 at 0.6x so no one turns) as the pre-chorus grid (same order) on one cream paper sheet, cells 420
+   px (pre-chorus 470: the smaller sheet keeps the two-row slab FOLD ME IN / AGAIN under it). Every fold is a VALLEY fold toward the
+   lens (first try: mountain folds away from us read as a sliver vanishing, not as paper). A flap is drawn in 56 strips parallel to the
+   crease, each at its rotated 3D place with perspective (D 1500 px), shaded by how it faces the lens, its crease side in its own
+   shadow; it casts a deepening shadow on the cells it lands on; it accelerates (th = pi p^2 (1.6 - 0.6p) over 0.55 beat) and lands
+   ON the beat with a lane-colour crease flash (the colours of the cells folded in). Folds land on b49.2 (col 4 onto 3), b49.3 (col 1
+   onto 2), b49.4 (col-2 stack onto 3), b50.1 (row 3 onto 2), b50.2 (row 1 onto 2). Undersides are the backs of the pictures, like
+   photographs: cream paper, the picture's ghost through it, the life's colour rule, branch (mono 27 px at sheet scale), hash, and the
+   commit message in Instrument Serif. Face-up tracking: the bottom of every stack is the cell that started there, so a stack folding
+   P onto Q leaves the back of P's own cell face-up. The last flap's underside is her (fold_chest frame 0). The sheet re-centres after
+   each landing (drift 0.9) and the camera closes in as it shrinks (fit 0.8 W x 0.62 H, max 2x); b50.2.6 to b51 the last panel grows
+   to the full frame; b51 (fold_chest from clip 0) matches it (checked: last frame of ca07 vs first of ca08 are the same picture, the
+   slab in the same place). Creases scored bright on the b49 downbeat. Nothing covers her face (slab rows at y 0.69+, her face ~0.2).
+   Checked: stills sheets dev/v2/fold/f2_sheet.jpg (valley v1), f3_sheet.jpg (with zoom), clip dev/v2/fold_v2.mp4 (83.3-88.0 s) as
+   frame strips round landings 1 and 5 (fold/land1.jpg, land5.jpg: k-4, k-2, k-1, k, k+1, k+3; landed on the beat frame) and the cut
+   (fold/cut.jpg). Not done: the crease echo at b130-131 (optional in the brief).

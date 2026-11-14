@@ -156,7 +156,16 @@ shot(46, 48, 'K+C', 'kit', 'runner_fuse', 'missing', 'Runners fuse in pairs, eig
 shot(48, 49, 'K+C', 'kit', 'runner_one', 'missing', "One runner: main Jade, the others' mediums flickering across her jacket.",
   { row: 'b48', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.58, align: 'left' }, kit: { mode: 'one', x: 0.74, head: 0.1, near: 1.04, lane: 0.95,
     flick: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'home', 'violet', 'piano'] } } });
-P(49, 51, 'fold_reach', 'missing', 'Close: she reaches one hand to the lens, then draws it back.', { row: 'b49-50', opt: { lyr: { x0: 0.66, x1: 0.97, align: 'right' } } });   // clip: she is centred, the hand reaches to frame left; the right third is clear
+// b49-50 (film v2, src/mapfold.js): the fold made literal. The twelve life plates as the pre-chorus's 4x3 grid on one paper sheet; it folds
+// like a map, every fold a valley fold toward the lens, landing on its beat: b49.2 column 4 onto 3, b49.3 column 1 onto 2, b49.4 the
+// column-2 stack onto 3, b50.1 row 3 onto 2, b50.2 row 1 onto 2. The undersides are the backs of the pictures (captioned with branch and
+// commit message); the last flap's underside is her (fold_chest frame 0). The last panel grows to the full frame by the b51 cut, where
+// fold_chest takes over from clip 0. folds: [beat from the shot start, axis, crease after column/row k, moving side]. Grid cells 420 px
+// (the pre-chorus's were 470): the two-row slab FOLD ME IN / AGAIN sits under the sheet. (Replaces fold_reach.)
+const MAPFOLD = { code: 'mapfold', lives: LIFE, her: 'fold_chest', grid: { cw: 420, g: 10, y0: 22 }, clip0: 0.3, speed: 0.6, D: 1500, dur: 0.55, drift: 0.9,
+  folds: [[1, 'x', 2, 'hi'], [2, 'x', 0, 'lo'], [3, 'x', 1, 'lo'], [4, 'y', 1, 'hi'], [5, 'y', 0, 'lo']], final: [2, 1], grow: [5.6, 8] };
+shot(49, 51, 'P+C', 'code', 'mapfold', 'missing', 'The sheet of twelve lives folds like a map, one crease per beat, down to one panel: her, hands crossed at her chest.',
+  { row: 'b49-50', opt: { ...MAPFOLD, lyr: { x0: 0.03, x1: 0.97, align: 'left' } } });
 P(51, 53, 'fold_chest', 'missing', 'Hands crossed at her chest; a fan of twelve afterimages, each in a medium, folds into her one per beat.', { code: 'P+K', row: 'b51-52', opt: { lyr: { x0: 0.03, x1: 0.97, align: 'left' },   // one row along the bottom (her trousers): clear of the fan, face and hands
     fan: { matte: '/work_fable/take2/kit/fold_chest', pivot: [0.5, 0.98], lives: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'sandstorm', 'home', 'violet'] } } });
 P(53, 54, 'look_back', 'missing', "She stops and looks back over her shoulder: the same look as the lives'.", { row: 'b53', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });
