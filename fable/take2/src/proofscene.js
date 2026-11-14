@@ -125,7 +125,7 @@ function preMap(t, ta, tP, c0, P) {
   // too little pre-turn action for the time: ping-pong it (fold a path of span/3 seconds over the last Dm seconds before P)
   const Lp = span / 3, s = Lp * pw(3), Dm = Math.max(0.3, Math.min(P, 1.5)); const r = (Lp - s) % (2 * Dm); const tri = r <= Dm ? r : 2 * Dm - r; return P - tri;
 }
-function turnOf(id) { const m = META[id], last = (m.n - 1) / m.fps; return m.turn_t != null ? m.turn_t : Math.min(2.5, last * 0.5); }
+function turnOf(id) { if (o.turn && o.turn[id] != null) return o.turn[id]; const m = META[id], last = (m.n - 1) / m.fps; return m.turn_t != null ? m.turn_t : Math.min(2.5, last * 0.5); }
 function gridClip(i, t) {
   const id = LIVES[i].id, m = META[id], last = (m.n - 1) / m.fps; const turn = turnOf(id);
   const hit = TL.hit - HF;          // half a frame early, so the turn is on screen from the frame nearest the downbeat

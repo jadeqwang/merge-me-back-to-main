@@ -4,7 +4,7 @@ she has got. Prints a shots.js-ready ROAD track: [[clip s, lead foot x, foot y, 
    work_fable/venv_hybrid/bin/python fable/take2/tools/track_road.py PLATE_ID [every_n_frames]
 Feet: pixels with min(R,G,B) > 150 (white trainers, the jacket is above the horizon) between y 0.78 and 0.97 below the black ground;
 the cluster round their median x; lead = the foot furthest in the walking direction (left: min x; right: max x, by the track's sign).
-Road: the violet pixels (B > G + 50, R > G + 20) below y 0.7, a least-squares line. Smoothed over 5 samples."""
+Road: the violet pixels (B > G + 50, R > G + 20) below y 0.7 and more than 0.1 W from her feet, a least-squares line. Smoothed over 5 samples."""
 import json, sys, numpy as np
 from PIL import Image
 pid = sys.argv[1]; every = int(sys.argv[2]) if len(sys.argv) > 2 else 3
@@ -14,11 +14,13 @@ for k in range(1, n + 1, every):
     a = np.asarray(Image.open(f'{D}/frames/f_{k:04d}.jpg').convert('RGB')).astype(int); h, w, _ = a.shape
     yy = np.arange(h)[:, None]
     v = (a[..., 2] > a[..., 1] + 50) & (a[..., 0] > a[..., 1] + 20) & (yy > 0.7 * h)
-    ys, xs = np.nonzero(v); b, c = np.polyfit(xs / w, ys / h, 1) if len(xs) > 20 else (np.nan, np.nan)
     f = (a.min(axis=2) > 150) & (yy > 0.78 * h) & (yy < 0.97 * h)
-    ys, xs = np.nonzero(f)
-    if len(xs) < 30: continue
-    mx = np.median(xs); s = np.abs(xs - mx) < 0.05 * w; xs, ys = xs[s], ys[s]
+    fy, fx = np.nonzero(f)
+    if len(fx) < 30: continue
+    mx = np.median(fx); s = np.abs(fx - mx) < 0.05 * w; xs, ys = fx[s], fy[s]
+    # the road: violet pixels away from her (her trousers and strap are violet too), one line per frame
+    vy, vx = np.nonzero(v); keep = np.abs(vx - mx) > 0.1 * w; vy, vx = vy[keep], vx[keep]
+    b, c = np.polyfit(vx / w, vy / h, 1) if len(vx) > 20 else (np.nan, np.nan)
     rows.append([(k - 1) / fps, xs.min() / w, xs.max() / w, ys.max() / h, c, b])
 R = np.array(rows); left = R[-1, 1] < R[0, 1]
 lead = R[:, 1] if left else R[:, 2]; rear = R[:, 2] if left else R[:, 1]

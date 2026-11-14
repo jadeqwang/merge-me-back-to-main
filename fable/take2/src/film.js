@@ -940,16 +940,16 @@ async function boot() {
   const heroV2 = !PROOFBUG && Q.get('hero') !== 'old' && HERO_NEXT && (await findPlate(HERO_NEXT.id));
   const heroNew = heroV2 || (!PROOFBUG && Q.get('hero') !== 'old' && (await findPlate('hero_paper')));
   // film v2: a life's A shot in bars 28-32 from a new plate (shots.js PROOF_A): clip0 puts its `land` moment on beat `landBeat` of the shot
-  const dirs = heroNew ? { hero: heroNew.dir } : {}, aPlates = {};
+  const dirs = heroNew ? { hero: heroNew.dir } : {}, aPlates = {}; const turnOv = {};
   // film v3: a life plate swapped everywhere, the proof's grid and bar-37 turn included (shots.js LIFE_SWAP; band_v2): the proof reads it
   // through dirs[id], the film through PLATE[id]; side/tone in lives.js are overridden from the wiring row when given
   if (!PROOFBUG) for (const [k, a] of Object.entries(LIFE_SWAP || {})) { const p = await findPlate(a.id); if (!p) continue;
-    dirs[k] = p.dir; PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; if (a.side) byId[k].side = a.side; if (a.tone) byId[k].tone = a.tone; }
+    dirs[k] = p.dir; PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; if (a.side) byId[k].side = a.side; if (a.tone) byId[k].tone = a.tone; if (a.turn != null) turnOv[k] = a.turn; }
   if (!PROOFBUG) for (const [k, a0] of Object.entries(PROOF_A || {})) { let a = a0; if (Array.isArray(a0)) { a = null; for (const x of a0) if (await findPlate(x.id)) { a = x; break; } if (!a) continue; }
     const p = await findPlate(await firstPlate(a.id)), s = SH.find((q) => q.kind === 'proof' && q.src === 'A:' + k); if (!p || !s) continue;
     const tb = T.beatT(Math.round(bposT(s.t0)) + a.landBeat); aPlates[k] = { key: k + '_A', clip0: a.land - (tb - s.t0), side: a.side }; dirs[k + '_A'] = p.dir; }
   PROOF = await makeProof(g, { W, H, FPS, T, plates: PROOF_PLATES, twos: false, fixStrip: !PROOFBUG,
-    dirs, aPlates, heroBlend: !heroNew,
+    dirs, aPlates, heroBlend: !heroNew, turn: turnOv,
     // hero_paper has her in the centre: crop so she sits right of centre, the slab stacks one word per row on the left (rule 5: clear of
     // her face and hands), and the written lane passes behind her legs
     hero: heroNew ? { zoom: 1.25, fx: 0, fy: 0.05, rows: [[0], [1], [2], [3], [4]], gap: [0.5, 0.77], ...(heroV2 ? { ...(HERO_NEXT.opt || {}), c0: heroV2.meta.t0_song !== undefined ? T.bar(41) - heroV2.meta.t0_song : 0 } : {}) } : null, writtenLanes: !PROOFBUG && Q.get('prooflanes') !== '0' ? { drawWrittenLane, laneString } : null,

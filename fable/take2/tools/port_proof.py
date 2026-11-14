@@ -46,6 +46,8 @@ patch("const SLAB_ROWS = [[0], [1, 2], [3, 4]], SLAB_X = 100 * S, SLAB_TRACK = -
       "const SLAB_ROWS = (o.hero && o.hero.rows) || [[0], [1, 2], [3, 4]], SLAB_X = 100 * S, SLAB_TRACK = -0.01;   // take two: o.hero.rows")
 patch("  g.save(); g.beginPath(); g.rect(0, 0, gapL, H); g.rect(gapR, 0, W - gapR, H); g.clip();",
       "  g.save(); g.beginPath(); if (o.hero && o.hero.gap) { const a = o.hero.gap[0] * W, b = o.hero.gap[1] * W; g.rect(0, 0, gapL, H); g.rect(gapR, 0, a - gapR, H); g.rect(b, 0, W - b, H); }   // take two: her legs pass in front of the lane\n  else { g.rect(0, 0, gapL, H); g.rect(gapR, 0, W - gapR, H); } g.clip();")
+# film v3: o.turn = { id: clip s } overrides a plate's turn_t for the bar-37 grid turn (band_v2 turns 0.2 s later than the others)
+patch("function turnOf(id) { const m = META[id],", "function turnOf(id) { if (o.turn && o.turn[id] != null) return o.turn[id]; const m = META[id],")
 # film v2: a life's full-frame A shot (bars 28-32) can use another plate (o.aPlates = { id: { key, clip0 } }, its folder in o.dirs[key]):
 # the clip plays from clip0 at natural speed; the grid (bars 33-38) keeps the life's own plate and its look-back
 patch("P.push({ id: s.id, c: clipA(s, t), rect: full,",
