@@ -169,10 +169,19 @@ export function makeOrchestra(K, C) {
   { const rest = order.slice(nEarly), pri = (s) => s.sec === 'timp' || s.sec === 'perc' || (s.sec === 'db' && s.r < 16); const later = [...rest.filter(pri), ...rest.filter((s) => !pri(s))]; let i = nOld;      // the timpani, percussion and the inner basses are born on bar 82 (shots 4 and 6 need them)
   for (const s of later) { s.i = i; role[i] = { kind: 'player', seat: s, born: C.tBorn(C.S[i].k) }; i++; } }
   role[0] = { kind: 'hero' };
-  // flights of the bar-81 copies: start between b81 + 0.05 s and beat 1.25, 0.36 s each; then the seated players sit down over 0.30 s
-  const bdur = bb(81, 2) - bar(81), TF = 0.36, TSIT = 0.30;
-  { const fl = []; for (let i = 1; i < nOld; i++) { const r = role[i], to = r.kind === 'player' ? r.seat : r.at; r.from = [S[i].x, S[i].z]; r.to = [to.x, to.z]; fl.push({ i, d: Math.hypot(S[i].x - to.x, S[i].z - to.z) }); }
-    const ds = fl.map((f) => f.d).sort((a, b) => a - b); for (const f of fl) { const r = role[f.i], q = ds.indexOf(f.d) / Math.max(1, ds.length - 1); r.tS = tA + 0.05 + 0.5 * bdur * q + 0.02 * h1(f.i); r.tL = r.tS + TF; } }
+  // Revision 3 (Jade on film v1: shot 1 "reads as a firework"; slower, fewer, visibly sitting). Only FLY_N front-desk 1st violins and the wushu row
+  // fly, each from at most FLY_D m out along a short arc (about a quarter of the old speed). Every other bar-81 copy arrives without an arc: its
+  // chair is drawn first (a ripple from the podium outward), then she appears standing at it and sits down over TSIT (r.appear).
+  const TF = 0.36, TSIT = 0.40, FLY_N = 16, FLY_D = 4.5;
+  { const flyers = new Set(seats.filter((s) => s.i !== undefined && s.sec === 'vn1').sort((p, q) => p.r - q.r || p.th - q.th).slice(0, FLY_N).map((s) => s.i));
+    for (let i = 1; i < nOld; i++) if (role[i].kind === 'wushu' && WROW.includes(role[i].at)) flyers.add(i);
+    const rOf = (r) => { const to = r.kind === 'player' ? r.seat : r.at; return Math.hypot(to.x - hx, to.z - hz); };
+    const rr = []; for (let i = 1; i < nOld; i++) if (!flyers.has(i)) rr.push(rOf(role[i])); rr.sort((a, b) => a - b);
+    let fq = 0; const nf = flyers.size;
+    for (let i = 1; i < nOld; i++) { const r = role[i], to = r.kind === 'player' ? r.seat : r.at; r.to = [to.x, to.z];
+      if (flyers.has(i)) { const dx = S[i].x - to.x, dz = S[i].z - to.z, d = Math.max(1e-3, Math.hypot(dx, dz)), k = Math.min(d, FLY_D) / d; r.from = [to.x + dx * k, to.z + dz * k];
+        r.tS = tA + 0.03 + 0.07 * (fq++ / Math.max(1, nf - 1)) + 0.01 * h1(i); r.tL = r.tS + TF; r.tChair = r.tS - 0.02; continue; }
+      const q = rr.indexOf(rOf(r)) / Math.max(1, rr.length - 1); r.appear = tA + 0.06 + 0.38 * q + 0.015 * h1(i); r.tL = r.appear + 0.08; r.tChair = Math.max(tA, r.appear - 0.18); } }
   const polar = (a, b, u) => { const ra = Math.hypot(a[0] - hx, a[1] - hz), rb = Math.hypot(b[0] - hx, b[1] - hz); const aa = Math.atan2(a[1] - hz, a[0] - hx), ab = Math.atan2(b[1] - hz, b[0] - hx); let d = ab - aa; if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI;
     const r = lerp(ra, rb, u), an = aa + d * u; return [hx + r * Math.cos(an), hz + r * Math.sin(an)]; };
 
@@ -197,11 +206,14 @@ export function makeOrchestra(K, C) {
     if (r.kind === 'hero') return { ...C.dancer(0, t, {}), lane: 'main', seed: 0 };
     const lane = r.kind === 'player' ? r.seat.lane : C.laneOf(i), out = { lane, seed: i + 1, gain: 1, alpha: 1 };
     if (r.born !== undefined) { if (t < r.born) return { visible: false }; const age = t - r.born; seatedBody(i, r.seat, t, out); out.gain = 1 + 1.6 * Math.exp(-age / 0.25); out.alpha = 0.35 + 0.65 * sm(age / 0.3); return out; }
+    if (r.appear !== undefined) { if (t < r.appear) return { visible: false }; const age = t - r.appear; out.gain = 1 + 0.3 * Math.exp(-age / 0.2); out.alpha = 0.3 + 0.7 * sm(age / 0.14);      // rev 3: appears standing at her chair, then sits
+      if (r.kind === 'wushu') { const d = C.dancer(i, t, {}); return Object.assign(out, { pos: [r.at.x, 0, r.at.z], yaw: d.yaw, track: d.track, time: d.time }); }
+      return seatedBody(i, r.seat, t, out); }
     const u = seg(t, r.tS, r.tL), d = C.dancer(i, r.kind === 'wushu' ? t : Math.min(t, r.tS), {});
     if (u < 0.75) { const p = u > 0 ? polar(r.from, r.to, sm(u / 0.75) * 0.94) : r.from; let toYaw = r.kind === 'player' ? r.seat.yaw : d.yaw, dy = Math.atan2(Math.sin(toYaw - d.yaw), Math.cos(toYaw - d.yaw));
-      Object.assign(out, { pos: [p[0], 0, p[1]], yaw: d.yaw + dy * sm(u / 0.75), track: d.track, time: u > 0 && r.kind === 'player' ? r.tS - (cast.songT0('build') || bar(73)) + (t - r.tS) * 0.3 : d.time, alpha: 1 - 0.6 * sm(u / 0.3), gain: 1 + 1.2 * sm(u / 0.2) });
+      Object.assign(out, { pos: [p[0], 0, p[1]], yaw: d.yaw + dy * sm(u / 0.75), track: d.track, time: u > 0 && r.kind === 'player' ? r.tS - (cast.songT0('build') || bar(73)) + (t - r.tS) * 0.3 : d.time, alpha: 1 - 0.2 * sm(u / 0.3), gain: 1 + 0.5 * sm(u / 0.2) });      // rev 3: slow flights stay solid
       if (u > 0 && r.kind === 'player') out.vary = 0; return out; }
-    out.alpha = 0.4 + 0.6 * sm((u - 0.75) / 0.25); out.gain = 1 + 1.2 * (1 - sm((t - r.tL) / 0.4));
+    out.alpha = 0.8 + 0.2 * sm((u - 0.75) / 0.25); out.gain = 1 + 0.5 * (1 - sm((t - r.tL) / 0.4));
     if (r.kind === 'wushu') return Object.assign(out, { pos: [r.at.x, 0, r.at.z], yaw: d.yaw, track: d.track, time: d.time });
     return seatedBody(i, r.seat, t, out); }
 
@@ -277,7 +289,7 @@ export function makeOrchestra(K, C) {
   const timp = seats.filter((s) => s.sec === 'timp').sort((p, q) => Math.abs(p.th) - Math.abs(q.th))[0], tdir = norm([hx - timp.x, 0, hz - timp.z]), tside = norm(cross([0, 1, 0], tdir));
   const dbIn = seats.filter((s) => s.sec === 'db').sort((p, q) => p.r - q.r || p.th - q.th), dbC = dbIn.slice(0, 6).reduce((a, s) => [a[0] + s.x / 6, a[1] + s.z / 6], [0, 0]), dbR = Math.hypot(dbC[0] - hx, dbC[1] - hz);
   const SHOTS = [
-    { name: 'above', t0: bar(81), chairs: 0.3, stands: 0, wide: true, cam: (u) => ({ pos: R(lerp(-9.5, -8.5, u), lerp(11.5, 10.5, u), lerp(-9.0, -8.2, u)), target: R(3.6, 0.4, 0.2), fov: 46 }) },
+    { name: 'above', t0: bar(81), chairs: 0.6, stands: 0, wide: true, cam: (u) => ({ pos: R(lerp(-6.4, -6.0, u), lerp(6.6, 6.3, u), lerp(-7.6, -7.2, u)), target: R(2.0, 0.4, -2.2), fov: 46 }) },      // rev 3: closer, so the sitting reads
     { name: 'side_low_violins', t0: bb(81, 3), chairs: 0.55, stands: 0.32, wide: false, cam: (u) => ({ pos: R(lerp(-0.75, -0.45, u), 0.98, lerp(-0.85, -1.15, u)), target: R(2.7, 0.92, -4.7), fov: 32, focusDist: 3.0, aperture: 0.012 }) },
     { name: 'above_behind', t0: bar(82), chairs: 0, stands: 0, wide: true, cam: (u) => ({ pos: PL(-36, lerp(6.9, 6.4, u), lerp(2.35, 2.2, u)), target: PL(-38, 1.6, 0.5), fov: 50 }) },
     { name: 'timpani', t0: bb(82, 3), chairs: 0.55, stands: 0.32, wide: false, cam: (u) => { const p = add(add([timp.x, lerp(1.80, 1.70, u), timp.z], mul(tdir, lerp(-1.55, -1.35, u))), mul(tside, 0.85)); return { pos: p, target: [timp.x + tdir[0] * 3.2, 0.85, timp.z + tdir[2] * 3.2], fov: 42, focusDist: 2.2, aperture: 0.006 }; } },
@@ -300,9 +312,11 @@ export function makeOrchestra(K, C) {
     for (let i = 0; i < N; i++) { if (i >= nLive) { cr.put(i, { visible: false }); continue; } const d = body(i, t); cr.put(i, d); const r = role[i];
       if (r.tS !== undefined && t > r.tS && t < r.tL) { const u = seg(t, r.tS, r.tL), pts = []; for (let q = 0; q <= 4; q++) { const w = Math.max(0, u - 0.22 + 0.055 * q); const p = polar(r.from, r.to, sm(Math.min(1, w / 0.75)) * 0.94); pts.push([p[0], 0.05, p[1]]); }
         P.poly(b, pts, hex(r.kind === 'player' ? r.seat.lane : C.laneOf(i)), 0.02, 1.4 * (1 - sm((u - 0.6) / 0.4))); }      // a short comet tail, not the whole path
-      if (r.kind !== 'player' || d.visible === false || !d.track) continue;
-      const s = r.seat, born = r.born !== undefined ? r.born : r.tL - 0.15, g = sm((t - born) / 0.3); if (g <= 0 || (d.track === 'build')) continue;
-      const cg = dev ? 0.55 : SS.chairs; if (cg > 0 && !STANDING[s.pose] && s.pose !== 'piano') chair(b, s, cg * g);
+      if (r.kind !== 'player') continue; if (d.visible === false || !d.track) { if (r.tChair !== undefined && t > r.tChair && SS.chairs > 0 && !STANDING[r.seat.pose] && r.seat.pose !== 'piano') chair(b, r.seat, SS.chairs * sm((t - r.tChair) / 0.2)); continue; }
+      const s = r.seat, born = r.born !== undefined ? r.born : r.appear !== undefined ? r.appear : r.tL - 0.15, g = sm((t - born) / 0.3);
+      const cg = dev ? 0.55 : SS.chairs, gc = r.tChair !== undefined ? sm((t - r.tChair) / 0.2) : g;      // rev 3: the chair is drawn before she sits in it
+      if (cg > 0 && gc > 0 && !STANDING[s.pose] && s.pose !== 'piano') chair(b, s, cg * gc);
+      if (g <= 0 || (d.track === 'build')) continue;
       instrument(b, s, { pos: d.pos, yaw: d.yaw, track: d.track, time: d.time, color: hex(s.lane) }, g * gI, wide); }
     const sg = dev ? 0.32 : SS.stands; if (sg > 0) for (const st of stands) { const g = Math.min(...st.who.map((s) => { const r = role[s.i]; return sm((t - (r.born !== undefined ? r.born : r.tL) + 0.05) / 0.35); })); if (g > 0.01) stand(b, st, sg * g); }
     podium(b, 0.8);

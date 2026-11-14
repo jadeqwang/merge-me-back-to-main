@@ -140,3 +140,38 @@ Done, committed. Looked at on stills only (raw and through the film's paper pass
 - Poses procedural, approximate grips; winds/brass no final accent; pianist on mocap; harps rise with the harp in their arms (instrument
   lifts with them for half a beat, as do cellos).
 - Shot 3 as above; shot 6 weak through the pass.
+
+## Revision 3 (film v2, section C of `notes/v2_direction.md`), 2026-11-14
+Jade on film v1: the playing looks "very mechanical", drumming wrists like a puppet; she took the solid paper look only because it hides a
+weak layer and would prefer the layer itself made better (e.g. with a video model). Shot 1 (fly in and sit): slower, fewer, visibly sitting.
+
+### 1. Shot 1 in the 3D (done; checked on frame strips only, not at speed)
+- `orchestra.js`: only 16 front-desk 1st violins plus the wushu row of 6 fly (22 arcs, was 255), each from at most 4.5 m out on a short arc
+  (`FLY_N`, `FLY_D`; about a quarter of the old speed), solid (alpha 0.8-1, was 0.4) with a small flash. Every other bar-81 copy arrives with
+  no arc: her chair is drawn first (a ripple from the podium outward, `r.tChair`), then she appears standing at it and sits over 0.40 s
+  (`r.appear`, `TSIT` 0.30 -> 0.40). Wing blocks (wushu) appear standing in place. Shot 1 camera is closer (`R(-6.4..-6.0, 6.6..6.3,
+  -7.6..-7.2)`, target `R(2, 0.4, -2.2)`), chairs at 0.6 (was 0.3).
+- The whole arrival still has to fit the 0.865 s shot: chairs 0-0.25 s, standing 0.06-0.44 s, seated by about 0.85 s. If it still reads
+  too fast at speed, the remaining lever is time (start the shot earlier or hold it longer), not code.
+- Frames re-rendered: `work_fable/take2/v7/orchestra/` (same command as rev 2; hand-written `meta.json` kept, note updated). Rev 2 frames
+  backed up in `work_fable/take2/dev/v2_orch/orchestra_rev2_backup/`. Frames outside 4169-4249 are byte-identical; 4196-4249 (shots 2-3)
+  differ only by the flyers' flash (PSNR 61 dB). Strip: `work_fable/take2/dev/v2_orch/shot1_rev3_strip.jpg` (old: `shot1_old.jpg`).
+
+### 2. Stills: the 3D frame restyled by the image model (done, sheet for the director)
+- Specs `fable/take2/gen/orch_stills.json` (raw prompts; one reference each = the raw 3D frame, no paper pass);
+  `gen_stills.py --specs=FILE` added (default unchanged). Refs `work_fable/take2/dev/v2_orch/ref/orch_<k>.jpg` from frames
+  1:4193 2:4205 3:4231 4:4264 5:4290 6:4309 7:4341 8:4358. Outputs `work_fable/take2/stills/orch_<k>_<tag>1.*`.
+- **Sheet: `work_fable/take2/dev/v2_orch/stills_sheet.jpg`** (3D layout beside each still). Chosen: 1 a1, 2 a1, 3 b1, 4 a1, 5 b1, 6 a1,
+  7 b1, 8 b1. 12 stills paid (8 a + 4 b retakes).
+- Audit: 2 (violins, side): violins on the left shoulder, bows parallel, blank stands, faces one design; good. 4 (timpani): back plain white,
+  pale-blue circle, RARE EARTH correct, patch (blank ring) on her left arm = left of picture, real copper timpani; good. 6 (basses): standing
+  basses with end pins, cellos seated with necks over the left shoulder; good. 1 (above): fan of seated violinists on wooden chairs, wushu
+  row in the render's T-like pose; good. 5 (conductor's view): a1 put patches with garbled glyphs on the wrong (right) arm of the foreground
+  players; b1 (no patch, no badge on the foreground sleeves) is clean but lost their arm bands; the conductor (hero) faces us with a baton.
+  3 (above behind): a1 sat the players on the ground and fused some; b1 has chairs and clean rows; some far wushu figures stand on one leg.
+  7 (top-down): a1 kept the render's pink/purple and drew a sky; b1 is a clean seating plan (the wushu wing blocks came out as players).
+  8 (last wide): a1 fisheye with a sea; b1 level, readable.
+- Decisions not in the brief: shot 5's hero **conducts** (the brief asks for the conductor's beat; in the 3D she does the `build` wushu
+  take); the row beside her keeps the wushu stance. Small figures carry the pale-blue circle only (no RARE EARTH, no sleeve patch) so no
+  model text appears at sizes where it would garble; RARE EARTH is only asked for on the timpanist.
+- Spend after the stills: see the running totals below.

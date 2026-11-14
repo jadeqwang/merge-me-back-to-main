@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Stills for take two (Nano Banana Pro through tools/gen/cf.py: spend cap + ledger). Run with the moongazing venv python:
-   $PY fable/take2/gen/gen_stills.py ID [ID ...] [--n=1] [--tag=a] [--dry]
+   $PY fable/take2/gen/gen_stills.py ID [ID ...] [--n=1] [--tag=a] [--dry] [--specs=fable/take2/gen/orch_stills.json]
 Specs: fable/take2/gen/stills.json. Writes work_fable/take2/stills/<id>_<tag><k>.jpg.
 A spec has: prompt parts (style, scene), lane, view (front|back|side|none), refs (image inputs; default the character sheet),
 and optional "raw": true (the prompt is used as written, for edits)."""
@@ -8,7 +8,8 @@ import json, os, sys
 from concurrent.futures import ThreadPoolExecutor
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, os.path.join(ROOT, "tools", "gen")); import cf
-SPEC = {p["id"]: p for p in json.load(open(os.path.join(HERE, "stills.json")))["stills"]}
+_SPECS = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--specs=")), os.path.join(HERE, "stills.json"))      # --specs=FILE: another spec file (default stills.json)
+SPEC = {p["id"]: p for p in json.load(open(_SPECS))["stills"]}
 SHEET = "inputs/character_sheet.png"
 FACE = ("Her face is the face of the reference sheet and is the same in every picture, whatever the medium: an oval face with a tall clear forehead, hair parted in the centre with no fringe, "
         "large very dark brown eyes with a clear double eyelid, soft straight brows, a small straight nose, natural closed lips, no makeup. The medium changes how the lines and tones are made, never her features. "
