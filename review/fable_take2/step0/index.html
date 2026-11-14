@@ -31,7 +31,7 @@ code{font-family:ui-monospace,monospace;font-size:14px}ul{margin:6px 0 6px 20px;
 <tr><td>7. Written lane</td><td class="v ok">Works</td><td>Readable from sparse to solid, and along the merge curves.</td></tr>
 <tr><td>8. Paper pass</td><td class="v warn">Black paper works, white does not yet</td><td>Gold on black holds the kick and the crowd. On white paper the image falls apart. Both still look partly like a filter.</td></tr>
 <tr><td>9. Main on paper</td><td class="v ok">Works</td><td>Flat cel on black paper, even stride. First take wrote RARE EARTH on her chest; fixed in the retake by a prompt change now applied to every clip.</td></tr>
-<tr><td>10. Glyph pass</td><td class="v ok">Works on a still</td><td>The open-source stage screen shows real lines from this repo's <code>git log</code>. The audience reads weakly. Not yet seen moving.</td></tr>
+<tr><td>10. Glyph pass</td><td class="v ok">Works on a still</td><td>The open-source stage screen shows real lines from this repo's <code>git log</code>. The audience reads weakly. The moving version is rendered but not judged at speed.</td></tr>
 </table>
 <p><b>Spend.</b> This step: $11.61 (9 stills, 9 clips). Project total: $399.45 of the $600 cap; about $200 left.</p>
 </section>
@@ -103,7 +103,8 @@ code{font-family:ui-monospace,monospace;font-size:14px}ul{margin:6px 0 6px 20px;
 <video controls src="t8_paper_kick.mp4"></video>
 <img src="t8_paper_above.jpg" alt="MAIN spelled by bodies: v7, black paper, white paper">
 <ul><li>Gold on black keeps the kick, the sun and the crowd, and gives the two-colour sunrise the plan asks for.</li>
-<li>On white paper the sun and the figure nearly vanish. MAIN from above reads on both.</li>
+<li>On white paper the sun becomes a thin outline and the crowd thins to scattered marks. MAIN from above reads on both.</li>
+<li>Every stroke is redrawn twelve times a second. That may read as too nervous at speed, and it makes the files large (40 to 80 Mbit/s at high quality), which matters for the X upload. The amount can be turned down; untested.</li>
 <li>It still looks partly like a filter over CG. It is acceptable for silhouettes and crowds; I would not put it on a close figure.</li>
 <li>It runs slower than hoped, which matters only for render time.</li></ul>
 </section>
@@ -120,9 +121,11 @@ code{font-family:ui-monospace,monospace;font-size:14px}ul{margin:6px 0 6px 20px;
 
 <section><h2>10. Glyph pass <span class="v ok">works on a still</span></h2>
 <p>The open-source plate. Left: the image model's imitation. Right: the engine's glyph pass, every character real, her figure untouched.</p>
+<video controls src="t10_glyph_side.mp4"></video>
 <img src="t10_glyph_open_source.jpg" alt="Open-source plate: source and glyph pass">
 <ul><li>The screen carries real lines from this repo's <code>git log</code> and your commit messages.</li>
-<li>The audience is hard to read as people. A moving version was still rendering when this page was written.</li></ul>
+<li>The audience is hard to read as people: in the source they are black heads on a near-black ground.</li>
+<li>The moving version above has not been judged at speed, including whether the edge of her kept figure holds through her head turn.</li></ul>
 </section>
 
 <section><h2>What I would change in the plan because of these tests</h2>
