@@ -92,3 +92,6 @@ and, if one attempt works, `main_split_v2` (bar 18, the copies singing as they s
 
 Update (Jade, same day): the face on the wushu life plate (0:34) does not read as her. `wushu_v3`: same picture, her head
 three-quarter to the viewer, the film's one face (large eyes, round cheeks, curtain bangs) in woodblock line. Replaces `wushu_v2`.
+
+Update (Jade, same day): the cupped hands at 0:43 are too still. `main_light_v2`: fingers curl and shift round the light, breath
+through the wrists, the glow moving over the fingers.

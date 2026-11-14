@@ -36,3 +36,4 @@
 - On retaking the band's life plate (it should be Hacker Dojo, not a bar): "yes, please update the band's plate".
 - "at 0:28, maybe the anime version could sing 'I split myself' as she splits" (bars 17-18).
 - "something about the face in 0:34 doesn't quite read as me as much as the anime face" (bar 20, the wushu life plate, wushu_v2).
+- "0:43 the hands by the light feel a little bit too still" (bar 25, main_light).
