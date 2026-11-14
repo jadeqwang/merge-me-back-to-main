@@ -52,7 +52,8 @@ const LIFE = ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band
 // the download details (b65-68), one per life, in the same order
 const DETAIL = ['fingers on keys', 'bow on string', 'a fist', 'a pipette', 'a pen trace', 'typewriter keys', 'a fan blade', 'a guitar pick',
   'laptop keys', 'a lectern', 'a grapefruit by a lamp', 'a pencil in a bun'];
-const STANCE = [['stance_1', 'bow stance punch'], ['stance_2', 'horse stance'], ['stance_3', 'empty stance'], ['stance_4', 'drop stance']];
+// the four stance stills (Step 3: no true empty stance was generated, so the fourth is a second drop stance)
+const STANCE = [['stance_bow', 'bow stance punch'], ['stance_horse', 'horse stance'], ['stance_drop', 'drop stance'], ['stance_drop2', 'drop stance, second view']];
 
 const S = [];
 let sec = null, n = 0;
@@ -74,21 +75,25 @@ section('intro_a');
 P(1, 3, 'root', 'exists', "Frame 0, no fade-in: the child's palm on the cold glass, frost already branching from it. Chip top-left: ● main  1 branch.",
   { ov: ['chip:● main  1 branch'], opt: { clip0: 1.0, push: 0.03 }, row: 'b1-2' });
 P(3, 5, 'root_fork', 'missing', 'Close on the glass: the frost forks in two, then four, on the bar lines. Counter 2, 4.', { ov: ['counter'], row: 'b3-4' });
-P(5, 7, 'root_face', 'missing', "The child's face in profile, lit by the frost, watching. First face. Counter 8, 16.", { ov: ['counter'], row: 'b5-6' });
+P(5, 7, 'root_face', 'missing', "The child's face in profile, lit by the frost, watching. First face. Counter 8, 16.", { ov: ['counter'], row: 'b5-6', opt: { counterSide: 'left' } });
+// b7-8: the root clip from 2.0 s (the frost has grown) slightly slowed, pulling back; twelve frost tips (plate fractions, measured on the
+// clip's frame 84) light up in the lives' lane colours one per half beat from beat 2 of b7
 P(7, 9, 'root', 'exists', 'Pull back: the frost tree fills the pane; its tips take lane colours one by one. Counter 32, 64.',
-  { code: 'P+C', ov: ['counter', 'frost tips take lane colours (to do)'], opt: { clip0: 0, zoom0: 1.18, push: -0.18 }, row: 'b7-8' });
+  { code: 'P+C', ov: ['counter'], opt: { clip0: 2.0, speed: 0.85, zoom0: 1.18, push: -0.18,
+    tips: [[0.43, 0.10], [0.672, 0.093], [0.312, 0.40], [0.53, 0.07], [0.35, 0.55], [0.77, 0.27], [0.36, 0.25], [0.46, 0.62], [0.60, 0.11], [0.40, 0.58], [0.56, 0.58], [0.335, 0.33]] }, row: 'b7-8' });
 
 // ------------------------------------------------------------------ Intro B: bars 9-16 (kick hit, rolling bass)
 section('intro_b');
-V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Title MERGE. Counter doubles each bar to 1,024 by b15.', { code: 'V7+C', ov: ['title:MERGE', 'counter'], row: 'b9' });
+// Step 3: no counter from b9 (the v7 tree's light count cannot be matched to a doubling number; Jade's rule: drop it after 64)
+V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Title MERGE. Counter doubles each bar to 1,024 by b15.', { code: 'V7+C', ov: ['title:MERGE'], row: 'b9' });
 const FL = [['piano', 11], ['wushu', 12], ['ames', 13], ['violet', 14]];
-V(10, [11, 3], 'seq 02', 'The tree grows east.', { ov: ['counter'], row: 'b10-14' });
+V(10, [11, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 FL.forEach(([id, b], i) => {
   P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02 }, row: 'b10-14' });
-  if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { ov: ['counter'], row: 'b10-14' });
+  if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 });
-V([14, 4], 15, 'seq 02', 'The tree grows east.', { ov: ['counter'], row: 'b10-14' });
-V(15, [16, 3], 'seq 02', 'Swoop down the trunk to ground level.', { ov: ['counter'], row: 'b15-16' });
+V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14' });
+V(15, [16, 3], 'seq 02', 'Swoop down the trunk to ground level.', { row: 'b15-16' });
 P([16, 3], 17, 'main_palm', 'missing', "Adult Jade from behind at the root, palm raised exactly like the child's.", { row: 'b15-16' });
 
 // ------------------------------------------------------------------ Verse 1: bars 17-32
@@ -161,35 +166,39 @@ P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit con
 
 // ------------------------------------------------------------------ Breakdown A: bars 57-64 (crash on b57, strings)
 section('break_a');
-P(57, 59, 'float_top', 'missing', 'From above: she floats on her back on dark water, hair fanned out; each strand continues as a coloured lane to the edge of frame, with its branch name.', { code: 'P+C', row: 'b57-58' });
-P(59, 60, 'float_face', 'missing', 'Close on her face, eyes closed, water lapping.', { row: 'b59-60' });
-P(60, 61, 'float_top', 'missing', 'Back above: the strands branch outward, doubling.', { code: 'C+P', row: 'b59-60' });
-C(61, 63, 'float_rotate', 'Slow rotation and pull-out; along one strand a life window glides past.', { row: 'b61-62' });
-C(63, 64, 'float_pulses', 'Pulses of light come home along every strand.', { row: 'b63-64' });
+// float_top + strands (src/film.js strands()): twelve hair strands continued as written lanes (branch name and commit message) from the hair
+// ends (STRANDS, plate fractions measured on the clip) straight out to the frame edge. mode: 'grow' (written out over the first bar),
+// 'double' (each forks in two), 'rotate' (the plate and the strands turn slowly and pull out; a life window glides along one strand),
+// 'pulses' (light runs home along every strand, one strand per sixteenth)
+P(57, 59, 'float_top', 'missing', 'From above: she floats on her back on dark water, hair fanned out; each strand continues as a coloured lane to the edge of frame, with its branch name.', { code: 'P+C', row: 'b57-58', opt: { strands: { mode: 'grow' } } });
+P(59, 60, 'float_face', 'missing', 'Close on her face, eyes closed, water lapping.', { row: 'b59-60', opt: { lyr: { y: 'top' } } });
+P(60, 61, 'float_top', 'missing', 'Back above: the strands branch outward, doubling.', { code: 'C+P', row: 'b59-60', opt: { clip0: 2.0, strands: { mode: 'double' } } });
+P(61, 63, 'float_top', 'missing', 'Slow rotation and pull-out; along one strand a life window glides past.', { code: 'C+P', row: 'b61-62', opt: { clip0: 0.5, speed: 0.75, push: 0, strands: { mode: 'rotate', window: 'piano', on: 3 } } });
+P(63, 64, 'float_top', 'missing', 'Pulses of light come home along every strand.', { code: 'C+P', row: 'b63-64', opt: { clip0: 3.0, strands: { mode: 'pulses' } } });
 P(64, 65, 'float_hand', 'missing', 'Her hand opens on the water as one arrives.', { row: 'b63-64' });
 
 // ------------------------------------------------------------------ Breakdown B: bars 65-72 ("Ahh"; snare crescendo from b68, roll in b72)
 section('break_b');
 for (let bar = 65; bar <= 68; bar++) {
   for (let k = 0; k < 3; k++) { const i = (bar - 65) * 3 + k;
-    shot([bar, 1 + k], [bar, 2 + k], 'S', 'plate', `det_${LIFE[i]}`, 'missing', `The download, one detail per beat in its medium: ${DETAIL[i]} (${LIFE[i]}).`, { row: 'b65-68' }); }
+    shot([bar, 1 + k], [bar, 2 + k], 'S', 'plate', `det_${LIFE[i]}`, 'missing', `The download, one detail per beat in its medium: ${DETAIL[i]} (${LIFE[i]}).`, { row: 'b65-68', opt: { push: 0.04, caption: LIFE[i], lyr: { y: 'top' } } }); }
   P([bar, 4], bar + 1, 'float_face', 'missing', 'Every fourth beat, her face: eyes moving under closed lids.', { row: 'b65-68' });
 }
 P(69, 70, 'rise', 'missing', 'She rises upright out of the water, arms opening; the first band of dawn.', { row: 'b69' });
 for (let k = 0; k < 16; k++) { const i = k % 12, bar = 70 + Math.floor(k / 8), beat = 1 + (k % 8) / 2;
   shot([bar, beat], k === 15 ? 72 : [70 + Math.floor((k + 1) / 8), 1 + ((k + 1) % 8) / 2], 'S', 'plate', `det_${LIFE[i]}`, 'missing',
-    `The details again, two per beat, new crops: ${DETAIL[i]}${k >= 12 ? ' (second new crop)' : ''}. White flashes on the snare.`, { ov: ['snare flashes (to do)'], opt: { crop: k >= 12 ? 'c' : 'b' }, row: 'b70-71' }); }
-C(72, 73, 'tile_collapse', 'All twelve tile in on sixteenths and collapse to a point.', { row: 'b72' });
+    `The details again, two per beat, new crops: ${DETAIL[i]}${k >= 12 ? ' (second new crop)' : ''}. White flashes on the snare.`, { opt: { crop: k >= 12 ? 'c' : 'b', push: 0.05, caption: LIFE[i], white: k % 4 === 2, lyr: { y: 'top' } }, row: 'b70-71' }); }   // the snare: beats 2 and 4
+shot(72, 73, 'C', 'code', 'tile_collapse', 'missing', 'All twelve tile in on sixteenths and collapse to a point.', { row: 'b72', opt: { code: 'tiles', lives: LIFE } });
 
 // ------------------------------------------------------------------ Build: bars 73-88 (biggest impact on b73; four on the floor)
 section('build');
 for (let k = 0; k < 4; k++) {
-  shot(73 + k, [73 + k, 2], 'S', 'plate', STANCE[k][0], 'missing', `Impact frame on the bar line: cel Jade in a long-fist stance (${STANCE[k][1]}), rim-lit, blue hour.`, { row: 'b73-76' });
-  C([73 + k, 2], 74 + k, 'gitlog', `git log --graph racing on the beat, her real commit messages: ${2 ** (k + 1)} rows per beat.`, { ov: ['gitlog'], row: 'b73-76' });
+  shot(73 + k, [73 + k, 2], 'S', 'plate', STANCE[k][0], 'missing', `Impact frame on the bar line: cel Jade in a long-fist stance (${STANCE[k][1]}), rim-lit, blue hour.`, { row: 'b73-76', opt: { push: 0.04, white: true } });
+  shot([73 + k, 2], 74 + k, 'C', 'code', 'gitlog', 'missing', `git log --graph racing on the beat, her real commit messages: ${2 ** (k + 1)} rows per beat.`, { row: 'b73-76', opt: { code: 'gitlog', rate: 2 ** (k + 1), bar: k } });
 }
 for (let k = 0; k < 4; k++) {
   V(77 + k, [77 + k, 3], 'seq 08', `Frontal formation: she forks on every kick (bar ${k + 1} of 4, toward 256).`, { row: 'b77-80' });
-  shot([77 + k, 3], [77 + k, 4], 'S', 'plate', STANCE[k][0], 'missing', `Stance frame on beat 3 (${STANCE[k][1]}).`, { row: 'b77-80' });
+  shot([77 + k, 3], [77 + k, 4], 'S', 'plate', STANCE[k][0], 'missing', `Stance frame on beat 3 (${STANCE[k][1]}).`, { row: 'b77-80', opt: { push: 0.04, white: true, zoom0: 1.06 } });
   V([77 + k, 4], 78 + k, 'seq 08', 'Frontal formation, after the stance frame.', { row: 'b77-80' });
 }
 // b81-84: the orchestra of Jades (v7 seq 08 variant, fable/take2/notes/orchestra.md revision 2), eight shots on the bar and beat 3,
@@ -267,6 +276,8 @@ C(153, 157, 'terminal', 'Terminal: the real git log --graph of this branch, type
 C(157, [161, 3], 'credits', 'Credits as commits, held.', { row: 'b157-160' });
 P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. A violet-gold light appears in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3' });
 
+// float_top geometry (plate fractions): her head (strand centre) and twelve hair ends in the lives' order; measured on the clip when it lands
+export const FLOAT = { center: [0.6, 0.27], ends: [[0.50, 0.12], [0.56, 0.06], [0.64, 0.05], [0.72, 0.08], [0.79, 0.14], [0.84, 0.24], [0.86, 0.36], [0.83, 0.48], [0.78, 0.56], [0.45, 0.20], [0.42, 0.30], [0.71, 0.60]] };
 export const SHOTS = S;
 
 // ------------------------------------------------------------------ resolve bar/beat to song time

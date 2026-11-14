@@ -10,8 +10,8 @@
 // Layers: source (proof | plate | v7 [paper pass] | card) -> grain + vignette -> overlays (chip, counter, title) -> lyrics -> HUD.
 // Source kinds: see shots.js. A missing plate, or a v7 time outside the delivered sequence, draws as a labelled card.
 import { loadTiming, clamp01, lerp, seg, ease } from './timing.js';
-import { resolveShots, SECTIONS } from '../shots.js';
-import { LIVES, MAIN, byId } from '../../proof/lives.js';
+import { resolveShots, SECTIONS, FLOAT } from '../shots.js';
+import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
 import { makeProof } from './proofscene.js';
@@ -76,7 +76,11 @@ async function findPlate(id) {
   if (id in PLATE) return PLATE[id];
   PLATE[id] = null;
   // complete = meta.json (not a placeholder) and its last frame, or the intake's REAL marker (intake writes frames, meta, REAL in that order)
-  for (const d of PLATE_DIRS) { const m = await json(`${d}/${id}/meta.json`); if (!m || m.placeholder || !m.n) continue;
+  for (const d of PLATE_DIRS) { const m = await json(`${d}/${id}/meta.json`); if (!m || m.placeholder) continue;
+    if (m.still) {   // still-only plate (meta {"still": true} + still.jpg): drawn from still.jpg with a push (rule 10: moves from frame 1)
+      if (!(await exists(`${d}/${id}/still.jpg`))) continue; const b = await bitmap(`${d}/${id}/still.jpg`);
+      PLATE[id] = { id, dir: `${d}/${id}`, meta: { ...m, n: 1, fps: 24 }, still: true, stillOnly: true, w: b.width, h: b.height }; break; }
+    if (!m.n) continue;
     if (!(await exists(`${d}/${id}/REAL`)) && !(await exists(`${d}/${id}/frames/f_${String(m.n).padStart(4, '0')}.jpg`))) continue;
     const p = { id, dir: `${d}/${id}`, meta: m, still: await exists(`${d}/${id}/still.jpg`) };
     const b = await bitmap(`${p.dir}/frames/f_0001.jpg`); p.w = b.width; p.h = b.height; PLATE[id] = p; break; }
@@ -125,6 +129,7 @@ function effKind(s) {
   if (s.kind === 'plate') return PLATE[s.src] ? 'plate' : 'card';
   if (s.kind === 'v7') return USE_V7 && v7Of(s) ? 'v7' : 'card';
   if (s.kind === 'kit') return KITX && !s.opt.kit.off && KITX.ok(s) ? 'kit' : 'card';
+  if (s.kind === 'code') return s.opt.code === 'tiles' ? (s.opt.lives.some((id) => PLATE['det_' + id]) ? 'code' : 'card') : 'code';
   return 'card';
 }
 
@@ -223,15 +228,21 @@ function plateDraw(s, t, id, out) {
   if (o.twos) c = Math.floor(c * 12 + 1e-6) / 12;
   const f = c * m.fps, i0 = Math.min(m.n - 1, blend ? Math.floor(f) : Math.round(f)), i1 = Math.min(m.n - 1, i0 + 1), fb = blend ? f - i0 : 0;
   const u = seg(t, s.t0, s.t1), zoom = (o.zoom0 || 1) + (o.push === undefined ? 0.03 : o.push) * ease.io(u);
-  const fo = o.fx !== undefined ? [o.fx, o.fy] : [0.5, 0.45];
-  if (o.still && p.still) out.push({ url: `${p.dir}/still.jpg`, zoom, fo });
-  else { out.push({ url: plateUrl(p, i0), zoom, fo }); if (fb > 0.02) out.push({ url: plateUrl(p, i1), zoom, fo, alpha: fb }); }
+  let fo = o.fx !== undefined ? [o.fx, o.fy] : [0.5, 0.45], zz = zoom;
+  if (o.crop) { const C = CROPS[o.crop] || CROPS.b, j = (s.i || 0) % C.f.length; zz = zoom * C.z; fo = C.f[j]; }   // b70-71: new crops of the details
+  if (p.stillOnly || (o.still && p.still)) out.push({ url: `${p.dir}/still.jpg`, zoom: zz, fo });
+  else { out.push({ url: plateUrl(p, i0), zoom: zz, fo }); if (fb > 0.02) out.push({ url: plateUrl(p, i1), zoom: zz, fo, alpha: fb }); }
 }
+// new crops for the second pass of the details: zoom and a focus that changes shot to shot
+const CROPS = { b: { z: 1.55, f: [[0.3, 0.35], [0.7, 0.6], [0.55, 0.3], [0.35, 0.65]] }, c: { z: 2.1, f: [[0.6, 0.45], [0.4, 0.5], [0.5, 0.6], [0.45, 0.35]] } };
 function scene(t) {
   const s = shotAt(t); const sc = { t, s, eff: effKind(s), imgs: [] };
   if (sc.eff === 'v7') { const k = v7Index(t, s); if (k < 0) sc.eff = 'card'; else sc.imgs.push({ url: v7Url(k, s), v7: true }); }
   if (sc.eff === 'plate') plateDraw(s, t, s.src, sc.imgs);
   if (sc.eff === 'kit') for (const u of KITX.need(s, t)) sc.imgs.push({ url: u });
+  if (sc.eff === 'code' && s.opt.code === 'tiles') for (const id of s.opt.lives) if (PLATE['det_' + id]) sc.imgs.push({ url: `${PLATE['det_' + id].dir}/still.jpg`, life: id });
+  if (sc.eff === 'plate' && s.opt && s.opt.strands && s.opt.strands.window && PLATE[s.opt.strands.window]) {   // the life window (b61-62)
+    sc.win = []; plateDraw({ t0: s.t0, t1: s.t1, opt: { clip0: 1.0, push: 0 } }, t, s.opt.strands.window, sc.win); }
   if (sc.eff === 'plate' && s.opt && s.opt.fan && sc.imgs[0]) { const m = sc.imgs[0].url.match(/f_(\d{4})\.jpg$/); if (m) sc.fan = `${s.opt.fan.matte}/rgba/f_${m[1]}.png`; }
   const x = s.opt && s.opt.cross;   // the crossing: from `at` the doorway grows into the life plate
   if (sc.eff === 'plate' && x && PLATE[x.life] && !ALLCARDS) { const D = s.t1 - s.t0, ta = s.t0 + x.at * D, te = s.t0 + x.end * D;
@@ -296,9 +307,9 @@ function overlays(t, sc) {
     if (o.startsWith('chip:') && !card) chip(o.slice(5), col === MAIN ? MAIN : col);
     if (o === 'counter') {
       const { bar } = barBeat(t), v = counterAt(bar), cf = capFont('mono', SZ.counter * S, 600), b0 = T.bar(bar), pop = on(t, b0) && fr(t, b0) < 6 ? 1 - fr(t, b0) / 6 : 0;
-      setFont(cf); const txt = v.toLocaleString('en-US'); const tw = g.measureText(txt).width, x = W - 80 * S - tw, y = (card ? CARD_H - 90 * S : 130 * S);
+      setFont(cf); const txt = v.toLocaleString('en-US'); const tw = g.measureText(txt).width, left = s.opt && s.opt.counterSide === 'left', x = left ? 80 * S : W - 80 * S - tw, y = (card ? CARD_H - 90 * S : 130 * S);
       g.save(); g.translate(x + tw, y); g.scale(1 + 0.12 * pop, 1 + 0.12 * pop); textShadow(0.7, 10); g.fillStyle = pop > 0.5 ? '#FFFFFF' : CREAM; g.fillText(txt, -tw, 0); noShadow(); g.restore();
-      setFont(FACE.mono(24 * S, 500)); g.fillStyle = hexA(MAIN, 0.95); const lb = v === 1 ? 'branch' : 'branches'; g.fillText(lb, W - 80 * S - g.measureText(lb).width, y + 36 * S);
+      setFont(FACE.mono(24 * S, 500)); g.fillStyle = hexA(MAIN, 0.95); const lb = v === 1 ? 'branch' : 'branches'; g.fillText(lb, left ? 80 * S : W - 80 * S - g.measureText(lb).width, y + 36 * S);
     }
     if (o.startsWith('title:')) {
       const txt = o.slice(6), f = fr(t, s.t0), a = clamp01((f + 1) / 4), cf = capFont('slab', SZ.title * S); setFont(cf); g.letterSpacing = `${0.04 * parseFloat(cf.font.split(' ')[1])}px`;
@@ -377,6 +388,75 @@ function fan(t, sc) {
   herOnly(); g.drawImage(FANC, 0, 0);
 }
 
+// ---------------------------------------------------------------- Step 3: frost tips, captions, strands, git log, tiles
+const bposT = (t) => { const B = T.beats; let lo = 0, hi = B.length - 1; if (t <= B[0]) return 0; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (B[m] <= t) lo = m; else hi = m - 1; } return lo + (lo + 1 < B.length ? (t - B[lo]) / (B[lo + 1] - B[lo]) : 0); };
+function glowAt(x, y, r, col, a) { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(255,255,255,${a})`); gr.addColorStop(0.22, hexA(col, 0.85 * a)); gr.addColorStop(1, hexA(col, 0)); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill(); }
+// b7-8: the frost tips take the lane colours, one per half beat from beat 2 (a pop, then a steady glow that breathes)
+function tips(t, sc) { const s = sc.s, b0 = Math.round(bposT(s.t0)), u = bposT(t) - b0;
+  s.opt.tips.forEach(([x, y], i) => { const k = 1 + 0.5 * i, f = u - k; if (f < 0) return; const p = plateToScreen(sc.imgs[0], x, y), col = LIVES[i].color, pop = Math.max(0, 1 - f / 0.5);
+    g.save(); g.globalCompositeOperation = 'lighter'; glowAt(p.x, p.y, (26 + 40 * pop) * S, col, 0.55 + 0.45 * pop + 0.08 * Math.sin(t * 5 + i)); g.restore(); }); }
+// a life's commit message as a short written line under its detail (b65-68, b70-71)
+function caption(t, sc) { const L = byId[sc.s.opt.caption]; if (!L) return; const cap = 28 * S, px = cap / 0.73; g.save(); g.font = `600 ${px}px "JetBrains Mono"`; const w = g.measureText(L.msg).width; g.restore();
+  const y = H - 70 * S, x0 = (W - w) / 2, u = clamp01((t - sc.s.t0) / 0.12);
+  drawWrittenLane(g, [{ x: x0, y }, { x: x0 + w + 2, y }], { text: L.msg + ' ', color: L.color, cap, merge: 0.4, under: 0.6, upto: (w + 2) * ease.out(u) }); }
+// b57-64 strands. STRANDS = the float_top geometry (shots.js export, measured on the clip): centre (her head) and twelve hair ends
+let STRANDS = null;
+function strandPaths(sc) { const im = sc.imgs[0], c = plateToScreen(im, STRANDS.center[0], STRANDS.center[1]);
+  return STRANDS.ends.map(([x, y], i) => { const e = plateToScreen(im, x, y); let dx = e.x - c.x, dy = e.y - c.y; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l; return { e, d: [dx, dy], L: LIVES[i] }; }); }
+const ray = (p, d, len) => ({ x: p.x + d[0] * len, y: p.y + d[1] * len });
+function writeRay(pts, L, cap, prog, t, alpha = 1) {   // text upright: paths run left to right; prog grows from the hair end
+  let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+  const rev = pts[pts.length - 1].x < pts[0].x, P = rev ? [...pts].reverse() : pts;
+  drawWrittenLane(g, P, { text: laneString([L.branch, L.msg], true), color: L.color, cap: (u) => cap * (rev ? 1.5 - 0.6 * u : 0.9 + 0.6 * u), merge: 0.25, under: 0.25, alpha,
+    scroll: (rev ? 1 : -1) * t * 3, from: rev ? len * (1 - prog) : 0, upto: rev ? undefined : len * prog }); }
+function strands(t, sc) {
+  const s = sc.s, st = s.opt.strands, u = seg(t, s.t0, s.t1), b0 = Math.round(bposT(s.t0)), ub = bposT(t) - b0, R = Math.hypot(W, H), paths = strandPaths(sc);
+  const cap = 18 * S;
+  paths.forEach((q, i) => {
+    if (st.mode === 'double') { const m = ray(q.e, q.d, 0.18 * R), grow = ease.out(clamp01(ub / 2));
+      writeRay([q.e, m], q.L, cap, 1, t);
+      for (const sg of [-1, 1]) { const a = sg * 0.22 * grow, d = [q.d[0] * Math.cos(a) - q.d[1] * Math.sin(a), q.d[0] * Math.sin(a) + q.d[1] * Math.cos(a)];
+        writeRay([m, ray(m, d, R)], q.L, cap * 1.1, grow, t + sg); } }
+    else writeRay([q.e, ray(q.e, q.d, R)], q.L, cap, st.mode === 'grow' ? ease.out(clamp01(ub / 3)) : 1, t);
+    if (st.mode === 'pulses') { const k = i / 4, f = (ub - k) / 2; if (f > 0 && f < 1.2) { const fp = Math.min(1, f), p = ray(q.e, q.d, 0.75 * R * (1 - ease.in(fp)));
+      g.save(); g.globalCompositeOperation = 'lighter'; glowAt(p.x, p.y, (30 + 30 * (f > 1 ? (1.2 - f) * 5 : 0)) * S, q.L.color, f > 1 ? (1.2 - f) * 5 : 1); g.restore(); } }
+  });
+  if (st.mode === 'rotate' && sc.win && sc.win.length) {   // a life window glides inward along one strand
+    const q = paths[st.on || 0], p = ray(q.e, q.d, (0.55 - 0.35 * ease.io(u)) * R * 0.6), w = 300 * S, h = w * 9 / 16, b = READY.get(sc.win[0].url);
+    if (b) { const cr = cover(b.width, b.height, w, h); g.save(); g.shadowColor = q.L.color; g.shadowBlur = 24 * S; g.fillStyle = q.L.color; g.fillRect(p.x - w / 2 - 3 * S, p.y - h / 2 - 3 * S, w + 6 * S, h + 6 * S); g.shadowBlur = 0;
+      g.drawImage(b, cr.sx, cr.sy, cr.sw, cr.sh, p.x - w / 2, p.y - h / 2, w, h); g.restore(); } }
+}
+// b73-76: git log --graph racing on the beat; real commit messages (proof/lives.js), hashes from hashOf; rows per beat 2, 4, 8, 16.
+// Rows scroll up from the bottom; the newest row is bright, older rows dim. Mono 34 px (cap 25).
+const GL = (() => { const out = []; const ids = [...LIVES.map((l) => l.id), 'main'];
+  for (let n = 0; n < 400; n++) { const id = ids[(n * 7) % ids.length], L = id === 'main' ? { branch: 'main', msg: 'merge me back to main', color: MAIN } : byId[id];
+    out.push({ col: (n * 5) % 6, id, L, hash: hashOf(id + '#' + n) }); } return out; })();
+function gitlog(t, s) {
+  g.fillStyle = '#07070C'; g.fillRect(0, 0, W, H);
+  const o = s.opt, prev = [0, 1, 2, 3].slice(0, o.bar).reduce((a, k) => a + 3 * 2 ** (k + 1), 0), b0 = bposT(s.t0), u = Math.max(0, bposT(t) - b0);
+  const n = 18 + prev + Math.floor(u * o.rate), fpx = 34 * S, lh = 50 * S, rows = Math.ceil(H / lh) + 1, cw = fpx * 0.6;
+  g.save(); g.font = `600 ${fpx}px "JetBrains Mono"`; g.textBaseline = 'alphabetic';
+  const beatPop = 1 - clamp01((u % 1) / 0.25);
+  for (let r = 0; r < rows; r++) { const k = n - 1 - r; if (k < 0) break; const R = GL[k % GL.length], y = H - 40 * S - r * lh, a = r === 0 ? 1 : Math.max(0.28, 0.85 - r * 0.035);
+    let x = 70 * S; g.globalAlpha = a;
+    for (let c = 0; c < 6; c++) { const ch = c === R.col ? '*' : (k + c) % 9 === 0 ? '/' : (k + c) % 11 === 0 ? '\\' : '|'; const cc = c === R.col ? R.L.color : LIVES[(c * 3) % 12].color; g.fillStyle = cc; g.fillText(ch, x, y); x += cw * 2; }
+    x += cw; g.fillStyle = hexA('#FFD23F', 0.8); g.fillText(R.hash, x, y); x += cw * 8;
+    g.fillStyle = R.L.color; const br = `(${R.L.branch})`; g.fillText(br, x, y); x += g.measureText(br).width + cw;
+    g.fillStyle = r === 0 ? '#FFFFFF' : CREAM; g.fillText(R.L.msg, x, y); }
+  g.restore();
+  if (beatPop > 0) { g.fillStyle = `rgba(255,255,255,${0.10 * beatPop})`; g.fillRect(0, 0, W, H); }
+}
+// b72: the twelve details tile in on sixteenths (4 x 3) and collapse to a point over the last beat
+function tiles(t, sc) {
+  g.fillStyle = '#05050A'; g.fillRect(0, 0, W, H);
+  const s = sc.s, b0 = Math.round(bposT(s.t0)), u = (bposT(t) - b0) * 4, gx = 4, gy = 3, tw = W / gx, th = H / gy, col = 1 - ease.in(clamp01((u - 12) / 4));
+  sc.imgs.forEach((im, i) => { if (u < i) return; const b = READY.get(im.url); if (!b) return; const pop = clamp01((u - i) / 0.6), cx = (i % gx + 0.5) * tw, cy = (Math.floor(i / gx) + 0.5) * th;
+    const x = W / 2 + (cx - W / 2) * col, y = H / 2 + (cy - H / 2) * col, sz = (0.8 + 0.2 * ease.outBack(pop)) * col, w = tw * sz, h = th * sz; if (w < 1) return;
+    const cr = cover(b.width, b.height, w, h); g.save(); g.globalAlpha = clamp01(pop * 2); g.drawImage(b, cr.sx, cr.sy, cr.sw, cr.sh, x - w / 2, y - h / 2, w, h);
+    g.strokeStyle = byId[im.life].color; g.lineWidth = 3 * S; g.strokeRect(x - w / 2, y - h / 2, w, h); g.restore(); });
+  if (u > 12) { const k = clamp01((u - 12) / 4); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(W / 2, H / 2, (20 + 160 * k) * S, MAIN, k); g.restore(); }
+}
+
 // ---------------------------------------------------------------- the frame
 function drawImgs(list) {
   for (const im of list) { const b = READY.get(im.url); const cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
@@ -387,7 +467,16 @@ function draw(t, sc) {
   g.fillStyle = BG; g.fillRect(0, 0, W, H);
   const s = sc.s, sec = SECTIONS[s.sec];
   if (sc.flash) drawImgs(sc.flash);
-  else if (sc.eff === 'plate') { drawImgs(sc.imgs); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc); }
+  else if (sc.eff === 'plate') {
+    const st = s.opt && s.opt.strands, rot = st && st.mode === 'rotate';
+    if (rot) { const u = seg(t, s.t0, s.t1), a = (-7 * ease.io(u)) * Math.PI / 180, z = 1 - 0.2 * ease.io(u); g.save(); g.translate(W / 2, H / 2); g.rotate(a); g.scale(z, z); g.translate(-W / 2, -H / 2); }
+    drawImgs(sc.imgs); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc);
+    if (st && STRANDS) strands(t, sc);
+    if (rot) g.restore();
+    if (s.opt.tips) tips(t, sc);
+    if (s.opt.caption) caption(t, sc);
+  }
+  else if (sc.eff === 'code') { try { if (s.opt.code === 'gitlog') gitlog(t, s); else tiles(t, sc); } catch (e) { console.log('ERROR code ' + e.stack); } }
   else if (sc.eff === 'v7') {
     let b = READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = s.opt && s.opt.v7crop;
     if (vc) { if (!CROPC) { CROPC = document.createElement('canvas'); CROPC.width = W; CROPC.height = H; } const x = CROPC.getContext('2d'); x.imageSmoothingQuality = 'high';
@@ -403,6 +492,7 @@ function draw(t, sc) {
     else g.drawImage(b, 0, 0, W, H);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
+  if (s.opt && s.opt.white && sc.eff === 'plate') { const f = fr(t, s.t0); if (f <= 1) { g.fillStyle = `rgba(255,250,240,${f === 0 ? 0.85 : 0.4})`; g.fillRect(0, 0, W, H); } }   // 2-frame white flash (impact, snare)
   grain(t); vignette();
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.lane && !(sc.cross && sc.cross.u >= 1)) lane(t, sc);
   overlays(t, sc);
@@ -414,7 +504,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.win || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc); if (HUD) hud(t, sc); return sc;
 }
 
@@ -426,7 +516,7 @@ async function boot() {
   measureMono(g);
   T = await loadTiming(TIMING);
   SH = resolveShots(T);
-  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); }
+  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.strands && s.opt.strands.window) await findPlate(s.opt.strands.window); if (s.kind === 'code' && s.opt.lives) for (const id of s.opt.lives) await findPlate('det_' + id); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); }
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
@@ -445,7 +535,7 @@ async function boot() {
     trail: !PROOFBUG && Q.get('trail') !== '0' });
   // the proof range must be exactly the proof shots of the list
   const pr = SH.filter((s) => s.kind === 'proof'); if (Math.abs(pr[0].t0 - PROOF.t0) > 0.002 || Math.abs(pr[pr.length - 1].t1 - PROOF.tEnd) > 0.002) throw new Error('proof range does not match the shot list');
-  LYR = buildLyrics(); buildGrain();
+  LYR = buildLyrics(); buildGrain(); STRANDS = FLOAT || null;
   const N = Math.ceil(T.duration * FPS - 1e-6);
   const sizes = {}; const meas = (k, f) => { setFont(f); sizes[k] = { font: f.font, capPx: +g.measureText('H').actualBoundingBoxAscent.toFixed(1) }; };
   meas('lyric_verse', capFont('serif', SZ.verse * S)); meas('lyric_slab', capFont('slab', SZ.slab * S)); meas('title', capFont('slab', SZ.title * S)); meas('counter', capFont('mono', SZ.counter * S, 600));
