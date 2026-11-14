@@ -1,28 +1,26 @@
-# Take two: handoff (updated 2026-11-14 after film v2)
+# Take two: handoff (updated 2026-11-14 after film v3)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
 ## Where things stand
 
-**Film v2** exists (2026-11-14, afternoon): 185 shots, 282.8 s, 1080p30. It answers Jade's notes on film v1
-(`notes/jade_v1_notes.md`, verbatim; what each note became: `notes/v2_direction.md`). **Nobody has watched v2 at speed with sound**;
-every check was on stills, beat strips and measurements. Jade is about to watch it.
+**Film v3** exists (2026-11-14, evening): 185 shots, 282.8 s, 1080p30. It answers Jade's notes on film v2
+(`notes/jade_v2_notes.md`, verbatim, with her same-day follow-ups; what each became: `notes/v3_direction.md`). **Nobody has watched
+v3 at speed with sound**; checks were stills, beat strips, measurements. Jade is about to watch it.
 
-- Pushed (a card for the one likeness shot): `review/fable_take2/film_v2.mp4`, sheets `film_v2_sheet_01..05.jpg`.
-- Local only (her likeness): `work_fable/take2/out/film_v2_local.mp4`. Film v1 files are kept.
-- Her review page: `review/fable_take2/review_v2.html` (timestamped notes plus ten decisions; she pastes the export back).
-- Spend: **$525.40** (`python tools/gen/spend.py`). Jade lifted the cap ("even above 600 is fine"); the tools' constant is still 600
-  and was not hit. Nothing is queued.
-- What changed in v2, per owner: `notes/compositor.md` ("Film v2"), `notes/plates_v2.md` (20 new plates, wiring table),
-  `notes/orchestra.md` ("Revision 3": `orch_1..8`, shot 1 refit).
-- Decided by Jade on v1: branch labels `jade/parenthood`, `jade/rna-band`, `jade/rare-earth`; no lyrics for wordless vocals; take E at
-  +80 ms for the first "Back to main"; the second likeness shot dropped (now `wave_run`); credits name Opus 5.5; stances, runners,
-  hand on the water, counter all fine as built.
+- Pushed (a card for the one likeness shot): `review/fable_take2/film_v3.mp4`, sheets `film_v3_sheet_01..05.jpg`.
+- Local only (her likeness): `work_fable/take2/out/film_v3_local.mp4`. v1 and v2 files are kept.
+- Her review page: `review/fable_take2/review_v3.html` (eight decisions; she pastes the export back).
+- Spend: **$541.82** (`tools/gen/spend.py`). Jade lifted the cap; the tools' constant is still 600 and was not hit. Nothing queued.
+- Per-owner detail: `notes/compositor.md` ("Film v2", "Film v3"), `notes/plates_v2.md`, `notes/plates_v3.md`, `notes/orchestra.md`.
+- Decided by Jade: orchestra is the hatched 3D (revision 3 frames; `?orch=plates` shows the video-model version she turned down);
+  labels `jade/parenthood`, `jade/rna-band`, `jade/rare-earth`, `jade/biology`, `jade/phd-neuroscience`; violet's message
+  `still writing this one`; no lyrics for wordless vocals; second likeness shot dropped (`wave_run`); real places in the town.
 
-Known weak points in v2 (told to Jade): the two widest orchestra shots barely move; the wushu row beside the podium stands arms-out
-in orchestra shots 1 and 3; the violins clip is one long stroke each way; the first orchestra shot is still under a second; the b33-38
-grid keeps the old wushu plate (the new one has no look-back); the b153-156 terminal shows the git log captured for v1 (recapture
-before the master); `ins_poem`'s hand lift is weak; the slab on `day_fork` is cream on white paper.
+Known weak points in v3 (told to Jade): the b33-38 grid keeps the old wushu plate (the new ones have no look-back); `main_split`
+does not sing (one attempt failed); the violin stroke starts mid-bow; `float_hand_v2` fingers are mid-curl at the cut; the runner
+covers a chip as she passes in the town; the slab on `day_fork` is cream on white paper; the hero shot opens on a washed-out frame;
+old branch names survive where they are baked into v7 frames (mostly illegible).
 
 ## What Jade has decided (binding)
 
@@ -39,8 +37,8 @@ before the master); `ins_poem`'s hand lift is weak; the slab on `day_fork` is cr
 
 ## Next work, in order
 
-1. Apply her notes on film v2 (review page export).
-2. Step 6 of the plan: costume audit of every plate in motion; readable-text pass; recapture the terminal git log.
+1. Apply her notes on film v3 (review page export).
+2. Step 6 of the plan: costume audit of every plate in motion; readable-text pass (the terminal git log is recaptured by `render_film.sh`).
 3. Step 7: master without the review HUD (`--q hud=0`), X and YouTube encodes, subtitles. The loop is exact with the HUD off.
 
 ## How to run things
