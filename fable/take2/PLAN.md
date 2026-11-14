@@ -428,9 +428,11 @@ Each is small. Run them first, show Jade, then generate in bulk.
   (`fable/take2/tools/matte.py`), generation (`fable/take2/gen/`).
 - Next: Jade's notes on the animatic and on the open points below; then Step 2. Do not generate the sections before her notes.
 
-**State on 2026-11-13, night (Step 2 in progress):** `review/fable_take2/section2_v1.mp4` (bars 16 to 57 with sound): 14 new plates in,
-b43 a partial runner kit, b46-48 still cards. Ten more runner clips (one per medium) are queued; the 3D orchestra for bars 81-84 is
-being built in the v7 engine (`fable/take2/notes/orchestra.md`). Spent $437.52 of $600.
+**State on 2026-11-14 (Steps 2 and 3 cut, waiting for Jade to watch):** `review/fable_take2/section1_v1.mp4` (bars 1-17),
+`section2_v3.mp4` (bars 16-57), `section3_v1.mp4` (bars 56-89, with the 3D orchestra of Jades in bars 81-84: `fable/take2/notes/orchestra.md`;
+two paper looks, `orchestra_v1.mp4` solid and `orchestra_v1_light.mp4`, Jade to choose). No cards left before bar 89. Sung insert: takes
+E and F (thoughtful, re-timed to the word times with `fable/take2/tools/retime_sung.py`) in the local picker; Jade picked +80 ms on take D.
+Spent $451.82 of $600. Next: Step 4 (drop, verse 2). Open for Jade: the orchestra look; whether the stance stills are true stances.
 - The video model will not keep a small full-length runner: three takes (padded 16:9 twice, 1:1 once) all reframed to a large figure
   cropped at the soles or knees. The kit is therefore built large, with the feet behind the written lane.
 - Restyling one approved runner still into each medium works when the ONLY image input is that still. Adding the character sheet or
