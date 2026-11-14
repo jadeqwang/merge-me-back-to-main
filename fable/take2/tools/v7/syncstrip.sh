@@ -16,13 +16,13 @@ while read bar t; do for k in -1 0 1; do tt=$(python3 -c "print(round($t+($k)/30
 $R --warp analysis_v3/warp_v2_to_v3.json --stills ${SW#,}
 SU=$(echo ${SW#,} | sed "s#/w_#/u_#g")
 $R --stills $SU
-F="fontfile=/home/jade/Documents/merge-me-back-to-main/fable/engine/fonts/JetBrainsMono[wght].ttf"
+F="fontfile='/home/jade/Documents/merge-me-back-to-main/fable/engine/fonts/JetBrainsMono\\[wght\\].ttf'"
 for kind in w u; do
   lab=$([ $kind = w ] && echo "WARPED" || echo "UNWARPED")
   while read bar t; do for k in -1 0 1; do
-    ffmpeg -y -v error -i $OUT/${kind}_${bar}_$k.png -vf "scale=640:-2,drawtext=$F:text='$lab bar $bar new t=$t frame $k':x=8:y=8:fontsize=18:fontcolor=white:box=1:boxcolor=black@0.7:boxborderw=4" $OUT/s_${kind}_${bar}_$k.png
+    ffmpeg -nostdin -y -v error -i $OUT/${kind}_${bar}_$k.png -vf "scale=640:-2,drawtext=$F:text=$lab bar $bar new t=$t frame $k:x=8:y=8:fontsize=18:fontcolor=white:box=1:boxcolor=black@0.7:boxborderw=4" $OUT/s_${kind}_${bar}_$k.png
   done; done <<< "$TIMES"
 done
 ARGS=(); for kind in w u; do for bar in $BARS; do for k in -1 0 1; do ARGS+=(-i $OUT/s_${kind}_${bar}_$k.png); done; done; done
-ffmpeg -y -v error "${ARGS[@]}" -filter_complex "xstack=inputs=24:layout=$(for r in 0 1 2 3 4 5 6 7; do for c in 0 1 2; do echo -n "$((c*640))_$((r*360))|"; done; done | sed 's/|$//')" -q:v 3 $OUT/sync_strip.jpg
+ffmpeg -nostdin -y -v error "${ARGS[@]}" -filter_complex "xstack=inputs=24:layout=$(for r in 0 1 2 3 4 5 6 7; do for c in 0 1 2; do echo -n "$((c*640))_$((r*360))|"; done; done | sed 's/|$//')" -q:v 3 $OUT/sync_strip.jpg
 echo $OUT/sync_strip.jpg
