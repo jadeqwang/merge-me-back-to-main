@@ -6,7 +6,8 @@
 // left gets the type; her bandmates fill the right). wushu and ames are flipped to dark (cream type):
 // wushu's top is a dark wooden wall, ames is a mid grey where ink read weakly.
 // optional yshift (-0.5..0.5): nudges the full-frame plate's vertical crop (fraction of the spare height) if the lane would cut her head.
-// Film v2 (Jade's notes on film v1): home's branch is jade/parenthood, the band's is jade/rna-band (ids unchanged).
+// Film v2 (Jade's notes on film v1): home's branch is jade/parenthood, the band's is jade/rna-band, violet's is jade/rare-earth
+// (Jade's pick; the painted 1420 MHz sleeve patch in the plates stays). Ids unchanged.
 export const MAIN = '#FF7A1A';
 export const LIVES = [
   { id: 'piano',     branch: 'jade/piano',                    msg: 'climbed onto the piano bench before I was three', color: '#FF3D7F', tone: 'light', side: 'left' },
@@ -20,7 +21,7 @@ export const LIVES = [
   { id: 'chezjj',    branch: 'jade/hacker-houses',            msg: 'a full house at 2am, everyone shipping',           color: '#3DDC97', tone: 'light', side: 'right' },
   { id: 'sandstorm', branch: 'jade/open-source',              msg: 'the live demo worked',                             color: '#22D3EE', tone: 'dark', side: 'right' },
   { id: 'home',      branch: 'jade/parenthood',               msg: 'taught the Copernican model at 10:30pm',           color: '#FF3D7F', tone: 'dark', side: 'right' },
-  { id: 'violet',    branch: 'jade/1420-mhz',                 msg: 'listened to hydrogen',                             color: '#9B6BFF', tone: 'dark', side: 'right' },
+  { id: 'violet',    branch: 'jade/rare-earth',               msg: 'listened to hydrogen',                             color: '#9B6BFF', tone: 'dark', side: 'right' },
 ];
 export const EXTRA = [{ id: 'root', color: MAIN }, { id: 'hero', color: MAIN }];
 export const PLATE_IDS = [...LIVES.map((l) => l.id), 'root', 'hero'];

@@ -77,19 +77,25 @@ export function makeOutro(E) {
   function chipAt(x, y, L) { g.save(); g.font = mono(26 * S, 600); const tw = g.measureText(L.branch).width, pad = 10 * S, h = 40 * S, d = 8 * S, w = tw + 2 * pad + 2 * d + 10 * S;
     g.fillStyle = 'rgba(243,239,230,0.92)'; g.strokeStyle = hexA(L.color, 0.9); g.lineWidth = 2 * S; g.beginPath(); g.roundRect(x - w / 2, y, w, h, 4 * S); g.fill(); g.stroke();
     g.fillStyle = L.color; g.beginPath(); g.arc(x - w / 2 + pad + d, y + h / 2, d, 0, 6.2832); g.fill(); g.fillStyle = INKP; g.fillText(L.branch, x - w / 2 + pad + 2 * d + 10 * S, y + h / 2 + 9 * S); g.restore(); }
+  // film v2: the world slides RIGHT (day_run faces frame left: Jade saw her "running the opposite direction to how the buildings are
+  // moving"). o.dir = +1 world to the right (default), -1 the v1 travel. The lives still pass in life order (piano first, entering from
+  // the left), the road text still reads left to right (it scrolls right with the ground), hills follow with parallax.
   function town(t, s) {
-    const o = s.opt, v = o.speed * S, tt = (t - s.t0) + (o.x0 || 0), scroll = v * tt, roadY = 0.86 * H, baseY = 0.74 * H, sp = o.spacing * W;
+    const o = s.opt, dir = o.dir === undefined ? 1 : o.dir, v = o.speed * S, tt = (t - s.t0) + (o.x0 || 0), scroll = v * tt, roadY = 0.86 * H, baseY = 0.74 * H, sp = o.spacing * W;
     g.fillStyle = PAPERW; g.fillRect(0, 0, W, H);
-    hills(scroll * 0.18, 0.42 * H, 40 * S, 1.3, 0.35); hills(scroll * 0.32, 0.5 * H, 26 * S, 4.1, 0.45);
+    hills(-dir * scroll * 0.18, 0.42 * H, 40 * S, 1.3, 0.35); hills(-dir * scroll * 0.32, 0.5 * H, 26 * S, 4.1, 0.45);
     // the facades along the road
     o.lives.forEach((id, k) => { const F = st.facades[id]; if (!F) return; const L = byId[id], bb = F.bb, img = F.img;
-      const bw = (bb.x1 - bb.x0) * img.width, bh = (bb.y1 - bb.y0) * img.height, q = Math.min((0.4 * H) / bh, (0.25 * W) / bw), cx = 0.78 * W + k * sp - scroll;
+      const bw = (bb.x1 - bb.x0) * img.width, bh = (bb.y1 - bb.y0) * img.height, q = Math.min((0.4 * H) / bh, (0.25 * W) / bw),
+        cx = dir > 0 ? 0.22 * W - k * sp + scroll : 0.78 * W + k * sp - scroll;
       if (cx < -0.4 * W || cx > 1.4 * W) return;
       g.drawImage(img, bb.x0 * img.width, bb.y0 * img.height, bw, bh, cx - bw * q / 2, baseY - bh * q, bw * q, bh * q);
       pencilLine([{ x: cx - bw * q / 2 - 20 * S, y: baseY + 1 }, { x: cx + bw * q / 2 + 20 * S, y: baseY + 2 }], 1.4, 0.5);
       chipAt(cx, baseY + 14 * S, L); });
-    // the road: main written dense (she is merged), scrolling with the ground
-    drawWrittenLane(g, [{ x: 0, y: roadY }, { x: W, y: roadY }], { text: laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true), color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: (scroll / (26 * S / 0.73 * 0.6)) });
+    // the road: main written dense (she is merged), scrolling with the ground (the path starts off-frame: a negative scroll leaves up to
+    // one glyph cell empty at the path's start)
+    const adv = 26 * S / 0.73 * 0.6, x0r = -3 * adv;
+    drawWrittenLane(g, [{ x: x0r, y: roadY }, { x: W, y: roadY }], { text: laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true), color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: dir * -(scroll / adv) });
     if (o.runner && st.run) { const R = o.runner, c = Math.max(0, t - s.t0), f = Math.min(st.run.n - 1, Math.round(c * st.run.fps)), img = READY.get(`${R.dir}/rgba/f_${String(f + 1).padStart(4, '0')}.png`);
       if (img) { const h = R.h * H, q = h / img.height, w = img.width * q, e = R.edge || 0;   // edge: the outer margin of the cut-out is dropped (stray specks)
         g.drawImage(img, e * img.width, e * img.height, img.width * (1 - 2 * e), img.height * (1 - 2 * e), R.x * W - w / 2 + e * w, R.y * H - h + e * h, w * (1 - 2 * e), h * (1 - 2 * e)); } }

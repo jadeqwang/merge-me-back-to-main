@@ -236,8 +236,8 @@ V(104, 105, '2:59', '1,024 salute the sun. Cut to night on b105.', { row: 'b104'
 section('verse2');
 // lyrics in the empty sky (cream); lane = the violet branch written sparse (merge 0) on the plate's violet line
 const VIO = '#9B6BFF';
-P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engraved Milky Way. Chip: ● jade/1420-mhz  ctx 97%.',
-  { ov: ['chip:● jade/1420-mhz  ctx 97%'], row: 'b105-106', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' }, lane: { pts: [[0.27, 0.79], [1, 0.975]], color: VIO, text: 'violet', cap: 20, scroll: -6, under: 0.2 } } });
+P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engraved Milky Way. Chip: ● jade/rare-earth  ctx 97%.',
+  { ov: ['chip:● jade/rare-earth  ctx 97%'], row: 'b105-106', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' }, lane: { pts: [[0.27, 0.79], [1, 0.975]], color: VIO, text: 'violet', cap: 20, scroll: -6, under: 0.2 } } });
 P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, lane: { pts: [[0, 0.955], [1, 0.955]], color: VIO, text: 'violet', cap: 22, scroll: -10, under: 0.2 } } });
 P(108, 109, 'vio_close', 'missing', 'Her profile, the bun and two pencils.', { row: 'b107-108', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });   // clip 0-1.7 s, before the blink near 2.5 s
 P(109, 111, 'vio_lookback', 'missing', 'She stops and looks back east: far off, a sliver of sunrise in full colour.', { row: 'b109-110', opt: { clip0: 0, clip1: 2.5, lyr: { y: 'top', x0: 0.42, x1: 0.97, align: 'right' } } });   // clip 0-2.5 s: the sunrise stays a far sliver
@@ -253,9 +253,9 @@ P(113, 114, 'vio_pencil', 'missing', 'She draws a pencil from her bun.', { row: 
 const HAND = { text: 'docs: start here', at: [0.21, 0.19], size: 0.04, track: [[0, 0.522, 0.122], [1.0, 0.522, 0.125], [1.5, 0.534, 0.117], [2.0, 0.548, 0.111], [2.5, 0.562, 0.106],
   [3.0, 0.572, 0.103], [3.5, 0.586, 0.096], [4.0, 0.601, 0.091], [4.5, 0.614, 0.085], [5.0, 0.615, 0.084]] };   
 P(114, 116, 'vio_write', 'missing', 'She writes in the air. The handwriting docs: start here is drawn in code, in violet light. ctx 99%.',
-  { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 99%'], row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, write: [0.05, 0.92] } } });
+  { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 99%'], row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, write: [0.05, 0.92] } } });
 P(116, 118, 'vio_release', 'missing', 'She lets the line of light go; it lifts off east. Hit on b117, then the drums cut. ctx 100%.',
-  { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, release: { to: [0.93, 0.5], top: 0.04, arrive: 117, trackAt: 3.46 } } } });
+  { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, release: { to: [0.93, 0.5], top: 0.04, arrive: 117, trackAt: 3.46 } } } });
 P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of her figure settle into the star field. Chip: detached, not merged. The stars keep twinkling.',
   { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
 
@@ -292,10 +292,11 @@ section('outro_a');
 shot(137, 139, 'L', 'plate', 'like_sing1', 'missing', 'The switch: on the impact the drawing becomes Jade herself, her traced likeness in the same jacket, singing.', { row: 'b137-138', opt: { songLock: true, push: 0 } });
 // b139-140 and b141-142: the town (opt.code 'town'): white paper, far pencil hills, the twelve facades (cut out) along the road, the road =
 // main's written lane, dense (she is merged); side travel with parallax; a chip with the branch name under each building
-const TOWN = { code: 'town', lives: LIFE, speed: 1050, spacing: 0.3 };   // all twelve pass in the four bars (b139-142)
+// film v2: dir 1 = the world slides right (she faces frame left, unmirrored: her sleeve patch has text); x 0.58 gives her lead room on the left
+const TOWN = { code: 'town', lives: LIFE, speed: 1050, spacing: 0.3, dir: 1 };   // all twelve pass in the four bars (b139-142), piano first
 shot(139, 141, 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax.', { row: 'b139-140', opt: { ...TOWN } });
 shot(141, 143, 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142',
-  opt: { ...TOWN, x0: 3.41, runner: { dir: '/work_fable/take2/kit/day_run', x: 0.5, h: 0.62, y: 0.9, edge: 0.02 } } });
+  opt: { ...TOWN, x0: 3.41, runner: { dir: '/work_fable/take2/kit/day_run', x: 0.58, h: 0.62, y: 0.9, edge: 0.02 } } });
 P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true } });
 // film v2: the second likeness shot is dropped (Jade: "it doesn't look like me"); plate wave_run (plates agent) instead: drawn Jade sprints
 // at the lens out of a breaking wave of the twelve lane colours. A card until work_fable/take2/plates/wave_run lands. Slab low.

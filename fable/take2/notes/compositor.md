@@ -414,3 +414,13 @@ Done:
 7 (part). Graph b149-152 dotted arc label: `cherry-pick HANDOFF.md`.
 8. b145-146: plate `wave_run` (P, push 0.02); a card until it lands. like_sing2 no longer used. First likeness shot unchanged.
 Stills: work_fable/take2/dev/v2/{credits,graph,ahh,b100}.jpg, check_lives_grid.jpg (before above, after below).
+2b. (coordinator, later) violet's branch `jade/1420-mhz` becomes `jade/rare-earth` (Jade's pick) in lives.js and the three verse 2 chips
+   in shots.js (`● jade/rare-earth  ctx 97% / 99% / 100%`); everything else reads lives.js. The id `violet`, its message and the
+   painted "1420 MHz" sleeve patch stay. Proof identity re-run: proofbug=1 max 0 on 13/13; film and proof vs their pre-v2 renders
+   differ only in x 1085-1919, y 497-825 on frames 400-520 (grid labels: band, home, violet cells).
+4. Town (b139-142, outro.js town, `TOWN.dir: 1`): the world slides RIGHT (day_run's cut-out faces frame left, unmirrored). Facades
+   start at 0.22 W and enter from the left, piano first (life order kept in time; in frame they stand right-to-left); hills parallax
+   reversed; road text scrolls right at ground speed and still reads left to right (path starts 3 glyphs off-frame: a negative
+   scroll leaves one empty glyph cell at the start). She moves to x 0.58 (lead room on the left, the way she runs). `dir: -1` = v1.
+   Checked: 6 stills (dev/v2/town_sheet.jpg) and the clip dev/v2/town_v2.mp4 (238.45-245.27) as a 3-frame strip of the road
+   (town_road_strip.jpg): facades, road and chips move together, about 35 px a frame.
