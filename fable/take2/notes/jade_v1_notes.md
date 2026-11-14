@@ -35,3 +35,7 @@
     Note: home -> parenthood; the band -> RNA band; trying to think of another label for 1420 MHz for the current wave of art, want to hear your suggestions
 13. Budget: Go ahead up to the $600 cap.
     Note: even above 600 is fine, we have plenty of credits
+
+## Follow-up, same day
+
+- The violet branch's label: "let's call it rare-earth" (`jade/rare-earth`, replacing `jade/1420-mhz`).

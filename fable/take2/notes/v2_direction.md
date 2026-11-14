@@ -25,7 +25,7 @@ to 750 and say so in the notes.
 
 1. **Lyrics.** Do not draw line 13 ("Ahh ahh", b65-72) or the "ooh" adlib (b100). On-screen lyrics are for words.
 2. **Lives.** `jade/home` becomes `jade/parenthood`; the band's branch `jade/robot-ninja-apocalypse` becomes `jade/rna-band`.
-   Everywhere they are drawn (chips, lanes, graph, town, git log). Ids (`home`, `band`) stay. `jade/1420-mhz` stays until Jade picks.
+   Everywhere they are drawn (chips, lanes, graph, town, git log). Ids (`home`, `band`) stay. `jade/1420-mhz` becomes `jade/rare-earth` (Jade's pick, 2026-11-14); the painted sleeve patch stays.
 3. **Credits.** Add Opus 5.5: main line becomes "animated by Fable 5.2 and Opus 5.5, with a supporting cast of models". The spend
    log shows GPT Image was used for plates as well as Nano Banana Pro: the plates line names both. No longer a placeholder.
 4. **Town direction (b139-142).** She runs facing frame left while the town also slides left: she looks like she runs backwards.
