@@ -260,18 +260,26 @@ P(109, 111, 'vio_lookback', 'missing', 'She stops and looks back east: far off, 
 P(111, 112, 'vio_climb', 'missing', 'She climbs to the rim of the dish.', { row: 'b111-112' });
 P(112, 113, 'violet', 'exists', 'She sits on the rim of the dish.', { opt: { clip0: 0.5, push: 0.02 }, row: 'b111-112' });
 P(113, 114, 'vio_pencil', 'missing', 'She draws a pencil from her bun.', { row: 'b113-115', opt: { clip0: 2.3, clip1: 4.0, lyr: { x0: 0.56, x1: 0.97, align: 'right' } } });   // clip: the pencil out of the bun by 3 s, held up by 4 s (ends on it)
-// the handwriting (src/script.js): written stroke by stroke where her pencil points; at = start of the line (plate fractions), size = x-height
-// (frame fraction), write = [from, to] fraction of the shot; placed so the pen ends at her pencil tip (about 0.5-0.6, 0.07 in vio_write) and
-// the line runs left of it in the empty sky above the dish; on vio_release the finished line lifts off and arcs up and over to the sunrise
-// on the right (to), arriving on the bar 117 downbeat with a flash
-// track: the pencil tip in vio_write per 4 frames (the yellow pencil's left end, minus the graphite point), plate fractions; the ink's pen
-// point sits on it while writing, its end after (and where vio_release takes it from)
-const HAND = { text: 'docs: start here', at: [0.21, 0.19], size: 0.04, track: [[0, 0.522, 0.122], [1.0, 0.522, 0.125], [1.5, 0.534, 0.117], [2.0, 0.548, 0.111], [2.5, 0.562, 0.106],
-  [3.0, 0.572, 0.103], [3.5, 0.586, 0.096], [4.0, 0.601, 0.091], [4.5, 0.614, 0.085], [5.0, 0.615, 0.084]] };   
-P(114, 116, 'vio_write', 'missing', 'She writes in the air. The handwriting docs: start here is drawn in code, in violet light. ctx 99%.',
-  { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 99%'], row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, write: [0.05, 0.92] } } });
-P(116, 118, 'vio_release', 'missing', 'She lets the line of light go; it lifts off east. Hit on b117, then the drums cut. ctx 100%.',
-  { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, release: { to: [0.93, 0.5], top: 0.04, arrive: 117, trackAt: 3.46 } } } });
+// b114-117 (film v2): set type in the air instead of the hand-drawn cursive (src/film.js typed()). TYPE.at = left edge and top of the block
+// in FRAME fractions; px = mono font px at 1080p; beats = beat from the shot start on which each line starts typing (one per beat, the
+// last two on beats 5 and 7 of the 8); from = her pencil point: a mote of violet light leaves it half a beat before each line and lands
+// where that line types. Two layouts: on vio_write2 (notebook on her knee; plates_v2.md wiring: clear sky upper left x 0.02-0.30,
+// y 0.05-0.50; notebook x 0.55-0.66, y 0.44-0.55) the block sits upper left under the chip; on the old vio_write (until vio_write2
+// is in the plates folder) it sits top centre, ending near her raised pencil, with the dark cloud over the dish.
+// vio_release2 (wiring: clip 1.0-4.4; hand x 0.57-0.68, y 0.30-0.38 at the hold; sunrise x 0.95-1.0, y 0.52-0.58): the closed line arcs
+// to the sunrise passing just above her lifted hand (mid).
+const TYPE_LINES = ['HANDOFF.md', 'Read this first.', 'Where things stand.', 'What it cost to learn.', 'What comes next.'];
+const TYPE_OLD = { lines: TYPE_LINES, at: [0.305, 0.12], px: 34, lead: 50, beats: [1, 2, 3, 5, 7], dur: 0.6, cloud: 0.6, from: [0.57, 0.1] };
+const TYPE_NEW = { ...TYPE_OLD, at: [0.035, 0.17], cloud: 0.45, from: [0.61, 0.485] };
+const REL = { to: [0.93, 0.5], top: 0.04, arrive: 117, close: 1.25 };
+const LYR_NEW = { x0: 0.03, x1: 0.37, align: 'left' };   // on vio_write2 / vio_release2 her boots reach x 0.38: the lyric keeps left of them
+// (the release path: up over the top of the frame and down to the sunrise right of her back, never across her)
+P(114, 116, 'vio_write', 'missing', 'She writes; in the sky, typed line by line on the beat in violet light: HANDOFF.md / Read this first. / Where things stand. / What it cost to learn. / What comes next. ctx 99%.',
+  { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 99%'], row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, type: TYPE_OLD,
+    next: { id: 'vio_write2', opt: { clip0: 0, type: TYPE_NEW, lyr: LYR_NEW } } } });
+P(116, 118, 'vio_release', 'missing', 'She lets it go: the block closes to one line of light and leaves east. Hit on b117, then the drums cut. ctx 100%.',
+  { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, type: { ...TYPE_OLD, release: REL },
+    next: { id: 'vio_release2', opt: { clip0: 1.0, clip1: 4.4, lyr: LYR_NEW, type: { ...TYPE_NEW, release: { ...REL, to: [0.97, 0.55], ctrl: [[0.3, -0.14], [1.12, -0.14]] } } } } } });
 P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of her figure settle into the star field. Chip: detached, not merged. The stars keep twinkling.',
   { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
 

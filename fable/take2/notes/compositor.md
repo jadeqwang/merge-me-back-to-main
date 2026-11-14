@@ -450,3 +450,20 @@ Stills: work_fable/take2/dev/v2/{credits,graph,ahh,b100}.jpg, check_lives_grid.j
    Checked: stills sheets dev/v2/fold/f2_sheet.jpg (valley v1), f3_sheet.jpg (with zoom), clip dev/v2/fold_v2.mp4 (83.3-88.0 s) as
    frame strips round landings 1 and 5 (fold/land1.jpg, land5.jpg: k-4, k-2, k-1, k, k+1, k+3; landed on the beat frame) and the cut
    (fold/cut.jpg). Not done: the crease echo at b130-131 (optional in the brief).
+7. Handwriting b114-117 -> set type (film.js `typed()`, shots.js `TYPE_OLD`/`TYPE_NEW`/`REL`; the cursive `hand` option and script.js
+   are no longer used). JetBrains Mono 600, 34 px (cap 25), lead 50 px, violet light (violet glow under a pale violet core), integer
+   positions, nothing moves once typed. Lines start on beats 1, 2, 3, 5, 7 of vio_write's 8 (one character every 0.6 beat / length,
+   the first on the beat), a block cursor at the newest line (blinks once typed). A mote of violet light leaves her pencil (`from`) half
+   a beat before each line and lands at its start, tying the type to her hand. Dark cloud behind the block (alpha 0.45-0.6).
+   Release (vio_release): the block is on screen from the cut, closes to one line of light over 1.25 beats, then travels east and
+   lands on the b117 downbeat (flash and sunrise glow, as v1).
+   **vio_write2 and vio_release2 had already landed** (plates agent), so the new generic `opt.next = {id, opt}` (film.js boot: if
+   that plate exists the shot uses it with `opt` merged; s.swapped) switched both shots; the layout was set on THEM, from the plates
+   wiring table: block upper left at (0.035, 0.17) under the chip (nothing near the notebook is clear for 22 characters at 34 px);
+   from = pencil point (0.61, 0.485); vio_release2 clip 1.0-4.4; lyric region x 0.03-0.37 on both (her boots reach x 0.38: the v1
+   region x1 0.55 put "that I" on her boot); the release path is a cubic (`ctrl` [[0.3,-0.14],[1.12,-0.14]]) up over the top edge and
+   down right of her bun to the sunrise (0.97, 0.55): every quadratic through the sky crossed her head. The old-plate layout
+   (TYPE_OLD, top centre at (0.305, 0.12)) is only used if vio_write2 disappears: not checked since the new plates landed.
+   Graph b149-152: `cherry-pick HANDOFF.md` (done with items 1-3).
+   Checked: stills dev/v2/hand/t3_sheet.jpg (10 times across b114-117), t2_05_crop.png (type at full size), mote.jpg; clip
+   dev/v2/vio_v2.mp4 (195.6-203.0) as a strip of the release path every 3 frames up to the b117 frame (hand/release_path.jpg).

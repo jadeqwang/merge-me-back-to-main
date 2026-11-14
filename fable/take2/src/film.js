@@ -514,6 +514,63 @@ function hand(t, sc) {
   else { const f = fr(t, ta); if (f <= 1) { g.fillStyle = `rgba(235,225,255,${f === 0 ? 0.8 : 0.4})`; g.fillRect(0, 0, W, H); }   // the hit
     g.save(); g.globalCompositeOperation = 'lighter'; glowAt(c2.x, c2.y, (30 + 60 * Math.max(0, 1 - f / 20)) * S, VIOC, 0.5 + 0.5 * Math.max(0, 1 - f / 20)); g.restore(); }
 }
+// film v2, b114-117: set type instead of handwriting (Jade: the wiggling cursive was goofy). opt.type = { lines, at [x, y] (frame
+// fractions: left edge, top of the first line), px (font px at 1080p), lead (x px), beats [beat from the shot start per line], dur (beats
+// to type a line), cloud (alpha of the dark cloud behind the block) }. Write shot: each line types on its beat (a character every
+// dur/len, the first on the beat), a block cursor at the end of the newest line. Release shot (type.release {to [x, y], top, arrive bar,
+// close beats}): the finished block is on screen from the cut, closes to one line of light over `close` beats, which then travels up
+// and over to `to` (the sunrise), shrinking, with a trail, arriving on the downbeat of bar `arrive` with a flash.
+// Mono, violet light: a violet glow under a pale violet core; integer pixel positions (steady, nothing wobbles).
+const VIO_CORE = '#EEE6FF', VIO_GLOW = '#9B6BFF';
+function typeBox(o) { const f = `600 ${o.px * S}px "JetBrains Mono"`; g.save(); g.font = f; const w = Math.max(...o.lines.map((l) => g.measureText(l).width)); g.restore();
+  const lead = (o.lead || o.px * 1.45) * S, x = Math.round(o.at[0] * W), y = Math.round(o.at[1] * H); return { f, x, y, w, lead, cap: o.px * 0.73 * S, h: (o.lines.length - 1) * lead + o.px * 0.73 * S }; }
+function vioText(txt, x, y, a, glow = 1) { g.save(); g.globalAlpha = a; g.shadowColor = VIO_GLOW; g.shadowBlur = 16 * S * glow; g.fillStyle = '#B79BFF'; g.fillText(txt, x, y); g.fillText(txt, x, y);
+  g.shadowBlur = 0; g.fillStyle = VIO_CORE; g.fillText(txt, x, y); g.restore(); }
+function typed(t, sc) {
+  const s = sc.s, o = s.opt.type, B = typeBox(o), ub = bposT(t) - Math.round(bposT(s.t0)), R = o.release;
+  const cloud = (a) => { if (a <= 0) return; const p = 46 * S; g.save(); g.filter = `blur(${Math.round(30 * S)}px)`; g.fillStyle = `rgba(5,6,26,${(o.cloud ?? 0.55) * a})`; g.fillRect(B.x - p, B.y - p, B.w + 2 * p, B.h + 2 * p); g.restore(); };
+  g.save(); g.font = B.f; g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+  if (!R) {
+    const shown = o.lines.map((l, k) => { const d = (o.dur || 0.6) / Math.max(1, l.length), f = ub - o.beats[k]; return f < 0 ? -1 : Math.min(l.length, Math.floor(f / d + 1e-6) + 1); });
+    cloud(clamp01((ub - o.beats[0] + 0.55) / 0.4));
+    g.font = B.f;
+    // a mote of violet light leaves her pencil (o.from, frame fractions) half a beat before each line and lands where it starts typing
+    if (o.from) { const P0 = { x: o.from[0] * W, y: o.from[1] * H };
+      o.beats.forEach((b, k) => { const m = (ub - (b - 0.5)) / 0.5; if (m <= 0 || m > 1.15) return; const P2 = { x: B.x - 6 * S, y: B.y + B.cap / 2 + k * B.lead }, P1 = { x: (P0.x + P2.x) / 2, y: Math.min(P0.y, P2.y) - 0.12 * H };
+        const Q = (v) => ({ x: (1 - v) * (1 - v) * P0.x + 2 * v * (1 - v) * P1.x + v * v * P2.x, y: (1 - v) * (1 - v) * P0.y + 2 * v * (1 - v) * P1.y + v * v * P2.y });
+        g.save(); g.globalCompositeOperation = 'lighter';
+        if (m <= 1) { const e = ease.io(m); for (let j = 6; j >= 0; j--) { const q = Q(Math.max(0, e - 0.045 * j)); glowAt(q.x, q.y, (6 + 14 * (1 - j / 6)) * S, VIO_GLOW, 0.95 * (1 - j / 7)); } const q0 = Q(e); glowAt(q0.x, q0.y, 5 * S, '#FFFFFF', 0.9); }
+        else { const f = (m - 1) / 0.15; glowAt(P2.x, P2.y, (18 + 20 * f) * S, VIO_GLOW, 0.8 * (1 - f)); }
+        g.restore(); }); }
+    let cur = -1; shown.forEach((n, k) => { if (n < 0) return; cur = k; const y = B.y + B.cap + k * B.lead;
+      // the newest characters flare as they land
+      vioText(o.lines[k].slice(0, n), B.x, y, 1, n < o.lines[k].length ? 1.5 : 1); });
+    if (cur >= 0) { const n = shown[cur], cx = B.x + Math.round(g.measureText(o.lines[cur].slice(0, n)).width) + 4 * S, y = B.y + B.cap + cur * B.lead;
+      if (n < o.lines[cur].length || Math.floor(t * 2.5) % 2 === 0) { g.save(); g.shadowColor = VIO_GLOW; g.shadowBlur = 14 * S; g.fillStyle = 'rgba(222,208,255,0.9)'; g.fillRect(cx, y - B.cap, Math.round(o.px * 0.55 * S), Math.round(B.cap * 1.15)); g.restore(); } }
+    g.restore(); return; }
+  // release: close (lines converge on the block's middle and thin to one bright line), then the line of light leaves east
+  const ta = T.bar(R.arrive), close = R.close || 1.25, kc = ease.io(clamp01(ub / close)), mid = B.y + B.h / 2;
+  if (kc < 1) { cloud(1 - kc);
+    o.lines.forEach((l, k) => { const y0 = B.y + B.cap + k * B.lead - B.cap / 2, y = lerp(y0, mid, kc); g.save(); g.translate(0, Math.round(y)); g.scale(1, Math.max(0.02, 1 - kc)); vioText(l, B.x, Math.round(B.cap / 2), 1 - 0.6 * kc); g.restore(); });
+    if (kc > 0.3) { const a = clamp01((kc - 0.3) / 0.5); g.save(); g.globalCompositeOperation = 'lighter'; g.shadowColor = VIO_GLOW; g.shadowBlur = 24 * S; g.fillStyle = `rgba(230,220,255,${a})`; g.fillRect(B.x, Math.round(mid - 2 * S), B.w, Math.round(4 * S)); g.restore(); }
+    g.restore(); return; }
+  // the line of light travels a quadratic arc up and over to R.to, shrinking, arriving on the downbeat of bar R.arrive
+  const t1 = T.beatT(Math.round(bposT(s.t0)) + close), u = clamp01((t - t1) / (ta - t1)), e = ease.io(u);
+  // R.ctrl [[x, y], [x, y]] (frame fractions): a cubic path (e.g. up over the top of the frame and down to the sunrise clear of her);
+  // else a quadratic up and over through R.top
+  const c0 = { x: B.x + B.w / 2, y: mid }, c2 = { x: R.to[0] * W, y: R.to[1] * H }, c1 = { x: (c0.x + c2.x) / 2, y: R.top * H };
+  const K = R.ctrl ? R.ctrl.map(([x, y]) => ({ x: x * W, y: y * H })) : null;
+  const q = K ? (k) => { const a = (1 - k) ** 3, b = 3 * k * (1 - k) ** 2, c = 3 * k * k * (1 - k), d = k ** 3; return { x: a * c0.x + b * K[0].x + c * K[1].x + d * c2.x, y: a * c0.y + b * K[0].y + c * K[1].y + d * c2.y }; }
+    : (k) => ({ x: (1 - k) * (1 - k) * c0.x + 2 * k * (1 - k) * c1.x + k * k * c2.x, y: (1 - k) * (1 - k) * c0.y + 2 * k * (1 - k) * c1.y + k * k * c2.y });
+  g.restore();
+  if (on(t, ta)) { const f = fr(t, ta); if (f <= 1) { g.fillStyle = `rgba(235,225,255,${f === 0 ? 0.8 : 0.4})`; g.fillRect(0, 0, W, H); }   // the hit
+    g.save(); g.globalCompositeOperation = 'lighter'; glowAt(c2.x, c2.y, (30 + 60 * Math.max(0, 1 - f / 20)) * S, VIO_GLOW, 0.5 + 0.5 * Math.max(0, 1 - f / 20)); g.restore(); return; }
+  const p = q(e), p2 = q(Math.min(1, e + 0.01)), ang = Math.atan2(p2.y - p.y, p2.x - p.x), len = B.w * (1 - 0.9 * e);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (let j = 1; j <= 6; j++) { const pj = q(Math.max(0, e - 0.03 * j)); glowAt(pj.x, pj.y, (10 + 5 * (6 - j)) * S * (1 - 0.6 * e), VIO_GLOW, 0.22 * (1 - j / 7)); }
+  g.translate(p.x, p.y); g.rotate(ang); g.shadowColor = VIO_GLOW; g.shadowBlur = 26 * S; g.fillStyle = 'rgba(232,222,255,0.95)'; g.fillRect(-len / 2, -2 * S, len, 4 * S); g.restore();
+}
+
 // vio_still: she becomes stars. Her figure stays at full brightness; along her outline star points break away (each edge cell gets its own
 // moment through the three bars), drift outward from her centre and settle among the sky's stars, twinkling (12 fps steps). The matte
 // also took the dish and its ring, so only the part inside settle.poly (plate fractions, set by hand on the clip) counts as her.
@@ -602,6 +659,7 @@ function draw(t, sc) {
     if (s.opt.tips) tips(t, sc);
     if (s.opt.caption) caption(t, sc);
     if (s.opt.hand) hand(t, sc);
+    if (s.opt.type) typed(t, sc);
     if (s.opt.forks && OUTRO) OUTRO.forks(t, s, sc.imgs[0]);
     if (s.opt.comet) comet(t, sc);
     if (s.opt.settle && sc.settle) settle(t, sc);
@@ -654,6 +712,8 @@ async function boot() {
   T = await loadTiming(TIMING);
   SH = resolveShots(T);
   for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.strands && s.opt.strands.window) await findPlate(s.opt.strands.window); if (s.kind === 'code' && s.opt.lives) for (const id of s.opt.lives) await findPlate('det_' + id); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); if (s.opt && s.opt.base) { await findPlate(s.opt.base); await findPlate(s.opt.top); } if (s.opt && s.opt.windows) for (const id of s.opt.windows.lives) await findPlate(id); if (s.opt && s.opt.code === 'mapfold') { for (const id of s.opt.lives) await findPlate(id); await findPlate(s.opt.her); } }
+  // film v2: a shot whose opt.next = { id, opt } switches to plate `id` (with `opt` merged over its own) when that plate has landed
+  for (const s of SH) if (s.opt && s.opt.next && (await findPlate(s.opt.next.id))) { s.src = s.opt.next.id; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
