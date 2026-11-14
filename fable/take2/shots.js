@@ -40,7 +40,7 @@ export const SECTIONS = {
   break_a: { name: 'Breakdown A', color: '#22D3EE' },
   break_b: { name: 'Breakdown B', color: '#3DDC97' },
   build: { name: 'Build', color: '#3D8BFF' },
-  drop: { name: 'Drop', color: '#FFB020', paper: 'black', ink: ['#FFB020'] },   // the sunrise drop: two colours, gold and black
+  drop: { name: 'Drop', color: '#FFB020', paper: 'black', ink: ['#FFB020'], stroke: '#FFC23A' },   // the sunrise drop: two colours, gold and black (gold neutral marks: effects test 8 recipe)
   verse2: { name: 'Verse 2', color: '#9B6BFF' },
   chorus2: { name: 'Chorus 2', color: '#FF7A1A' },
   outro_a: { name: 'Outro A', color: '#FF7A1A', paper: 'white' },              // day
@@ -218,31 +218,42 @@ section('drop');
 V(89, 90, '2:32', 'Butterfly kick at its apex against the huge sun.', { row: 'b89' });
 for (let k = 0; k < 3; k++) {
   V(90 + k, [90 + k, 3], 'seq 10', 'The unison phrase, low and wide, the thousand in silhouette.', { row: 'b90-92' });
-  shot([90 + k, 3], 91 + k, 'S', 'plate', `drop_hero_${k + 1}`, 'missing', `Two-beat close insert ${k + 1} of 3: cel Jade in one of the phrase's key poses, lit gold.`, { row: 'b90-92' });
+  shot([90 + k, 3], 91 + k, 'S', 'plate', `drop_hero_${k + 1}`, 'missing', `Two-beat close insert ${k + 1} of 3: cel Jade in one of the phrase's key poses, lit gold.`, { row: 'b90-92', opt: { push: 0.035, white: true } });
 }
 for (let k = 0; k < 4; k++) V(93 + k, 94 + k, '2:52', ['Travelling phrases.', 'The close line of copies.', 'Orbit.', 'Travelling phrase, orbit.'][k] + ' (one cut per bar)', { row: 'b93-96' });
 V(97, 98, '2:44', 'The group fall, from her real set.', { row: 'b97-99' });
 V(98, 100, '2:44', 'From above the bodies spell MAIN; hold; they rise as one.', { row: 'b97-99' });
-V(100, [100, 3], '2:56', 'Arms wide.', { row: 'b100' });
-P([100, 3], 101, 'drop_face', 'missing', 'Close: her face in the sun, eyes closed, breathing ("ooh" 172.5).', { row: 'b100' });
+// the wordless "ooh" (vocal stems 172.54-180.28; an adlib, not in the lyric lines) set on its time over both b100 shots
+V(100, [100, 3], '2:56', 'Arms wide.', { row: 'b100', ov: ['adlib:ooh:172.54'] });
+P([100, 3], 101, 'drop_face', 'missing', 'Close: her face in the sun, eyes closed, breathing ("ooh" 172.5).', { row: 'b100', ov: ['adlib:ooh:172.54'], opt: { adlibAt: [0.82, 0.86] } });
 V(101, 102, '2:57', 'Last phrase.', { row: 'b101-103' });
-shot(102, [102, 3], 'S', 'plate', 'drop_hero_4', 'missing', 'Insert: cel Jade, last phrase, lit gold.', { row: 'b101-103' });
+shot(102, [102, 3], 'S', 'plate', 'drop_hero_4', 'missing', 'Insert: cel Jade, last phrase, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true } });
 V([102, 3], [103, 3], '2:58', 'Tornado kick.', { row: 'b101-103' });
-shot([103, 3], 104, 'S', 'plate', 'drop_hero_5', 'missing', 'Insert: the landing, lit gold.', { row: 'b101-103' });
+shot([103, 3], 104, 'S', 'plate', 'drop_hero_5', 'missing', 'Insert: the landing, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true } });
 V(104, 105, '2:59', '1,024 salute the sun. Cut to night on b105.', { row: 'b104' });
 
 // ------------------------------------------------------------------ Verse 2: bars 105-120 (scratchboard, white on black, violet the only colour)
 section('verse2');
-P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engraved Milky Way. Chip: ● jade/1420-mhz  ctx 97%.', { ov: ['chip:● jade/1420-mhz  ctx 97%'], row: 'b105-106' });
-P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108' });
+// lyrics in the empty sky (cream); lane = the violet branch written sparse (merge 0) on the plate's violet line
+const VIO = '#9B6BFF';
+P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engraved Milky Way. Chip: ● jade/1420-mhz  ctx 97%.',
+  { ov: ['chip:● jade/1420-mhz  ctx 97%'], row: 'b105-106', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' }, lane: { pts: [[0.2, 0.825], [1, 0.955]], color: VIO, text: 'violet', cap: 20, scroll: -6, under: 0.2 } } });
+P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108', opt: { lane: { pts: [[0, 0.92], [1, 0.92]], color: VIO, text: 'violet', cap: 22, scroll: -10, under: 0.2 } } });
 P(108, 109, 'vio_close', 'missing', 'Her profile, the bun and two pencils.', { row: 'b107-108' });
-P(109, 111, 'vio_lookback', 'missing', 'She stops and looks back east: far off, a sliver of sunrise in full colour.', { row: 'b109-110' });
+P(109, 111, 'vio_lookback', 'missing', 'She stops and looks back east: far off, a sliver of sunrise in full colour.', { row: 'b109-110', opt: { lyr: { y: 'top', x0: 0.42, x1: 0.97, align: 'right' } } });
 P(111, 112, 'vio_climb', 'missing', 'She climbs to the rim of the dish.', { row: 'b111-112' });
 P(112, 113, 'violet', 'exists', 'She sits on the rim of the dish.', { opt: { clip0: 0.5, push: 0.02 }, row: 'b111-112' });
-P(113, 114, 'vio_pencil', 'missing', 'She draws a pencil from her bun.', { row: 'b113-115' });
-P(114, 116, 'vio_write', 'missing', 'She writes in the air. The handwriting docs: start here is drawn in code, in violet light. ctx 99%.', { code: 'P+C', ov: ['handwriting: docs: start here (to do)', 'chip:● jade/1420-mhz  ctx 99%'], row: 'b113-115' });
-P(116, 118, 'vio_release', 'missing', 'She lets the line of light go; it lifts off east. Hit on b117, then the drums cut. ctx 100%.', { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 100%'], row: 'b116-117' });
-P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of her figure settle into the star field. Chip: detached, not merged. The stars keep twinkling.', { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120' });
+P(113, 114, 'vio_pencil', 'missing', 'She draws a pencil from her bun.', { row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.45, align: 'left' } } });
+// the handwriting (src/script.js): written stroke by stroke where her pencil points; at = start of the line (plate fractions), size = x-height
+// (frame fraction), write = [from, to] fraction of the shot; on vio_release the finished line lifts off and arcs up and over to the sunrise
+// on the right (to), arriving on the bar 117 downbeat with a flash
+const HAND = { text: 'docs: start here', at: [0.12, 0.3], size: 0.045 };
+P(114, 116, 'vio_write', 'missing', 'She writes in the air. The handwriting docs: start here is drawn in code, in violet light. ctx 99%.',
+  { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 99%'], row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, write: [0.05, 0.92] } } });
+P(116, 118, 'vio_release', 'missing', 'She lets the line of light go; it lifts off east. Hit on b117, then the drums cut. ctx 100%.',
+  { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, release: { to: [0.96, 0.6], top: 0.04, arrive: 117 } } } });
+P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of her figure settle into the star field. Chip: detached, not merged. The stars keep twinkling.',
+  { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, settle: { matte: '/work_fable/take2/kit/vio_still' } } });
 
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');

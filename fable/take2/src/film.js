@@ -14,6 +14,7 @@ import { resolveShots, SECTIONS, FLOAT } from '../shots.js';
 import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
+import { scriptPaths, drawScript } from './script.js';
 import { makeProof } from './proofscene.js';
 
 const Q = new URLSearchParams(location.search);
@@ -243,6 +244,7 @@ function scene(t) {
   if (sc.eff === 'code' && s.opt.code === 'tiles') for (const id of s.opt.lives) if (PLATE['det_' + id]) sc.imgs.push({ url: `${PLATE['det_' + id].dir}/still.jpg`, life: id });
   if (sc.eff === 'plate' && s.opt && s.opt.strands && s.opt.strands.window && PLATE[s.opt.strands.window]) {   // the life window (b61-62)
     sc.win = []; plateDraw({ t0: s.t0, t1: s.t1, opt: { clip0: 1.0, push: 0 } }, t, s.opt.strands.window, sc.win); }
+  if (sc.eff === 'plate' && s.opt && s.opt.settle && sc.imgs[0]) { const m = sc.imgs[0].url.match(/f_(\d{4})\.jpg$/); if (m && SETTLE_OK[s.opt.settle.matte]) sc.settle = `${s.opt.settle.matte}/rgba/f_${m[1]}.png`; }
   if (sc.eff === 'plate' && s.opt && s.opt.fan && sc.imgs[0]) { const m = sc.imgs[0].url.match(/f_(\d{4})\.jpg$/); if (m) sc.fan = `${s.opt.fan.matte}/rgba/f_${m[1]}.png`; }
   const x = s.opt && s.opt.cross;   // the crossing: from `at` the doorway grows into the life plate
   if (sc.eff === 'plate' && x && PLATE[x.life] && !ALLCARDS) { const D = s.t1 - s.t0, ta = s.t0 + x.at * D, te = s.t0 + x.end * D;
@@ -305,6 +307,9 @@ function overlays(t, sc) {
   const s = sc.s, col = SECTIONS[s.sec].color, card = sc.eff === 'card';
   for (const o of s.ov) {
     if (o.startsWith('chip:') && !card) chip(o.slice(5), col === MAIN ? MAIN : col);
+    if (o.startsWith('adlib:') && !card) { const [, w, ts] = o.split(':'), t0 = +ts; if (on(t, t0)) {   // a wordless adlib on its time: verse serif, cream
+      const f = capFont('serif', SZ.verse * S); setFont(f); const tw = g.measureText(w).width, at = (s.opt && s.opt.adlibAt) || [0.5, 0.86], a = clamp01((fr(t, t0) + 1) / 3);
+      g.save(); g.globalAlpha = a; textShadow(0.8, 14); g.fillStyle = CREAM; g.fillText(w, at[0] * W - tw / 2, at[1] * H); noShadow(); g.restore(); } }
     if (o === 'counter') {
       const { bar } = barBeat(t), v = counterAt(bar), cf = capFont('mono', SZ.counter * S, 600), b0 = T.bar(bar), pop = on(t, b0) && fr(t, b0) < 6 ? 1 - fr(t, b0) / 6 : 0;
       setFont(cf); const txt = v.toLocaleString('en-US'); const tw = g.measureText(txt).width, left = s.opt && s.opt.counterSide === 'left', x = left ? 80 * S : W - 80 * S - tw, y = (card ? CARD_H - 90 * S : 130 * S);
@@ -474,6 +479,45 @@ function tiles(t, sc) {
     g.strokeStyle = byId[im.life].color; g.lineWidth = 3 * S; g.strokeRect(cx - w / 2, cy - h / 2, w, h); g.restore(); });
 }
 
+// ---------------------------------------------------------------- Step 4: the handwriting and the settle into stars (verse 2)
+const SETTLE_OK = {};
+function handPaths(sc) { const H0 = sc.s.opt.hand, a = plateToScreen(sc.imgs[0], H0.at[0], H0.at[1]); return scriptPaths(H0.text, { x: a.x, y: a.y, size: H0.size * H }); }
+function hand(t, sc) {
+  const s = sc.s, o = s.opt.hand, P = handPaths(sc), VIOC = '#9B6BFF', wd = 4.5 * S;
+  if (!o.release) { const u = clamp01((seg(t, s.t0, s.t1) - o.write[0]) / (o.write[1] - o.write[0]));
+    if (u <= 0) return; const pen = drawScript(g, P, { upto: P.len * u, color: VIOC, width: wd, glow: 22 * S });
+    if (pen) { g.save(); g.globalCompositeOperation = 'lighter'; glowAt(pen.x, pen.y, 26 * S, VIOC, 0.9); g.restore(); } return; }
+  // release: the finished line lifts off and travels up and over to the sunrise, arriving on the downbeat of bar R.arrive
+  const R = o.release, ta = T.bar(R.arrive), u = clamp01((t - s.t0) / (ta - s.t0)), e = ease.io(u), b = P.box;
+  const c0 = { x: b.x + b.w / 2, y: b.y + b.h / 2 }, c2 = { x: R.to[0] * W, y: R.to[1] * H }, c1 = { x: (c0.x + c2.x) / 2, y: R.top * H };
+  const q = (k) => ({ x: (1 - k) * (1 - k) * c0.x + 2 * k * (1 - k) * c1.x + k * k * c2.x, y: (1 - k) * (1 - k) * c0.y + 2 * k * (1 - k) * c1.y + k * k * c2.y });
+  if (u < 1) { const p = q(e), sz = 1 - 0.9 * e;
+    for (let j = 1; j <= 5; j++) { const pj = q(Math.max(0, e - 0.035 * j)); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(pj.x, pj.y, (10 + 6 * (5 - j)) * S * (1 - 0.6 * e), VIOC, 0.25 * (1 - j / 6) * (u > 0.02 ? 1 : 0)); g.restore(); }
+    g.save(); g.translate(p.x, p.y); g.rotate(-0.15 * Math.sin(e * Math.PI)); g.scale(sz, sz); g.translate(-c0.x, -c0.y); drawScript(g, P, { color: VIOC, width: wd / Math.max(0.35, sz), glow: 22 * S }); g.restore(); }
+  else { const f = fr(t, ta); if (f <= 1) { g.fillStyle = `rgba(235,225,255,${f === 0 ? 0.8 : 0.4})`; g.fillRect(0, 0, W, H); }   // the hit
+    g.save(); g.globalCompositeOperation = 'lighter'; glowAt(c2.x, c2.y, (30 + 60 * Math.max(0, 1 - f / 20)) * S, VIOC, 0.5 + 0.5 * Math.max(0, 1 - f / 20)); g.restore(); }
+}
+// vio_still: her outline settles into the star field: stars appear along the edge of her matte (more and more through the shot) and her
+// figure dims toward the sky; all the stars twinkle (12 fps steps, seeded per star)
+let SETC = null;
+function settle(t, sc) {
+  const m = READY.get(sc.settle); if (!m) return; const u = ease.io(seg(t, sc.s.t0, sc.s.t1)), im = sc.imgs[0], cr = cover(m.width, m.height, W, H, im.zoom || 1, im.fo[0], im.fo[1]);
+  const gw = 192, gh = 108; if (!SETC) { SETC = document.createElement('canvas'); SETC.width = gw; SETC.height = gh; }
+  const x = SETC.getContext('2d', { willReadFrequently: true }); x.clearRect(0, 0, gw, gh); x.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, gw, gh);
+  const A = x.getImageData(0, 0, gw, gh).data, al = (i, j) => (i < 0 || j < 0 || i >= gw || j >= gh ? 0 : A[(j * gw + i) * 4 + 3]);
+  // dim the figure (her own matte, darkened) toward the night
+  if (!FANC) { FANC = document.createElement('canvas'); FANC.width = W; FANC.height = H; }
+  const fc = FANC.getContext('2d'); fc.setTransform(1, 0, 0, 1, 0, 0); fc.globalCompositeOperation = 'source-over'; fc.clearRect(0, 0, W, H); fc.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, W, H);
+  fc.globalCompositeOperation = 'source-in'; fc.fillStyle = '#05050C'; fc.fillRect(0, 0, W, H); g.save(); g.globalAlpha = 0.55 * u; g.drawImage(FANC, 0, 0); g.restore();
+  const step = Math.floor(t * 12 + 1e-6); g.save(); g.globalCompositeOperation = 'lighter';
+  for (let j = 1; j < gh - 1; j++) for (let i = 1; i < gw - 1; i++) { const a = al(i, j); if (a < 128) continue;
+    if (al(i - 1, j) >= 128 && al(i + 1, j) >= 128 && al(i, j - 1) >= 128 && al(i, j + 1) >= 128) continue;   // edge cells only
+    const h = mulberry32(i * 7349 + j * 9157)(); if (h > u * 0.85) continue;
+    const tw = 0.55 + 0.45 * Math.sin(step * 0.9 + h * 40), px = (i + 0.5) * W / gw, py = (j + 0.5) * H / gh;
+    glowAt(px, py, (3 + 5 * h) * S * (0.8 + 0.4 * tw), h < 0.3 ? '#9B6BFF' : '#EDE6FF', 0.7 * tw); }
+  g.restore();
+}
+
 // ---------------------------------------------------------------- the frame
 function drawImgs(list) {
   for (const im of list) { const b = READY.get(im.url); const cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
@@ -492,6 +536,8 @@ function draw(t, sc) {
     if (rot) g.restore();
     if (s.opt.tips) tips(t, sc);
     if (s.opt.caption) caption(t, sc);
+    if (s.opt.hand) hand(t, sc);
+    if (s.opt.settle && sc.settle) settle(t, sc);
   }
   else if (sc.eff === 'code') { try { if (s.opt.code === 'gitlog') gitlog(t, s); else tiles(t, sc); } catch (e) { console.log('ERROR code ' + e.stack); } }
   else if (sc.eff === 'v7') {
@@ -505,7 +551,7 @@ function draw(t, sc) {
       const lc = LIGHTC.getContext('2d'); paperPass(lc, b, rect, { paper: 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t, skip: 'h' });
       g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.6; g.drawImage(LIGHTC, 0, 0); g.restore(); }
     else if (paperPass && USE_PAPER) { const { extraInk, ...lk } = look || {};
-      g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ink: [...(sec.ink || INKS), ...(extraInk || [])], seed: 1000 + s.i, t, ...lk }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
+      g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ...(sec.stroke ? { stroke: sec.stroke } : {}), ink: [...(sec.ink || INKS), ...(extraInk || [])], seed: 1000 + s.i, t, ...lk }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else g.drawImage(b, 0, 0, W, H);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
@@ -521,7 +567,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.win || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.win || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc); if (HUD) hud(t, sc); return sc;
 }
 
@@ -553,6 +599,7 @@ async function boot() {
   // the proof range must be exactly the proof shots of the list
   const pr = SH.filter((s) => s.kind === 'proof'); if (Math.abs(pr[0].t0 - PROOF.t0) > 0.002 || Math.abs(pr[pr.length - 1].t1 - PROOF.tEnd) > 0.002) throw new Error('proof range does not match the shot list');
   LYR = buildLyrics(); buildGrain(); STRANDS = FLOAT || null;
+  for (const s of SH) if (s.opt && s.opt.settle) { const d = s.opt.settle.matte; if (!(d in SETTLE_OK)) { const mm = await json(`${d}/meta.json`); SETTLE_OK[d] = !!(mm && mm.n); } }
   const N = Math.ceil(T.duration * FPS - 1e-6);
   const sizes = {}; const meas = (k, f) => { setFont(f); sizes[k] = { font: f.font, capPx: +g.measureText('H').actualBoundingBoxAscent.toFixed(1) }; };
   meas('lyric_verse', capFont('serif', SZ.verse * S)); meas('lyric_slab', capFont('slab', SZ.slab * S)); meas('title', capFont('slab', SZ.title * S)); meas('counter', capFont('mono', SZ.counter * S, 600));
