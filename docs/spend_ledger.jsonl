@@ -1022,3 +1022,48 @@
 {"ts": "2026-11-14T06:15:39Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_release_t1", "job": "mergemain/t2_vio_release_t1-9a55d409a0", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T06:15:40Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_still_t1", "job": "mergemain/t2_vio_still_t1-c9f6d62b57", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T06:15:41Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_face_t1", "job": "mergemain/t2_drop_face_t1-731761f8fc", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:21:05Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_wide_t1", "job": "mergemain/t2_vio_wide_t1-767373f9bc", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:21:06Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_walk_t1", "job": "mergemain/t2_vio_walk_t1-4ddbe81e4f", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:21:58Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_close_t1", "job": "mergemain/t2_vio_close_t1-b6ea28a411", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:21:58Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_lookback_t1", "job": "mergemain/t2_vio_lookback_t1-39fde2985a", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:22:48Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_climb_t1", "job": "mergemain/t2_vio_climb_t1-37136f1f28", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:22:49Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_pencil_t1", "job": "mergemain/t2_vio_pencil_t1-03070b49dd", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:23:38Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_write_t1", "job": "mergemain/t2_vio_write_t1-c710050f31", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:24:59Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_face_t1", "job": "mergemain/t2_drop_face_t1-731761f8fc", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:25:31Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_release_t1", "job": "mergemain/t2_vio_release_t1-9a55d409a0", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:26:03Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_still_t1", "job": "mergemain/t2_vio_still_t1-c9f6d62b57", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:33:50Z", "model": "google/nano-banana-pro", "tag": "t2_c2_hands", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:33:59Z", "model": "google/nano-banana-pro", "tag": "t2_c2_lookup", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:34:09Z", "model": "google/nano-banana-pro", "tag": "t2_catch", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:34:27Z", "model": "google/nano-banana-pro", "tag": "t2_day_run", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:34:33Z", "model": "google/nano-banana-pro", "tag": "t2_root_light", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:34:35Z", "model": "google/nano-banana-pro", "tag": "t2_day_fork", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:34:49Z", "model": "google/nano-banana-pro", "tag": "t2_like_wide", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:35:03Z", "model": "google/nano-banana-pro", "tag": "t2_facade_piano", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:35:04Z", "model": "google/nano-banana-pro", "tag": "t2_facade_violin", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:35:18Z", "model": "google/nano-banana-pro", "tag": "t2_facade_wushu", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:35:32Z", "model": "google/nano-banana-pro", "tag": "t2_facade_wetlab", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:35:32Z", "model": "google/nano-banana-pro", "tag": "t2_facade_phd", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:35:52Z", "model": "google/nano-banana-pro", "tag": "t2_facade_poet", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:36:06Z", "model": "google/nano-banana-pro", "tag": "t2_facade_ames", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:36:13Z", "model": "google/nano-banana-pro", "tag": "t2_facade_band", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:36:20Z", "model": "google/nano-banana-pro", "tag": "t2_facade_chezjj", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:36:29Z", "model": "google/nano-banana-pro", "tag": "t2_facade_sandstorm", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:36:42Z", "model": "google/nano-banana-pro", "tag": "t2_facade_home", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:36:46Z", "model": "google/nano-banana-pro", "tag": "t2_facade_violet", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:37:33Z", "model": "google/nano-banana-pro", "tag": "t2_root_light", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:37:34Z", "model": "google/nano-banana-pro", "tag": "t2_like_wide", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:37:43Z", "model": "google/nano-banana-pro", "tag": "t2_resolve", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:38:33Z", "model": "google/nano-banana-pro", "tag": "t2_like_wide", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:39:01Z", "model": "google/nano-banana-pro", "tag": "t2_day_jade", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:39:48Z", "model": "google/nano-banana-pro", "tag": "t2_patchwork2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:41:11Z", "model": "google/nano-banana-pro", "tag": "t2_night_jade", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T06:41:13Z", "model": "bytedance/seedance-2.5", "tag": "t2_c2_lookup_t1", "job": "mergemain/t2_c2_lookup_t1-87a5509442", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:41:14Z", "model": "bytedance/seedance-2.5", "tag": "t2_c2_hands_t1", "job": "mergemain/t2_c2_hands_t1-fdca9021fc", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:41:15Z", "model": "bytedance/seedance-2.5", "tag": "t2_catch_t1", "job": "mergemain/t2_catch_t1-5abe4b8b6c", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:41:16Z", "model": "bytedance/seedance-2.5", "tag": "t2_patch_hold_t1", "job": "mergemain/t2_patch_hold_t1-ed88b846be", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:41:17Z", "model": "bytedance/seedance-2.5", "tag": "t2_patch_settle_t1", "job": "mergemain/t2_patch_settle_t1-29de6757f8", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:41:18Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_run_t1", "job": "mergemain/t2_day_run_t1-c14019c6c9", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:41:19Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_fork_t1", "job": "mergemain/t2_day_fork_t1-fbfc361475", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:41:20Z", "model": "bytedance/seedance-2.5", "tag": "t2_root_light_t1", "job": "mergemain/t2_root_light_t1-6c366747e6", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T06:41:21Z", "model": "bytedance/seedance-2.5", "tag": "t2_like_sing2_a", "job": "mergemain/t2_like_sing2_a-07c3f6ff99", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}

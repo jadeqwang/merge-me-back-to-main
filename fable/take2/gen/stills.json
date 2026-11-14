@@ -527,6 +527,153 @@
     "work_fable/take2/stills/vio_lookback_b1.jpg"
    ],
    "prompt": "Edit this picture; keep everything exactly as it is, in the same scratchboard engraving style, except two things. First: remove the round white patch from her arm completely, so that the arm on the right side of the picture has only the plain violet band round it and no patch, no ring and no lettering. Second: take the headphones off her ears and put them round her neck, resting on her collar, so that her ear and the side of her head are bare. Nothing else changes: same pose, same face in profile, same jacket back with the pale-blue circle and the words RARE EARTH, same sky, same sliver of sunrise."
+  },
+  {
+   "id": "c2_lookup",
+   "lane": "orange",
+   "view": "side",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. It is first light: low across the picture, on the horizon, one thin level band of gold drawn with horizontal strokes of golden pencil; everything above it is still black paper.",
+   "scene": "A medium close shot of her from the chest up, in the left half of the picture, in profile facing right, her face lifted to look up into the sky at the upper right, eyes open, a look of quiet recognition, lips closed; her hair stirs. High in the upper right of the picture, far off, one small point of violet light with a short drawn violet trail is coming toward her across the black sky, drawn in violet pencil and white gel pen. Because she faces right, the arm we see is her right arm, which has an orange band and NO patch."
+  },
+  {
+   "id": "c2_hands",
+   "lane": "orange",
+   "view": "none",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. It is first light: low across the picture, on the horizon, one thin level band of gold drawn with horizontal strokes of golden pencil; everything above it is still black paper.",
+   "scene": "A close-up of her two hands opening at chest height, palms up and a little apart, ready to receive something, with the white cuffs of her jacket sleeves and a blur of her black top and open white jacket behind them; her face is not in the picture. A faint violet light falls on her palms from above, drawn with a few violet pencil strokes. Each hand has exactly five fingers, simply and correctly drawn."
+  },
+  {
+   "id": "catch",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. It is first light: low across the picture, on the horizon, one thin level band of gold drawn with horizontal strokes of golden pencil; everything above it is still black paper.",
+   "scene": "A medium close shot of her from the waist up, in the centre, facing the viewer, both hands closed gently against her chest holding a small point of violet light, which shines out between her fingers in short violet pencil rays and lights her chin and jacket with flat violet tones; her eyes are closed, her head slightly bowed, calm and full, lips closed. Her hair lifts a little as if a wind has just reached her."
+  },
+  {
+   "id": "day_run",
+   "lane": "orange",
+   "view": "side",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on WHITE paper in full colour: flat colours, two tones of shading, no gradients, no glow, no 3D, no photographic sky; the white paper and its slight tooth show everywhere; the daylight sky is drawn only as loose strokes of pale-blue coloured pencil at the top of the picture.",
+   "scene": "Morning, on white paper. She runs and half dances along a straight orange pencil line that runs level across the picture like a road, seen exactly side-on, moving toward the LEFT, full length, about two thirds of the picture's height, in the centre: a light, springing stride, one arm swung out, and in the raised hand nearer the viewer she twirls a yellow pencil between her fingers. Her face in profile is glad, the smallest smile, lips closed; her long hair and the straps of her trousers fly behind her to the right. Behind her only white paper, with a few light pencil lines of distant hills and pale-blue strokes of sky."
+  },
+  {
+   "id": "day_fork",
+   "lane": "orange",
+   "view": "backc",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on WHITE paper in full colour: flat colours, two tones of shading, no gradients, no glow, no 3D, no photographic sky; the white paper and its slight tooth show everywhere; the daylight sky is drawn only as loose strokes of pale-blue coloured pencil at the top of the picture.",
+   "scene": "Morning, on white paper, seen from above and behind her. She stands small at the bottom centre of the picture, about one quarter of the picture's height, on one straight orange pencil line that comes up from the bottom edge to her feet. Just in front of her the orange line forks into many new lines that run out across the blank white paper toward the top of the picture like the branches of a young tree: they are bare graphite pencil lines, thin and grey, not yet coloured, drawn with a light hand, some only just begun. She holds a yellow pencil in her right hand at her side. The rest is clean blank white paper."
+  },
+  {
+   "id": "root_light",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/root/still.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same watercolour and gouache style with white ink frost: the same small girl seen from behind at the dark window, the same frost tree on the glass, the same clothes. Change two things only. First: her hand is no longer touching the glass; she has drawn it back a little and holds her open palm a hand's width away from the pane. Second: on the glass, in the frost, just in front of her palm, there is now one small point of light, violet at its heart with a thin warm gold edge, with a few short fine rays, floating in the frost; it does not touch her hand. She is looking at it. No other change. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "like_wide",
+   "raw": true,
+   "refs": [
+    "/home/jade/Documents/1-music-shipped/orbital-sunrise-video/media/plates/jade_loc_day/take1.first.jpg"
+   ],
+   "prompt": "Draw a NEW picture of the woman shown in this reference, in exactly the same graphite and coloured-pencil drawing style on cream paper. This is NOT a selfie and not a close-up: the camera is three metres away from her. She stands in the middle of a straight road, seen from the knees up, small enough that her head is in the upper third of the picture and there is open space on both sides of her; both arms hang relaxed at her sides. She faces the viewer, lips closed, calm and glad. She has exactly the same face as in the reference (same features, glasses, high forehead, long centre-parted hair; do not beautify, slim or restyle her), the same cream jacket with orange bands, the pink headphones round her neck, and dark trousers. Behind her the road runs away to the horizon between low hills under an open sky, with a row of small simple buildings along one side in the distance, all drawn lightly in pencil. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_piano",
+   "raw": true,
+   "refs": [],
+   "prompt": "A hand-painted gouache illustration in the manner of a mid-century children's picture book: opaque matte paint, visible brush texture, soft rounded shapes, warm lamplight, a limited palette of cream, walnut brown, deep teal and dusty rose. One single subject, seen straight on from the front like a flat piece of stage scenery: a small old house with one lit window, through which an upright piano and a lamp can be seen. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is rose pink. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_violin",
+   "raw": true,
+   "refs": [],
+   "prompt": "A coloured-pencil drawing on cream paper: fine layered hatching, visible pencil strokes, the tooth of the paper showing through, restrained colour, unfinished edges where the drawing fades into bare paper. One single subject, seen straight on from the front like a flat piece of stage scenery: a small concert hall with tall arched doors and a row of windows. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is golden yellow. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_wushu",
+   "raw": true,
+   "refs": [],
+   "prompt": "A traditional East Asian woodblock print: bold carved black key lines, flat areas of colour with visible wood grain and slight misregistration, on warm handmade paper; a limited palette of ink black, indigo, pale grey and coral red. One single subject, seen straight on from the front like a flat piece of stage scenery: a martial-arts training hall with wide wooden doors and a tiled roof. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is coral red. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_wetlab",
+   "raw": true,
+   "refs": [],
+   "prompt": "A scientific ink drawing in the manner of an early-1900s histology plate: very fine black and sepia pen lines and stippling on aged ivory paper, hand-ruled margins, exquisite patient linework. One single subject, seen straight on from the front like a flat piece of stage scenery: a plain laboratory building with rows of windows and a few flasks on the sills. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is mint green. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_phd",
+   "raw": true,
+   "refs": [],
+   "prompt": "A pen-plotter drawing on pale green graph paper: single-weight technical ink lines in black with one cyan pen, precise and slightly mechanical, cross-hatching made of parallel plotted strokes. One single subject, seen straight on from the front like a flat piece of stage scenery: a university building with a clock tower whose clock face is blank. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is cyan. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_poet",
+   "raw": true,
+   "refs": [],
+   "prompt": "Sumi ink wash on rice paper: wet grey washes, dry-brush blacks, generous areas of empty paper, a single accent colour. One single subject, seen straight on from the front like a flat piece of stage scenery: a small bookshop-cafe with a striped awning and a table and chair outside. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is magenta. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_ames",
+   "raw": true,
+   "refs": [],
+   "prompt": "A 1970s space-agency concept painting, fully painted with no pencil lines, in a single hue: smooth airbrushed gouache in shades of one cool grey-teal from near-black to ivory, strong shafts of pale light, crisp engineering forms, the slight grain of an offset print. The only strong colour in the whole picture is bright blue, used only for her arm bands, straps and headphones. One single subject, seen straight on from the front like a flat piece of stage scenery: the enormous square intake of a giant wind tunnel, with its grid of vanes, towering like a cliff. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is bright blue. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_band",
+   "raw": true,
+   "refs": [],
+   "prompt": "A two-colour risograph print like a hand-made gig poster: coral and navy inks on off-white paper, coarse halftone dots, slight misregistration between the two inks, grainy solid areas. One single subject, seen straight on from the front like a flat piece of stage scenery: a small music club with a van parked outside and a guitar case leaning on the wall. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is coral red. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_chezjj",
+   "raw": true,
+   "refs": [],
+   "prompt": "Detailed side-view pixel art in the manner of an early handheld game console: crisp square pixels in only four shades of one colour, from deep navy to pale blue-grey, cosy night lighting from many screens. The only strong colour in the whole picture is mint green, used only for her arm bands, straps and headphones and for the glow of the screens. One single subject, seen straight on from the front like a flat piece of stage scenery: a tall narrow San Francisco town house with bay windows, every window lit. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is mint green. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_sandstorm",
+   "raw": true,
+   "refs": [],
+   "prompt": "A bold high-contrast line drawing in white on a black panel. One single subject, seen straight on from the front like a flat piece of stage scenery: a conference stage with a lectern and a big blank screen, drawn in bold white outlines on a solid black panel. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is cyan. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_home",
+   "raw": true,
+   "refs": [],
+   "prompt": "A chalk and pale pastel drawing on dark blue construction paper: confident textured strokes with the paper showing between them, drawn only in chalk white and pale blue-grey; the lamp's light is drawn as pale chalk rays. The only strong colour in the whole picture is rose pink, used only for her arm bands, straps and headphones. Faces and hands are drawn in pale chalk with simple clean lines, like the character sheet's face. One single subject, seen straight on from the front like a flat piece of stage scenery: a family house at night with a warm lamp in one window and two small bicycles outside. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is rose pink. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "facade_violet",
+   "raw": true,
+   "refs": [],
+   "prompt": "A scratchboard engraving: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. One single subject, seen straight on from the front like a flat piece of stage scenery: a large radio telescope dish on its lattice tower. It stands alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; about two thirds of the picture's height; nothing else around it: no street, no sky, no trees, no people. There is no lettering of any kind: no signs, no names, no numbers. The subject is in this one medium, nearly monochrome, and its only strong colour, used once or twice (a door, an awning, a light), is violet. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "day_jade",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/resolve_b1.jpg"
+   ],
+   "prompt": "Edit this picture; keep the woman exactly as she is: the same pose, the same framing, the same face, the same clothes, the same flat cel colours and clean inked line. Change only the background: remove the painted blue sky and clouds completely and replace them with plain WHITE paper with a slight tooth, on which the sky is suggested only by a few loose strokes of pale-blue coloured pencil near the top, and one straight orange pencil line runs level across the picture behind her at hip height. The picture runs to every edge with no frame or border. No text."
+  },
+  {
+   "id": "patchwork2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/day_jade_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep the woman in exactly the same pose, the same place, the same size and the same framing, with exactly the same face and features, eyes open, and the same outline. Change only how she is rendered: her whole figure is now a patchwork of twelve different art mediums, divided into about twelve irregular patches with soft torn-paper seams between them, each patch rendered in a different medium: opaque gouache paint; coloured-pencil hatching; woodblock print with bold black key lines; fine pen-and-ink stippling; thin plotter lines on pale green graph paper; sumi ink wash; airbrush; two-colour risograph halftone dots; square 16-bit pixel art; wax crayon; small monospaced text characters; and white-line scratchboard on black. The outline of her figure and the features of her face are continuous and correct through every patch: it is one drawing of one woman, not a collage of different people; her eyes, nose and mouth stay exactly where and as they are, and her face must remain recognisably the same face. Each patch carries a different strong colour: rose pink, golden yellow, coral, mint green, cyan, magenta, blue, violet and orange. The background stays the same white paper with pale-blue pencil strokes. No text, and the small monospaced characters are abstract marks, not words."
+  },
+  {
+   "id": "night_jade",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/day_jade_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep the woman exactly as she is: the same pose, the same framing, the same face, the same clothes, the same flat cel colours and clean inked line, but with her eyes gently closed. Change only the background: it is now bare BLACK paper with a slight tooth, at first light: low across the picture, at her hip height, one thin level band of gold drawn with horizontal strokes of golden pencil replaces the orange line, and everything above it is plain black paper with no sky strokes. No glow, no gradient. The picture runs to every edge with no frame or border. No text."
   }
  ]
 }
