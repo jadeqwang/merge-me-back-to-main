@@ -308,3 +308,34 @@ Orchestra (b81-84):
   check.py section1: 14 hard cuts, max 0.45 fr, mean 0.27; section3: 65 clear cuts mean 0.33 fr, outliers bu37/bu39 (+2.8 fr, the
   3-frame flash ends, as in the animatic); "no clear change" on bb16, bb22, bb31 (similar crops or face to face), bu09 (stance into
   v7), dr01. Type, lyrics pass; single frame vs full: 7 + 12 frames, max diff 0.
+
+## Step 4: drop (b89-104) and verse 2 (b105-120), plus section 3 v2 (2026-11-14, night)
+
+Section 3 v2 fixes: b72 tiles in on sixteenths and holds, then on the last sixteenth (beat 3.75) snaps to a point with a 2-frame flash
+and a dying bright point (no tween); float strands start at the measured hair ends and carry only the branch name, sparse (merge 0);
+b14 flash stays violet. Note: section3_v2 was rendered before the drop's gold stroke, so its last bar (b89) shows the old chalk marks.
+
+Drop: SECTIONS.drop gets `stroke: '#FFC23A'` (passed to paperPass as its neutral mark colour) with black paper and ink ['#FFB020']:
+every mark is gold on black (effects test 8's sunrise recipe; before, the neutral marks were chalk cream). drop_hero_1..3 (b90-92
+beats 3-4) and 4, 5 (b102 beats 1-2, b103 beats 3-4): still-only, push 3.5 %, 2-frame white flash on entry. drop_face on b100 beats
+3-4 from clip 0 (eyes closed; push-in is the clip's). The wordless "ooh" (172.54, not a lyric line in timing.json) is an overlay
+`adlib:ooh:172.54` on both b100 shots, verse serif cap 66, at (0.82, 0.86) on drop_face (black, clear of her face), bottom centre on
+the v7 shot. No other type in the drop.
+
+Verse 2 (lyrics cream, in the sky; chips as the rows):
+- vio_wide: violet lane written sparse (branch message 'listened to hydrogen', cap 20) on the plate's violet line, measured on the clip.
+- vio_walk: lane on the bottom line (cap 22), lyric left; vio_close clip 0-1.7 (before the blink), lyric left; vio_lookback clip 0-2.5
+  slowed (the sunrise stays a sliver), lyric top right; vio_climb whole; violet as before; vio_pencil clip 2.3-4.0 (ends on the pencil
+  held up), lyric right.
+- Handwriting (`src/script.js`): "docs: start here" as single-stroke cursive I drew by hand point by point (one pen path per letter,
+  joined as cursive, Catmull-Rom smoothed, small per-letter irregularity, colon dots and t bars as separate strokes after their word),
+  revealed along its arc length with a pen-point glow; violet glow + pale core. Placed in the sky below the chip, ending near her
+  pencil tip (it drifts in the clip; the line does not track it frame by frame). x-height 0.045 H.
+- vio_release: the finished line lifts off from the shot start and travels a quadratic arc up and over (top at 0.04 H) to the sunrise
+  sliver (0.93, 0.5), shrinking, with a trail; on the b117 downbeat a 2-frame violet-white flash and a glow on the horizon (the hit).
+- vio_still: her matte (tools/matte.py -> work_fable/take2/kit/vio_still; the matte also takes the dish, so only x > 0.55 counts):
+  stars appear along her outline (more through the shot), her figure dims toward the sky (to 55 %), the sky's brightest star cells get
+  twinkling glints. Chip "detached, not merged".
+- Render: review/fable_take2/section4_v1.mp4 (151.06-209.526 s = bars 88-121, 32.3 MB), 5 sheets. check.py: 30 clear cuts, mean
+  0.41 fr; outliers bu37/bu39 (+2.8 fr, the flash shots as always), dr01 no clear change (v7 into v7 at the drop); type and lyrics
+  pass; single frame vs full 11 of 11 identical.
