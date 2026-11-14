@@ -1076,3 +1076,110 @@
 {"ts": "2026-11-14T06:50:15Z", "model": "bytedance/seedance-2.5", "tag": "t2_root_light_t1", "job": "mergemain/t2_root_light_t1-6c366747e6", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T06:50:15Z", "model": "bytedance/seedance-2.5", "tag": "t2_like_sing2_a", "job": "mergemain/t2_like_sing2_a-07c3f6ff99", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T06:53:19Z", "model": "bytedance/seedance-2.5", "tag": "t2_patch_hold_t1", "job": "mergemain/t2_patch_hold_t1-ed88b846be", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:00:13Z", "model": "google/nano-banana-pro", "tag": "t2_vio_write2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:00:18Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:00:47Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run_m", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:01:12Z", "model": "google/nano-banana-pro", "tag": "t2_vio_release2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:02:04Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_write2_t1", "job": "mergemain/t2_vio_write2_t1-4485069263", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:02:05Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_release2_t1", "job": "mergemain/t2_vio_release2_t1-4b663a25f2", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:02:06Z", "model": "bytedance/seedance-2.5", "tag": "t2_wave_run_t1", "job": "mergemain/t2_wave_run_t1-8331529513", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:03:19Z", "model": "google/nano-banana-pro", "tag": "t2_wushu_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:03:41Z", "model": "google/nano-banana-pro", "tag": "t2_wushu_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:04:33Z", "model": "bytedance/seedance-2.5", "tag": "t2_root_face_v2_t1", "job": "mergemain/t2_root_face_v2_t1-ecdc490ded", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:04:34Z", "model": "bytedance/seedance-2.5", "tag": "t2_main_palm_v2_t1", "job": "mergemain/t2_main_palm_v2_t1-f0f55d7ff7", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:04:35Z", "model": "bytedance/seedance-2.5", "tag": "t2_wushu_v2_t1", "job": "mergemain/t2_wushu_v2_t1-83f29cab14", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:04:36Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_face_v2_t1", "job": "mergemain/t2_drop_face_v2_t1-c0ff69a4e5", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:05:24Z", "model": "google/nano-banana-pro", "tag": "t2_orch_2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:05:29Z", "model": "google/nano-banana-pro", "tag": "t2_orch_3", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:05:30Z", "model": "google/nano-banana-pro", "tag": "t2_orch_1", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:05:59Z", "model": "google/nano-banana-pro", "tag": "t2_orch_5", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:05Z", "model": "google/nano-banana-pro", "tag": "t2_ins_piano", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:06Z", "model": "google/nano-banana-pro", "tag": "t2_ins_violin", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:07Z", "model": "google/nano-banana-pro", "tag": "t2_ins_poem", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:28Z", "model": "google/nano-banana-pro", "tag": "t2_orch_4", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:29Z", "model": "google/nano-banana-pro", "tag": "t2_drop_eyes_closed", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:31Z", "model": "google/nano-banana-pro", "tag": "t2_orch_6", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:33Z", "model": "google/nano-banana-pro", "tag": "t2_drop_hand_open", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:34Z", "model": "google/nano-banana-pro", "tag": "t2_ins_guitar", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:48Z", "model": "google/nano-banana-pro", "tag": "t2_orch_7", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:06:51Z", "model": "google/nano-banana-pro", "tag": "t2_drop_palm_sun", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:07:00Z", "model": "google/nano-banana-pro", "tag": "t2_orch_8", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:07:13Z", "model": "google/nano-banana-pro", "tag": "t2_drop_land_clean", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:09Z", "model": "google/nano-banana-pro", "tag": "t2_orch_5", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:11Z", "model": "google/nano-banana-pro", "tag": "t2_orch_7", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:23Z", "model": "google/nano-banana-pro", "tag": "t2_ins_piano", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:24Z", "model": "google/nano-banana-pro", "tag": "t2_ins_poem", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:25Z", "model": "google/nano-banana-pro", "tag": "t2_ins_violin", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:36Z", "model": "google/nano-banana-pro", "tag": "t2_orch_3", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:45Z", "model": "google/nano-banana-pro", "tag": "t2_ins_guitar", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:47Z", "model": "google/nano-banana-pro", "tag": "t2_orch_8", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:08:54Z", "model": "bytedance/seedance-2.5", "tag": "t2_wave_run_t1", "job": "mergemain/t2_wave_run_t1-8331529513", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:10:23Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_2_t1", "job": "mergemain/t2_orch_2_t1-cec11acddc", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:10:24Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_4_t1", "job": "mergemain/t2_orch_4_t1-d4caea0edc", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:10:25Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_5_t1", "job": "mergemain/t2_orch_5_t1-384391f3c2", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:10:26Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_6_t1", "job": "mergemain/t2_orch_6_t1-368da840ca", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:10:35Z", "model": "google/nano-banana-pro", "tag": "t2_drop_sun_only", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:11:07Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_bow_v2_t1", "job": "mergemain/t2_stance_bow_v2_t1-7f3bdbc575", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:07Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_horse_v2_t1", "job": "mergemain/t2_stance_horse_v2_t1-cba8ad15cf", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:08Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_drop_v2_t1", "job": "mergemain/t2_stance_drop_v2_t1-61c4e8845b", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:10Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_drop2_v2_t1", "job": "mergemain/t2_stance_drop2_v2_t1-d87fea7ec9", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:11Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_violin_t1", "job": "mergemain/t2_ins_violin_t1-aaaf6bb31d", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:12Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_poem_t1", "job": "mergemain/t2_ins_poem_t1-036174a5ad", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:13Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_piano_t1", "job": "mergemain/t2_ins_piano_t1-11f5a81a9b", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:14Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_guitar_t1", "job": "mergemain/t2_ins_guitar_t1-03d6a5dd2c", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:15Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_1_v2_t1", "job": "mergemain/t2_drop_hero_1_v2_t1-c950d04a1a", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:16Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_2_v2_t1", "job": "mergemain/t2_drop_hero_2_v2_t1-5f9962a151", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:17Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_3_v2_t1", "job": "mergemain/t2_drop_hero_3_v2_t1-455a533d2e", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:18Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_4_v2_t1", "job": "mergemain/t2_drop_hero_4_v2_t1-39f40373ed", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:19Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_5_v2_t1", "job": "mergemain/t2_drop_hero_5_v2_t1-095c115810", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:37Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_1_v2_t2", "job": "mergemain/t2_drop_hero_1_v2_t2-c2df2269bd", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:37Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_write2_t1", "job": "mergemain/t2_vio_write2_t1-4485069263", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:38Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_release2_t1", "job": "mergemain/t2_vio_release2_t1-4b663a25f2", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:39Z", "model": "bytedance/seedance-2.5", "tag": "t2_root_face_v2_t1", "job": "mergemain/t2_root_face_v2_t1-ecdc490ded", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:39Z", "model": "bytedance/seedance-2.5", "tag": "t2_main_palm_v2_t1", "job": "mergemain/t2_main_palm_v2_t1-f0f55d7ff7", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:40Z", "model": "bytedance/seedance-2.5", "tag": "t2_wushu_v2_t1", "job": "mergemain/t2_wushu_v2_t1-83f29cab14", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:11:41Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_face_v2_t1", "job": "mergemain/t2_drop_face_v2_t1-c0ff69a4e5", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:15:39Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_4_t1", "job": "mergemain/t2_orch_4_t1-d4caea0edc", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:16:39Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_6_t1", "job": "mergemain/t2_orch_6_t1-368da840ca", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:17:42Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_2_t1", "job": "mergemain/t2_orch_2_t1-cec11acddc", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:18:30Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_2_t2", "job": "mergemain/t2_orch_2_t2-36709e64ac", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:18:32Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_6_t2", "job": "mergemain/t2_orch_6_t2-3b146d6d58", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:18:40Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_1_t1", "job": "mergemain/t2_orch_1_t1-107bf6542c", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:18:41Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_3_t1", "job": "mergemain/t2_orch_3_t1-112c4dbac4", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:18:42Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_7_t1", "job": "mergemain/t2_orch_7_t1-f1169cd60c", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:18:43Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_8_t1", "job": "mergemain/t2_orch_8_t1-81ddbbb502", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:18:44Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_5_t1", "job": "mergemain/t2_orch_5_t1-384391f3c2", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:18:44Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_5_t1", "job": "mergemain/t2_orch_5_t1-384391f3c2", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:19:01Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:19:06Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:19:22Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_drop_v2_t1", "job": "mergemain/t2_stance_drop_v2_t1-61c4e8845b", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:19:55Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run3", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:19:58Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_bow_v2_t1", "job": "mergemain/t2_stance_bow_v2_t1-7f3bdbc575", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:19:59Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_horse_v2_t1", "job": "mergemain/t2_stance_horse_v2_t1-cba8ad15cf", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:20:00Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_violin_t1", "job": "mergemain/t2_ins_violin_t1-aaaf6bb31d", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:20:01Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_poem_t1", "job": "mergemain/t2_ins_poem_t1-036174a5ad", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:21:12Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_drop2_v2_t1", "job": "mergemain/t2_stance_drop2_v2_t1-d87fea7ec9", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:21:14Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_1_v2_t1", "job": "mergemain/t2_drop_hero_1_v2_t1-c950d04a1a", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:21:20Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run3_face", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:21:33Z", "model": "bytedance/seedance-2.5", "tag": "t2_wave_run_t2", "job": "mergemain/t2_wave_run_t2-e0f7a0f23d", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:21:57Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_drop_v2_t2", "job": "mergemain/t2_stance_drop_v2_t2-ec203cade6", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:22:44Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_piano_t1", "job": "mergemain/t2_ins_piano_t1-11f5a81a9b", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:22:44Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_guitar_t1", "job": "mergemain/t2_ins_guitar_t1-03d6a5dd2c", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:22:46Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_3_v2_t1", "job": "mergemain/t2_drop_hero_3_v2_t1-455a533d2e", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:22:46Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_4_v2_t1", "job": "mergemain/t2_drop_hero_4_v2_t1-39f40373ed", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:23:20Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_2_v2_t1", "job": "mergemain/t2_drop_hero_2_v2_t1-5f9962a151", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:23:20Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_5_v2_t1", "job": "mergemain/t2_drop_hero_5_v2_t1-095c115810", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:26:39Z", "model": "bytedance/seedance-2.5", "tag": "t2_drop_hero_1_v2_t2", "job": "mergemain/t2_drop_hero_1_v2_t2-c2df2269bd", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:29:12Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_2_t2", "job": "mergemain/t2_orch_2_t2-36709e64ac", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:30:19Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_6_t2", "job": "mergemain/t2_orch_6_t2-3b146d6d58", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:30:52Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_1_t1", "job": "mergemain/t2_orch_1_t1-107bf6542c", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:31:25Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_3_t1", "job": "mergemain/t2_orch_3_t1-112c4dbac4", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:31:35Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_2_t3", "job": "mergemain/t2_orch_2_t3-df8c711e8c", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:31:57Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_7_t1", "job": "mergemain/t2_orch_7_t1-f1169cd60c", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:31:57Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_8_t1", "job": "mergemain/t2_orch_8_t1-81ddbbb502", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:32:33Z", "model": "bytedance/seedance-2.5", "tag": "t2_wave_run_t2", "job": "mergemain/t2_wave_run_t2-e0f7a0f23d", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:33:04Z", "model": "bytedance/seedance-2.5", "tag": "t2_stance_drop_v2_t2", "job": "mergemain/t2_stance_drop_v2_t2-ec203cade6", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:33:39Z", "model": "google/nano-banana-pro", "tag": "t2_ins_violin_warm", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-14T21:33:51Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_violin_t2", "job": "mergemain/t2_ins_violin_t2-54ad290739", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:36:25Z", "model": "bytedance/seedance-2.5", "tag": "t2_orch_2_t3", "job": "mergemain/t2_orch_2_t3-df8c711e8c", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T21:41:16Z", "model": "bytedance/seedance-2.5", "tag": "t2_ins_violin_t2", "job": "mergemain/t2_ins_violin_t2-54ad290739", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}

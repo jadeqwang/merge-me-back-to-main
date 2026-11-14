@@ -1,20 +1,28 @@
-# Take two: handoff (written 2026-11-14)
+# Take two: handoff (updated 2026-11-14 after film v2)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
 ## Where things stand
 
-The whole film exists as **film v1** (185 shots, 282.8 s, 1080p30, on `inputs/Merge (keychange down).wav`, timing `analysis_v3/timing.json`).
-Steps 0 to 5 of the plan are done. **Nobody has watched film v1 at speed with sound.** Every check so far was on stills, contact
-sheets, clip strips and measurements. Jade is about to watch it and send notes.
+**Film v2** exists (2026-11-14, afternoon): 185 shots, 282.8 s, 1080p30. It answers Jade's notes on film v1
+(`notes/jade_v1_notes.md`, verbatim; what each note became: `notes/v2_direction.md`). **Nobody has watched v2 at speed with sound**;
+every check was on stills, beat strips and measurements. Jade is about to watch it.
 
-- Pushed (cards for the two likeness shots): `review/fable_take2/film_v1.mp4`, sections `section1_v1`, `section2_v3`, `section3_v3`,
-  `section4_v2`, `section5_v1`, orchestra looks `orchestra_v1.mp4` (solid) and `orchestra_v1_light.mp4`.
-- Local only (git-ignored, has her likeness): `work_fable/take2/out/film_v1_local.mp4`.
-- Her review page: `review/fable_take2/review_v1.html` (timestamped notes plus thirteen decisions; she pastes the export back).
-- Lag picker for the sung takes: `review/fable_take2/step0/likeness_local/index.html` (local only).
-- Spend: **$480.10 of the $600 cap** (`python tools/gen/spend.py`). Nothing is queued.
-- Branch `fable/merge`, pushed. Last film commit: the compositor's `29733c1`; later commits are notes, the review page and this file.
+- Pushed (a card for the one likeness shot): `review/fable_take2/film_v2.mp4`, sheets `film_v2_sheet_01..05.jpg`.
+- Local only (her likeness): `work_fable/take2/out/film_v2_local.mp4`. Film v1 files are kept.
+- Her review page: `review/fable_take2/review_v2.html` (timestamped notes plus ten decisions; she pastes the export back).
+- Spend: **$525.40** (`python tools/gen/spend.py`). Jade lifted the cap ("even above 600 is fine"); the tools' constant is still 600
+  and was not hit. Nothing is queued.
+- What changed in v2, per owner: `notes/compositor.md` ("Film v2"), `notes/plates_v2.md` (20 new plates, wiring table),
+  `notes/orchestra.md` ("Revision 3": `orch_1..8`, shot 1 refit).
+- Decided by Jade on v1: branch labels `jade/parenthood`, `jade/rna-band`, `jade/rare-earth`; no lyrics for wordless vocals; take E at
+  +80 ms for the first "Back to main"; the second likeness shot dropped (now `wave_run`); credits name Opus 5.5; stances, runners,
+  hand on the water, counter all fine as built.
+
+Known weak points in v2 (told to Jade): the two widest orchestra shots barely move; the wushu row beside the podium stands arms-out
+in orchestra shots 1 and 3; the violins clip is one long stroke each way; the first orchestra shot is still under a second; the b33-38
+grid keeps the old wushu plate (the new one has no look-back); the b153-156 terminal shows the git log captured for v1 (recapture
+before the master); `ins_poem`'s hand lift is weak; the slab on `day_fork` is cream on white paper.
 
 ## What Jade has decided (binding)
 
@@ -29,34 +37,11 @@ sheets, clip strips and measurements. Jade is about to watch it and send notes.
 - Working method: delegate mechanical work to cheaper models, two or three agents at most, each with a notes file; commit and push at
   every checkpoint after the secret check; say plainly what was checked on stills only.
 
-## Waiting on Jade (the review page lists these)
-
-1. Orchestra look for bars 81-84: solid, light, or light stripped back to black sky and flat ground (my lean; not built).
-2. The first orchestra shot (fly in and sit) still reads as a firework.
-3. First "Back to main": take E, F or D, and the lag. Film v1 local uses E at +80 ms (my provisional choice).
-4. Second "Back to main" (wide): does it read as her. Local plate is the wide take re-timed, +80 ms.
-5. The BACK TO MAIN slab crosses her outstretched arm in the first likeness shot.
-6. Whether the stance stills (bars 73-80) are true wushu. The "empty stance" failed twice and was dropped; two drop stances are used.
-7. Runner kit built large with feet behind the lane (the video model will not keep a small full-length runner).
-8. The hand on the water closes round the light where the plan had it opening.
-9. Intro counter stops at 64.
-10. Bars 54-55 lit windows and commit nodes: not built.
-11. Credits wording: placeholder from PLAN section 10 item 3, not approved.
-12. The lives list and commit messages (Cloudflare is not one of the twelve).
-13. Budget for fixes.
-
 ## Next work, in order
 
-1. Apply her timestamped notes and decisions (compositor work is free; retakes about $1.16 a clip, $0.13 a still).
-2. Step 6 of the plan: costume audit of every plate **in motion** (I audited every still and five frames per clip, not every frame);
-   readable-text pass (no model-drawn text shown; check the sleeve patch on small figures, the child's patch in `root_light` reads
-   garbled up close); fix the known weak shots below.
-3. Step 7: master without the review HUD (`--q hud=0`), X and YouTube encodes, subtitles. The loop is exact with the HUD off (last
-   frame equals frame 0).
-
-Known weak shots: orchestra wides through the paper pass; aerial pull-back (b147-148) is plain; code pencil branches on `day_fork` are
-faint; hard-edged patch cells in b130-131; small violet comet in `c2_lookup` (the clip has a stray arm at the right edge, cropped
-out); fused runners keep only the first runner's medium; handwriting "docs: start here" is hand-built; bars 54-55 overlays missing.
+1. Apply her notes on film v2 (review page export).
+2. Step 6 of the plan: costume audit of every plate in motion; readable-text pass; recapture the terminal git log.
+3. Step 7: master without the review HUD (`--q hud=0`), X and YouTube encodes, subtitles. The loop is exact with the HUD off.
 
 ## How to run things
 
