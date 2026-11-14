@@ -401,28 +401,42 @@ function caption(t, sc) { const L = byId[sc.s.opt.caption]; if (!L) return; cons
   drawWrittenLane(g, [{ x: x0, y }, { x: x0 + w + 2, y }], { text: L.msg + ' ', color: L.color, cap, merge: 0.4, under: 0.6, upto: (w + 2) * ease.out(u) }); }
 // b57-64 strands. STRANDS = the float_top geometry (shots.js export, measured on the clip): centre (her head) and twelve hair ends
 let STRANDS = null;
-function strandPaths(sc) { const im = sc.imgs[0], c = plateToScreen(im, STRANDS.center[0], STRANDS.center[1]);
-  return STRANDS.ends.map(([x, y], i) => { const e = plateToScreen(im, x, y); let dx = e.x - c.x, dy = e.y - c.y; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l; return { e, d: [dx, dy], L: LIVES[i] }; }); }
+// a strand starts inside the hair (70% of the way from her head to the measured hair end) and runs straight out to the frame edge
+// (+ margin); De = its length to the edge
+// the clip turns and pulls back: STRANDS.track = [[clip s, head, left foot], ...] (plate fractions); the hair ends measured at clip time
+// STRANDS.at follow the similarity (rotation, scale, shift) that takes head and foot there to head and foot now
+function strandFrame(c) { const K = STRANDS.track; let i = 0; while (i < K.length - 2 && c > K[i + 1][0]) i++; const a = K[i], b = K[i + 1], u = clamp01((c - a[0]) / (b[0] - a[0]));
+  return { h: [lerp(a[1][0], b[1][0], u), lerp(a[1][1], b[1][1], u)], f: [lerp(a[2][0], b[2][0], u), lerp(a[2][1], b[2][1], u)] }; }
+function strandPaths(sc) { const im = sc.imgs[0], cm = clipMap(sc.s), cc = cm.c0 + (sc.t - sc.s.t0) * cm.sp;
+  const A = strandFrame(STRANDS.at), Bf = strandFrame(cc), PX = (p) => plateToScreen(im, p[0], p[1]);
+  const h0 = PX(A.h), f0 = PX(A.f), h1 = PX(Bf.h), f1 = PX(Bf.f), v0 = [f0.x - h0.x, f0.y - h0.y], v1 = [f1.x - h1.x, f1.y - h1.y];
+  const sc2 = Math.hypot(...v1) / Math.hypot(...v0), rot = Math.atan2(v1[1], v1[0]) - Math.atan2(v0[1], v0[0]), cs = Math.cos(rot) * sc2, sn = Math.sin(rot) * sc2;
+  const map = (p) => { const q = PX(p), dx = q.x - h0.x, dy = q.y - h0.y; return { x: h1.x + cs * dx - sn * dy, y: h1.y + sn * dx + cs * dy }; };
+  const c = map(STRANDS.center);
+  return STRANDS.ends.map(([x, y], i) => { const e0 = map([x, y]); let dx = e0.x - c.x, dy = e0.y - c.y; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    const e = { x: c.x + (e0.x - c.x) * 0.7, y: c.y + (e0.y - c.y) * 0.7 };
+    const tx = dx > 0 ? (W - e.x) / dx : dx < 0 ? -e.x / dx : 1e9, ty = dy > 0 ? (H - e.y) / dy : dy < 0 ? -e.y / dy : 1e9;
+    return { e, d: [dx, dy], De: Math.max(60 * S, Math.min(tx, ty)) + 40 * S, L: LIVES[i] }; }); }
 const ray = (p, d, len) => ({ x: p.x + d[0] * len, y: p.y + d[1] * len });
 function writeRay(pts, L, cap, prog, t, alpha = 1) {   // text upright: paths run left to right; prog grows from the hair end
   let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
   const rev = pts[pts.length - 1].x < pts[0].x, P = rev ? [...pts].reverse() : pts;
-  drawWrittenLane(g, P, { text: laneString([L.branch, L.msg], true), color: L.color, cap: (u) => cap * (rev ? 1.5 - 0.6 * u : 0.9 + 0.6 * u), merge: 0.25, under: 0.25, alpha,
+  drawWrittenLane(g, P, { text: laneString([L.branch, L.msg], true), color: L.color, cap: (u) => cap * (rev ? 1.4 - 0.5 * u : 0.9 + 0.5 * u), merge: 0.3, under: 0.45, alpha,
     scroll: (rev ? 1 : -1) * t * 3, from: rev ? len * (1 - prog) : 0, upto: rev ? undefined : len * prog }); }
 function strands(t, sc) {
-  const s = sc.s, st = s.opt.strands, u = seg(t, s.t0, s.t1), b0 = Math.round(bposT(s.t0)), ub = bposT(t) - b0, R = Math.hypot(W, H), paths = strandPaths(sc);
-  const cap = 18 * S;
+  const s = sc.s, st = s.opt.strands, u = seg(t, s.t0, s.t1), b0 = Math.round(bposT(s.t0)), ub = bposT(t) - b0, paths = strandPaths(sc);
+  const cap = 22 * S;
   paths.forEach((q, i) => {
-    if (st.mode === 'double') { const m = ray(q.e, q.d, 0.18 * R), grow = ease.out(clamp01(ub / 2));
+    if (st.mode === 'double') { const m = ray(q.e, q.d, 0.4 * q.De), grow = ease.out(clamp01(ub / 2));
       writeRay([q.e, m], q.L, cap, 1, t);
-      for (const sg of [-1, 1]) { const a = sg * 0.22 * grow, d = [q.d[0] * Math.cos(a) - q.d[1] * Math.sin(a), q.d[0] * Math.sin(a) + q.d[1] * Math.cos(a)];
-        writeRay([m, ray(m, d, R)], q.L, cap * 1.1, grow, t + sg); } }
-    else writeRay([q.e, ray(q.e, q.d, R)], q.L, cap, st.mode === 'grow' ? ease.out(clamp01(ub / 3)) : 1, t);
-    if (st.mode === 'pulses') { const k = i / 4, f = (ub - k) / 2; if (f > 0 && f < 1.2) { const fp = Math.min(1, f), p = ray(q.e, q.d, 0.75 * R * (1 - ease.in(fp)));
-      g.save(); g.globalCompositeOperation = 'lighter'; glowAt(p.x, p.y, (30 + 30 * (f > 1 ? (1.2 - f) * 5 : 0)) * S, q.L.color, f > 1 ? (1.2 - f) * 5 : 1); g.restore(); } }
+      for (const sg of [-1, 1]) { const a = sg * 0.2 * grow, d = [q.d[0] * Math.cos(a) - q.d[1] * Math.sin(a), q.d[0] * Math.sin(a) + q.d[1] * Math.cos(a)];
+        writeRay([m, ray(m, d, q.De)], q.L, cap * 1.05, grow, t + sg); } }
+    else writeRay([q.e, ray(q.e, q.d, q.De)], q.L, cap, st.mode === 'grow' ? ease.out(clamp01(ub / 3)) : 1, t);
+    if (st.mode === 'pulses') { const k = i / 4, f = (ub - k) / 1.5; if (f > 0 && f < 1.25) { const fp = Math.min(1, f), p = ray(q.e, q.d, q.De * (1 - ease.io(fp))), arr = f > 1 ? 1 - (f - 1) / 0.25 : 0;
+      g.save(); g.globalCompositeOperation = 'lighter'; glowAt(p.x, p.y, (34 + 50 * arr) * S, q.L.color, f > 1 ? arr : 1); g.restore(); } }
   });
   if (st.mode === 'rotate' && sc.win && sc.win.length) {   // a life window glides inward along one strand
-    const q = paths[st.on || 0], p = ray(q.e, q.d, (0.55 - 0.35 * ease.io(u)) * R * 0.6), w = 300 * S, h = w * 9 / 16, b = READY.get(sc.win[0].url);
+    const q = paths[st.on || 0], p = ray(q.e, q.d, q.De * (0.85 - 0.6 * ease.io(u))), w = 320 * S, h = w * 9 / 16, b = READY.get(sc.win[0].url);
     if (b) { const cr = cover(b.width, b.height, w, h); g.save(); g.shadowColor = q.L.color; g.shadowBlur = 24 * S; g.fillStyle = q.L.color; g.fillRect(p.x - w / 2 - 3 * S, p.y - h / 2 - 3 * S, w + 6 * S, h + 6 * S); g.shadowBlur = 0;
       g.drawImage(b, cr.sx, cr.sy, cr.sw, cr.sh, p.x - w / 2, p.y - h / 2, w, h); g.restore(); } }
 }

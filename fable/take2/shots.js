@@ -74,8 +74,8 @@ const PR = (from, to, src, pic, x) => shot(from, to, x && x.code || 'P', 'proof'
 section('intro_a');
 P(1, 3, 'root', 'exists', "Frame 0, no fade-in: the child's palm on the cold glass, frost already branching from it. Chip top-left: ● main  1 branch.",
   { ov: ['chip:● main  1 branch'], opt: { clip0: 1.0, push: 0.03 }, row: 'b1-2' });
-P(3, 5, 'root_fork', 'missing', 'Close on the glass: the frost forks in two, then four, on the bar lines. Counter 2, 4.', { ov: ['counter'], row: 'b3-4' });
-P(5, 7, 'root_face', 'missing', "The child's face in profile, lit by the frost, watching. First face. Counter 8, 16.", { ov: ['counter'], row: 'b5-6', opt: { counterSide: 'left' } });
+P(3, 5, 'root_fork', 'missing', 'Close on the glass: the frost forks in two, then four, on the bar lines. Counter 2, 4.', { ov: ['counter'], row: 'b3-4', opt: { clip0: 1.15, speed: 1.05 } });   // clip: forks in two at about 1.2 s (on the bar 3 line), branches on to about 3 s (bar 4)
+P(5, 7, 'root_face', 'missing', "The child's face in profile, lit by the frost, watching. First face. Counter 8, 16.", { ov: ['counter'], row: 'b5-6', opt: { counterSide: 'left', clip0: 0, clip1: 3.0 } });   // clip: first 3 s (a blink at 3.2-3.4, a late push crops the ponytail)
 // b7-8: the root clip from 2.0 s (the frost has grown) slightly slowed, pulling back; twelve frost tips (plate fractions, measured on the
 // clip's frame 84) light up in the lives' lane colours one per half beat from beat 2 of b7
 P(7, 9, 'root', 'exists', 'Pull back: the frost tree fills the pane; its tips take lane colours one by one. Counter 32, 64.',
@@ -94,7 +94,7 @@ FL.forEach(([id, b], i) => {
 });
 V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 V(15, [16, 3], 'seq 02', 'Swoop down the trunk to ground level.', { row: 'b15-16' });
-P([16, 3], 17, 'main_palm', 'missing', "Adult Jade from behind at the root, palm raised exactly like the child's.", { row: 'b15-16' });
+P([16, 3], 17, 'main_palm', 'missing', "Adult Jade from behind at the root, palm raised exactly like the child's.", { row: 'b15-16', opt: { clip0: 1.0, clip1: 3.0 } });   // clip: the tree grows fastest at about 1-3 s
 
 // ------------------------------------------------------------------ Verse 1: bars 17-32
 section('verse1');
@@ -171,18 +171,18 @@ section('break_a');
 // 'double' (each forks in two), 'rotate' (the plate and the strands turn slowly and pull out; a life window glides along one strand),
 // 'pulses' (light runs home along every strand, one strand per sixteenth)
 P(57, 59, 'float_top', 'missing', 'From above: she floats on her back on dark water, hair fanned out; each strand continues as a coloured lane to the edge of frame, with its branch name.', { code: 'P+C', row: 'b57-58', opt: { strands: { mode: 'grow' } } });
-P(59, 60, 'float_face', 'missing', 'Close on her face, eyes closed, water lapping.', { row: 'b59-60', opt: { lyr: { y: 'top' } } });
+P(59, 60, 'float_face', 'missing', 'Close on her face, eyes closed, water lapping.', { row: 'b59-60', opt: { lyr: { x0: 0.03, x1: 0.36, align: 'left' } } });   // her face is top centre: type bottom left
 P(60, 61, 'float_top', 'missing', 'Back above: the strands branch outward, doubling.', { code: 'C+P', row: 'b59-60', opt: { clip0: 2.0, strands: { mode: 'double' } } });
 P(61, 63, 'float_top', 'missing', 'Slow rotation and pull-out; along one strand a life window glides past.', { code: 'C+P', row: 'b61-62', opt: { clip0: 0.5, speed: 0.75, push: 0, strands: { mode: 'rotate', window: 'piano', on: 3 } } });
 P(63, 64, 'float_top', 'missing', 'Pulses of light come home along every strand.', { code: 'C+P', row: 'b63-64', opt: { clip0: 3.0, strands: { mode: 'pulses' } } });
-P(64, 65, 'float_hand', 'missing', 'Her hand opens on the water as one arrives.', { row: 'b63-64' });
+P(64, 65, 'float_hand', 'missing', 'Her hand opens on the water as one arrives.', { row: 'b63-64', opt: { clip0: 1.0, clip1: 3.5, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });   // clip: the light reaches her palm at about 2.5 s, a loose fist by 3.5
 
 // ------------------------------------------------------------------ Breakdown B: bars 65-72 ("Ahh"; snare crescendo from b68, roll in b72)
 section('break_b');
 for (let bar = 65; bar <= 68; bar++) {
   for (let k = 0; k < 3; k++) { const i = (bar - 65) * 3 + k;
     shot([bar, 1 + k], [bar, 2 + k], 'S', 'plate', `det_${LIFE[i]}`, 'missing', `The download, one detail per beat in its medium: ${DETAIL[i]} (${LIFE[i]}).`, { row: 'b65-68', opt: { push: 0.04, caption: LIFE[i], lyr: { y: 'top' } } }); }
-  P([bar, 4], bar + 1, 'float_face', 'missing', 'Every fourth beat, her face: eyes moving under closed lids.', { row: 'b65-68' });
+  P([bar, 4], bar + 1, 'float_face', 'missing', 'Every fourth beat, her face: eyes moving under closed lids.', { row: 'b65-68', opt: { clip0: 0.5 + (bar - 65) * 0.8, lyr: { x0: 0.03, x1: 0.36, align: 'left' } } });
 }
 P(69, 70, 'rise', 'missing', 'She rises upright out of the water, arms opening; the first band of dawn.', { row: 'b69' });
 for (let k = 0; k < 16; k++) { const i = k % 12, bar = 70 + Math.floor(k / 8), beat = 1 + (k % 8) / 2;
@@ -277,7 +277,7 @@ C(157, [161, 3], 'credits', 'Credits as commits, held.', { row: 'b157-160' });
 P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. A violet-gold light appears in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3' });
 
 // float_top geometry (plate fractions): her head (strand centre) and twelve hair ends in the lives' order; measured on the clip when it lands
-export const FLOAT = { center: [0.6, 0.27], ends: [[0.50, 0.12], [0.56, 0.06], [0.64, 0.05], [0.72, 0.08], [0.79, 0.14], [0.84, 0.24], [0.86, 0.36], [0.83, 0.48], [0.78, 0.56], [0.45, 0.20], [0.42, 0.30], [0.71, 0.60]] };
+export const FLOAT = { at: 2.0, track: [[0, [0.555, 0.18], [0.297, 0.894]], [2.0, [0.588, 0.204], [0.266, 0.769]], [5.0, [0.623, 0.333], [0.259, 0.597]]], center: [0.59, 0.20], ends: [[0.31, 0.22], [0.344, 0.111], [0.4375, 0.037], [0.542, 0.019], [0.667, 0.015], [0.771, 0.056], [0.854, 0.148], [0.896, 0.278], [0.896, 0.426], [0.865, 0.556], [0.823, 0.667], [0.75, 0.74]] };   // measured on float_top frame 49
 export const SHOTS = S;
 
 // ------------------------------------------------------------------ resolve bar/beat to song time
