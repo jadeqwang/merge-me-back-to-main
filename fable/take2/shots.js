@@ -26,7 +26,8 @@
 //             lane {pts, color, text, cap, scroll, merge, under, from, to}: a written lane (src/lanes.js) over the plate; pts in frame
 //               fractions [[x, y], ...]; text = a life id (its commit message) or 'main' (merge me back to main + every message)
 //             lyr {x0, x1, y, align, top}: where this shot's lyric goes (frame fractions; y 'bottom' | 'top', top = first row's top);
-//               default the full width, bottom. Only the words sung before the shot's last 0.15 s are laid out in the region
+//               default the full width, bottom. Only the words sung before the shot ends are laid out in the region; tail N: only the
+//               line's last N words (b56: the held 'undone')
 //             v7crop [x, y, w, h]: v7 shots, the part of the v7 frame used (fractions), e.g. to crop out v7's own road-written lyric
 //   alt       an alternative source named in the table
 // paper / ink: the paper pass for v7 sources in the section (default black paper, every lane hue kept)
@@ -130,25 +131,30 @@ PR(39, 41, 'D:root', 'The root node opens onto the child at the frost window; ri
 // ------------------------------------------------------------------ Chorus 1: bars 41-56
 section('chorus1');
 PR(41, 43, 'E:hero', 'Main Jade sprints at us on the orange line as the coloured lanes join it. Slab type.', { row: 'b41-42' });
-// b43 first version (partial): the runner kit with the cut-outs that exist (fable/take2/tools/matte.py), the other lanes empty. kind 'kit'
-// draws on black paper: thirteen written lanes in perspective (far = a hairline, near = readable), each runner on her lane at her
-// lane's scale; dir = the cut-out folder (rgba/f_%04d.png + meta.json). A card until the first runner's cut-out exists.
+// b43, b46-47, b48: the runner kit (kind 'kit', drawn by src/kit.js from the cut-outs in work_fable/take2/kit/ and fable/take2/kit.json).
+// lanes far -> near with each runner's head x (frame fraction); every head top on one line (y `head`), the slab above it.
+const KIT_ROW = [['violet', 0.80], ['sandstorm', 0.30], ['chezjj', 0.62], ['wetlab', 0.40], ['home', 0.92], ['piano', 0.12], ['violin', 0.71],
+  ['band', 0.30], ['ames', 0.86], ['poet', 0.08], ['phd', 0.57], ['wushu', 0.76], ['main', 0.40]].map(([id, x]) => ({ id, x }));
 shot(43, 44, 'K+C', 'kit', 'runner_kit', 'missing', 'Side-on: the twelve run in parallel on their lanes, each drawn in her own medium, main in front.',
-  { row: 'b43', ov: ['chip:runner kit 2 of 13 (partial)'], opt: { lyr: { y: 'top', top: 0.13, x0: 0.03, x1: 0.52, align: 'left' }, kit: {   // runner_main take 1 (cropped at the soles; three retakes did not give a full-length figure): feet sit behind the lane
-    lanes: ['piano', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'violin', 'sandstorm', 'home', 'violet', 'main'],
-    runners: [{ id: 'runner_pencil', dir: '/work_fable/take2/tests/kit/runner_pencil', lane: 'violin', x: 0.84, clip0: 0.4 },
-      { id: 'runner_main', dir: '/work_fable/take2/kit/runner_main', lane: 'main', x: 0.67, clip0: 0 }] } } });
+  { row: 'b43', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'row', lanes: KIT_ROW, head: 0.33, far: 0.5, near: 1.02 } } });
 P(44, 45, 'hero_feet', 'missing', 'Low and close: her trainers strike the orange line.',
   { row: 'b44', opt: { lyr: { y: 'top', x0: 0.04, x1: 0.96, align: 'left' }, lane: { pts: [[0, 0.845], [1, 0.845]], color: '#FF7A1A', text: 'main', cap: 34, scroll: -14 } } });   // written just under the plate's own line (y 0.80-0.81 in the clip)
 V(45, 46, '1:16-1:20', 'From above: the lanes braid into one. Slab type.', { row: 'b45' });
-P(46, 48, 'runner_fuse', 'missing', 'Runners fuse in pairs, eight to four to two. Where pencil-Jade and gouache-Jade merge, the new runner is half and half for a beat, then whole.', { code: 'K+C', ov: ['medium overlays (to do)'], row: 'b46-47' });
-P(48, 49, 'runner_one', 'missing', "One runner: main Jade, the others' mediums flickering across her jacket.", { code: 'K+C', row: 'b48' });
+// fusions on the measured beats: [beat from the shot start, lane a, lane b]; 8 -> 4 on the four beats of b46, 4 -> 2 on beats 1 and 3 of b47
+shot(46, 48, 'K+C', 'kit', 'runner_fuse', 'missing', 'Runners fuse in pairs, eight to four to two. Where pencil-Jade and gouache-Jade merge, the new runner is half and half for a beat, then whole.',
+  { row: 'b46-47', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'fuse', head: 0.36, far: 0.56, near: 1.02,
+    lanes: [['violin', 0.30], ['piano', 0.52], ['wushu', 0.20], ['wetlab', 0.66], ['phd', 0.36], ['poet', 0.80], ['ames', 0.48], ['band', 0.70]].map(([id, x]) => ({ id, x })),
+    events: [[0, 0, 1], [1, 2, 3], [2, 4, 5], [3, 6, 7], [4, 0, 2], [6, 4, 6]] } } });
+shot(48, 49, 'K+C', 'kit', 'runner_one', 'missing', "One runner: main Jade, the others' mediums flickering across her jacket.",
+  { row: 'b48', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.58, align: 'left' }, kit: { mode: 'one', x: 0.74, head: 0.1, near: 1.04, lane: 0.95,
+    flick: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'home', 'violet', 'piano'] } } });
 P(49, 51, 'fold_reach', 'missing', 'Close: she reaches one hand to the lens, then draws it back.', { row: 'b49-50', opt: { lyr: { x0: 0.66, x1: 0.97, align: 'right' } } });   // clip: she is centred, the hand reaches to frame left; the right third is clear
-P(51, 53, 'fold_chest', 'missing', 'Hands crossed at her chest; a fan of twelve afterimages, each in a medium, folds into her one per beat.', { code: 'P+K', row: 'b51-52', opt: { lyr: { x0: 0.03, x1: 0.42, align: 'left' } } });
+P(51, 53, 'fold_chest', 'missing', 'Hands crossed at her chest; a fan of twelve afterimages, each in a medium, folds into her one per beat.', { code: 'P+K', row: 'b51-52', opt: { lyr: { x0: 0.03, x1: 0.97, align: 'left' },   // one row along the bottom (her trousers): clear of the fan, face and hands
+    fan: { matte: '/work_fable/take2/kit/fold_chest', pivot: [0.5, 0.98], lives: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'sandstorm', 'home', 'violet'] } } });
 P(53, 54, 'look_back', 'missing', "She stops and looks back over her shoulder: the same look as the lives'.", { row: 'b53', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });
 V(54, 56, 'night world', 'Wide: every road still glows to the horizon; along them the twelve worlds as small lit windows; commit nodes lock on, one per beat.',
   { code: 'V7+P+C', ov: ['plate thumbnails (to do)', 'commit nodes per beat (to do)'], row: 'b54-55', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' } } });
-P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { clip0: 0, clip1: 3.0, push: 0, lyr: { y: 'top' } } });   // the whole pull-out (close on the jacket back to the wide by 3 s); the slab sits over the sky and, early, her hair/back (no face)
+P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { clip0: 0, clip1: 3.0, push: 0, lyr: { y: 'top', top: 0.025, tail: 1 } } });   // the whole pull-out (close on the jacket back to the wide by 3 s); only the held UNDONE, one row at the very top, above her head
 
 // ------------------------------------------------------------------ Breakdown A: bars 57-64 (crash on b57, strings)
 section('break_a');

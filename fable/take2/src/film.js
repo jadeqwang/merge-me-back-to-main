@@ -13,6 +13,7 @@ import { loadTiming, clamp01, lerp, seg, ease } from './timing.js';
 import { resolveShots, SECTIONS } from '../shots.js';
 import { LIVES, MAIN, byId } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
+import { makeKit } from './kit.js';
 import { makeProof } from './proofscene.js';
 
 const Q = new URLSearchParams(location.search);
@@ -81,11 +82,8 @@ async function findPlate(id) {
     const b = await bitmap(`${p.dir}/frames/f_0001.jpg`); p.w = b.width; p.h = b.height; PLATE[id] = p; break; }
   return PLATE[id];
 }
-// runner kit cut-outs (shots.js kind 'kit'): KIT[shot id] = [{ ...runner, meta }] for the runners whose cut-out exists
-const KIT = {};
-async function findKit(s) { const out = []; if (s.opt.kit.off) { KIT[s.id] = null; return; }
-  for (const r of s.opt.kit.runners) { const m = await json(`${r.dir}/meta.json`); if (m && m.n && (await exists(`${r.dir}/rgba/f_${String(m.n).padStart(4, '0')}.png`))) out.push({ ...r, meta: m }); }
-  KIT[s.id] = out.length ? out : null; }
+// runner kit (shots.js kind 'kit', src/kit.js): KITX = makeKit(...) at boot when fable/take2/kit.json loads
+let KITX = null;
 const plateUrl = (p, i) => `${p.dir}/frames/f_${String(i + 1).padStart(4, '0')}.jpg`;
 function cover(iw, ih, w, h, zoom = 1, fx = 0.5, fy = 0.5) {
   const da = w / h, pa = iw / ih; let sw, sh;
@@ -115,7 +113,7 @@ function effKind(s) {
   if (ALLCARDS) return 'card';
   if (s.kind === 'plate') return PLATE[s.src] ? 'plate' : 'card';
   if (s.kind === 'v7') return USE_V7 && V7 ? 'v7' : 'card';
-  if (s.kind === 'kit') return KIT[s.id] ? 'kit' : 'card';
+  if (s.kind === 'kit') return KITX && !s.opt.kit.off && KITX.ok(s) ? 'kit' : 'card';
   return 'card';
 }
 
@@ -144,7 +142,7 @@ function layoutLine(l, place, lyr, tEnd) {
   const cap = (l.slab ? SZ.slab : SZ.verse) * S, lead = cap * (l.slab ? 1.3 : 1.5), maxW = R ? Math.min(R.x1 - R.x0, W - 200 * S) : W - 200 * S;
   const txt = (w) => (l.slab ? w.w.toUpperCase() : w.w), sp = g.measureText(' ').width * (l.slab ? 0.8 : 1);
   const rows = [[]]; let x = 0;
-  l.words.forEach((w, wi) => { if (R && tEnd !== undefined && !(w.start < tEnd - 0.15)) return; /* a word sung in the last 0.15 s of the shot waits for the next shot */ const ww = g.measureText(txt(w)).width; if (x > 0 && x + sp + ww > maxW) { rows.push([]); x = 0; } if (x > 0) x += sp; rows[rows.length - 1].push({ wi, txt: txt(w), x, w: ww }); x += ww; });
+  l.words.forEach((w, wi) => { if (R && tEnd !== undefined && !(w.start < tEnd - HF)) return; if (R && lyr.tail && wi < l.words.length - lyr.tail) return; /* every word sung inside the shot, on its word time; tail: only the last N words (a held note) */ const ww = g.measureText(txt(w)).width; if (x > 0 && x + sp + ww > maxW) { rows.push([]); x = 0; } if (x > 0) x += sp; rows[rows.length - 1].push({ wi, txt: txt(w), x, w: ww }); x += ww; });
   g.letterSpacing = '0px';
   const top = CARD_H, n = rows.length; let y0;
   if (place === 'strip') y0 = top + (H - top) / 2 - ((n - 1) * lead) / 2 + cap / 2;          // centred in the strip under the card
@@ -222,8 +220,8 @@ function scene(t) {
   const s = shotAt(t); const sc = { t, s, eff: effKind(s), imgs: [] };
   if (sc.eff === 'v7') { const k = v7Index(t); if (k < 0) sc.eff = 'card'; else sc.imgs.push({ url: v7Url(k), v7: true }); }
   if (sc.eff === 'plate') plateDraw(s, t, s.src, sc.imgs);
-  if (sc.eff === 'kit') for (const r of KIT[s.id]) { const m = r.meta, c = softcap(Math.max(0, (r.clip0 || 0) + (t - s.t0)), (m.n - 1) / m.fps);
-    sc.imgs.push({ url: `${r.dir}/rgba/f_${String(Math.min(m.n - 1, Math.round(c * m.fps)) + 1).padStart(4, '0')}.png`, runner: r }); }
+  if (sc.eff === 'kit') for (const u of KITX.need(s, t)) sc.imgs.push({ url: u });
+  if (sc.eff === 'plate' && s.opt && s.opt.fan && sc.imgs[0]) { const m = sc.imgs[0].url.match(/f_(\d{4})\.jpg$/); if (m) sc.fan = `${s.opt.fan.matte}/rgba/f_${m[1]}.png`; }
   const x = s.opt && s.opt.cross;   // the crossing: from `at` the doorway grows into the life plate
   if (sc.eff === 'plate' && x && PLATE[x.life] && !ALLCARDS) { const D = s.t1 - s.t0, ta = s.t0 + x.at * D, te = s.t0 + x.end * D;
     if (on(t, ta)) { sc.cross = { u: t >= te - HF ? 1 : seg(t, ta - HF, te - HF), life: [], door: x.door, col: (byId[x.life] || {}).color || MAIN };
@@ -342,16 +340,26 @@ function lane(t, sc) {
   drawWrittenLane(g, pts, { text: laneText(L.text), color: L.color || MAIN, cap: (L.cap || 22) * S, scroll: (L.scroll || 0) * (t - sc.s.t0), merge: L.merge || 0, under: L.under === undefined ? 0.35 : L.under, upto, from });
 }
 
-// the runner kit: black paper, the lanes far (top, hairlines) to near (bottom, readable), runners on their lanes, ground scrolling right
-function kit(t, sc) {
-  const K = sc.s.opt.kit, n = K.lanes.length, f = (k) => Math.pow(k / (n - 1), 1.4);
-  const laneY = (k) => (0.36 + 0.59 * f(k)) * H, figH = (k) => (0.2 + 0.62 * f(k)) * H;
-  g.fillStyle = '#0D0D11'; g.fillRect(0, 0, W, H);
-  K.lanes.forEach((id, k) => {   // far to near: each lane, then the runner on it (nearer lanes pass in front of farther runners)
-    const col = id === 'main' ? MAIN : byId[id].color, cap = (4 + 30 * f(k)) * S;
-    drawWrittenLane(g, [{ x: 0, y: laneY(k) + cap * 0.9 }, { x: W, y: laneY(k) + cap * 0.9 }], { text: laneText(id), color: col, cap, scroll: -(t - sc.s.t0) * (4 + 10 * f(k)), under: 0.3, merge: 0.2 });
-    for (const im of sc.imgs) { const r = im.runner; if (r.lane !== id) continue; const b = READY.get(im.url), q = figH(k) / (0.95 * b.height);
-      g.save(); g.imageSmoothingQuality = 'high'; g.drawImage(b, r.x * W - 0.52 * b.width * q, laneY(k) - b.height * q, b.width * q, b.height * q); g.restore(); } });
+// b51-52: the fan of twelve afterimages (shots.js opt.fan): copies of her own cut-out (matte of the plate, same frame), each tinted in a
+// life's lane colour, rotated about a pivot low on her body; the fan opens over the first beat, then one folds into her every half beat
+// from beat 1.5 (twelve folds by beat 7), each with a short flash of its colour on her outline. She is redrawn on top: her face stays clear.
+let FANC = null;
+function fan(t, sc) {
+  const s = sc.s, F = s.opt.fan, im = sc.imgs[0], m = READY.get(sc.fan); if (!KITX) return;
+  if (!FANC) { FANC = document.createElement('canvas'); FANC.width = W; FANC.height = H; }
+  const fc = FANC.getContext('2d'), cr = cover(m.width, m.height, W, H, im.zoom || 1, im.fo[0], im.fo[1]);
+  const piv = plateToScreen(im, F.pivot[0], F.pivot[1]), b0 = Math.round(KITX.bpos(s.t0)), u = KITX.bpos(t) - b0, open = ease.out(clamp01(u));
+  const ids = F.lives, n = ids.length;
+  const herOnly = () => { fc.setTransform(1, 0, 0, 1, 0, 0); fc.globalCompositeOperation = 'source-over'; fc.globalAlpha = 1; fc.clearRect(0, 0, W, H); fc.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, W, H); };
+  let flash = null;
+  for (let j = n - 1; j >= 0; j--) {
+    const fj = 1.5 + 0.5 * j, k = clamp01((u - (fj - 0.5)) / 0.5); if (u >= fj) { if (u < fj + 0.35) flash = { col: byId[ids[j]].color, a: 1 - (u - fj) / 0.35 }; continue; }
+    const side = j % 2 ? 1 : -1, ang = side * (10 + 4.5 * (n - 1 - j)) * Math.PI / 180 * open * (1 - ease.io(k));
+    herOnly(); fc.globalCompositeOperation = 'source-atop'; fc.fillStyle = hexA(byId[ids[j]].color, 0.62); fc.fillRect(0, 0, W, H);
+    g.save(); g.globalAlpha = 0.55 * open; g.translate(piv.x, piv.y); g.rotate(ang); g.translate(-piv.x, -piv.y); g.drawImage(FANC, 0, 0); g.restore();
+  }
+  herOnly(); g.drawImage(FANC, 0, 0);
+  if (flash) { fc.globalCompositeOperation = 'source-in'; fc.fillStyle = flash.col; fc.fillRect(0, 0, W, H); g.save(); g.globalAlpha = 0.35 * flash.a; g.shadowColor = flash.col; g.shadowBlur = 30 * S; g.drawImage(FANC, 0, 0); g.restore(); }
 }
 
 // ---------------------------------------------------------------- the frame
@@ -364,14 +372,14 @@ function draw(t, sc) {
   g.fillStyle = BG; g.fillRect(0, 0, W, H);
   const s = sc.s, sec = SECTIONS[s.sec];
   if (sc.flash) drawImgs(sc.flash);
-  else if (sc.eff === 'plate') { drawImgs(sc.imgs); if (sc.cross) crossing(sc); }
+  else if (sc.eff === 'plate') { drawImgs(sc.imgs); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc); }
   else if (sc.eff === 'v7') {
     let b = READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = s.opt && s.opt.v7crop;
     if (vc) { if (!CROPC) { CROPC = document.createElement('canvas'); CROPC.width = W; CROPC.height = H; } const x = CROPC.getContext('2d'); x.imageSmoothingQuality = 'high';
       x.drawImage(b, vc[0] * b.width, vc[1] * b.height, vc[2] * b.width, vc[3] * b.height, 0, 0, W, H); b = CROPC; }
     if (paperPass && USE_PAPER) { g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else g.drawImage(b, 0, 0, W, H);
-  } else if (sc.eff === 'kit') kit(t, sc);
+  } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
   grain(t); vignette();
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.lane && !(sc.cross && sc.cross.u >= 1)) lane(t, sc);
@@ -384,7 +392,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc); if (HUD) hud(t, sc); return sc;
 }
 
@@ -396,12 +404,13 @@ async function boot() {
   measureMono(g);
   T = await loadTiming(TIMING);
   SH = resolveShots(T);
-  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); if (s.kind === 'kit') await findKit(s); }
+  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); }
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
   try { ({ paperPass } = await import('./paper.js')); } catch (e) { console.log('paper.js not loaded (' + String(e).slice(0, 80) + '); v7 shots are raw'); }
   try { ({ glyphPass } = await import('./glyph.js')); } catch (e) { console.log('glyph.js not loaded'); }
+  { const KJ = await json('/fable/take2/kit.json'); if (KJ) KITX = makeKit({ g, W, H, S, T, KJ, READY, drawWrittenLane, laneString, glyphPass, byId, MAIN, clamp01, lerp, ease }); }
   // take-two changes inside the proof range (all off with proofbug=1): the black-paper hero (hero_paper, nearest frame; hero=old for the
   // first one), written lanes on the ten lives (prooflanes=0 off), bar 38 panel afterimages (trail=0 off)
   const heroNew = !PROOFBUG && Q.get('hero') !== 'old' && (await findPlate('hero_paper'));
@@ -422,7 +431,7 @@ async function boot() {
   Object.assign(sizes, PROOF.sizes);
   // font px of each mono label too (the 24 px rule for chips and labels is a font-size rule)
   for (const k of Object.keys(sizes)) sizes[k].fontPx = parseFloat(sizes[k].font.match(/(\d+(\.\d+)?)px/)[1]);
-  const shots = SH.map((s) => ({ id: s.id, sec: s.sec, from: s.from, to: s.to, t0: s.t0, t1: s.t1, code: s.code, kind: s.kind, src: s.src, status: s.status, eff: effKind(s), found: s.kind === 'plate' ? !!PLATE[s.src] : s.kind === 'kit' ? (KIT[s.id] || []).map((r) => r.id) : null, flash: s.opt && s.opt.flash ? s.opt.flash : null, pic: s.pic }));
+  const shots = SH.map((s) => ({ id: s.id, sec: s.sec, from: s.from, to: s.to, t0: s.t0, t1: s.t1, code: s.code, kind: s.kind, src: s.src, status: s.status, eff: effKind(s), found: s.kind === 'plate' ? !!PLATE[s.src] : null, flash: s.opt && s.opt.flash ? s.opt.flash : null, pic: s.pic }));
   let ws = null, ack = null;
   async function post(i) {
     if (!ws) { ws = new WebSocket(`ws://${location.host}/__ws`); ws.binaryType = 'arraybuffer'; await new Promise((r) => (ws.onopen = r)); ws.onmessage = () => ack && ack(); }
