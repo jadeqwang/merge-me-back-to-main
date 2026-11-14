@@ -27,7 +27,8 @@
 //   tooth   0..1 how much the paper grain eats the marks (default .55)
 //   invert  white paper only: marks where it is LIGHT (a negative drawing) (default false)
 //   scale   internal raster scale (default 1; .75 draws at 75% and scales up: about half the time, softer marks)
-//   out     optional object; receives { ms, strokes, prof }
+//   out     optional object; receives { ms, strokes, prof }    skip  debug: 'h' no hatch, 'c' no contour, 't' no tooth
+const h3 = (a, b, c) => Math.sqrt(a * a + b * b + c * c);
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 function hash3(a, b, c) {
   let h = Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263) + Math.imul(c | 0, 1274126177);
@@ -186,7 +187,7 @@ export function paperPass(ctx, src, rect, opts = {}) {
     let bi = -1, be = opts.lineMin ?? .3;
     for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) { const i = (cy + dy) * AW + cx + dx; if (E[i] > be) { be = E[i]; bi = i; } }
     if (bi < 0) continue;
-    const gx = b1[bi + 1] - b1[bi - 1], gy = b1[bi + AW] - b1[bi - AW], gm = Math.hypot(gx, gy); if (gm < 1e-5) continue;
+    const gx = b1[bi + 1] - b1[bi - 1], gy = b1[bi + AW] - b1[bi - AW], gm = Math.sqrt(gx * gx + gy * gy); if (gm < 1e-5) continue;
     const ex = -gy / gm, ey = gx / gm, hx = hash3(cx, cy, seed + bstep * 17), hy = hash3(cy, cx, seed + 3 + bstep * 17);
     const X = ((bi % AW) + .5) * 2 + (hx - .5) * 1.6 * S * boil, Y = (((bi / AW) | 0) + .5) * 2 + (hy - .5) * 1.6 * S * boil;
     const l = (4.5 + 4 * hx) * S, a = (hy - .5) * .35 * boil, ca = Math.cos(a), sa = Math.sin(a), ux = ex * ca - ey * sa, uy = ex * sa + ey * ca;
@@ -200,12 +201,12 @@ export function paperPass(ctx, src, rect, opts = {}) {
     const q1 = side ? null : blur(O1, QW, QH, 1.3, an.ct, an.p1), q2 = side ? null : blur(O1, QW, QH, 2.3, an.ct, an.p2), q3 = side ? null : blur(O2, QW, QH, 1.3, an.ct, an.p3), q4 = side ? null : blur(O2, QW, QH, 2.3, an.ct, an.p4);
     const thr2 = opts.coarseDetail ?? (side ? .03 : .007), kq = opts.coarse ?? 1;
     for (let qy = 1; qy < QH - 1; qy++) for (let qx = 1; qx < QW - 1; qx++) {
-      const i = qy * QW + qx, d0 = c1[i] - c2[i], d = side ? d0 * side : Math.hypot(d0 * .3, (q1[i] - q2[i]) * .5, (q3[i] - q4[i]) * .5) * .8;
+      const i = qy * QW + qx, d0 = c1[i] - c2[i], d = side ? d0 * side : h3(d0 * .3, (q1[i] - q2[i]) * .5, (q3[i] - q4[i]) * .5) * .8;
       let e = clamp01((d - thr2) / (thr2 * 1.5)) * kq; if (e < .3) continue;
       // only at the ridge across the edge: the strongest of its neighbours along the gradient
-      const gx = c1[i + 1] - c1[i - 1], gy = c1[i + QW] - c1[i - QW], gm = Math.hypot(gx, gy); if (gm < 1e-5) continue;
+      const gx = c1[i + 1] - c1[i - 1], gy = c1[i + QW] - c1[i - QW], gm = Math.sqrt(gx * gx + gy * gy); if (gm < 1e-5) continue;
       const nx = gx / gm, ny = gy / gm, ia = (qy + Math.round(ny)) * QW + qx + Math.round(nx), ib = (qy - Math.round(ny)) * QW + qx - Math.round(nx);
-      const dq = (k) => side ? (c1[k] - c2[k]) * side : Math.hypot((c1[k] - c2[k]) * .3, (q1[k] - q2[k]) * .5, (q3[k] - q4[k]) * .5) * .8, da = dq(ia), db = dq(ib);
+      const dq = (k) => side ? (c1[k] - c2[k]) * side : h3((c1[k] - c2[k]) * .3, (q1[k] - q2[k]) * .5, (q3[k] - q4[k]) * .5) * .8, da = dq(ia), db = dq(ib);
       if (da > d || db > d) continue;
       e *= clamp01((nl(qx * 2, qy * 2) - lift * .5) * 3); if (e < .3) continue;
       const hx = hash3(qx, qy, seed + 77 + bstep * 17), hy = hash3(qy, qx, seed + 78 + bstep * 17);

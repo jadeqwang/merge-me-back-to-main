@@ -58,9 +58,39 @@ thresh .12, floor .22, depth [.69, .71] with dither 0 (near cells for the audien
 - `fable/take2/tools/fx/test8_paper.sh`, `fable/take2/tools/fx/test10_glyph.sh`: the two tests end to end.
 - v7 sources: `node fable/tools/render.mjs --show /fable/show/main.js --q "notype=1&nohud=1" --stills T:out.png` (OLD song time).
 
-## Timing (1080p, headless Chrome, software raster, machine loaded by other renders, so upper bounds)
-See the status section below for the latest numbers.
+## Timing (1080p, headless Chrome with --disable-gpu = software raster; machine load 20-45 from other agents' renders, so these are
+upper bounds; warm medians from `fx.mjs --time 15`)
+- Paper, black paper (kick / MAIN): about 63 / 83 ms. White paper (both-side contour + colour coarse edges): about 70-100 ms after
+  replacing Math.hypot. `scale: .75` exists but did not measure faster under this load. Over the 60 ms target by up to 1.5x; the
+  JS part is about 45 ms (analysis 10, blurs + edge field 22, contour gen 5-20), the rest is Skia rasterising the strokes.
+  First call per size adds about 150-250 ms (paper sheet and tooth are built once and cached).
+- Glyph: about 33 ms without a keep mask, 40-65 ms with one (2,200-3,000 cells; the layer is composed in a JS pixel buffer: the
+  per-cell drawImage version was about 5x slower).
+
+## Outputs (work_fable/take2/tests/)
+- paper/kick_sheet.png, kick_sheet_half.png (source | black paper gold-and-black | white paper with gold ink), kick_black.mp4,
+  kick_white.mp4 (3 s, 30 fps, 1080p, source 152.6-155.6 old time), kick_triptych.mp4 (half size).
+- paper/above_*: the same for MAIN from above (167.5; frames 166-169).
+- glyph/glyph_sheet.png, glyph_sheet_half.png (source | source colour | lane palette), glyph_still.png, glyph.mp4 (3 s from the
+  24 fps frames), glyph_side.mp4. Masks: glyph/keep_still.png, glyph/keep_frames/. Options: glyph/opts_glyph.json.
+
+## Frank assessment (judged on stills and frame strips only; nobody has watched either at speed)
+- Paper, gold on black (the kick): the strongest. Reads as gel pen or chalk on black: crosshatched sun with a rubbed core,
+  silhouettes left as bare paper with a sketchy rim, hatch directions turning across the frame. Still visibly procedural in the
+  glow (uniform hatch density field), and the crowd rim lines are busy.
+- Paper, white (the kick): reads as a pencil sketch; the sun is an open circle drawn twice; the figure is crosshatched. The upper
+  sky corners pick up loose hatching (the sky is darker there in v7).
+- Paper, MAIN from above: works as a drawing of a crowd (tick marks per figure), but white paper is dense and dark (the letters are
+  almost solid crowd); black paper has orange hatching over the top letters from v7's glow.
+- Boil: deterministic, steps at 12 fps (checked: two times in one step give identical md5, next step differs). Every stroke is
+  re-laid each step, so the boil is strong; at speed it may read as too nervous: `boil` < 1 scales the jitter (not tested at speed).
+  The boil fights compression: 3 s at crf 16 is 16-31 MB (40-80 Mbit/s). Delivery encodes will need care.
+- Glyph: every character is a real JetBrains Mono glyph; the screen becomes a terminal of real commit lines (lives.js plus this
+  repo's git log), readable when paused; her figure is untouched (BiRefNet keep mask). Weakest part: the audience below the
+  screen reads only as loose glyph clusters (the source's audience is black heads on a near-black ground). The MMORPG reference's
+  "alive" density is only partly there: the background imitation-text columns come through as dim ramp glyphs.
 
 ## Status
-- Paper pass: built; test 8 rendered. Glyph pass: built; test 10 rendering.
-- Next: speed (paper is over the 60 ms target under load), glyph audience reads weakly (heads), judge both at speed.
+- Both passes built and committed; tests 8 and 10 rendered.
+- Next: watch the mp4s at speed (boil strength, shimmer); speed of the paper pass (coarse edge step, then raster); the glyph
+  audience (a hand-placed depth mask for the heads, or edge glyphs with a lower edgeT); decide the MAIN white-paper density.
