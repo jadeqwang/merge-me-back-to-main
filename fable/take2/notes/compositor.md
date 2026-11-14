@@ -194,3 +194,27 @@ What is wired (all in `shots.js` opts + `src/film.js`; proof-range changes in `t
 
 Mistake to avoid: two edits put a `// comment` before the closing `);` of a shot line in shots.js and the page failed to boot (the
 harness prints "module error ... shots.js:N"). Check with `node -e "import('./fable/take2/shots.js')"` after editing shots.js.
+
+### Director's strip notes applied (same evening)
+main_split 0.5-3.2 s; doorway entries wushu 3.5, ames 2.7, hacker houses 2.7, wetlab 3.0 (the wipe starts as she enters, so the
+clip's white-out is never the picture); main_light 2.0-4.5 s (no extra rays drawn: the spark reads on stills); main_back_wide the
+whole pull-out 0-3.0 s; cross_violet natural speed from 0 (uses 0-1.74 s, inside the 0-3 s asked); look_back from 0 (ends at
+1.73 s, before the blink at 2.6 s); hero_feet from 0 (opens on a strike). **b43 is a card again**: runner_main take 1 is cropped
+at the feet and is being retaken; the kit code stays, switched off by `kit.off: true` in shots.js (remove it, re-cut the new take
+with matte.py into work_fable/take2/kit/runner_main, and b43 builds).
+
+### Section 2 v1 render (bars 16-57, 26.35-99.19 s)
+    rm -rf work_fable/take2/out/keep_section2_v1
+    node fable/take2/tools/render.mjs --mp4 work_fable/take2/out/film_section2_v1_master.mp4 --range 26.35:99.187 \
+      --audio "inputs/Merge (keychange down).wav" --workers 6 --crf 16 \
+      --keep 870,1040,1095,1335,1600,1960,2130,2210,2330,2560,2900 --keepdir work_fable/take2/out/keep_section2_v1
+    # review encode (CRF 20, capped 4.5 Mb/s) and 4 fps sheets (8x6): see the ffmpeg lines in render_film.sh, same flags
+    .venv/bin/python fable/take2/tools/check.py work_fable/take2/out/film_section2_v1_master.mp4
+2185 frames in about 110 s (6 workers). review/fable_take2/section2_v1.mp4 35.8 MB; sheets section2_v1_sheet_01..07.jpg.
+check.py: 36 hard cuts, mean |error| 0.33 fr, 35 within 0.5 fr; the one outlier is pc03 (+1.89 fr, the proof's own bar 38
+transition, as in the animatic). Type: all rule-5 sizes pass (verse 66, slab 105, proof slab 106; written lanes in this section
+cap 24-34, font 33-47 px). Lyrics: no word under 0.6 s. Single frame vs full render: 11 frames, max diff 0.
+Known: a region lyric does not lay out a word sung in the last 0.15 s of a shot (it appears on the next shot's first frame
+instead; check.py's word-duration check does not see this). The "Merge me back to main" slab re-sets at bar 43 (card strip) and b44
+in its own layout after the proof's stacked one. The 4 fps sheets' timestamp box hides the top of top-placed slabs (sheet only).
+Nobody has watched it at speed with sound.
