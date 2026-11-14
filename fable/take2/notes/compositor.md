@@ -277,3 +277,34 @@ Orchestra (b81-84):
   weak: 1 (streak firework of arcs), 7 and 8 (dense wides become a field of marks; the fan shape reads in 7), and the sky's horizon
   glow is hatched in every low shot. light: all eight read as pictures, but it is close to the raw 3D (purple trousers, blue sky
   gradient, shading): it breaks "v7 never raw" in spirit; 1 still a firework.
+
+## Step 3: intro (b1-16), breakdown (b57-72), build (b73-88) (2026-11-14, night)
+
+- **Still-only plates** (meta {"still": true} + still.jpg) count as plates; drawn from still.jpg with the shot's push (det_* 4-5 %,
+  stances 4 %). STANCE ids are now stance_bow, stance_horse, stance_drop, stance_drop2 (no true empty stance).
+- **Intro A**: root b1-2 as before (clip from 1.0, frame 0 no fade-in, chip); root_fork from clip 1.15 at 1.05x (the fork into two on the
+  bar 3 line, branching on through bar 4); root_face clip 0-3.0 (before the blink), counter on the LEFT (her face is right);
+  root b7-8 from clip 2.0 at 0.85x pulling back, twelve frost tips (`opt.tips`, plate fractions measured on root frame 84) glow in
+  the lives' lane colours one per half beat from beat 2 of b7. Counter 2..64 on b3-8 as before.
+- **Intro B**: no counter from b9 (the v7 tree cannot be matched to a doubling count: the coordinator's fallback). MERGE title b9,
+  flashes on beat 3 of b11-14 as before (piano, wushu, ames, violet: the table's "the dish"; the coordinator's message said sandstorm,
+  the PLAN row says the dish: kept the PLAN), main_palm clip 1.0-3.0 for the last two beats of b16.
+- **Breakdown A**: float_top with written strands (`strands()`, FLOAT in shots.js): twelve strands from 70 % of the way head->hair end
+  straight to the frame edge, each written with its branch name and commit message (cap 22, under-band). The clip turns and pulls
+  back, so the strands follow the similarity that maps head+left foot at clip 2.0 s to head+foot now (FLOAT.track, measured at 0, 2, 5 s).
+  Modes: grow (b57-58, written out over 3 beats), double (b60, each forks in two), rotate (b61-62: plate and strands turn 7 deg and
+  pull out 20 %; the piano plate as a window glides inward along the piano strand), pulses (b63, one per sixteenth, light runs home
+  along each strand). float_face b59 (lyric bottom left), float_hand clip 1.0-3.5 (the light arrives at about 2.5 s).
+- **Breakdown B**: det_* one per beat b65-68 with the life's commit message written under it (cap 28, writes on in 0.12 s); float_face
+  every 4th beat, clip 0.5/1.3/2.1/2.9 + 0.43 s (never past 4.0: eyes open at 4.1); rise b69 from 0 (it ends at 1.73 s, before the
+  bloom and smile); b70-71 the details again two per half beat with new crops (zoom 1.55, then 2.1 for the last four) and a 2-frame
+  white flash on beats 2 and 4 (the snare); b72 kind 'code' tiles: the twelve tile in on sixteenths (4 x 3) and collapse to a point.
+  Lyrics in b65-71 at the top (details) / bottom left (face).
+- **Build**: b73-76 stance stills on the bar line (one beat, 2-frame white flash), then `gitlog()` (kind 'code'): real messages from
+  proof/lives.js + main, branch names, hashes from hashOf(id#n), graph columns; rows scroll at 2, 4, 8, 16 per beat, a faint pop on each
+  beat; mono 34 px. No glyph pass (plain text read better and stays real). b77-80 v7 + stance on beat 3; b81-84 orchestra (solid);
+  b85 seq 09 from beat 2 (orchestra holds into it); b87-88 the flashes as before.
+- Renders: section1_v1 (0-29.823 s, bars 1-17) 15.5 MB, 3 sheets; section3_v1 (95.727-154.514 s, bars 56-89) 33.9 MB, 5 sheets.
+  check.py section1: 14 hard cuts, max 0.45 fr, mean 0.27; section3: 65 clear cuts mean 0.33 fr, outliers bu37/bu39 (+2.8 fr, the
+  3-frame flash ends, as in the animatic); "no clear change" on bb16, bb22, bb31 (similar crops or face to face), bu09 (stance into
+  v7), dr01. Type, lyrics pass; single frame vs full: 7 + 12 frames, max diff 0.
