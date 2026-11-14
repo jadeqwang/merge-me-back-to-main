@@ -10,6 +10,8 @@ Commons, one per building, licence in each `SOURCE.json`) in `work_fable/take2/v
 ## Spend
 
 - Start: $525.40 (whole project). After first group of stills + 8 clips: $539.51.
+- Close: **TOTAL $541.82 of $600 cap** (whole project, list-price estimates). My lines: $16.42 (19 stills, 12 clips including the
+  rejected `main_split_v2` and `main_light_v2` take 1). No cap change was needed.
 
 ## Items
 
@@ -74,8 +76,38 @@ move. The film keeps `main_split`. Clip kept at `media/gen/t2_main_split_v2_t1_3
 
 **11. main_light_v2**. Look at v1: the hands are frozen; the only motion is the push-in, and the light only appears at 2.25 s. t1
 (locked camera): the light kindles at 0.25 s (bright by 0.5); the hands move (optical flow 3-6 px per 0.25 s) but only from 1.5 s:
-no 1.75 s window has both. Take 2 submitted with stronger wording (movement from the first frame, fingers part to let the light
-out, hands lift at 2 s).
+no 1.75 s window has both. Take 2 (stronger wording: movement from the first frame, fingers part to let the light out, hands lift
+at 2 s; the first version of that prompt was 2020 characters and the catalog refused it: the limit is 2000) ACCEPTED and intaken:
+the hands move from 0.25 s and keep moving in waves (open wider 0.25-0.5, close round the light 1.0-1.5, lift 2.0-2.5, shift
+3.25-3.75; optical flow up to 30 px per 0.25 s), each hand five fingers. Trade-off: in take 2 the light is already a small point at
+frame 0 and its glow swells over the palms 0.25-0.5 s (it does not kindle from nothing; take 1 did, at 0.25 s, but its hands were
+still until 1.5 s). Chose take 2 because the note was about the hands. **Best 1.75 s window: 0.0-1.75** (glow swells 0.25-0.5,
+hands open and close round it). Take 1 kept as a clip only (`media/gen/t2_main_light_v2_t1_4ec9453f9f.mp4`).
+
+**8. band_v2** (life plate, replaces `band` everywhere). The old band plate (`work_fable/proof/plates/band`, clip
+`pf_band_t3`): a club with a crowd packed in front and a van seen through the open back door: it reads as a club gig, not
+Hacker Dojo (strip `dev/v3_plates/band_old_pf_t3.jpg`). Structure of the old clip: sings and strums 0-2.5 s, turns ONLY her head
+over her left shoulder from about 2.5, motion peak 2.62, settled 3.3, holds; `turn_t` 2.6; first frame `work_fable/proof/refs/band.jpg`,
+last frame `work_fable/proof/turns/band.jpg`. New first frame `band_v2_a2` (edit of the old first frame, one ref: the three musicians
+kept, the room changed to a hackerspace: truss ceiling with ducts and strip lights, whiteboards with unreadable scribbles,
+folding tables with laptops, soldering iron and wire, office chairs, a closed roll-up door, three people watching, two with
+laptops; no bar, no stage, no drinks, no signs). `band_v2_a1` lost the second bandmate: rejected. Turn frame `band_v2_turn_a1` =
+edit of a2 (head turned, the film's face): the face matches the old approved turn frame closely. Clip t1 (first a2, last turn,
+the proof's own prompt structure) ACCEPTED: sings and strums 0-2.5, head turn from 2.5 (motion peak 2.58, as the old 2.62),
+settled 3.6 (old 3.3, so the look arrives 0.3 s later), holds to 5.0. `meta.json`: `turn_t 2.6` (same as the old plate),
+`focus [0.32, 0.35]`. **Her side of the frame is LEFT** (x 0.08-0.45; the old plate counted as 'right' in `lives.js`), so type goes
+right; but the right side is a busy room (whiteboards, tables); the calmest area is the ceiling band x 0.5-1.0, y 0.0-0.18.
+
+**4. vio_wide_v2**. Same still `vio_wide_a1`. Clip t1 ACCEPTED: the model reframed as it did for v1 (figure about 0.15-0.2 of the
+height, not one eighth), but held it: she runs 0-1.5 s (arms pumping), jogs 1.5-2.5, walks from about 3.0 to 5.0, moving left from
+x 0.73 to x 0.49. Track (every 0.25 s; her centre x and feet y, feet from a fit of the violet line `y = 0.1288 x + 510.3` px) in
+`work_fable/take2/plates/vio_wide_v2/track.json`. NOTE the plate's own violet line runs ahead of her to x 0.31 (and to the right
+edge behind her): to make the lane end at her feet, mask the drawn line left of her feet.
+
+**7. wave_run_v3**. Same still `wave_run3_knees` (the take 2 still). Clip t1 ACCEPTED: sprints at the lens all through, framing held
+knees-up, patch on her left arm (picture right), one face. Expression: calm and slightly smiling 0-1.25 (not as "set" as asked),
+a blink at 1.5, **glance up and back over her shoulder 1.75-2.5** (profile at 2.25), forward again 2.75, **open smile from 3.25**
+to the end (teeth showing, glad). The wave's crest breaks into white spray from 2.75, largest 3.5-5.0.
 
 **6. Facades** (`facade_<life>_v2`, still-only plates, cut-outs `kit/facade_<life>_v2` by `matte.py`). One reference photo each
 (Wikimedia Commons; `v3refs/<life>/SOURCE.json` has title, URL, licence): Roble Gym 2013 (`Roble Gym Stanford April 2013 002.jpg`),
@@ -100,4 +132,9 @@ than tall. No model-drawn text on any.
 | `hero_paper_v2` | `hero_paper` b41-42 (69.7-73.2) | lay clip 0 at song 69.2 (so the shot is clip 0.5-4.0) | mouth already open on "Merge" at the cut; "me" closure at 71.82 | sides x 0.0-0.3 and x 0.7-1.0 above y 0.55 (coloured lines below) |
 | `main_face_v2` | `main_face` b17 (28.09-29.82) | lay clip 0 at song 27.6 (shot = clip 0.49-2.22) | "I" at 28.675 (clip 1.07), "my-" closure 29.16 | left x 0.0-0.45 (dark, stars, orange line at y 0.48) |
 | `vio_empty` | still, crossed under `vio_still` b118-120 | still | matches `vio_still` frame 121 exactly; earlier frames need the scale above | as vio_still |
-| `facade_wushu_v2` .. `facade_band_v2`, `facade_home_v2` | town facades b139-142, b147-148 | stills; cut-outs in `kit/facade_<life>_v2/rgba/f_0001.png` | | home is wider than a house front (cut-away room) |
+| `facade_wushu_v2` .. `facade_band_v2`, `facade_home_v2` | town facades b139-142, b147-148 | stills; cut-outs in `kit/facade_<life>_v2/rgba/f_0001.png` | | cut-out heights differ from v1 (frame fractions): wushu 0.68 (v1 0.66), phd 0.68 (0.74), wetlab 0.88 (0.61), ames 0.57 (0.92; long and low, x 0.07-0.97), band 0.49 (0.70; low unit), home 0.86 (0.60; cut-away room, x 0.20-0.81). Base lines at y 0.84 (wushu), 0.88 (phd), 0.94 (wetlab), 0.81 (ames), 0.77 (band), 0.93 (home): normalise by bbox. Matte flaws: wetlab_v2 has a thin dark sliver down its left column; phd_v2's right edge is ragged where the wall met the graph paper |
+| `main_light_v2` (take 2) | `main_light` b25 (41.99-43.73) | **0.0-1.75** | glow swells 0.25-0.5; cup opens 0.25-0.5 and closes 1.0-1.5 | as v1 (locked camera now, no push-in): black above the hands y 0.0-0.12 between the sleeves only |
+| `band_v2` | `band` everywhere (verse b28-32, the b37 grid, flashes) | 0.0-2.5 playing; turn from 2.5 | **turn_t 2.6** (same as `band`); look settled 3.6 | her side LEFT (x 0.08-0.45); calmest area the ceiling x 0.5-1.0, y 0.0-0.18; grid focus [0.32, 0.35] |
+| `vio_wide_v2` | `vio_wide` b105-106 (3.4 s) | 0.0-3.4 (run, jog, walk; the walk from 3.0 meets `vio_walk`); or 1.6-5.0 to land fully in the walk | slows to a walk at about 3.0 s | track.json: x 0.73 -> 0.49, feet y 0.876 -> 0.821; sky above y 0.55 |
+| `wave_run_v3` | `wave_run` b145-146 | 1.4-4.8 as v2 (glance 1.75-2.5, smile from 3.25) | glance back over the shoulder 2.25; smile breaks 3.25 | as `wave_run` v2: slab low y 0.75-0.97 or upper corners |
+| ~~`main_split_v2`~~ | rejected: keep `main_split` | | | |
