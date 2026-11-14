@@ -405,6 +405,128 @@
    "view": "front",
    "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
    "scene": "Blue hour, on bare black paper. She holds a wushu drop stance: one leg bent in a full deep squat with the heel down, the other leg stretched out straight to the side close to the ground with the foot flat, torso upright and turned toward the straight leg, one arm reaching along that leg and the other raised behind. The stance is exact and strong, as a trained athlete would hold it. Her whole body is in the picture, about three quarters of the picture's height, in the centre, seen from the front three-quarter. A cool blue rim of light is drawn along one edge of her body with strokes of blue pencil, and a thin orange line runs level under her feet. Her face is calm and focused, lips closed. Her hair swings with the movement. Nothing else: empty black paper."
+  },
+  {
+   "id": "vio_wide",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. A very wide view. She is a tiny figure, about one eighth of the picture's height, walking toward the left along one thin straight violet line that crosses a dark empty plain from the right edge to the left edge, low in the picture. Above her, filling most of the picture, the great band of the Milky Way. Far off on the left horizon, very small, a radio telescope dish. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "vio_walk",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. A medium shot from the side. She walks toward the left along a thin violet line, seen exactly side-on from the knees up, in the right half of the picture, her face in profile, calm, lips closed, looking ahead; we see her left arm with the round patch. The left half of the picture is open night sky. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "vio_close",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. A close-up of her head and shoulders in profile, facing left, in the right half of the picture: her face tilted a little upward toward the stars, calm and curious, lips closed, eyes open; the bun with its two pencils clearly seen. The left half of the picture is the engraved Milky Way. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "vio_lookback",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. She has stopped walking and stands seen from behind from the hips up, in the left half of the picture, her body facing away to the left, and she turns her head to look back over her shoulder toward the RIGHT side of the picture, her face in profile, a quiet look of recognition, lips closed. Far away at the right edge of the picture, low on the horizon, there is one thin sliver of sunrise in full warm colour, gold and orange, the only warm colour in the picture, very small and far. The back of her jacket with the pale-blue circle is clearly seen. Because we see her from behind, her LEFT arm is on the LEFT side of the picture and carries the round 1420 MHz patch; the arm on the right side of the picture is her right arm and has a violet band but NO patch. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "vio_climb",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. Seen from below and behind: she climbs a steel ladder up the side of the great radio telescope dish toward its rim, one hand reaching for the next rung, her back to the viewer, small against the huge curved lattice of the dish, which fills the picture diagonally, with the Milky Way above the rim. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "vio_pencil",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. A close-up from behind her left shoulder: her right hand is raised to her bun and is drawing one of the two yellow pencils out of it; we see the back of her head, the bun, her hand with exactly five fingers, and the edge of her cheek, not her whole face. Her raised right arm has a violet band but NO round patch; the round patch is only on her other, left arm, which hangs at the left edge of the picture. Beyond her, the open engraved sky. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "vio_write",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. She sits on the rim of the dish, seen from behind from the waist up, in the lower right of the picture, her right arm stretched up and out toward the upper left, holding a yellow pencil like a pen, its point touching the empty night sky as if writing on it. The whole upper left of the picture is clear dark sky with only faint stars: nothing is written there, no lines, no letters. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "vio_release",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. She sits on the rim of the dish, seen from behind from the waist up, in the lower left of the picture, her right hand lifted and open, palm up, toward the upper right, as if she has just let something go into the sky; her head is tilted up, following it. Her lifted right arm has a violet band but NO round patch; the round 1420 MHz patch is only on her LEFT arm, which is on the left side of the picture resting at her side. The upper right of the picture is clear dark sky with faint stars and nothing else. At the far right edge, on the horizon, a thin sliver of warm gold sunrise, very small. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "vio_still",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/violet/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same scratchboard engraving style as the reference: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. It shows the same woman as the reference, with the same face and the same clothes: black hair in a bun with two yellow pencils pushed through it, violet headphones round her neck, a white cropped bomber jacket with one violet band round each upper arm and a round white 1420 MHz patch with a black ring on her LEFT upper arm only, the back of the jacket plain white with only a large pale-blue circle and the small words RARE EARTH and no band or stripe across it, very wide dark trousers with violet straps, chunky white trainers. Violet (her bands, straps and headphones) and the pale blue of the circle are the only colours; everything else is white lines on black. She sits quite still on the rim of the dish, seen from directly behind from the hips up, in the centre of the picture, her hands resting in her lap, her head level, looking out at the Milky Way, which fills the sky before her. The back of her jacket with the pale-blue circle is clearly seen. Calm and complete. Deep night far from any city, the Milky Way engraved in thousands of tiny cuts. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than on her jacket."
+  },
+  {
+   "id": "drop_face",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper, at sunrise: the only colours in the whole picture are GOLD and BLACK, plus the white of her jacket and her own flat skin and hair tones; light is drawn only as hand-made strokes of golden pencil; no gradients, no glow, no bloom, no photographic sky, no 3D.",
+   "scene": "A close-up of her face and shoulders, in the centre, her face lifted a little to the sun, eyes closed, breathing, calm and full, lips closed; a rim of gold pencil light along her cheek, hair and shoulders. Behind her a huge sun disc is drawn as a flat circle of gold pencil hatching on the black paper, filling much of the picture."
+  },
+  {
+   "id": "drop_hero_1",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper, at sunrise: the only colours in the whole picture are GOLD and BLACK, plus the white of her jacket and her own flat skin and hair tones; light is drawn only as hand-made strokes of golden pencil; no gradients, no glow, no bloom, no photographic sky, no 3D.",
+   "scene": "An extreme close-up of her eyes and brow only, filling the picture from edge to edge: her eyes just opened, steady and bright, looking straight at the viewer, a bar of gold pencil light across them, strands of black hair crossing the frame. No mouth in the picture."
+  },
+  {
+   "id": "drop_hero_2",
+   "lane": "orange",
+   "view": "none",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper, at sunrise: the only colours in the whole picture are GOLD and BLACK, plus the white of her jacket and her own flat skin and hair tones; light is drawn only as hand-made strokes of golden pencil; no gradients, no glow, no bloom, no photographic sky, no 3D.",
+   "scene": "An extreme close-up of her bare fist closing (a bare hand in her flat warm skin tone, not a glove), seen from the side, with the white cuff of her jacket sleeve, a rim of gold pencil light along the knuckles, and a few short gold strokes flying off it. The fist has exactly four fingers and a thumb, simply and correctly drawn. No face, no body. The background is black paper."
+  },
+  {
+   "id": "drop_hero_3",
+   "lane": "orange",
+   "view": "none",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper, at sunrise: the only colours in the whole picture are GOLD and BLACK, plus the white of her jacket and her own flat skin and hair tones; light is drawn only as hand-made strokes of golden pencil; no gradients, no glow, no bloom, no photographic sky, no 3D.",
+   "scene": "A close-up of her bare open palm thrust straight toward the viewer, fingers together and upright, thumb tucked, in her flat warm skin tone, filling the centre of the picture; behind it only the plain white cuff and forearm of her white jacket sleeve, with no badge, no stripes on the cuff and no lettering; rim-lit in gold, with short gold pencil strokes bursting outward around the hand. The hand has exactly five fingers, simply and correctly drawn. No face, no chest, no body. The background is black paper."
+  },
+  {
+   "id": "drop_hero_4",
+   "lane": "orange",
+   "view": "side",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper, at sunrise: the only colours in the whole picture are GOLD and BLACK, plus the white of her jacket and her own flat skin and hair tones; light is drawn only as hand-made strokes of golden pencil; no gradients, no glow, no bloom, no photographic sky, no 3D.",
+   "scene": "A close-up of her head in profile, facing left, as she turns fast: her long black hair whips out behind her in a great arc across the picture, each strand edged with gold pencil light; her face is calm and focused, lips closed, eye open. Behind her a huge sun disc is drawn as a flat circle of gold pencil hatching on the black paper, filling much of the picture."
+  },
+  {
+   "id": "drop_hero_5",
+   "lane": "orange",
+   "view": "none",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper, at sunrise: the only colours in the whole picture are GOLD and BLACK, plus the white of her jacket and her own flat skin and hair tones; light is drawn only as hand-made strokes of golden pencil; no gradients, no glow, no bloom, no photographic sky, no 3D.",
+   "scene": "A low, close view at ground level of her two chunky white trainers landing together on flat ground, knees bending to absorb the landing, the wide hems of her navy trousers and an orange strap swinging; where the feet land, short gold pencil strokes burst outward along the ground. Only her feet and lower legs are in the picture. The ground is a single level gold line on black paper."
+  },
+  {
+   "id": "vio_lookback_fix",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/vio_lookback_b1.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same scratchboard engraving style, except two things. First: remove the round white patch from her arm completely, so that the arm on the right side of the picture has only the plain violet band round it and no patch, no ring and no lettering. Second: take the headphones off her ears and put them round her neck, resting on her collar, so that her ear and the side of her head are bare. Nothing else changes: same pose, same face in profile, same jacket back with the pale-blue circle and the words RARE EARTH, same sky, same sliver of sunrise."
   }
  ]
 }
