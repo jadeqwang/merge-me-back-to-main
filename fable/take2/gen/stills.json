@@ -53,6 +53,126 @@
     "inputs/character_sheet.png"
    ],
    "prompt": "Edit the first image. Keep the same woman in exactly the same pose, the same framing, the same size and position in the picture, the same outline. Change only how she is drawn: the patchwork of different art mediums and the torn-paper seams are gone, and she is now drawn in ONE clean style, a flat cel-shaded anime drawing with a clean inked line and her true full colours, exactly as on the character sheet (the second image): black hair, a white cropped bomber jacket with one orange band across the front of the chest and one orange band around each upper arm, a small pale-blue circle on the chest, a round white 1420 MHz patch with a black ring on her LEFT upper arm (the right side of the picture), a black top, navy cargo trousers with orange straps, orange headphones round her neck. Her face is the character sheet's face: large very dark brown eyes, soft straight brows, calm, lips closed, eyes open, looking at the viewer. Behind her, in place of the white paper, a simple bright morning: a pale blue sky with a few soft flat clouds and warm daylight, drawn in the same flat cel style on white paper. The picture fills the whole frame. No text other than 1420 MHz on the patch."
+  },
+  {
+   "id": "main_face",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. A close three-quarter portrait of her head and shoulders, placed in the right half of the picture; she looks toward the left side of the picture, a little past the viewer, eyes open, calm and resolved, lips closed. Her hair stirs slightly. The left half of the picture is empty black paper, crossed only by one thin straight orange pencil line that runs level across the picture behind her at shoulder height. A warm orange rim of light is drawn along the edge of her cheek and hair with a few pencil strokes. A few small white gel-pen stars."
+  },
+  {
+   "id": "main_split4",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. FOUR identical copies of her stand in a row across the picture, full length, each about two thirds of the picture's height, each a whole complete body, evenly spaced with a little gap between them, all facing the viewer, each in mid step outward as if they have just stepped apart from one another, the two on the left stepping to the left and the two on the right stepping to the right. They are the same woman four times with the same face, hair and clothes. The only difference: the first has orange bands, straps and headphones, the second rose pink, the third golden yellow, the fourth mint green. Under each one's feet a thin straight drawn line in her own colour runs from her feet toward the bottom edge of the picture, the four lines fanning apart. Nothing else: empty black paper."
+  },
+  {
+   "id": "cross_wushu",
+   "lane": "coral red",
+   "view": "backc",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper, seen from low down and directly behind her. She runs straight away from the viewer along a single straight thin coral-red line drawn on the black paper, which runs from the bottom centre of the picture to a doorway in the middle distance, a little above centre. The doorway is a tall upright rectangle standing alone in the dark, with no wall around it, and the picture inside it is a traditional woodblock print on warm handmade paper, in ink black, indigo and pale grey with bold carved key lines and visible wood grain: the empty wooden floor of a martial-arts training hall with a rack of long staffs and straight swords against the back wall. Short hand-drawn strokes of light fan out from the doorway onto the black paper around it. Everything outside the doorway is bare black paper with nothing drawn on it except the one thin line she runs on. The coral-red line runs straight into the bottom edge of the doorway and she is running along it directly toward the doorway, which is straight ahead of her. Her LEFT arm, on the LEFT side of the picture, carries the round patch; the arm on the right side of the picture has no patch. She is in mid stride, about one third of the picture's height, in the lower middle of the picture, her hair swinging."
+  },
+  {
+   "id": "cross_ames",
+   "lane": "bright blue",
+   "view": "back",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. She runs away from us along a single straight thin bright-blue line drawn on the black paper, which leads from the bottom right corner of the picture to a very large doorway that fills most of the left half of the picture; she is only a few strides from it. The doorway is a tall upright rectangle standing alone in the dark, with no wall around it, and the picture inside it is a smooth airbrushed painting in shades of one cool grey-teal, like a 1970s space-agency concept painting: the inside of a giant wind tunnel with its enormous curved turning vanes towering overhead and shafts of pale light between them, with no people in it. Short hand-drawn strokes of light fan out from the doorway onto the black paper around it. Everything outside the doorway is bare black paper with nothing drawn on it except the one thin line she runs on. She is in mid stride, about half the picture's height, right of centre, her hair and straps streaming."
+  },
+  {
+   "id": "cross_hackerhouses",
+   "lane": "mint green",
+   "view": "back",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper, seen from high above and behind her, looking down. She runs away from us along a single straight thin mint-green line drawn on the black paper, which leads from the bottom centre of the picture up to a doorway standing in the upper left of the picture. The doorway is a tall upright rectangle standing alone in the dark, with no wall around it, and the picture inside it is crisp pixel art in four shades of one navy blue-grey, like an early handheld game: the inside of a big shared house at night, with long tables, sofas, bunk beds and many small glowing blank screens, with no people and no writing on the screens. Short hand-drawn strokes of light fan out from the doorway onto the black paper around it. Everything outside the doorway is bare black paper with nothing drawn on it except the one thin line she runs on. She is small, about one quarter of the picture's height, in the lower right, in mid stride, her hair swinging."
+  },
+  {
+   "id": "cross_violet",
+   "lane": "violet",
+   "view": "back",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. She runs away from us along a single thin violet line drawn on the black paper, which leads from the bottom right of the picture toward the upper left and simply continues into the dark: there is NO doorway and no building anywhere. Ahead of her, in the left half of the picture, the black paper is engraved like scratchboard with very fine white parallel hatched lines that form a great night sky: the band of the Milky Way and faint concentric ripples, as in a nineteenth-century wood engraving of the heavens, in white lines only. She is in mid stride, about one third of the picture's height, right of centre, her hair swinging, running on into that dark with a light step."
+  },
+  {
+   "id": "main_light",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. An extreme close-up of her two hands cupped together, palms up, in the centre of the picture; her face is not in the picture, only her hands, wrists and the white cuffs of her jacket sleeves, with a blur of the black top and open white jacket behind them. In the hollow of her cupped hands a small light has just kindled: a tiny warm point drawn in white gel pen and golden pencil with short fine rays, lighting the insides of her fingers with flat warm tones. Her hands have exactly five fingers each, simply and correctly drawn."
+  },
+  {
+   "id": "main_release",
+   "lane": "orange",
+   "view": "back",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper, seen from behind her right shoulder. She stands in the right third of the picture, seen from behind from the waist up, both arms stretched forward and hands open, letting go of a small light. The light, a small warm point drawn in white gel pen and golden pencil with short rays and a short drawn trail, has just left her hands and is flying away from her along a single thin straight rose-pink line that runs across the black paper from in front of her to a vanishing point far away at the left of the picture. Her hair lifts in the draught of it. The rest is empty black paper with a few white gel-pen stars."
+  },
+  {
+   "id": "hero_feet",
+   "lane": "orange",
+   "view": "none",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. A low, close view at ground level, exactly side-on, of her two feet and lower legs only, running toward the left: chunky white trainers and the wide hems of very wide navy cargo trousers, an orange strap flying behind. The leading foot is just striking a single straight thin orange line that runs level across the whole picture like the ground; the back foot is in the air behind. Where the foot lands, a few short hand-drawn orange pencil strokes burst outward. Nothing else in the picture: no body above the knees, no scenery, empty black paper."
+  },
+  {
+   "id": "fold_reach",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. A close shot of her from the chest up, facing the viewer, on the left of centre; she reaches her right hand straight out toward the viewer, open palm forward and fingers spread, the hand large in the foreground at the right of centre and strongly foreshortened, not covering her face. She looks straight at the viewer, calm and warm, lips closed. Behind her, thin hand-drawn lines in several colours converge on one orange line. Her hand has exactly five fingers, simply and correctly drawn. Her face and her hand are drawn in the same flat cel style as the reference sheet: flat colour with one tone of shading and a clean black inked outline, with no pencil rendering, no realistic skin texture and no wrinkles on the hand. The pale-blue circle on the chest of her jacket is visible."
+  },
+  {
+   "id": "fold_chest",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. She stands in the exact centre of the picture facing the viewer, seen from the knees up, about four fifths of the picture's height, both hands crossed flat over her chest one upon the other, eyes gently closed, head slightly bowed, calm and glad, lips closed. Her hair hangs still. On each side of her the black paper is empty. One thin straight orange line runs up the picture behind her from the bottom edge to her feet."
+  },
+  {
+   "id": "look_back",
+   "lane": "orange",
+   "view": "back",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. She has stopped running and stands seen from behind, from the hips up, in the right half of the picture, her body facing away, and she turns her head to look back over her left shoulder at the viewer: a quiet look of recognition, the smallest beginning of a smile, lips closed, eyes open and warm. Her hair swings with the turn. Far beyond her, at the left, many thin hand-drawn coloured lines run away to a horizon."
+  },
+  {
+   "id": "main_back_wide",
+   "lane": "orange",
+   "view": "backc",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper, a very wide view. She stands still, small, seen from directly behind, at the bottom centre of the picture, about one quarter of the picture's height, on a single orange line. Before her a vast dark plain stretches to a far level horizon, and across it run a great many thin hand-drawn lines in rose pink, golden yellow, coral, mint green, cyan, magenta, blue and violet, branching away from the orange line like the branches of a great tree laid flat or a river delta, all the way to the horizon. Along the lines, here and there, twelve tiny warm lit windows, small plain rectangles of ivory light. Above the horizon the black paper has a few white gel-pen stars. No buildings, no city, no glow."
+  },
+  {
+   "id": "runner_main",
+   "lane": "orange",
+   "view": "side",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, exactly the drawing style of the reference character sheet: flat colours, two tones of shading, no gradients, no 3D.",
+   "scene": "Draw ONE single new figure only; do not copy the layout of the reference sheet, which is only a guide to her design: no row of figures, no labels, no captions, no other views. A full-length figure of her running, exactly side-on, in mid stride with both feet off the ground, arms pumping, long hair and trouser straps streaming behind her to the right. The figure is SMALL in the picture: she is exactly in the centre and only about two fifths of the picture's height, with a very wide empty margin above her head, below her feet and on both sides. The background is a completely plain, flat, even, empty mid grey with nothing else in it: no ground line, no shadow, no texture, no scenery.",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg",
+    "inputs/character_sheet.png"
+   ],
+   "prompt": "Redraw the first picture in a different drawing style. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain empty flat grey background, with nothing added. Change only how she is drawn: instead of coloured pencil, draw her as a flat cel-shaded anime drawing with a clean black inked line and flat colours with one tone of shading, exactly the drawing style of the second picture (use the second picture only for the style and for her design; do not copy its layout, its row of figures or its labels). Change the yellow bands, straps and headphones to ORANGE. Her face is the face of the second picture, in profile, lips closed. The round white patch reading 1420 MHz stays on the upper arm we see. No words on the jacket. One figure only. No caption, no labels, no other text."
+  },
+  {
+   "id": "orch_concept",
+   "raw": true,
+   "refs": [
+    "inputs/character_sheet.png"
+   ],
+   "prompt": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no glow, no 3D; light drawn as hand-made strokes of golden pencil. A very wide view from high up at the back of a concert stage, looking down over a full symphony orchestra from BEHIND the players toward the front of the stage. Every single player is the same woman, the woman of the reference sheet, seen from behind: long straight black hair to the waist, a white cropped bomber jacket whose plain white back carries only a large pale-blue circle (no stripe or band across the back), wide navy trousers. About eighty of her sit in the standard seating of a symphony orchestra in curved rows around the podium: first violins at the front on the left of the stage and second violins beside them, violas in the middle, cellos at the front on the right with double basses standing behind them, flutes, oboes, clarinets and bassoons in two rows in the centre, horns, trumpets, trombones and a tuba behind them, timpani and percussion at the very back nearest the viewer, a harp at the left and a grand piano at the left edge. The instruments are drawn in warm gold and brown pencil; everything else is white, navy and black. So the picture is rows and rows of white jacket backs with pale-blue circles, bows all at the same angle. At the front of the stage, beyond the orchestra and facing it, where a conductor would stand, a line of seven of the same woman are not playing: they hold a low wushu bow stance in perfect unison, one arm punched forward, and the one in the centre stands on the podium. Beyond them the hall is empty black paper. Wide 16:9 picture that fills the frame, no border, no caption, no text."
+  },
+  {
+   "id": "main_split1",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/main_split4_a1.jpg"
+   ],
+   "prompt": "Edit this picture so that it contains exactly ONE person. Erase the second, third and fourth women completely, together with their coloured lines, leaving plain bare black paper where they stood. Keep only the first woman, the one with ORANGE bands, and place her alone in the exact centre of the picture at the same size, standing upright and still with her feet together and arms relaxed at her sides, facing the viewer, calm, lips closed, no smile. One thin straight orange line runs from her feet to the bottom edge. The finished picture shows a single woman alone on empty black paper: count the people, there is only one. Same drawing style, flat cel colours and inked line. No text."
   }
  ]
 }

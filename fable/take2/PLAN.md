@@ -398,6 +398,17 @@ Each is small. Run them first, show Jade, then generate in bulk.
   the on-twos path does not blend. Check the source clip frame by frame first; if the clip is clean, show fast-motion plates
   without blending (nearest frame, or on twos). That shot is due to be replaced by the black-paper version anyway.
 
+**Made by Jade after animatic v1 (2026-11-13, late):**
+
+- **Animatic v1 pacing is about right** (judged at her reading speed; pictures may feel different). The paper pass on the v7
+  material works for her: "the art style of the 3d renders makes them feel un-janky".
+- **The reveal at bar 137 uses the Orbital Sunrise trace**, and specifically a still where the grey shadow cast by her glasses is
+  gone and natural skin colour is back: Orbital's round-4 daylight relight, `media/plates/jade_loc_day/take1.first.jpg` in the
+  Orbital repo. Retake asks for a glad, open face.
+- **The click track** was listened to; no complaint.
+- **Her idea, under discussion:** the crowd of Jades doing wushu turns out to be mostly an orchestra of Jades, with only some doing
+  wushu. Concept still: `review/fable_take2/orchestra_concept.jpg`.
+
 **Still open:**
 
 1. **The reveal at bar 137.** Is her traced likeness from Orbital Sunrise the right image for "main is reality", and should it be

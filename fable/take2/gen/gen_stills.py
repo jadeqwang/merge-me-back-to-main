@@ -23,9 +23,10 @@ def char(p):
     if lane != "orange": s += f"The bands, straps and headphones are {lane}, not orange, and they are the only strong colour in the picture. "
     return s
 VIEW = {
- "front": "She faces the viewer, so her LEFT arm, the one with the round 1420 MHz patch, is on the RIGHT side of the picture; the arm on the left side of the picture has no patch. ",
+ "front": "She faces the viewer, so her LEFT arm, the one with the round 1420 MHz patch, is on the RIGHT side of the picture; the arm on the left side of the picture has no patch. There are no words on the front of her jacket. ",
  "back": "She is seen from behind and faces toward the LEFT side of the picture, so the arm nearer the viewer is her left arm, the one with the round 1420 MHz patch; the back of her jacket with the pale-blue circle is clearly visible. ",
  "side": "She is seen exactly side-on and moves toward the LEFT side of the picture, so the viewer sees her left side and her left arm, the one with the round 1420 MHz patch. ",
+ "backc": "She is seen from directly behind, running or standing straight away from the viewer, so her LEFT arm, the one with the round 1420 MHz patch, is on the LEFT side of the picture; the back of her jacket with the pale-blue circle is clearly visible. ",
  "none": ""}
 TAIL = ("Wide 16:9 picture that fills the whole frame from edge to edge with no blank margin, bar or border. No caption, no signature, no watermark. "
         "The only lettering anywhere is RARE EARTH on the back of her jacket and 1420 MHz on the sleeve patch.")
