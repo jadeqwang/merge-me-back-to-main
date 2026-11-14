@@ -401,7 +401,7 @@ function caption(t, sc) { const L = byId[sc.s.opt.caption]; if (!L) return; cons
   drawWrittenLane(g, [{ x: x0, y }, { x: x0 + w + 2, y }], { text: L.msg + ' ', color: L.color, cap, merge: 0.4, under: 0.6, upto: (w + 2) * ease.out(u) }); }
 // b57-64 strands. STRANDS = the float_top geometry (shots.js export, measured on the clip): centre (her head) and twelve hair ends
 let STRANDS = null;
-// a strand starts inside the hair (70% of the way from her head to the measured hair end) and runs straight out to the frame edge
+// a strand starts at the measured hair end and runs straight out to the frame edge
 // (+ margin); De = its length to the edge
 // the clip turns and pulls back: STRANDS.track = [[clip s, head, left foot], ...] (plate fractions); the hair ends measured at clip time
 // STRANDS.at follow the similarity (rotation, scale, shift) that takes head and foot there to head and foot now
@@ -414,14 +414,15 @@ function strandPaths(sc) { const im = sc.imgs[0], cm = clipMap(sc.s), cc = cm.c0
   const map = (p) => { const q = PX(p), dx = q.x - h0.x, dy = q.y - h0.y; return { x: h1.x + cs * dx - sn * dy, y: h1.y + sn * dx + cs * dy }; };
   const c = map(STRANDS.center);
   return STRANDS.ends.map(([x, y], i) => { const e0 = map([x, y]); let dx = e0.x - c.x, dy = e0.y - c.y; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
-    const e = { x: c.x + (e0.x - c.x) * 0.7, y: c.y + (e0.y - c.y) * 0.7 };
+    const e = { x: c.x + (e0.x - c.x) * 1.0, y: c.y + (e0.y - c.y) * 1.0 };   // from the hair end itself (section 3 v2: clear of her hair)
     const tx = dx > 0 ? (W - e.x) / dx : dx < 0 ? -e.x / dx : 1e9, ty = dy > 0 ? (H - e.y) / dy : dy < 0 ? -e.y / dy : 1e9;
     return { e, d: [dx, dy], De: Math.max(60 * S, Math.min(tx, ty)) + 40 * S, L: LIVES[i] }; }); }
 const ray = (p, d, len) => ({ x: p.x + d[0] * len, y: p.y + d[1] * len });
 function writeRay(pts, L, cap, prog, t, alpha = 1) {   // text upright: paths run left to right; prog grows from the hair end
   let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
   const rev = pts[pts.length - 1].x < pts[0].x, P = rev ? [...pts].reverse() : pts;
-  drawWrittenLane(g, P, { text: laneString([L.branch, L.msg], true), color: L.color, cap: (u) => cap * (rev ? 1.4 - 0.5 * u : 0.9 + 0.5 * u), merge: 0.3, under: 0.45, alpha,
+  // sparse: the branch name only, once per strand with long gaps (merge 0 widens the gaps), the hairline carries the rest
+  drawWrittenLane(g, P, { text: laneString([L.branch], true), color: L.color, cap: (u) => cap * (rev ? 1.3 - 0.4 * u : 0.9 + 0.4 * u), merge: 0, under: 0.35, alpha,
     scroll: (rev ? 1 : -1) * t * 3, from: rev ? len * (1 - prog) : 0, upto: rev ? undefined : len * prog }); }
 function strands(t, sc) {
   const s = sc.s, st = s.opt.strands, u = seg(t, s.t0, s.t1), b0 = Math.round(bposT(s.t0)), ub = bposT(t) - b0, paths = strandPaths(sc);
@@ -460,15 +461,17 @@ function gitlog(t, s) {
   g.restore();
   if (beatPop > 0) { g.fillStyle = `rgba(255,255,255,${0.10 * beatPop})`; g.fillRect(0, 0, W, H); }
 }
-// b72: the twelve details tile in on sixteenths (4 x 3) and collapse to a point over the last beat
+// b72: the twelve details tile in on sixteenths (4 x 3), hold, and on the last sixteenth snap to one point: a 2-frame white flash and a
+// bright point that dies away (the roll ending)
 function tiles(t, sc) {
   g.fillStyle = '#05050A'; g.fillRect(0, 0, W, H);
-  const s = sc.s, b0 = Math.round(bposT(s.t0)), u = (bposT(t) - b0) * 4, gx = 4, gy = 3, tw = W / gx, th = H / gy, col = 1 - ease.in(clamp01((u - 12) / 4));
+  const s = sc.s, b0 = Math.round(bposT(s.t0)), u = (bposT(t) - b0) * 4, gx = 4, gy = 3, tw = W / gx, th = H / gy, snap = T.beatT(b0 + 3.75);
+  if (on(t, snap)) { const f = fr(t, snap); if (f <= 1) { g.fillStyle = `rgba(255,250,240,${f === 0 ? 1 : 0.55})`; g.fillRect(0, 0, W, H); }
+    g.save(); g.globalCompositeOperation = 'lighter'; const k = Math.max(0, 1 - f / 9); glowAt(W / 2, H / 2, (14 + 70 * k) * S, MAIN, 0.4 + 0.6 * k); g.restore(); return; }
   sc.imgs.forEach((im, i) => { if (u < i) return; const b = READY.get(im.url); if (!b) return; const pop = clamp01((u - i) / 0.6), cx = (i % gx + 0.5) * tw, cy = (Math.floor(i / gx) + 0.5) * th;
-    const x = W / 2 + (cx - W / 2) * col, y = H / 2 + (cy - H / 2) * col, sz = (0.8 + 0.2 * ease.outBack(pop)) * col, w = tw * sz, h = th * sz; if (w < 1) return;
-    const cr = cover(b.width, b.height, w, h); g.save(); g.globalAlpha = clamp01(pop * 2); g.drawImage(b, cr.sx, cr.sy, cr.sw, cr.sh, x - w / 2, y - h / 2, w, h);
-    g.strokeStyle = byId[im.life].color; g.lineWidth = 3 * S; g.strokeRect(x - w / 2, y - h / 2, w, h); g.restore(); });
-  if (u > 12) { const k = clamp01((u - 12) / 4); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(W / 2, H / 2, (20 + 160 * k) * S, MAIN, k); g.restore(); }
+    const sz = 0.8 + 0.2 * ease.outBack(pop) + 0.015 * Math.max(0, u - 12), w = tw * sz, h = th * sz;
+    const cr = cover(b.width, b.height, w, h); g.save(); g.globalAlpha = clamp01(pop * 2); g.drawImage(b, cr.sx, cr.sy, cr.sw, cr.sh, cx - w / 2, cy - h / 2, w, h);
+    g.strokeStyle = byId[im.life].color; g.lineWidth = 3 * S; g.strokeRect(cx - w / 2, cy - h / 2, w, h); g.restore(); });
 }
 
 // ---------------------------------------------------------------- the frame
