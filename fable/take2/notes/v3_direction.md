@@ -95,3 +95,6 @@ three-quarter to the viewer, the film's one face (large eyes, round cheeks, curt
 
 Update (Jade, same day): the cupped hands at 0:43 are too still. `main_light_v2`: fingers curl and shift round the light, breath
 through the wrists, the glow moving over the fingers.
+
+Update (Jade, same day): at bar 26 the words written behind the light she releases are the lyric itself ("Each one a light I sent
+ahead", on its word times); no separate lyric and no piano commit message on that shot.

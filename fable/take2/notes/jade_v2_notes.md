@@ -37,3 +37,4 @@
 - "at 0:28, maybe the anime version could sing 'I split myself' as she splits" (bars 17-18).
 - "something about the face in 0:34 doesn't quite read as me as much as the anime face" (bar 20, the wushu life plate, wushu_v2).
 - "0:43 the hands by the light feel a little bit too still" (bar 25, main_light).
+- "0:44 maybe instead of the words 'climed onto the piano bench before' and the lyric separate, maybe the words she sends out is the lyric" (bar 26, main_release).
