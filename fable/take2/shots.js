@@ -262,7 +262,7 @@ P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of he
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');
 V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121' });
-P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { lyr: { x0: 0.45, x1: 0.97, align: 'right' } } });   // she is left: the slab right
+P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { zoom0: 1.35, fx: 0, fy: 0.3, push: 0.02, lyr: { x0: 0.45, x1: 0.97, align: 'right' } } });   // she is left: the slab right; cropped left (a stray arm at the clip's right edge)
 V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123' });
 // b124-126: the twelve converge on her (src/kit.js 'row' with conv): runners from the right run in toward main (large, centre), from the
 // left they are mirrored; each reaches her and fades into her as the bar ends. Lanes as section 2.
@@ -273,7 +273,7 @@ const CONV = [
   KC(['violet', 'piano', 'chezjj', 'violin', 'ames', 'phd', 'poet', 'wushu', 'main'], [0.05, 0.95, 0.1, 0.9, 0.15, 0.85, 0.02, 0.98, 0.5]),
 ];
 for (let k = 0; k < 3; k++) shot(124 + k, 125 + k, 'K', 'kit', `runner_converge_${k + 1}`, 'missing', `The twelve runners converge on her from every side, each in her medium (shot ${k + 1} of 3).`,
-  { row: 'b124-127', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'row', lanes: CONV[k], conv: true } } });
+  { row: 'b124-127', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'row', lanes: CONV[k], conv: true, hNear: 0.6 } } });
 V(127, 128, 'seq 12', 'From above, the roads converge.', { row: 'b124-127' });
 P(128, 129, 'c2_hands', 'missing', 'Close on her hands opening.', { row: 'b128' });
 P(129, 130, 'catch', 'missing', 'She catches the violet light at her chest, eyes closed.', { row: 'b129', opt: { lyr: { x0: 0.03, x1: 0.33, align: 'left' } } });   // she is centred, hands at her chest: the slab left of her
@@ -282,8 +282,8 @@ P(129, 130, 'catch', 'missing', 'She catches the violet light at her chest, eyes
 // its life's lane colour on its edge
 shot(130, 132, 'K+S', 'code', 'fold', 'missing', 'The twelve fold into her, one per beat; each fold adds its medium to her (twelve patches on night_jade).', { row: 'b130-131',
   opt: { lyr: { x0: 0.03, x1: 0.33, align: 'left' }, code: 'fold', base: 'night_jade', top: 'patchwork2', mattes: { night_jade: '/work_fable/take2/kit/night_jade', patchwork2: '/work_fable/take2/kit/patchwork2' }, beats: [0, 1, 2, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5] } });
-P(132, 134, 'patch_hold', 'missing', "The poster frame: one Jade drawn in all twelve mediums at once, on white paper: full colour and daylight arrive.", { row: 'b132-133', opt: { lyr: { x0: 0.03, x1: 0.37, align: 'left' } } });
-P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136', opt: { clip0: 0, clip1: 4.95, lyr: { x0: 0.03, x1: 0.37, align: 'left' } } });
+P(132, 134, 'patch_hold', 'missing', "The poster frame: one Jade drawn in all twelve mediums at once, on white paper: full colour and daylight arrive.", { row: 'b132-133', opt: { lyr: { x0: 0.03, x1: 0.32, align: 'left' } } });
+P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136', opt: { clip0: 0, clip1: 4.95, lyr: { x0: 0.03, x1: 0.32, align: 'left' } } });
 
 // ------------------------------------------------------------------ Outro A: bars 137-148 (full drums; has to top the drop)
 section('outro_a');
@@ -295,7 +295,7 @@ shot(137, 139, 'L', 'plate', 'like_sing1', 'missing', 'The switch: on the impact
 const TOWN = { code: 'town', lives: LIFE, speed: 1050, spacing: 0.3 };   // all twelve pass in the four bars (b139-142)
 shot(139, 141, 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax.', { row: 'b139-140', opt: { ...TOWN } });
 shot(141, 143, 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142',
-  opt: { ...TOWN, x0: 2 * 3.43, runner: { dir: '/work_fable/take2/kit/day_run', x: 0.5, h: 0.62, y: 0.9 } } });
+  opt: { ...TOWN, x0: 3.41, runner: { dir: '/work_fable/take2/kit/day_run', x: 0.5, h: 0.62, y: 0.9 } } });
 P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true } });
 shot(145, 147, 'L', 'plate', 'like_sing2', 'missing', 'Jade again, wider, singing.', { row: 'b145-146' });
 shot(147, 149, 'S+C', 'code', 'aerial', 'missing', 'Aerial pull-back: the road, the town, the new forks.', { row: 'b147-148', opt: { code: 'aerial', lives: LIFE } });
