@@ -254,6 +254,157 @@
     "work_fable/take2/stills/runner_pencil_a1.jpg"
    ],
    "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in a scratchboard engraving: her figure is solid black, with every form drawn in fine white lines and dense white parallel hatching cut out of the black, like a nineteenth-century wood engraving. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to VIOLET; that violet is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "root_fork",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/root/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same watercolour and gouache style as the reference, with white ink for the frost: soft wet washes of night blue, delicate opaque white linework. An extreme close-up of the cold dark window glass from the reference. At the lower right edge only the small fingertips of the child's hand rest on the glass with a small warm glow under them; no face, no body. From the warm spot a single stem of white frost grows up and to the left and forks cleanly in TWO, like the first fork of a tree, each branch feathered with fine frost crystals; the rest of the pane is dark, wet night blue and empty. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "root_face",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/plates/root/still.jpg"
+   ],
+   "prompt": "A new picture in exactly the same watercolour and gouache style as the reference, with white ink for the frost. A close-up of the same small girl of about five from the reference, her face in profile looking toward the left, in the right half of the picture: a round child's face, large very dark eyes, black hair worn half up and half down with side-swept bangs, exactly as in the reference. She is watching, quietly amazed, lips closed. Her face is lit softly from the left by the pale light of white frost crystals that branch across the dark window glass filling the left half of the picture. The collar of her small white jacket and orange headphones round her neck are just visible. Night blue everywhere else. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "main_palm",
+   "lane": "orange",
+   "view": "back",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper. She stands seen from behind, from the knees up, in the right half of the picture, her left arm raised and her open palm pressed flat forward against the air, exactly like a child pressing a hand to a window. From the spot under her palm a great tree of thin hand-drawn lines of light grows away from her across the left half of the picture, branching and branching again like frost on glass: the trunk orange, the branch tips in rose pink, golden yellow, coral, mint green, cyan, magenta, blue and violet. A small warm glow, drawn with a few golden pencil strokes, under her hand. Her hair stirs."
+  },
+  {
+   "id": "float_top",
+   "lane": "orange",
+   "view": "none",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper, seen from directly above. She floats on her back on still dark water in the centre of the picture, her whole body in view, about half the picture's height, arms a little out from her sides, eyes closed, calm, lips closed. The water is the black paper itself, with only a few thin white gel-pen ripple rings around her. Her very long black hair is fanned out all around her head on the water like a great halo, in many separate long strands that spread outward toward every edge of the picture, each strand drawn with a fine line. She faces up toward the viewer, so the single orange band across the front of her jacket and the small pale-blue circle on its chest are seen, and the round 1420 MHz patch is on her LEFT upper arm, which is on the right side of the picture; her other arm has no patch. No words on the front of the jacket."
+  },
+  {
+   "id": "float_face",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper, seen from above. A close-up of her face and shoulders as she floats on her back on still dark water, her face in the centre, upright in the picture, eyes closed, calm and at rest, lips closed. The water is the black paper, with a few thin white gel-pen ripples lapping at her cheeks and shoulders; her black hair floats out from her head in long separate strands toward the edges. Orange headphones float at her neck."
+  },
+  {
+   "id": "float_hand",
+   "lane": "orange",
+   "view": "none",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Night, on bare black paper, seen from above. A close-up of her one hand lying open, palm up, on still dark water, with the white cuff of her jacket sleeve, in the right half of the picture; the hand is relaxed, with exactly five fingers, simply and correctly drawn. Thin white gel-pen ripples ring the hand. From the left edge of the picture one thin rose-pink line runs across the black water to her fingertips, and a small warm point of light, drawn in white gel pen and golden pencil with short rays, is just arriving along it at her fingers. No face, no body beyond the forearm."
+  },
+  {
+   "id": "rise",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "The end of night, on bare black paper. She rises upright out of still dark water, seen from the front from the thighs up, in the centre of the picture, her arms opening outward and a little upward, palms open, her face lifted, eyes open, calm and glad, lips closed. Water runs off her in a few white gel-pen drops and thin ripples ring her. Her wet hair hangs long. Low behind her, right across the picture, the first band of dawn: one level band of gold drawn with horizontal strokes of golden pencil on the black paper, with nothing above it but black paper. Gold and black are the only colours besides her own."
+  },
+  {
+   "id": "det_piano",
+   "raw": true,
+   "refs": [],
+   "prompt": "A hand-painted gouache illustration in the manner of a mid-century children's picture book: opaque matte paint, visible brush texture, soft rounded shapes, warm lamplight, a limited palette of cream, walnut brown, deep teal and dusty rose. A close-up of the two very small hands of a little girl of three on the keys of an upright piano, fingers curved, in warm lamplight; plain keys. Her hands are tiny, soft and chubby with a light warm skin tone; her sleeves are white with a narrow rose-pink cuff; no waistcoat. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow rose pink band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is rose pink. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_violin",
+   "raw": true,
+   "refs": [],
+   "prompt": "A coloured-pencil drawing on cream paper: fine layered hatching, visible pencil strokes, the tooth of the paper showing through, restrained colour, unfinished edges where the drawing fades into bare paper. A close-up of a violin bow drawn across the strings of a violin near the bridge, with the fingers of the bow hand at the edge of the picture. The hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone: no wrinkles, no veins, no hair, no jewellery, no watch. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow golden yellow band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is golden yellow. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_wushu",
+   "raw": true,
+   "refs": [],
+   "prompt": "A traditional East Asian woodblock print: bold carved black key lines, flat areas of colour with visible wood grain and slight misregistration, on warm handmade paper; a limited palette of ink black, indigo, pale grey and coral red. A close-up of a clenched fist punching straight forward, the forearm in a white sleeve, with carved speed lines behind it. The hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone: no wrinkles, no veins, no hair, no jewellery, no watch. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow coral red band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is coral red. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_wetlab",
+   "raw": true,
+   "refs": [],
+   "prompt": "A scientific ink drawing in the manner of an early-1900s histology plate: very fine black and sepia pen lines and stippling on aged ivory paper, hand-ruled margins, exquisite patient linework. A close-up of a gloved hand holding a laboratory pipette over a round glass dish, a single drop about to fall. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow mint green band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is mint green. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_phd",
+   "raw": true,
+   "refs": [],
+   "prompt": "A pen-plotter drawing on pale green graph paper: single-weight technical ink lines in black with one cyan pen, precise and slightly mechanical, cross-hatching made of parallel plotted strokes. The whole picture is itself a flat ink drawing made by a pen plotter, not a photograph and not 3D: every object is drawn only in thin single-weight ink lines with parallel-line hatching. It shows a close-up of a hand holding a pen, tracing a waveform of brain activity across pale green graph paper, the hand at the edge of the picture; the trace is a wavy line only, with no labels. The hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone: no wrinkles, no veins, no hair, no jewellery, no watch. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow cyan band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is cyan. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_poet",
+   "raw": true,
+   "refs": [],
+   "prompt": "Sumi ink wash on rice paper: wet grey washes, dry-brush blacks, generous areas of empty paper, a single accent colour. A close-up of two hands typing on the round keys of an old manual typewriter; the key tops are blank discs; a blank sheet of paper in the roller. The hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone: no wrinkles, no veins, no hair, no jewellery, no watch. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow magenta band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is magenta. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_ames",
+   "raw": true,
+   "refs": [],
+   "prompt": "A 1970s space-agency concept painting, fully painted with no pencil lines, in a single hue: smooth airbrushed gouache in shades of one cool grey-teal from near-black to ivory, strong shafts of pale light, crisp engineering forms, the slight grain of an offset print. The only strong colour in the whole picture is bright blue, used only for her arm bands, straps and headphones. A close-up of one enormous curved fan blade of a giant wind-tunnel fan, seen from below against a shaft of pale light, with a tiny railing for scale. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow bright blue band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is bright blue. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_band",
+   "raw": true,
+   "refs": [],
+   "prompt": "A two-colour risograph print like a hand-made gig poster: coral and navy inks on off-white paper, coarse halftone dots, slight misregistration between the two inks, grainy solid areas. A close-up of a hand holding a guitar pick striking the strings of an electric guitar over the pickups. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow coral red band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is coral red. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_chezjj",
+   "raw": true,
+   "refs": [],
+   "prompt": "Detailed side-view pixel art in the manner of an early handheld game console: crisp square pixels in only four shades of one colour, from deep navy to pale blue-grey, cosy night lighting from many screens. The only strong colour in the whole picture is mint green, used only for her arm bands, straps and headphones and for the glow of the screens. A close-up of two hands on the keys of a laptop at night, seen from the side, the screen's glow on the fingers; the keys are blank and the screen is not shown. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow mint green band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is mint green. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_sandstorm",
+   "raw": true,
+   "refs": [],
+   "prompt": "A bold high-contrast line drawing in white on black. A close-up of a hand resting on the edge of a wooden lectern beside a slim microphone on a gooseneck, with a bright stage light behind. Drawn simply in bold white outlines and flat white shapes on solid black, high contrast, with no text characters at all. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow cyan band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is cyan. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_home",
+   "raw": true,
+   "refs": [],
+   "prompt": "A chalk and pale pastel drawing on dark blue construction paper: confident textured strokes with the paper showing between them, drawn only in chalk white and pale blue-grey; the lamp's light is drawn as pale chalk rays. The only strong colour in the whole picture is rose pink, used only for her arm bands, straps and headphones. Faces and hands are drawn in pale chalk with simple clean lines, like the character sheet's face. A close-up of a grapefruit held up in a hand beside a bare lamp bulb on a table at night, the lamp lighting one half of the grapefruit like the sun lighting a planet. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow rose pink band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is rose pink. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "det_violet",
+   "raw": true,
+   "refs": [],
+   "prompt": "A scratchboard engraving: fine white lines cut out of solid black, dense parallel hatching for every tone, like a nineteenth-century wood engraving of the night sky. A close-up, from behind, of a pencil pushed through a bun of black hair at the back of a woman's head, a few loose strands; no face. If a sleeve is seen, it is the white cuff of a bomber jacket; a narrow violet band or strap may appear once. No face is shown anywhere in the picture. Nothing that can be read: no letters, numbers, words or logos on anything. The picture is in this one medium on a near-monochrome ground, and its only strong colour, if any, is violet. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "stance_bow",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Blue hour, on bare black paper. She holds a wushu long-fist bow stance with a straight punch: front knee bent deeply over the front foot, back leg straight, hips square, the right fist punched straight out level with the shoulder, the left fist drawn back to the hip, back straight. The stance is exact and strong, as a trained athlete would hold it. Her whole body is in the picture, about three quarters of the picture's height, in the centre, seen from the front three-quarter. A cool blue rim of light is drawn along one edge of her body with strokes of blue pencil, and a thin orange line runs level under her feet. Her face is calm and focused, lips closed. Her hair swings with the movement. Nothing else: empty black paper."
+  },
+  {
+   "id": "stance_horse",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Blue hour, on bare black paper. She holds a wushu horse stance: feet wide apart and parallel, knees bent deeply so the thighs are level, back straight and upright, both fists drawn back to the hips, looking straight ahead. The stance is exact and strong, as a trained athlete would hold it. Her whole body is in the picture, about three quarters of the picture's height, in the centre, seen from the front three-quarter. A cool blue rim of light is drawn along one edge of her body with strokes of blue pencil, and a thin orange line runs level under her feet. Her face is calm and focused, lips closed. Her hair swings with the movement. Nothing else: empty black paper."
+  },
+  {
+   "id": "stance_empty",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Blue hour, on bare black paper. She holds a wushu empty stance (xu bu), which is a HIGH, narrow stance, not a low wide one: she stands with her feet close together, one a short step in front of the other; her back leg is bent only a little and carries all her weight; her front leg is slightly bent with the heel lifted so that only the toes rest lightly on the ground just in front of her; her hips are high; one open palm pushed forward at chest height and the other hand hooked behind her, back straight. The stance is exact and strong, as a trained athlete would hold it. Her whole body is in the picture, about three quarters of the picture's height, in the centre, seen from the front three-quarter. A cool blue rim of light is drawn along one edge of her body with strokes of blue pencil, and a thin orange line runs level under her feet. Her face is calm and focused, lips closed. Her hair swings with the movement. Nothing else: empty black paper."
+  },
+  {
+   "id": "stance_drop",
+   "lane": "orange",
+   "view": "front",
+   "style": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen.",
+   "scene": "Blue hour, on bare black paper. She holds a wushu drop stance: one leg bent in a full deep squat with the heel down, the other leg stretched out straight to the side close to the ground with the foot flat, torso upright and turned toward the straight leg, one arm reaching along that leg and the other raised behind. The stance is exact and strong, as a trained athlete would hold it. Her whole body is in the picture, about three quarters of the picture's height, in the centre, seen from the front three-quarter. A cool blue rim of light is drawn along one edge of her body with strokes of blue pencil, and a thin orange line runs level under her feet. Her face is calm and focused, lips closed. Her hair swings with the movement. Nothing else: empty black paper."
   }
  ]
 }
