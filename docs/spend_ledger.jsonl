@@ -934,3 +934,17 @@
 {"ts": "2026-11-14T04:45:27Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_chezjj_t1", "job": "mergemain/t2_runner_chezjj_t1-d10e30b4c1", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T04:45:28Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_home_t1", "job": "mergemain/t2_runner_home_t1-7b696678db", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T04:45:29Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_violet_t1", "job": "mergemain/t2_runner_violet_t1-4036835266", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:47Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_piano_t1", "job": "mergemain/t2_runner_piano_t1-54e46bd48f", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:49Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_wushu_t1", "job": "mergemain/t2_runner_wushu_t1-33cf9aeb5a", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:51Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_wetlab_t1", "job": "mergemain/t2_runner_wetlab_t1-d51813d223", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:53Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_phd_t1", "job": "mergemain/t2_runner_phd_t1-da088b8e7a", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:54Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_poet_t1", "job": "mergemain/t2_runner_poet_t1-a4f566084d", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:56Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_ames_t1", "job": "mergemain/t2_runner_ames_t1-9f36b901fa", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:57Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_band_t1", "job": "mergemain/t2_runner_band_t1-1bc2b2465d", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:58Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_chezjj_t1", "job": "mergemain/t2_runner_chezjj_t1-d10e30b4c1", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:02:59Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_home_t1", "job": "mergemain/t2_runner_home_t1-7b696678db", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:03:01Z", "model": "bytedance/seedance-2.5", "tag": "t2_runner_violet_t1", "job": "mergemain/t2_runner_violet_t1-4036835266", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:22:55Z", "model": "bytedance/seedance-2.5", "tag": "t2_like_sing1_e", "job": "mergemain/t2_like_sing1_e-d1a66aa22d", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:22:57Z", "model": "bytedance/seedance-2.5", "tag": "t2_like_sing1_f", "job": "mergemain/t2_like_sing1_f-cb07cc2877", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:27:19Z", "model": "bytedance/seedance-2.5", "tag": "t2_like_sing1_f", "job": "mergemain/t2_like_sing1_f-cb07cc2877", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-14T05:29:22Z", "model": "bytedance/seedance-2.5", "tag": "t2_like_sing1_e", "job": "mergemain/t2_like_sing1_e-d1a66aa22d", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
