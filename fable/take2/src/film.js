@@ -81,6 +81,11 @@ async function findPlate(id) {
     const b = await bitmap(`${p.dir}/frames/f_0001.jpg`); p.w = b.width; p.h = b.height; PLATE[id] = p; break; }
   return PLATE[id];
 }
+// runner kit cut-outs (shots.js kind 'kit'): KIT[shot id] = [{ ...runner, meta }] for the runners whose cut-out exists
+const KIT = {};
+async function findKit(s) { const out = [];
+  for (const r of s.opt.kit.runners) { const m = await json(`${r.dir}/meta.json`); if (m && m.n && (await exists(`${r.dir}/rgba/f_${String(m.n).padStart(4, '0')}.png`))) out.push({ ...r, meta: m }); }
+  KIT[s.id] = out.length ? out : null; }
 const plateUrl = (p, i) => `${p.dir}/frames/f_${String(i + 1).padStart(4, '0')}.jpg`;
 function cover(iw, ih, w, h, zoom = 1, fx = 0.5, fy = 0.5) {
   const da = w / h, pa = iw / ih; let sw, sh;
@@ -110,6 +115,7 @@ function effKind(s) {
   if (ALLCARDS) return 'card';
   if (s.kind === 'plate') return PLATE[s.src] ? 'plate' : 'card';
   if (s.kind === 'v7') return USE_V7 && V7 ? 'v7' : 'card';
+  if (s.kind === 'kit') return KIT[s.id] ? 'kit' : 'card';
   return 'card';
 }
 
@@ -138,11 +144,11 @@ function layoutLine(l, place, lyr, tEnd) {
   const cap = (l.slab ? SZ.slab : SZ.verse) * S, lead = cap * (l.slab ? 1.3 : 1.5), maxW = R ? Math.min(R.x1 - R.x0, W - 200 * S) : W - 200 * S;
   const txt = (w) => (l.slab ? w.w.toUpperCase() : w.w), sp = g.measureText(' ').width * (l.slab ? 0.8 : 1);
   const rows = [[]]; let x = 0;
-  l.words.forEach((w, wi) => { if (R && tEnd !== undefined && !(w.start < tEnd - HF)) return; const ww = g.measureText(txt(w)).width; if (x > 0 && x + sp + ww > maxW) { rows.push([]); x = 0; } if (x > 0) x += sp; rows[rows.length - 1].push({ wi, txt: txt(w), x, w: ww }); x += ww; });
+  l.words.forEach((w, wi) => { if (R && tEnd !== undefined && !(w.start < tEnd - 0.15)) return; /* a word sung in the last 0.15 s of the shot waits for the next shot */ const ww = g.measureText(txt(w)).width; if (x > 0 && x + sp + ww > maxW) { rows.push([]); x = 0; } if (x > 0) x += sp; rows[rows.length - 1].push({ wi, txt: txt(w), x, w: ww }); x += ww; });
   g.letterSpacing = '0px';
   const top = CARD_H, n = rows.length; let y0;
   if (place === 'strip') y0 = top + (H - top) / 2 - ((n - 1) * lead) / 2 + cap / 2;          // centred in the strip under the card
-  else if (R && R.y === 'top') y0 = 70 * S + cap;                                                // a shot's region: top
+  else if (R && R.y === 'top') y0 = (lyr.top !== undefined ? lyr.top * H : 70 * S) + cap;                                                // a shot's region: top
   else y0 = H - (l.slab ? 96 : 84) * S - (n - 1) * lead;                                      // full-frame: bottom, rising with rows
   const out = []; rows.forEach((r, ri) => { const rw = r.length ? r[r.length - 1].x + r[r.length - 1].w : 0;
     const x0 = R ? (R.align === 'left' ? R.x0 : R.align === 'right' ? R.x1 - rw : (R.x0 + R.x1 - rw) / 2) : l.slab && place !== 'strip' ? 100 * S : (W - rw) / 2;
@@ -216,6 +222,8 @@ function scene(t) {
   const s = shotAt(t); const sc = { t, s, eff: effKind(s), imgs: [] };
   if (sc.eff === 'v7') { const k = v7Index(t); if (k < 0) sc.eff = 'card'; else sc.imgs.push({ url: v7Url(k), v7: true }); }
   if (sc.eff === 'plate') plateDraw(s, t, s.src, sc.imgs);
+  if (sc.eff === 'kit') for (const r of KIT[s.id]) { const m = r.meta, c = softcap(Math.max(0, (r.clip0 || 0) + (t - s.t0)), (m.n - 1) / m.fps);
+    sc.imgs.push({ url: `${r.dir}/rgba/f_${String(Math.min(m.n - 1, Math.round(c * m.fps)) + 1).padStart(4, '0')}.png`, runner: r }); }
   const x = s.opt && s.opt.cross;   // the crossing: from `at` the doorway grows into the life plate
   if (sc.eff === 'plate' && x && PLATE[x.life] && !ALLCARDS) { const D = s.t1 - s.t0, ta = s.t0 + x.at * D, te = s.t0 + x.end * D;
     if (on(t, ta)) { sc.cross = { u: t >= te - HF ? 1 : seg(t, ta - HF, te - HF), life: [], door: x.door, col: (byId[x.life] || {}).color || MAIN };
@@ -324,9 +332,26 @@ function lane(t, sc) {
   let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
   // grow [a, b]: the lane is written out over that part of the shot, from its first point, or from its last with growEnd (paths run
   // left to right so the type is upright; a lane leaving her hand on the right is written from its end)
+  // track [[clip s, x], ...]: the lane is written from x (where the light is, measured on the clip) to its last point
   const u = seg(t, sc.s.t0, sc.s.t1), p = L.grow ? ease.out(seg(u, L.grow[0], L.grow[1])) : 1;
-  const upto = L.grow && !L.growEnd ? len * p : undefined, from = L.grow && L.growEnd ? len * (1 - p) : 0;
+  let upto = L.grow && !L.growEnd ? len * p : undefined, from = L.grow && L.growEnd ? len * (1 - p) : 0;
+  if (L.track) { const cm = clipMap(sc.s), c = cm.c0 + (t - sc.s.t0) * cm.sp, k = L.track; let x = k[k.length - 1][1];
+    for (let i = 1; i < k.length; i++) if (c < k[i][0]) { x = lerp(k[i - 1][1], k[i][1], clamp01((c - k[i - 1][0]) / (k[i][0] - k[i - 1][0]))); break; }
+    const X = plateToScreen(im, x, 0).x; let acc = 0; from = len;
+    for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i], l = Math.hypot(b.x - a.x, b.y - a.y); if (b.x >= X) { from = acc + l * clamp01((X - a.x) / ((b.x - a.x) || 1)); break; } acc += l; } }
   drawWrittenLane(g, pts, { text: laneText(L.text), color: L.color || MAIN, cap: (L.cap || 22) * S, scroll: (L.scroll || 0) * (t - sc.s.t0), merge: L.merge || 0, under: L.under === undefined ? 0.35 : L.under, upto, from });
+}
+
+// the runner kit: black paper, the lanes far (top, hairlines) to near (bottom, readable), runners on their lanes, ground scrolling right
+function kit(t, sc) {
+  const K = sc.s.opt.kit, n = K.lanes.length, f = (k) => Math.pow(k / (n - 1), 1.4);
+  const laneY = (k) => (0.36 + 0.59 * f(k)) * H, figH = (k) => (0.2 + 0.62 * f(k)) * H;
+  g.fillStyle = '#0D0D11'; g.fillRect(0, 0, W, H);
+  K.lanes.forEach((id, k) => {   // far to near: each lane, then the runner on it (nearer lanes pass in front of farther runners)
+    const col = id === 'main' ? MAIN : byId[id].color, cap = (4 + 30 * f(k)) * S;
+    drawWrittenLane(g, [{ x: 0, y: laneY(k) + cap * 0.9 }, { x: W, y: laneY(k) + cap * 0.9 }], { text: laneText(id), color: col, cap, scroll: -(t - sc.s.t0) * (4 + 10 * f(k)), under: 0.3, merge: 0.2 });
+    for (const im of sc.imgs) { const r = im.runner; if (r.lane !== id) continue; const b = READY.get(im.url), q = figH(k) / (0.95 * b.height);
+      g.save(); g.imageSmoothingQuality = 'high'; g.drawImage(b, r.x * W - 0.52 * b.width * q, laneY(k) - b.height * q, b.width * q, b.height * q); g.restore(); } });
 }
 
 // ---------------------------------------------------------------- the frame
@@ -346,7 +371,8 @@ function draw(t, sc) {
       x.drawImage(b, vc[0] * b.width, vc[1] * b.height, vc[2] * b.width, vc[3] * b.height, 0, 0, W, H); b = CROPC; }
     if (paperPass && USE_PAPER) { g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else g.drawImage(b, 0, 0, W, H);
-  } else card(t, s);
+  } else if (sc.eff === 'kit') kit(t, sc);
+  else card(t, s);
   grain(t); vignette();
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.lane && !(sc.cross && sc.cross.u >= 1)) lane(t, sc);
   overlays(t, sc);
@@ -370,7 +396,7 @@ async function boot() {
   measureMono(g);
   T = await loadTiming(TIMING);
   SH = resolveShots(T);
-  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); }
+  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); if (s.kind === 'kit') await findKit(s); }
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
@@ -396,7 +422,7 @@ async function boot() {
   Object.assign(sizes, PROOF.sizes);
   // font px of each mono label too (the 24 px rule for chips and labels is a font-size rule)
   for (const k of Object.keys(sizes)) sizes[k].fontPx = parseFloat(sizes[k].font.match(/(\d+(\.\d+)?)px/)[1]);
-  const shots = SH.map((s) => ({ id: s.id, sec: s.sec, from: s.from, to: s.to, t0: s.t0, t1: s.t1, code: s.code, kind: s.kind, src: s.src, status: s.status, eff: effKind(s), found: s.kind === 'plate' ? !!PLATE[s.src] : null, flash: s.opt && s.opt.flash ? s.opt.flash : null, pic: s.pic }));
+  const shots = SH.map((s) => ({ id: s.id, sec: s.sec, from: s.from, to: s.to, t0: s.t0, t1: s.t1, code: s.code, kind: s.kind, src: s.src, status: s.status, eff: effKind(s), found: s.kind === 'plate' ? !!PLATE[s.src] : s.kind === 'kit' ? (KIT[s.id] || []).map((r) => r.id) : null, flash: s.opt && s.opt.flash ? s.opt.flash : null, pic: s.pic }));
   let ws = null, ack = null;
   async function post(i) {
     if (!ws) { ws = new WebSocket(`ws://${location.host}/__ws`); ws.binaryType = 'arraybuffer'; await new Promise((r) => (ws.onopen = r)); ws.onmessage = () => ack && ack(); }

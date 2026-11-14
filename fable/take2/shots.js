@@ -25,7 +25,8 @@
 //               inside it, from its clip time life0; after `end` the life plate is the picture
 //             lane {pts, color, text, cap, scroll, merge, under, from, to}: a written lane (src/lanes.js) over the plate; pts in frame
 //               fractions [[x, y], ...]; text = a life id (its commit message) or 'main' (merge me back to main + every message)
-//             lyr {x0, x1, y, align}: where this shot's lyric goes (frame fractions; y 'bottom' | 'top'); default the full width, bottom
+//             lyr {x0, x1, y, align, top}: where this shot's lyric goes (frame fractions; y 'bottom' | 'top', top = first row's top);
+//               default the full width, bottom. Only the words sung before the shot's last 0.15 s are laid out in the region
 //             v7crop [x, y, w, h]: v7 shots, the part of the v7 frame used (fractions), e.g. to crop out v7's own road-written lyric
 //   alt       an alternative source named in the table
 // paper / ink: the paper pass for v7 sources in the section (default black paper, every lane hue kept)
@@ -100,10 +101,10 @@ P(18, 19, 'main_split', 'missing', 'She steps apart into two, then four (Banach-
 V(19, 20, 'seq 01', 'From above and behind: eight, sixteen, more run out along their lanes.',
   { code: 'V7', alt: 'K runners + C', row: 'b19', opt: { v7crop: [0.3, 0.0, 0.7, 0.7] } });   // v7's own road lyric (I SPLIT MYSELF...) runs along the bottom left: cropped out
 const CROSS = [
-  ['cross_wushu', 'Wushu (woodblock)', 'wushu', { reach: 2.5, door: [0.41, 0.125, 0.582, 0.6] }],   // clip: whole figure inside the door outline from 2.25 s
+  ['cross_wushu', 'Wushu (woodblock)', 'wushu', { reach: 2.5, door: [0.41, 0.125, 0.582, 0.66] }],   // clip: whole figure inside the door outline from 2.25 s
   ['cross_wetlab', 'neuron lab (ink)', 'wetlab', { reach: 3.0, door: [0.29, 0.10, 0.44, 0.74] }],   // measured on the clip: front half through the door at 3.0 s
   ['cross_ames', 'wind tunnel (painting)', 'ames', { reach: 3.0, door: [0.20, 0.09, 0.43, 0.80] }],   // clip: half through at 2.75 s, in at 3.25 s
-  ['cross_hackerhouses', 'hacker houses (pixel)', 'chezjj', { reach: 2.4, door: [0.21, 0.10, 0.37, 0.53] }],
+  ['cross_hackerhouses', 'hacker houses (pixel)', 'chezjj', { reach: 2.8, door: [0.20, 0.07, 0.38, 0.50] }],   // clip: at the door's edge 2.25 s, inside and glowing at 3.0 s
 ];
 CROSS.forEach(([id, m, life, c], i) =>
   P(20 + i, 21 + i, id, 'missing', `Crossing ${i + 1} of 4: a cel-drawn branch-Jade runs her lane toward a doorway of light; as she crosses, the whole picture turns into her medium: ${m}.`,
@@ -112,7 +113,8 @@ P(24, 25, 'cross_violet', 'missing', 'The fifth road has no doorway: the violet 
 P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { row: 'b25', opt: { clip0: 1.5, lyr: { y: 'top' } } });   // the spark kindles at about 2.2-3.0 s of the clip
 P(26, 27, 'main_release', 'missing', 'She opens her hands; the light leaves along the lane.',
   { code: 'P+C', row: 'b26', opt: { lyr: { x0: 0.04, x1: 0.55, align: 'left' },
-    lane: { pts: [[0.0, 0.415], [0.6, 0.255]], color: '#FF3D7F', text: 'piano', cap: 30, scroll: -9, grow: [0, 0.5], growEnd: true } } });   // the light leaves her hand at clip 0 and is off the left edge by about 0.9 s: the lane is written behind it
+    lane: { pts: [[0, 0.425], [0.04, 0.417], [0.111, 0.399], [0.181, 0.379], [0.331, 0.338], [0.548, 0.275], [0.595, 0.265]], color: '#FF3D7F', text: 'piano', cap: 30, scroll: -9,
+      track: [[0, 0.595], [0.375, 0.548], [0.5, 0.331], [0.625, 0.181], [0.75, 0.111], [1.0, 0.064], [1.5, 0.044]] } } });   // the light's path, measured on the clip (warmest point per frame): the lane is written behind it
 V(27, 28, 'lane shot', 'The light races down the rose lane and becomes the lamp in the piano room (match cut).', { row: 'b27' });
 // b28-32: the proof edit, ten lives, 4,4,2,2,2,2,1,1,1,1 beats
 { const D = [4, 4, 2, 2, 2, 2, 1, 1, 1, 1]; let b = 0; const at = (k) => [28 + Math.floor(k / 4), 1 + (k % 4)];
@@ -128,18 +130,25 @@ PR(39, 41, 'D:root', 'The root node opens onto the child at the frost window; ri
 // ------------------------------------------------------------------ Chorus 1: bars 41-56
 section('chorus1');
 PR(41, 43, 'E:hero', 'Main Jade sprints at us on the orange line as the coloured lanes join it. Slab type.', { row: 'b41-42' });
-P(43, 44, 'runner_kit', 'missing', 'Side-on: the twelve run in parallel on their lanes, each drawn in her own medium, main in front.', { code: 'K+C', row: 'b43' });
+// b43 first version (partial): the runner kit with the cut-outs that exist (fable/take2/tools/matte.py), the other lanes empty. kind 'kit'
+// draws on black paper: thirteen written lanes in perspective (far = a hairline, near = readable), each runner on her lane at her
+// lane's scale; dir = the cut-out folder (rgba/f_%04d.png + meta.json). A card until the first runner's cut-out exists.
+shot(43, 44, 'K+C', 'kit', 'runner_kit', 'missing', 'Side-on: the twelve run in parallel on their lanes, each drawn in her own medium, main in front.',
+  { row: 'b43', ov: ['chip:runner kit 2 of 13 (partial)'], opt: { lyr: { y: 'top', top: 0.13, x0: 0.03, x1: 0.52, align: 'left' }, kit: {
+    lanes: ['piano', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'violin', 'sandstorm', 'home', 'violet', 'main'],
+    runners: [{ id: 'runner_pencil', dir: '/work_fable/take2/tests/kit/runner_pencil', lane: 'violin', x: 0.84, clip0: 0.4 },
+      { id: 'runner_main', dir: '/work_fable/take2/kit/runner_main', lane: 'main', x: 0.67, clip0: 0 }] } } });
 P(44, 45, 'hero_feet', 'missing', 'Low and close: her trainers strike the orange line.',
   { row: 'b44', opt: { lyr: { y: 'top', x0: 0.04, x1: 0.96, align: 'left' }, lane: { pts: [[0, 0.845], [1, 0.845]], color: '#FF7A1A', text: 'main', cap: 34, scroll: -14 } } });   // written just under the plate's own line (y 0.80-0.81 in the clip)
 V(45, 46, '1:16-1:20', 'From above: the lanes braid into one. Slab type.', { row: 'b45' });
 P(46, 48, 'runner_fuse', 'missing', 'Runners fuse in pairs, eight to four to two. Where pencil-Jade and gouache-Jade merge, the new runner is half and half for a beat, then whole.', { code: 'K+C', ov: ['medium overlays (to do)'], row: 'b46-47' });
 P(48, 49, 'runner_one', 'missing', "One runner: main Jade, the others' mediums flickering across her jacket.", { code: 'K+C', row: 'b48' });
-P(49, 51, 'fold_reach', 'missing', 'Close: she reaches one hand to the lens, then draws it back.', { row: 'b49-50', opt: { lyr: { x0: 0.66, x1: 0.97, align: 'right' } } }   // clip: she is centred, the hand reaches to frame left; the right third is clear);
+P(49, 51, 'fold_reach', 'missing', 'Close: she reaches one hand to the lens, then draws it back.', { row: 'b49-50', opt: { lyr: { x0: 0.66, x1: 0.97, align: 'right' } } });   // clip: she is centred, the hand reaches to frame left; the right third is clear
 P(51, 53, 'fold_chest', 'missing', 'Hands crossed at her chest; a fan of twelve afterimages, each in a medium, folds into her one per beat.', { code: 'P+K', row: 'b51-52', opt: { lyr: { x0: 0.03, x1: 0.42, align: 'left' } } });
 P(53, 54, 'look_back', 'missing', "She stops and looks back over her shoulder: the same look as the lives'.", { row: 'b53', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });
 V(54, 56, 'night world', 'Wide: every road still glows to the horizon; along them the twelve worlds as small lit windows; commit nodes lock on, one per beat.',
   { code: 'V7+P+C', ov: ['plate thumbnails (to do)', 'commit nodes per beat (to do)'], row: 'b54-55', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' } } });
-P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { zoom0: 1.08, push: -0.08, lyr: { y: 'top' } } });
+P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { clip0: 1.8, push: 0, lyr: { y: 'top' } } });   // clip: the pull-out runs 0-4 s; from 1.8 s she is small enough for the slab above her
 
 // ------------------------------------------------------------------ Breakdown A: bars 57-64 (crash on b57, strings)
 section('break_a');

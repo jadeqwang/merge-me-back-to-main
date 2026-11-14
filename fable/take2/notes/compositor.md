@@ -150,3 +150,47 @@ Breakdown A 6, Breakdown B 34, Build 41, Drop 20, Verse 2 10, Chorus 2 14, Outro
   line, including the restored strip lines in bars 32-38. Not watched at speed with sound by anyone.
 - Known: the bar 149-152 graph (v7) is sparse and its labels are not enlarged; v7 frames after about 279.8 s hold v7's last
   frame (unused: the last shot is a card); counter stays at 1,024 from bar 12.
+
+## Step 2: bars 17-56 as a real section (2026-11-13, late; compositor agent, second owner)
+
+What is wired (all in `shots.js` opts + `src/film.js`; proof-range changes in `tools/port_proof.py` -> `src/proofscene.js`):
+- **Plates drop in.** A plate counts when `meta.json` (not a placeholder, with `n`) and either `REAL` or its last frame `f_<n>.jpg`
+  exist (intake writes frames, meta, REAL in that order). No code change when a plate lands; boot-time check, so a render started
+  before a plate lands keeps the card for that render.
+- **Clip map** (`clipMap()`): `clip0`, `clip1` (play clip0..clip1 over the shot), `speed`. Nearest frame; frame blend only when the
+  clip is slowed (speed < 1) unless `blend` is set. Defaults: main_split 0.5-3.5 s (1.73x), main_light from 1.5 s (the spark kindles
+  at about 2.2-3.0 s), look_back from 0, main_back_wide from 1.8 s (she is small enough for the slab above her).
+- **Crossings** (b20-23, `opt.cross`): `reach` = clip time she is through the doorway (measured on each clip: wushu 2.5, wetlab 3.0,
+  ames 3.0, hacker houses 2.8), lands at `at` = 0.58 of the bar; speed = reach / (at x bar), capped at `maxSpeed` 1.5, the rest by
+  starting later in the clip (so the clips do NOT start at 0: 1.5x running looked like the limit; set maxSpeed 3 to play from 0).
+  From `at` to `end` (0.84) the doorway rect (`door`, plate fractions, measured on the clips at reach) grows (ease io3) to the frame
+  plus 6 px, with the life plate (proof plate wushu / wetlab / ames / chezjj, from its 1.0 s) cover-fitted inside it, and a lane-colour
+  edge that fades; after `end` the life plate is the picture. The rect overshoots the frame, so no edge of the old picture survives
+  (the Step 0 one-frame dark edge came from the test script's resize rounding; nothing like it here, checked on stills).
+- **Hero b41-42**: `hero_paper` (work_fable/take2/plates) replaces the proof's hero through `makeProof({dirs: {hero: dir}})`;
+  nearest frame (`heroBlend` false). It has her in the centre, so: crop zoom 1.25 anchored left/top (fx 0, fy 0.05) puts her right of
+  centre; the slab stacks one word per row (MERGE / ME / BACK / TO / MAIN) on the left, clear of face and hands; the written lane has
+  a gap where her legs cross it (she passes in front of it). `?hero=old` gives the proof's first hero and its layout back.
+- **Written lanes**: `opt.lane` on plates (`lane()`): hero_feet (main text, cap 34, just under the plate's own orange line at
+  y 0.80-0.81), main_release (the rose/piano lane, cap 30, written behind the light along its measured path: `track` = light x per
+  clip time, from the warmest point per frame). Lane points are plate fractions mapped through the plate's crop and push. The ten
+  lives (b28-32, proof range): the lane line is now a written lane (cap 24, the life's commit message, the proof's colour wipe kept;
+  `?prooflanes=0` restores the solid line). `?lanes=0` turns plate lanes off.
+- **Bar 38**: each panel's last frame trails behind it as afterimages (5 per panel, from its place toward its node, lane-colour tint,
+  fading out by the root iris). `?trail=0` off.
+- **Lyrics per shot** (`opt.lyr` = {x0, x1, y, align, top}): a region with a soft dark cloud behind the words instead of the
+  full-width bottom gradient; only the words sung before the shot's last 0.15 s are laid out there. Placements, checked on the
+  clip frames: main_face left; crossings bottom-left; main_light top (over the chest); main_release bottom-left; hero_feet top (over
+  the trousers); fold_reach right third (she is centred and the hand reaches to frame left; the clip differs from the still);
+  fold_chest left; look_back left; b54-55 v7 left; main_back_wide top. A line that runs over several shots is re-set in each.
+- **v7 in this section**: b19, b27, b45, b54-55 through the paper pass on black paper. b19 is cropped (`v7crop` [0.3, 0, 0.7, 0.7]):
+  v7's own road lyric ("I SPLIT MYSELF", "CLIMBED ONTO TH...") runs big along the bottom left there. b27 and b45: no readable road
+  text after the paper pass. b54-55: small text along the orange lane at her feet in the raw v7; illegible after the paper pass.
+- **Runner kit b43** (kind `kit`): black paper, thirteen written lanes in perspective (far hairlines to near readable), runner_main
+  (cut out with tools/matte.py into work_fable/take2/kit/runner_main) on main's lane in front, runner_pencil (the Step 0 cut-out
+  in work_fable/take2/tests/kit/runner_pencil, from take t2 of that clip, not the plate's t1) on the violin lane; chip
+  "runner kit 2 of 13 (partial)". A card until the first runner's cut-out exists. b46-48 stay cards.
+- Proof identity (`tools/proof_identity.py`) after these changes: proofbug=1 still max diff 0 on all 13 frames.
+
+Mistake to avoid: two edits put a `// comment` before the closing `);` of a shot line in shots.js and the page failed to boot (the
+harness prints "module error ... shots.js:N"). Check with `node -e "import('./fable/take2/shots.js')"` after editing shots.js.
