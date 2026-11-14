@@ -389,6 +389,15 @@ Each is small. Run them first, show Jade, then generate in bulk.
 - **Budget:** "no need to cap it so low, it can go higher." The $180 figure in section 8 is no longer a cap; the working limit is
   the project cap enforced by the tools ($600 in total, about $200 left). Ask before going past that.
 
+**Made by Jade after watching proof round 2 (2026-11-13):**
+
+- **The faces read as one person.** The method stays: one face design, and a "looking back" still as each clip's last frame.
+- **Smooth versus on twos:** she sees no big difference. On twos is therefore not required for the look; decide per shot.
+- **A small discontinuity in the running shot at the end of the proof** (the chorus hero), less noticeable on twos. Not yet
+  diagnosed. Likely cause (unverified): the compositor cross-blends 24 fps plate frames into 30 fps, which doubles fast-moving legs;
+  the on-twos path does not blend. Check the source clip frame by frame first; if the clip is clean, show fast-motion plates
+  without blending (nearest frame, or on twos). That shot is due to be replaced by the black-paper version anyway.
+
 **Still open:**
 
 1. **The reveal at bar 137.** Is her traced likeness from Orbital Sunrise the right image for "main is reality", and should it be
@@ -400,6 +409,10 @@ Each is small. Run them first, show Jade, then generate in bulk.
 4. **The click track.** `analysis_v3/click_check.wav` has not been listened to. A minute of her ear on it before the cut is locked.
 
 ## 11. Order of work
+
+**State on 2026-11-13, end of session:** proof round 2 is in `review/fable_proof/` and Jade has approved the direction, the look and
+the faces. Spent $387.84 of the $600 project cap. Nothing in the table below has been started; the next step is Step 0.
+
 
 | Step | Work | Jade sees |
 |---|---|---|

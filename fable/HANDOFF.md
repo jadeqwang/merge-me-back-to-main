@@ -15,6 +15,8 @@
 > - The hybrid (Seedance redraw over the code world) was not adopted; recommendation to her was against it as proposed.
 > - **She approved the direction after the proof ("a huge improvement"). The plan for the full rebuild, with the shot table, assets,
 >   budget, tests and the decisions still hers, is `fable/take2/PLAN.md`: start there.** No generation beyond the proof has been done.
+> - Proof round 2 (her corrections applied) is in `review/fable_proof/`; she confirmed the faces read as one person. Her standing
+>   corrections for every plate are in the plan (rules 8, 9, 12 and section 10) and in the session memory `merge-plate-canon`.
 
 (The rest of this file was written 2026-11-11, about 00:45.)
 
