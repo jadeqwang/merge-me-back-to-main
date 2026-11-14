@@ -25,7 +25,7 @@ async function run(job) {
   if (job.side) { const k = Math.max(w / src.width, h / src.height); g.drawImage(src, (w - src.width * k) / 2, (h - src.height * k) / 2, src.width * k, src.height * k); x += w; }
   for (const o0 of list) {
     const o = { ...o0, t: job.t ?? o0.t ?? 0, out: {} };
-    if (mask) o.keep = { mask, luma: true, feather: o0.feather ?? 3 };
+    if (mask) o.keep = { mask, luma: !!job.maskLuma, feather: o0.feather ?? 0 };
     g.save(); g.beginPath(); g.rect(x, 0, w, h); g.clip();
     (job.pass === 'glyph' ? glyphPass : paperPass)(g, src, { x, y: 0, w, h }, o); if (o.out.prof && job.prof) console.log(o.out.prof);
     g.restore(); ms.push(o.out.ms); x += w;

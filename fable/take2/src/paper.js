@@ -18,9 +18,9 @@
 //   ink     ['#rrggbb', ...] accent inks kept from the source by hue      inkSat  min source saturation to take an ink (default .28)
 //   seed    integer (default 1)      t  song time (s)      fps  boil rate (default 12)      boil  0..1 how much moves per step (default 1)
 //   tone    'hatch' | 'stipple' (default 'hatch')         hatch  hatch spacing in px at 1080p (default 9)    stroke length: len (default 90)
-//   angle   base hatch angle, degrees (default 55)        layers  hatch layers 1..3 (default 3)
+//   angle   base hatch angle, degrees (default 55)    angleVar  radians the hatch turns across the frame, fixed per seed (default .6)        layers  hatch layers 1..3 (default 3)
 //   levels  [lo, hi] tone levels in luminance (default: lo = median + .04 on black paper / median - .04 on white, hi = 99.5th / .5th pct)
-//   thresholds [a, b, c] tone where each hatch layer starts (default [.12, .4, .66])      solid  tone where the core is rubbed solid (.9)
+//   thresholds [a, b, c] tone where each hatch layer starts (default [.12, .4, .66])      solid  tone where the core is rubbed solid (.84 black, .94 white)
 //   line    edge strength (default 1)    detail  edge threshold (lower = more lines; default .018)    lift  0..1 line breakup (default .4)
 //   lineSide 'light' | 'dark' | 'both': which side of an edge carries the contour (default: light on black paper, both on white)
 //   coarse  strength of the outline of big soft forms (coarse DoG at quarter size) (default 1; 0 = off)   coarseDetail (.03 one-sided, .007 both)
@@ -144,7 +144,7 @@ export function paperPass(ctx, src, rect, opts = {}) {
   // edges (one-sided DoG), with lift breakup and colour, into a half-size RGBA image
   const b1 = blur(L, AW, AH, .9, an.tmp, an.b1), b2 = blur(b1, AW, AH, 1.14, an.tmp, an.b2);   // b2 = sigma 1.45 (cascaded)
   const N0 = opts.stroke ? hexRGB(opts.stroke) : black ? [236, 230, 216] : [38, 34, 31];
-  const lside = opts.lineSide ?? (black ? 'light' : 'both'), side = lside === 'light' ? 1 : lside === 'dark' ? -1 : 0, thr = opts.detail ?? .018, lineK = opts.line ?? 1, lift = opts.lift ?? .4, solid = opts.solid ?? .84;
+  const lside = opts.lineSide ?? (black ? 'light' : 'both'), side = lside === 'light' ? 1 : lside === 'dark' ? -1 : 0, thr = opts.detail ?? .018, lineK = opts.line ?? 1, lift = opts.lift ?? .4, solid = opts.solid ?? (black ? .84 : .94);
   const nl = lattice(AW, AH, 11 * S, seed, bstep, 3); let anyF = false;
   for (let y = 0, i = 0; y < AH; y++) for (let x = 0; x < AW; x++, i++) {
     const d0 = b1[i] - .985 * b2[i], d = side ? d0 * side : Math.abs(d0) * .8;
@@ -200,12 +200,12 @@ export function paperPass(ctx, src, rect, opts = {}) {
     const q1 = side ? null : blur(O1, QW, QH, 1.3, an.ct, an.p1), q2 = side ? null : blur(O1, QW, QH, 2.3, an.ct, an.p2), q3 = side ? null : blur(O2, QW, QH, 1.3, an.ct, an.p3), q4 = side ? null : blur(O2, QW, QH, 2.3, an.ct, an.p4);
     const thr2 = opts.coarseDetail ?? (side ? .03 : .007), kq = opts.coarse ?? 1;
     for (let qy = 1; qy < QH - 1; qy++) for (let qx = 1; qx < QW - 1; qx++) {
-      const i = qy * QW + qx, d0 = c1[i] - c2[i], d = side ? d0 * side : Math.hypot(d0, (q1[i] - q2[i]) * .5, (q3[i] - q4[i]) * .5) * .8;
+      const i = qy * QW + qx, d0 = c1[i] - c2[i], d = side ? d0 * side : Math.hypot(d0 * .3, (q1[i] - q2[i]) * .5, (q3[i] - q4[i]) * .5) * .8;
       let e = clamp01((d - thr2) / (thr2 * 1.5)) * kq; if (e < .3) continue;
       // only at the ridge across the edge: the strongest of its neighbours along the gradient
       const gx = c1[i + 1] - c1[i - 1], gy = c1[i + QW] - c1[i - QW], gm = Math.hypot(gx, gy); if (gm < 1e-5) continue;
       const nx = gx / gm, ny = gy / gm, ia = (qy + Math.round(ny)) * QW + qx + Math.round(nx), ib = (qy - Math.round(ny)) * QW + qx - Math.round(nx);
-      const dq = (k) => side ? (c1[k] - c2[k]) * side : Math.hypot(c1[k] - c2[k], (q1[k] - q2[k]) * .5, (q3[k] - q4[k]) * .5) * .8, da = dq(ia), db = dq(ib);
+      const dq = (k) => side ? (c1[k] - c2[k]) * side : Math.hypot((c1[k] - c2[k]) * .3, (q1[k] - q2[k]) * .5, (q3[k] - q4[k]) * .5) * .8, da = dq(ia), db = dq(ib);
       if (da > d || db > d) continue;
       e *= clamp01((nl(qx * 2, qy * 2) - lift * .5) * 3); if (e < .3) continue;
       const hx = hash3(qx, qy, seed + 77 + bstep * 17), hy = hash3(qy, qx, seed + 78 + bstep * 17);
@@ -230,7 +230,7 @@ export function paperPass(ctx, src, rect, opts = {}) {
   const colours = [N0, ...inks];
   const inkAt = (x, y) => { const ax = Math.min(AW - 1, Math.max(0, (x * .5) | 0)), ay = Math.min(AH - 1, Math.max(0, (y * .5) | 0)), i = ay * AW + ax; return an.inkW[i] > .35 ? an.ink[i] : 0; };
   let strokes = 0;
-  const diag = Math.hypot(FW, FH);
+  const diag = Math.hypot(FW, FH), angVar = opts.angleVar ?? .6, angN = lattice(FW, FH, 260 * S, seed, 0, 9);
   if (!stip) for (let q = 0; q < nly; q++) {
     const a = base + [0, -1.2, .6][q] + (hash3(bstep, q, seed) - .5) * .06 * boil, c = Math.cos(a), s = Math.sin(a);
     const sp = sp0 * [1, .95, .85][q], len = len0 * [1, .8, .65][q], ph = hash3(bstep, q + 11, seed) * boil;
@@ -247,14 +247,15 @@ export function paperPass(ctx, src, rect, opts = {}) {
         const press = clamp01((tc - need) / .3);
         const L2 = len * (.42 + .12 * hash3(sj, li, seed + 7 + bstep)) * (.85 + .3 * press);
         const jx = (hash3(li, sj, bstep * 3 + 5) - .5) * sp * .5 * boil, jy = (hash3(sj, li, bstep * 3 + 6) - .5) * sp * .5 * boil;
+        const dA = (angN(x, y) - .5) * angVar, cd = Math.cos(dA), sd = Math.sin(dA), c2 = c * cd - s * sd, s2 = s * cd + c * sd;   // the hand turns the hatch with the region
         let ea = L2, eb = L2; const lim = need * .7;
-        if (tAt(x - c * ea, y - s * ea) < lim) ea *= tAt(x - c * ea * .5, y - s * ea * .5) < lim ? .3 : .6;
-        if (tAt(x + c * eb, y + s * eb) < lim) eb *= tAt(x + c * eb * .5, y + s * eb * .5) < lim ? .3 : .6;
-        const xa = x + jx - c * ea, ya = y + jy - s * ea, xb = x + jx + c * eb, yb = y + jy + s * eb;
+        if (tAt(x - c2 * ea, y - s2 * ea) < lim) ea *= tAt(x - c2 * ea * .5, y - s2 * ea * .5) < lim ? .3 : .6;
+        if (tAt(x + c2 * eb, y + s2 * eb) < lim) eb *= tAt(x + c2 * eb * .5, y + s2 * eb * .5) < lim ? .3 : .6;
+        const xa = x + jx - c2 * ea, ya = y + jy - s2 * ea, xb = x + jx + c2 * eb, yb = y + jy + s2 * eb;
         const w = sp * (.08 + .16 * press) * (black ? 1 : .9), bow = (hs - .5) * sp * .9;
-        const mxp = x + jx - s * bow, myp = y + jy + c * bow;     // bowed middle
+        const mxp = x + jx - s2 * bow, myp = y + jy + c2 * bow;     // bowed middle
         const P2 = paths[inkAt(x, y) * NAL + Math.min(NAL - 1, (press * NAL) | 0)];
-        P2.moveTo(xa, ya); P2.quadraticCurveTo(mxp - s * w * 2, myp + c * w * 2, xb, yb); P2.quadraticCurveTo(mxp + s * w * 2, myp - c * w * 2, xa, ya);
+        P2.moveTo(xa, ya); P2.quadraticCurveTo(mxp - s2 * w * 2, myp + c2 * w * 2, xb, yb); P2.quadraticCurveTo(mxp + s2 * w * 2, myp - c2 * w * 2, xa, ya);
         strokes++;
       }
     }

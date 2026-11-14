@@ -12,6 +12,8 @@ G=work_fable/take2/tests/glyph; SRC=work_fable/proof/plates/sandstorm; PY=${PY:-
 mkdir -p $G
 [ -f $G/keep_still.png ] || $PY -I fable/take2/tools/fx/matte.py --in $SRC/still.jpg --out $G/keep_still.png --seed 0.69,0.15 --region 0.44,0,0.9,1
 [ -d $G/keep_frames ] && [ "$(ls $G/keep_frames | wc -l)" -ge 121 ] || nice -n 10 $PY -I fable/take2/tools/fx/matte.py --in $SRC/frames --out $G/keep_frames --seed 0.69,0.15 --region 0.44,0,0.9,1 --every 3
+$PY -I fable/take2/tools/fx/matte.py --to-rgba --in $G/keep_still.png --out $G/keep_still.png      # older grey masks -> RGBA (no-op if RGBA)
+$PY -I fable/take2/tools/fx/matte.py --to-rgba --in $G/keep_frames --out $G/keep_frames
 python3 - "$G" <<'EOF'
 import json, re, subprocess, random, sys
 G = sys.argv[1]

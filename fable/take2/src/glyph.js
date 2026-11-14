@@ -45,8 +45,8 @@ const ATL = new Map();
 function atlasFor(fpx, weight) {
   const key = `${fpx.toFixed(2)}:${weight}`; let A = ATL.get(key); if (A) return A;
   const cw = Math.ceil(fpx * .6) + 2, ch = Math.ceil(fpx * 1.22) + 2, cols = 32, rows = 12;
-  const cv = mk(cols * cw, rows * ch), g = cv.getContext('2d');
-  A = { cv, g, cw, ch, cols, rows, map: new Map(), n: 0, fpx, font: `${weight} ${fpx}px "${FAMILY}"` };
+  const cv = mk(cols * cw, rows * ch), g = cv.getContext('2d', { willReadFrequently: true });
+  A = { cv, g, cw, ch, cols, rows, map: new Map(), alpha: [], n: 0, fpx, font: `${weight} ${fpx}px "${FAMILY}"` };
   ATL.set(key, A); return A;
 }
 function slot(A, c) {
@@ -56,7 +56,9 @@ function slot(A, c) {
   const x = (s % A.cols) * A.cw, y = Math.floor(s / A.cols) * A.ch, g = A.g;
   g.save(); g.beginPath(); g.rect(x, y, A.cw, A.ch); g.clip();
   g.font = A.font; g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(c, x + A.cw / 2, y + A.ch / 2 + A.fpx * .04);
-  g.restore(); return s;
+  g.restore();
+  const d = g.getImageData(x, y, A.cw, A.ch).data, a = new Uint8Array(A.cw * A.ch); for (let k = 0; k < a.length; k++) a[k] = d[k * 4 + 3];
+  A.alpha[s] = a; return s;
 }
 
 // ---------------------------------------------------------------- scratch
@@ -94,9 +96,11 @@ export function glyphPass(ctx, src, rect, opts = {}) {
   else if (depth === 'luma') depthAt = null;   // per cell, from its own luminance
   else { const d = sampleGrid(depth, 64, 36, rect, [0, 0, depth.width, depth.height]); depthAt = (u, v) => d[(Math.min(35, (v * 36) | 0) * 64 + Math.min(63, (u * 64) | 0)) * 4] / 255; }
 
-  const layer = scratch('layer', Math.ceil(rect.w), Math.ceil(rect.h), false), lg = layer.g;
+  const LW = Math.ceil(rect.w), LH = Math.ceil(rect.h), layer = scratch('layer', LW, LH, false), lg = layer.g;
+  if (!layer.img) layer.img = lg.createImageData(LW, LH);
+  const LB = layer.img.data;
   if (opts.bg !== 'none') { ctx.save(); ctx.fillStyle = opts.bg || '#000'; ctx.fillRect(rect.x, rect.y, rect.w, rect.h); ctx.restore(); }
-  let cells = 0;
+  let cells = 0; const PR = [];
   for (const near of [false, true]) {
     if (near && !depth) break;
     const fpx = near ? nearF : farF, A = atlasFor(fpx, weight);
@@ -118,8 +122,8 @@ export function glyphPass(ctx, src, rect, opts = {}) {
       for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { let a = 0, n = 0; for (let dy = -R2; dy <= R2; dy++) { const rr = r + dy; if (rr < 0 || rr >= rows) continue; for (let dx = -R2; dx <= R2; dx++) { const cc = c + dx; if (cc < 0 || cc >= cols) continue; a += lum[rr * cols + cc]; n++; } } bl[r * cols + c] = a / n; }
       for (let i = 0; i < N; i++) lum[i] = clamp01(lum[i] + (lum[i] - bl[i]) * local);
     }
-    const col = scratch(near ? 'colN' : 'colF', cols, rows), cimg = col.g.createImageData(cols, rows), C = cimg.data;
-    lg.setTransform(1, 0, 0, 1, 0, 0); lg.globalCompositeOperation = 'source-over'; lg.globalAlpha = 1; lg.clearRect(0, 0, layer.w, layer.h);
+    PR.push(['sample', performance.now()]);
+    LB.fill(0);
     let tpos = 0, inRun = false, this_msg = '', msgI = 0, runs = 0; const tbase = text ? Math.floor(hash3(seed, 1, 2) * text.length) : 0;
     // length of each row's bright run (text needs room to be read: runs shorter than textMin take the ramp)
     const runLen = new Uint16Array(N);
@@ -164,30 +168,38 @@ export function glyphPass(ctx, src, rect, opts = {}) {
         let b = isText ? (opts.textBright ?? 1) : dim ? floor * (.6 + .8 * hash3(c, r, seed + 4)) : .35 + .65 * lv;
         if (!near && depth) b *= farDim + (1 - farDim) * dp / nearAt;
         const s = slot(A, chr);
-        lg.globalAlpha = clamp01(b);
-        lg.drawImage(A.cv, (s % A.cols) * A.cw, Math.floor(s / A.cols) * A.ch, A.cw, A.ch, c * cw + (cw - A.cw) / 2, r * ch + (ch - A.ch) / 2, A.cw, A.ch);
         cells++;
         // colour of this cell
-        const j = i * 4; let R, G, B;
+        let R, G, B;
         if (pal) {
           const x = clamp01(lv) * (pal.length - 1), p = Math.min(pal.length - 2, Math.floor(x)), f = x - p, P0 = pal[p], P1 = pal[Math.min(pal.length - 1, p + 1)];
           if (pal.length === 1) [R, G, B] = pal[0]; else { R = P0[0] + (P1[0] - P0[0]) * f; G = P0[1] + (P1[1] - P0[1]) * f; B = P0[2] + (P1[2] - P0[2]) * f; }
         } else {
-          R = px[j]; G = px[j + 1]; B = px[j + 2]; const m = (R + G + B) / 3; R = m + (R - m) * sat; G = m + (G - m) * sat; B = m + (B - m) * sat;
+          const j = i * 4; R = px[j]; G = px[j + 1]; B = px[j + 2]; const m = (R + G + B) / 3; R = m + (R - m) * sat; G = m + (G - m) * sat; B = m + (B - m) * sat;
           const mx = Math.max(R, G, B, 1), up = Math.min(255 / mx, 2.2); R *= up; G *= up; B *= up;   // colour at full value; brightness is the glyph's alpha
         }
-        C[j] = R; C[j + 1] = G; C[j + 2] = B; C[j + 3] = 255;
+        // blit the glyph's coverage x brightness in that colour (straight alpha; the brighter cell wins where slots overlap)
+        const ga = A.alpha[s], gw = A.cw, gh = A.ch, x0 = Math.round(c * cw + (cw - gw) / 2), y0 = Math.round(r * ch + (ch - gh) / 2), bb = clamp01(b);
+        R = R > 255 ? 255 : R; G = G > 255 ? 255 : G; B = B > 255 ? 255 : B;
+        for (let yy = 0; yy < gh; yy++) {
+          const Y = y0 + yy; if (Y < 0 || Y >= LH) continue;
+          let o = (Y * LW + x0) * 4, k = yy * gw;
+          for (let xx = 0; xx < gw; xx++, o += 4, k++) {
+            const av = ga[k]; if (!av) continue; const X = x0 + xx; if (X < 0 || X >= LW) continue;
+            const A2 = av * bb; if (A2 <= LB[o + 3]) continue;
+            LB[o] = R; LB[o + 1] = G; LB[o + 2] = B; LB[o + 3] = A2;
+          }
+        }
       }
     }
-    col.g.putImageData(cimg, 0, 0);
-    lg.globalAlpha = 1; lg.globalCompositeOperation = 'source-in'; lg.imageSmoothingEnabled = false;
-    lg.drawImage(col.cv, 0, 0, cols * cw, rows * ch);
-    lg.globalCompositeOperation = 'source-over';
+    PR.push(['cells', performance.now()]);
+    lg.putImageData(layer.img, 0, 0);
     ctx.drawImage(layer.cv, 0, 0, rect.w, rect.h, rect.x, rect.y, rect.w, rect.h);
+    PR.push(['tint', performance.now()]);
   }
   // keep: the source untouched (her face and body)
   if (opts.keep) drawKeep(ctx, src, rect, cover, opts.keep);
-  if (opts.out) { opts.out.ms = performance.now() - t0; opts.out.cells = cells; }
+  if (opts.out) { opts.out.ms = performance.now() - t0; opts.out.cells = cells; let p0 = t0; opts.out.prof = PR.map(([n, v]) => { const d = n + ' ' + (v - p0).toFixed(1); p0 = v; return d; }).join(', '); }
 }
 
 function drawKeep(ctx, src, rect, cover, keep) {
@@ -195,7 +207,13 @@ function drawKeep(ctx, src, rect, cover, keep) {
     ctx.save(); ctx.beginPath(); for (const k of keep) ctx.rect(rect.x + k.x, rect.y + k.y, k.w, k.h); ctx.clip();
     ctx.drawImage(src, cover[0], cover[1], cover[2], cover[3], rect.x, rect.y, rect.w, rect.h); ctx.restore(); return;
   }
-  const W = Math.ceil(rect.w), H = Math.ceil(rect.h), m = scratch('keepM', W, H), k = scratch('keepK', W, H, false);
+  const W = Math.ceil(rect.w), H = Math.ceil(rect.h), k = scratch('keepK', W, H, false);
+  if (!keep.feather && !keep.luma && !keep.invert) {   // an alpha mask as is: mask, then the source inside it
+    const kg = k.g; kg.globalCompositeOperation = 'copy'; kg.drawImage(keep.mask, 0, 0, W, H);
+    kg.globalCompositeOperation = 'source-in'; kg.drawImage(src, cover[0], cover[1], cover[2], cover[3], 0, 0, rect.w, rect.h);
+    kg.globalCompositeOperation = 'source-over'; ctx.drawImage(k.cv, 0, 0, rect.w, rect.h, rect.x, rect.y, rect.w, rect.h); return;
+  }
+  const m = scratch('keepM', W, H);
   const mg = m.g; mg.setTransform(1, 0, 0, 1, 0, 0); mg.globalCompositeOperation = 'source-over'; mg.clearRect(0, 0, W, H);
   mg.filter = keep.feather ? `blur(${keep.feather * rect.h / 1080}px)` : 'none';
   mg.drawImage(keep.mask, 0, 0, W, H); mg.filter = 'none';
