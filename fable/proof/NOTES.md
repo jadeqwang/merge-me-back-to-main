@@ -40,55 +40,59 @@ Env: `WORKERS` (default 4), `RES` (default 1920x1080; layout scales with height)
 Plates are read when the page loads, so after real plates arrive, re-run `render_proof.sh`. Nothing else is needed.
 If a life plate has `turn_t: null`, the grid uses min(2.5 s, half the clip) as its turn. Put the real turn time into meta.json.
 
-## The edit (all times from the timing file). Revision 1 (2026-11-13, all 14 real plates in)
+## The edit (all times from the timing file). Revision 2 (2026-11-13, final plates: late turns, figures on either side)
 
 - A, bars 28-32: 10 full-frame shots of 4,4,2,2,2,2,1,1,1,1 beats from bar 28's beat index, with a push of 3% (4 beats),
-  2.2% (2 beats) or 1% (1 beat). Full-frame plates cross-blend adjacent source frames by the fractional position (24 to 30 fps,
-  no repeated frames). The lane line sits at y=0.82H with a ring at x=0.12W; on each cut the new colour wipes out from the
-  node over 3 frames. The chyron is a chip: #05061A at 82%, radius 4, with dot + branch + dim hash on line 1 and the commit message
-  on line 2; its left edge sits on the node's left edge. "Each one a story / to unfold" (2 rows, baseline 140) is upper left.
-  The colour follows the shot's `tone` in lives.js (ink #14122B with a thin cream shadow on light plates, cream with a thin ink
-  shadow on dark ones) and switches on the cut. There is no scrim. wushu is marked light, against the brief's list: the plate is a light grey mat.
-- B, bars 33-36: twelve 16:9 cells of 470x264 with 10 px gutters, top margin 14, grid bottom 827. Below the grid is a lyric strip
-  on the near-black background. Sandstorm scales from full frame into its cell (row 3, col 2) over 8 frames. The other 11 cells
-  pop in on half-beats with a back-ease, lane tick and node flash, and empty slots show a dim lane tint. Each cell has its lane
-  along the bottom edge, its node at the right end (88%) and a small chip label at bottom left. Cells play their pre-turn action
-  slowed (a power curve; ping-pong if the slowdown would be more than 4x). "And every branch remembers" and "Where I started from"
-  are centred in the strip (cap 70, baseline 1000, cream, soft shadow, no box). "And every branch" starts over the last
-  full-frame plates in the same place.
-- C, bar 37: the turn lands on the frame nearest the downbeat. The clip map is half a frame early, and grid cells at natural speed
-  show floor() (no blend), so the turn is crisp. The gutters flash white then lane colour, and the grid punches 3% over 6 frames.
-  The grid holds the whole bar. In beat 3 a pulse runs left to right along each lane; in beat 4 the lit lane gathers into the node.
-- D, bar 38: a night background (#05061A to #0B1240) with seeded stars at 0.35 parallax. Column by column, one column per beat
-  with the left column first, the cells shrink into their nodes (first half of the beat). Each node throws a 12 px lane stroke
-  (soft edge, colour body, bright core, round caps) in an S-curve down-left into main. Higher rows land further left, and the
-  curves nest without crossing. Each junction flashes on arrival at beat+0.9, after which a strand runs alongside main and a small
-  ring stays on it. Main goes from 6 to 18 px and brightens with each merge. The camera travels left (graph moves right, u^2) and
-  pulls back to 0.62 about the frame centre. The root ring (r 24) enters from the left in the last beat and lands at (0.12W, 0.82H)
-  on bar 39. There are no labels in this section.
-- Bar 39 downbeat: an iris from the root node opens over 2 beats into the root plate. Lane strokes are clipped to outside the
-  iris and fade, so over the plate only main and the root node remain, with light pulses on main that speed up into bar 41. The
-  root push accelerates (1.0 to 1.12, power 2.4). "Where I started from" stays in the strip until it ends.
-- E, bar 41: hard cut to hero with a 2-frame flash (0.85, 0.4) and a 4% scale punch settling over 8 frames, then a 4% push.
-  The slab is MERGE / ME BACK / TO MAIN in Archivo Expanded 800 at cap 106, tracking -0.01em, x=100. The rows end at x 832, 1004
-  and 937 (1049 at most while a word lands at 1.08 scale), and the hero figure starts at about 0.62W. Each word lands on its word time.
-- Finish: a seeded paper grain (6 tiles, chosen and offset by floor(t*12)) multiplied over everything below the lines, and a
-  0.24 vignette. Lines and type sit above.
+  2.2% (2 beats) or 1% (1 beat). Full-frame plates cross-blend adjacent source frames.
+  - Layout follows the figure. Each life in lives.js has `side` (where SHE is), plus an optional `yshift` (vertical crop nudge;
+    none needed so far). The upper lyric block ("Each one a story / to unfold", cap 68, baseline 108) goes in the upper corner
+    away from her. The chip and the lane node go to the same side at the lane height (node at 0.12W or 0.88W; the chip's outer
+    edge sits on the node's outer edge). The lane runs full width and is continuous; on a cut the node may jump sides and the
+    new colour wipes out from wherever the node now is.
+  - Sides: left = piano, wetlab, poet, phd (type on the right); right = violin, wushu, ames, band, chezjj, sandstorm, home, violet.
+    phd and band are near the centre and were chosen by eye: phd's right is clear grid paper, band's top left is clear (bandmates on the right).
+  - Tones (lyric ink #14122B on light, cream #FFF1D6 on dark, thin opposite shadow): light = piano, violin, wetlab, phd, poet,
+    chezjj; dark = wushu, ames, band, sandstorm, home, violet. wushu and ames are flipped from the brief's list (wushu's top is a
+    dark wooden wall, ames a mid grey where ink read weakly).
+  - The line holds 0.3 s after its last word and fades in 0.2 s, so it is gone before the band cut.
+- No A shot reaches a turn. The longest shot is 4 beats (1.74 s) against turn_t of at least 2.5 s, and A clip time is soft-capped at turn_t - 0.4.
+- B, bars 33-36: twelve 16:9 cells of 470x264 with 10 px gutters, top 14, bottom 827, and a lyric strip below. Sandstorm scales
+  into its cell over 8 frames; the others pop in on half-beats. Each cell has its lane along the bottom edge, its node at the
+  right end and a chip label at bottom left (the labels fade out at bar 38). Pre-turn action is slowed with a power curve.
+  "And every branch remembers" and "Where I started from" are centred in the strip (cap 70, baseline 1000).
+- C, bar 37: the turn lands on the frame nearest the downbeat. The clip map is half a frame early, and grid cells at natural
+  speed show floor() (no blend). After the turn, plates play at natural speed for min(1.2 s, half the remaining clip), then ease
+  toward the last frame along a curve (linear part 0.25 plus ease-out) that arrives as the cell finishes shrinking in bar 38.
+  Slowed playback blends frames; it never stops and never runs off the clip. The grid holds the whole bar, with a pulse left to
+  right in beat 3 and a gather into the node in beat 4.
+- D, bar 38: night background. The camera does not translate: it zooms (u^2, accelerating) from 1 to 0.8 about (1880, lane y),
+  so the graph slides right, stays tall in frame, and the root (world x = 1880 - 1650/0.8) enters from the left mid-bar and lands
+  on (0.12W, 0.82H) on bar 39. Column per beat, left first: cells shrink into their nodes and each node throws a 12 px S-curve
+  into main. Junction flashes; main grows from 6 to 18 px. There are no labels.
+- Bar 39: an iris from the root node opens into the root plate over 2 beats. Strokes are clipped outside the iris and fade, so
+  only main and the root node remain over the plate. The push accelerates into bar 41.
+- E, bar 41: the hero cut with a 2-frame flash and a 4% punch over 8 frames. Slab MERGE / ME BACK / TO MAIN at cap 106.
+  Written lane (test): main under the hero is a line of JetBrains Mono caps (22 px cap, lane orange) reading
+  "MERGE ME BACK TO MAIN · " then the twelve commit messages separated by " · ", repeated and scrolling left at 46 px/s, on a
+  2.5 px solid rule, with a gap around the node ring.
+- `twos=1` (query flag; `render_proof.sh v3 twos`): plate time is quantised to 1/12 s on a grid with a step boundary at each
+  plate's turn_t (turn_t + k/12), with no blending. Everything drawn in code stays at 30 fps.
+- Finish: seeded paper grain (multiply, 12 fps) and a 0.24 vignette under lines and type.
 
-## Check results (v3, all real plates, revision 1)
+## Check results (v3, final plates, revision 2)
 
-- Cuts: max |error| 0.48 frames over 12 cuts and transitions.
-- Turn: every cell reaches its meta turn_t on frame 467. The bar 37 downbeat is at frame 467.01, and clip time minus turn_t is +16 ms.
-  This is verified from the page's clip times, because the real plates have no test patch.
-- Slab words, by frame (v3): MERGE 667, ME 738, BACK 745, TO 763, MAIN 772. Checked in the mp4: each is absent one frame before.
-- Type (cap heights): chyron branch 37, commit 26, upper-left lyric 75, strip lyric 70, slab 106. Cell chip labels are 26 px font (20 cap).
-- Single frame alone vs the same frame in the full render: max diff 0 for frames 75, 560 and 700.
-- Faces: at each A shot's midpoint the lyric and chip are clear of the protagonist's face. On wushu, "story" passes just above a
-  background dancer's head.
+- Cuts (twos off): max |error| 0.48 frames. Twos: the detector reports wetlab at -1.36 frames, but it is fooled by a large
+  12 fps pose step on wushu at frame 129. Frame 130 is the first wetlab frame (checked by eye), so the cut timing is the same as
+  with twos off (cut code is shared).
+- Turn: all 12 cells reach turn_t on frame 467 (downbeat 467.01, +16 ms), with twos off and on.
+- Hold after the turn (frame 467 to each cell's shrink): every clip keeps advancing and stays below its last frame (ends 4.81-4.86
+  of 5.00 s). The slowest step is 1.4 ms of clip per output frame (wetlab, violet, the last column, near the end of the hold).
+  With twos on, those cells can hold one 12 fps plate frame for up to roughly a second while they shrink.
+- Type caps (measured): chyron 37, commit 26, A lyric 67 (set at 68), strip lyric 70, slab 106, chips 26 px font. The written lane is 22 px cap.
+- Single frame alone vs full render: max diff 0 for frames 75, 560 and 700 (twos off and on).
 
 ## Open problems / next
 
 - `still.jpg` is not used.
-- Bar 38 leaves the top half of the frame as starry night (the graph sits in the lower half after the pull-back).
-- The A lyric on wushu passes close to a background figure. Per-plate lyric placement would fix that if needed.
-- The grid cells near the turn use floor() sampling (crisp turn) rather than blending. Every 4th or 5th output frame repeats there.
+- The home cell's chip (bottom left of the cell) sits just below the two children's heads, touching their shoulders.
+- Twos makes slow passages read as stepped (that is the point). The end of the grid hold is the slowest.

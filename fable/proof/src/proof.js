@@ -11,6 +11,7 @@ import { LIVES, byId, hashOf, MAIN, PLATE_IDS } from '../lives.js';
 const Q = new URLSearchParams(location.search);
 const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080), FPS = +(Q.get('fps') || 30);
 const S = H / 1080, HF = 0.5 / FPS;
+const TWOS = Q.get('twos') === '1';     // plates held at 12 fps (no blending); everything drawn in code stays at 30
 const PLATES = Q.get('plates') || '/work_fable/proof/plates';
 const TIMING = Q.get('timing') || '/analysis_v2/timing.json';
 const canvas = document.getElementById('c'); canvas.width = W; canvas.height = H;
@@ -42,7 +43,7 @@ function setFont(f) { g.font = f.font; g.fontStretch = f.stretch; g.textBaseline
 const CAP = {};    // cap height per px of font size, measured
 function pxFor(face, cap, wt) { return cap / CAP[face + (wt || '')]; }
 // sizes at 1080p (cap heights in px; the mono labels are font sizes, as the SPEC's HUD rule)
-const SZ = { chyron: 36, commit: 26, lyricUL: 76, lyricStrip: 70, slab: 106, cellLabelPx: 26 };
+const SZ = { chyron: 36, commit: 26, lyricUL: 68, lyricStrip: 70, slab: 106, cellLabelPx: 26 };
 
 // ---------------------------------------------------------------- plates
 const META = {}, DIM = {}, CACHE = new Map(); const CMAX = 160;
@@ -58,7 +59,9 @@ const READY = new Map();   // url -> ImageBitmap for the current frame
 // frame indices a plate draw needs (clip time c). With P.blend the two neighbouring source frames are cross-faded by the fractional
 // position (full-frame plates always, 24 -> 30 fps with no repeated frames; grid cells when slowed). Grid cells at natural speed show
 // floor(c*fps) so the head turn lands crisply on the frame nearest the bar 37 downbeat.
-function frameIdx(id, c) { const m = META[id]; const f = Math.max(0, c) * m.fps; const i0 = Math.min(m.n - 1, Math.floor(f)); return { i0, i1: Math.min(m.n - 1, i0 + 1), fr: i0 >= m.n - 1 ? 0 : f - i0 }; }
+// twos: plate time quantised to 1/12 s on a grid that has a step boundary at the plate's turn_t, so the turn still lands on its frame
+function twos(id, c) { const tt = META[id].turn_t || 0; return tt + Math.floor((c - tt) * 12 + 1e-6) / 12; }
+function frameIdx(id, c) { const m = META[id]; if (TWOS) c = twos(id, c); const f = Math.max(0, c) * m.fps + (TWOS ? 1e-6 : 0); const i0 = Math.min(m.n - 1, Math.floor(f)); return { i0, i1: Math.min(m.n - 1, i0 + 1), fr: i0 >= m.n - 1 ? 0 : f - i0 }; }
 // source crop for a plate drawn "cover" into rect (w,h) with zoom about focus (fx,fy)
 function crop(id, w, h, zoom = 1, fx = 0.5, fy = 0.5) {
   const { w: iw, h: ih } = DIM[id]; const da = w / h, pa = iw / ih; let sw, sh;
@@ -69,7 +72,7 @@ function drawPlate(P) {
   const { id, c, rect: r, zoom = 1, alpha = 1 } = P; const { i0, i1, fr: f } = frameIdx(id, c); const cr = crop(id, r.w, r.h, zoom, P.fx, P.fy);
   g.save(); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   g.globalAlpha = alpha; g.drawImage(READY.get(url(id, i0)), cr.sx, cr.sy, cr.sw, cr.sh, r.x, r.y, r.w, r.h);
-  if (P.blend && f > 0.02) { g.globalAlpha = alpha * f; g.drawImage(READY.get(url(id, i1)), cr.sx, cr.sy, cr.sw, cr.sh, r.x, r.y, r.w, r.h); }   // frame blend: no stepping when slowed
+  if (P.blend && !TWOS && f > 0.02) { g.globalAlpha = alpha * f; g.drawImage(READY.get(url(id, i1)), cr.sx, cr.sy, cr.sw, cr.sh, r.x, r.y, r.w, r.h); }   // frame blend: no stepping when slowed
   g.restore();
 }
 
@@ -87,10 +90,13 @@ function buildTimeline() {
   TL.col = [0, 1, 2, 3].map((c) => T.beat(38, c + 1)); TL.shrunk = [0, 1, 2, 3].map((c) => T.beat(38, c + 1.5)); TL.arr = [0, 1, 2, 3].map((c) => T.beat(38, c + 1.9));
   TL.L4 = T.line('Each one a story to unfold'); TL.L5 = T.line('And every branch remembers'); TL.L6 = T.line('Where I started from'); TL.L7 = T.line('Merge me back to main');
   const outOf = (L, next) => Math.min(L.words[L.words.length - 1].end + 0.5, next ? next.words[0].start - 0.1 : 1e9);
-  TL.L4.out = outOf(TL.L4, TL.L5); TL.L5.out = outOf(TL.L5, TL.L6); TL.L6.out = outOf(TL.L6, null); TL.L7.out = TL.tEnd;
+  TL.L4.out = Math.min(outOf(TL.L4, TL.L5), TL.L4.words[TL.L4.words.length - 1].end + 0.3);   // short hold so it is gone before the next cut TL.L5.out = outOf(TL.L5, TL.L6); TL.L6.out = outOf(TL.L6, null); TL.L7.out = TL.tEnd;
 }
 
 // ---------------------------------------------------------------- A: the lives, one at a time
+// section A: the lyric, chip and node go to the side away from her (lives.js side = her side)
+const awayRight = (id) => byId[id].side === 'left';
+const nodeX = (id) => (awayRight(id) ? W - NX : NX);
 function shotAt(t) { let s = null; for (const q of TL.shots) if (on(t, q.t0)) s = q; return s; }
 function clipA(s, t) { const m = META[s.id]; const last = (m.n - 1) / m.fps; const lim = m.turn_t != null ? m.turn_t - 0.4 : last; return softcap(Math.max(0, t - s.t0), Math.min(lim, last)); }
 
@@ -117,16 +123,20 @@ function gridClip(i, t) {
   const id = LIVES[i].id, m = META[id], last = (m.n - 1) / m.fps; const turn = turnOf(id);
   const hit = TL.hit - HF;          // half a frame early, so the turn is on screen from the frame nearest the downbeat
   const P = turn - 0.35, tP = hit - 0.35; let c;
-  if (t >= tP) { const x = t - hit; if (x <= 1.2) c = turn + x; else { const rem = Math.max(0.25, last - 0.05 - (turn + 1.2)); c = turn + 1.2 + rem * (1 - Math.exp(-(x - 1.2) / rem)); } }
+  if (t >= tP) { const x = t - hit, nat = Math.min(1.2, 0.5 * (last - turn)); if (x <= nat) c = turn + x;
+    else {   // ease toward the last frame, arriving when the cell has shrunk into its node (bar 38), never stopping before that
+      const span = Math.max(0.1, TL.shrunk[CELL[i].col] + 0.1 - hit - nat), D = Math.max(0.05, last - 0.06 - (turn + nat)), u = clamp01((x - nat) / span), R = span / D;
+      if (R <= 1) c = turn + nat + D * u; else { const a = 0.25, p = (R - a) / (1 - a); c = turn + nat + D * (a * u + (1 - a) * (1 - Math.pow(1 - u, p))); }
+      if (x > nat + span) c += (x - nat - span) * 0.05; } }
   else c = preMap(t, TL.start[id], tP, TL.c0[id] || 0, P);
   return softcap(Math.max(0, c), last);
 }
 
 // ---------------------------------------------------------------- D (bar 38): camera and merge geometry. World = grid screen coords at bar 38.
 // The camera travels left along main (the graph scrolls right, accelerating) and pulls back about the frame centre; main stays at YM.
-const CAM_L = -500 * S, ZOOM_END = 0.62;
-function cam(t) { const u = seg(t, TL.t38, TL.t39); return { L: CAM_L * u * u, s: 1 - (1 - ZOOM_END) * ease.io(u) }; }
-const toScr = (c, p) => ({ x: W / 2 + (p.x - c.L - W / 2) * c.s, y: YM + (p.y - YM) * c.s });
+const ZOOM_END = 0.8, ZAX = 1880 * S;
+function cam(t) { const u = seg(t, TL.t38, TL.t39); return { L: 0, s: 1 - (1 - ZOOM_END) * u * u }; }
+const toScr = (c, p) => ({ x: ZAX + (p.x - ZAX) * c.s, y: YM + (p.y - YM) * c.s });
 let XROOT;   // world x of the root node: lands on NX at bar 39 (set in boot)
 function mergeOf(i) { const c = CELL[i]; const n = { x: c.x + NODE_U * c.w, y: c.y + c.h - 2 * S }; const D = (70 + 0.38 * (YM - n.y) / S) * S; return { n, j: { x: n.x - D, y: YM }, D, col: c.col, row: c.row }; }
 // the S-curve from node to junction: leaves the node heading left, arrives on main heading left (horizontal tangents at both ends)
@@ -143,7 +153,7 @@ function gridState(t) {
     let lineRel = 1, nodeU = NODE_U, pop = 1, lineW = 5 * S, from = null, alpha = 1; const f = fr(t, ta);
     if (L.id === 'sandstorm') {            // the full-frame plate scales down into its cell over 8 frames
       const u = ease.out(clamp01((f + 1) / 8)); from = u;
-      r = { x: lerp(0, r.x, u), y: lerp(0, r.y, u), w: lerp(W, r.w, u), h: lerp(H, r.h, u) }; lineRel = lerp(0.82, 1, u); nodeU = lerp(0.12, NODE_U, u); lineW = lerp(6, 5, u) * S;
+      r = { x: lerp(0, r.x, u), y: lerp(0, r.y, u), w: lerp(W, r.w, u), h: lerp(H, r.h, u) }; lineRel = lerp(0.82, 1, u); nodeU = lerp(nodeX('sandstorm') / W, NODE_U, u); lineW = lerp(6, 5, u) * S;
     } else { pop = clamp01((f + 1) / 4); const s = 0.55 + 0.45 * ease.outBack(pop); alpha = clamp01(pop * 2); const ccx = r.x + r.w / 2, ccy = r.y + r.h / 2; r = { x: ccx - r.w * s / 2, y: ccy - r.h * s / 2, w: r.w * s, h: r.h * s }; }
     let ly = r.y + r.h * lineRel - 2 * S * (from === null ? 1 : from);
     let node = { x: r.x + nodeU * r.w, y: ly }, sigma = 1; const m = mergeOf(i);
@@ -165,7 +175,7 @@ function scene(t) {
   const full = { x: 0, y: 0, w: W, h: H };
   if (on(t, TL.t41)) { const f = fr(t, TL.t41), punch = f <= 8 ? 1 + 0.04 * Math.pow(1 - f / 8, 2) : 1;
     P.push({ id: 'hero', c: softcap(t - TL.t41, (META.hero.n - 1) / META.hero.fps), rect: full, zoom: (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, blend: true }); sc.phase = 'E'; return sc; }
-  if (!on(t, TL.grid)) { const s = shotAt(t) || TL.shots[0]; sc.shot = s; sc.phase = 'A'; P.push({ id: s.id, c: clipA(s, t), rect: full, zoom: 1 + s.push * seg(t, s.t0, s.t1), fy: 0.45, blend: true }); return sc; }
+  if (!on(t, TL.grid)) { const s = shotAt(t) || TL.shots[0]; sc.shot = s; sc.phase = 'A'; P.push({ id: s.id, c: clipA(s, t), rect: full, zoom: 1 + s.push * seg(t, s.t0, s.t1), fy: clamp01(0.45 + (byId[s.id].yshift || 0)), blend: true }); return sc; }
   sc.phase = t < TL.t38 - HF ? 'B' : 'D';
   const GS = gridState(t); sc.grid = GS;
   for (const C of GS.cells) if (C.sigma > 0.004 && C.rect.w > 1) { const fo = META[C.L.id].focus || [0.5, 0.5];
@@ -207,7 +217,7 @@ function vignette() {
 const STARS = (() => { const r = mulberry32(4242); return [...Array(90)].map(() => ({ x: (r() * 2.2 - 0.6) * W, y: r() * 0.75 * H, s: 0.8 + 1.8 * r() * r(), ph: r() * 6.283, a: 0.35 + 0.6 * r() })); })();
 function night(t, C) {
   const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#05061A'); gr.addColorStop(1, '#0B1240'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
-  for (const s of STARS) { const x = s.x - C.L * 0.35, y = s.y; if (x < -4 || x > W + 4) continue; g.globalAlpha = s.a * (0.75 + 0.25 * Math.sin(s.ph + t * 3)); g.fillStyle = '#FFF1D6'; g.beginPath(); g.arc(x, y, s.s * S, 0, 6.2832); g.fill(); }
+  for (const s of STARS) { const x = ZAX + (s.x - ZAX) * (1 - 0.35 * (1 - C.s)), y = s.y; if (x < -4 || x > W + 4) continue; g.globalAlpha = s.a * (0.75 + 0.25 * Math.sin(s.ph + t * 3)); g.fillStyle = '#FFF1D6'; g.beginPath(); g.arc(x, y, s.s * S, 0, 6.2832); g.fill(); }
   g.globalAlpha = 1;
 }
 
@@ -237,12 +247,12 @@ function stroke(pts, col, w, upto = 1e9) {
 const plen = (pts) => { let l = 0; for (let i = 1; i < pts.length; i++) l += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y); return l; };
 
 function linesA(t, s) {
-  const L = byId[s.id], prev = s.i > 0 ? byId[TL.shots[s.i - 1].id].color : MAIN, f = fr(t, s.t0);
-  const maxD = Math.max(NX, W - NX), r = f >= 2 ? 1e9 : ((f + 1) / 3) * maxD;
+  const L = byId[s.id], prev = s.i > 0 ? byId[TL.shots[s.i - 1].id].color : MAIN, f = fr(t, s.t0), nx = nodeX(s.id);
+  const maxD = Math.max(nx, W - nx), r = f >= 2 ? 1e9 : ((f + 1) / 3) * maxD;     // the new colour wipes out from wherever the node now is
   line(0, YM, W, YM, prev, 6 * S);
-  line(Math.max(0, NX - r), YM, Math.min(W, NX + r), YM, L.color, 6 * S, false);
-  if (f < 2) for (const x of [NX - r, NX + r]) if (x > 0 && x < W) glow(x, YM, 18 * S, L.color, 0.9);
-  ring(NX, YM, 13 * S + (f < 4 ? 5 * S * (1 - f / 4) : 0), L.color);
+  line(Math.max(0, nx - r), YM, Math.min(W, nx + r), YM, L.color, 6 * S, false);
+  if (f < 2) for (const x of [nx - r, nx + r]) if (x > 0 && x < W) glow(x, YM, 18 * S, L.color, 0.9);
+  ring(nx, YM, 13 * S + (f < 4 ? 5 * S * (1 - f / 4) : 0), L.color);
 }
 // bars 33-37: each cell's lane along its bottom edge, the node at its right end; bar 37 beat 3 a pulse runs left to right, beat 4 the
 // lit lane gathers into the node
@@ -306,21 +316,34 @@ function linesRoot(t, sc) {
   for (let j = 0; j * gap < span + gap; j++) { const x = W - ((s + j * gap) % (span + gap)); if (x > NX + 30 * S && x < W) { line(x, YM, Math.min(W, x + (40 + 120 * u) * S), YM, '#FFE2B8', wM * 0.4, false); glow(x, YM, 16 * S, MAIN, 0.7); } }
   ringRoot(t, NX);
 }
-function linesHero(t) { line(0, YM, W, YM, MAIN, 10 * S); ring(NX, YM, 18 * S, MAIN, 7 * S); }
+// chorus test: main written as a line of text (mono caps, lane orange, ~22 px cap) scrolling slowly left, on a thin solid rule
+let LANE_TXT = null;
+function linesHero(t) {
+  const cap = 22 * S, f = FACE.mono(pxFor('mono', cap, 600), 600); setFont(f);
+  if (!LANE_TXT) { const str = ['merge me back to main', ...LIVES.map((l) => l.msg)].join(' \u00b7 ').toUpperCase() + ' \u00b7 '; LANE_TXT = { str, w: g.measureText(str).width }; }
+  const yb = YM + cap / 2, off = ((t - TL.t41) * 46 * S) % LANE_TXT.w, gapL = NX - 34 * S, gapR = NX + 34 * S;
+  g.save(); g.beginPath(); g.rect(0, 0, gapL, H); g.rect(gapR, 0, W - gapR, H); g.clip();
+  textShadow(0.55, 6); g.fillStyle = MAIN; for (let x = -off; x < W; x += LANE_TXT.w) g.fillText(LANE_TXT.str, x, yb); noShadow();
+  line(0, yb + 7 * S, W, yb + 7 * S, MAIN, 2.5 * S); g.restore();
+  line(gapL, yb + 7 * S, gapR, yb + 7 * S, MAIN, 2.5 * S);
+  ring(NX, YM + 2 * S, 13 * S, MAIN, 6 * S);
+}
 
 // ---------------------------------------------------------------- type
 function textShadow(a = 0.75, blur = 10, col = '5,6,26') { g.shadowColor = `rgba(${col},${a})`; g.shadowBlur = blur * S; g.shadowOffsetX = 0; g.shadowOffsetY = 2 * S; }
 function noShadow() { g.shadowColor = 'transparent'; g.shadowBlur = 0; g.shadowOffsetY = 0; }
 function chipRect(x, y, w, h) { g.fillStyle = 'rgba(5,6,26,0.82)'; g.beginPath(); g.roundRect(x, y, w, h, 4 * S); g.fill(); }
-// A: the chip. Line 1: dot, branch, dim hash. Line 2: commit message. Left edge on the node's left edge; bottom above the lane.
+// A: the chip. Line 1: dot, branch, dim hash. Line 2: commit message. Its outer edge sits on the node's outer edge (left or right
+// side, away from her); bottom above the lane.
 function chyron(t, s, alpha = 1) {
   const L = byId[s.id]; if (!L.branch) return; g.save(); g.globalAlpha = alpha;
   const f1 = FACE.mono(pxFor('mono', SZ.chyron * S, 600), 600), f2 = FACE.mono(pxFor('mono', SZ.commit * S, 500), 500); const hash = hashOf(s.id);
   const padX = 16 * S, padT = 12 * S, padB = 14 * S, gapL = 16 * S, dotR = 9 * S;
   setFont(f1); const wb = g.measureText(L.branch).width, wh = g.measureText(hash).width, gap = g.measureText(' ').width * 1.5;
   setFont(f2); const wm = g.measureText(L.msg).width;
-  const bx = NX - 14 * S, bottom = YM - 26 * S, h = padT + SZ.chyron * S + gapL + SZ.commit * S + padB + 7 * S, by = bottom - h;
-  const tx = bx + padX + 2 * dotR + 12 * S, w = Math.max(tx + wb + gap + wh, bx + padX + wm) - bx + padX;
+  const right = awayRight(s.id), nx = nodeX(s.id), bottom = YM - 26 * S, h = padT + SZ.chyron * S + gapL + SZ.commit * S + padB + 7 * S, by = bottom - h;
+  const w = Math.max(padX + 2 * dotR + 12 * S + wb + gap + wh, padX + wm) + padX;
+  const bx = right ? nx + 14 * S - w : nx - 14 * S, tx = bx + padX + 2 * dotR + 12 * S;
   chipRect(bx, by, w, h);
   const y1 = by + padT + SZ.chyron * S, y2 = y1 + gapL + SZ.commit * S;
   g.fillStyle = L.color; g.beginPath(); g.arc(bx + padX + dotR, y1 - SZ.chyron * S / 2, dotR, 0, 6.2832); g.fill();
@@ -331,7 +354,7 @@ function chyron(t, s, alpha = 1) {
 function cellLabels(t, sc) {
   const f = FACE.mono(SZ.cellLabelPx * S, 600);
   for (const C of sc.grid.cells) {
-    const r = C.rect; const a = clamp01(C.from === null ? C.pop : (C.from - 0.6) / 0.4) * clamp01((C.sigma - 0.7) / 0.2); if (a <= 0.01) continue;
+    const r = C.rect; const a = clamp01(C.from === null ? C.pop : (C.from - 0.6) / 0.4) * (on(t, TL.t38) ? 1 - clamp01((fr(t, TL.t38) + 1) / 4) : 1); if (a <= 0.01) continue;   // no labels in bar 38
     setFont(f); const w = g.measureText(C.L.branch).width, cap = SZ.cellLabelPx * 0.73 * S, dotR = 6 * S, pad = 9 * S;
     const h = cap + 2 * pad + 4 * S, bx = r.x + 10 * S, by = C.ly - 12 * S - h;
     g.save(); g.globalAlpha = a; chipRect(bx, by, pad + 2 * dotR + 9 * S + w + pad, h);
@@ -344,11 +367,13 @@ function lineAlpha(L, t, fade = 0.3) { return 1 - clamp01((t - L.out) / fade); }
 // A: "Each one a story / to unfold", upper left, ink on light plates and cream on dark ones (switches on the cut), thin opposite shadow
 const UL_ROWS = [4, 2];
 function lyricUL(t, L, shot) {
-  const la = lineAlpha(L, t); if (la <= 0 || !on(t, L.words[0].start)) return;
+  const la = lineAlpha(L, t, 0.2); if (la <= 0 || !on(t, L.words[0].start)) return;
   const light = shot && byId[shot.id].tone === 'light'; const ink = light ? '#14122B' : CREAM, sh = light ? '255,241,214' : '20,18,43';
   const f = FACE.serif(pxFor('serif', SZ.lyricUL * S)); setFont(f); const sp = g.measureText(' ').width, lead = SZ.lyricUL * S * 1.32;
   let wi = 0;
-  UL_ROWS.forEach((n, ri) => { let x = 110 * S; const y = 64 * S + SZ.lyricUL * S + ri * lead;
+  const right = shot && awayRight(shot.id); let wj = 0;
+  UL_ROWS.forEach((n, ri) => { const rw = L.words.slice(wj, wj + n).map((w) => g.measureText(w.w).width); wj += n; const tot = rw.reduce((a, b) => a + b, 0) + sp * (rw.length - 1);
+    let x = right ? W - 110 * S - tot : 110 * S; const y = 40 * S + SZ.lyricUL * S + ri * lead;
     for (let k = 0; k < n && wi < L.words.length; k++, wi++) { const w = L.words[wi], a = wordAlpha(t, w) * la, ww = g.measureText(w.w).width;
       if (a > 0) { const rise = (1 - clamp01((fr(t, w.start) + 1) / 4)) * 8 * S; g.save(); g.globalAlpha = a; textShadow(light ? 0.55 : 0.6, 5, sh); g.shadowOffsetY = 1.5 * S; g.fillStyle = ink; g.fillText(w.w, x, y + rise); noShadow(); g.restore(); }
       x += ww + sp; } });
@@ -435,7 +460,7 @@ async function boot() {
   T = await loadTiming(TIMING);
   for (const id of PLATE_IDS) { const r = await fetch(`${PLATES}/${id}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${PLATES}/${id}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
   buildTimeline(); TL.c0.sandstorm = clipA(TL.shots[9], TL.grid);
-  { const c = cam(TL.t39); XROOT = W / 2 + (NX - W / 2) / c.s + c.L; }
+  { const c = cam(TL.t39); XROOT = ZAX + (NX - ZAX) / c.s; }
   buildGrain(); SLAB = slabLayout();
   const N = Math.round((TL.tStop - TL.t0) * FPS);
   const sizes = {};   // measured type sizes in px (cap height = ascent of 'H')
@@ -454,7 +479,7 @@ async function boot() {
     const px = g.getImageData(0, 0, W, H).data; const p = new Promise((r) => (ack = r)); ws.send((Q.get('wid') || 0) + ':' + i); ws.send(px.buffer); await p;
   }
   await render(+(Q.get('t') || TL.t0));
-  Object.assign(window.PROOF, { ready: true, W, H, FPS, t0: TL.t0, tStop: TL.tStop, n: N, timing: TIMING, barBeatWorst: T.barBeatWorst, sizes, events, meta: META, render, probe,
+  Object.assign(window.PROOF, { ready: true, W, H, FPS, twos: TWOS, t0: TL.t0, tStop: TL.tStop, n: N, timing: TIMING, barBeatWorst: T.barBeatWorst, sizes, events, meta: META, render, probe,
     async renderAndPost(t, i) { await render(t); await post(i); } });
 }
 boot().catch((e) => { console.error('BOOT ERROR', e && e.stack ? e.stack : e); window.PROOF.error = String(e && e.stack ? e.stack : e); });

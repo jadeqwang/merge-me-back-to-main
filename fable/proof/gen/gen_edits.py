@@ -15,11 +15,13 @@ MEDIUM = {"piano": "gouache picture-book paint", "violin": "coloured pencil", "w
           "chezjj": "pixel art", "sandstorm": "text-character art", "home": "wax crayon and chalk pastel", "violet": "white-line scratchboard engraving"}
 def turn_prompt(i):
     face = CHILD if i == "piano" else FACE
+    extra = {"violet": " Her hair stays exactly as in the first image: twisted up in a bun with the two yellow pencils crossed through it; her hair is NOT let down.",
+             "home": " Her skin is the same light tone as on the character sheet and her face has the sheet's features exactly, only rendered in crayon; she is not a different, more realistic woman. The two children still have their backs to the viewer; their faces are never seen."}.get(i, "")
     return ("Edit the first image. Keep EVERYTHING exactly as it is: the same picture, framing, medium, colours, background, other people, her body, shoulders, arms, hands, clothes, "
             "and the back of her jacket with the pale-blue circle and the words RARE EARTH. Change only ONE thing: she has turned her head over her left shoulder to look back at the viewer. "
             "Only her head and neck move; her shoulders and body stay exactly where they are, her back still toward the viewer. "
             f"Her face is now seen in three-quarter view, drawn in {MEDIUM[i]} like the rest of the picture, and it is the face of the character in the second image (the character sheet): {face}. "
-            "Her expression is calm: a quiet look of recognition, lips closed, the faintest smile. Her hair falls naturally with the turn. Add nothing else; no text, no border.")
+            "Her expression is calm: a quiet look of recognition, lips closed, the faintest smile." + (extra if extra else " Her hair falls naturally with the turn.") + " Add nothing else; no text, no border.")
 def run(job):
     out, inp, tag = job
     try: return out, cf.generate("google/nano-banana-pro", inp, out, tag=tag)

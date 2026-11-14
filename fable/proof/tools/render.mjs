@@ -6,7 +6,7 @@
 //   node fable/proof/tools/render.mjs --timing ... --stills 62.73:a.png                     (song time)
 //   node fable/proof/tools/render.mjs --timing ... --info out.json                          (segment, events, measured type sizes)
 //   node fable/proof/tools/render.mjs --timing ... --probe 1860:1890 out.json               (turn-patch positions for frames k0..k1)
-// Options: --res 1920x1080 --fps 30 --crf 16 --preset slow --plates /work_fable/proof/plates
+// Options: --res 1920x1080 --fps 30 --crf 16 --preset slow --plates /work_fable/proof/plates --q "twos=1" (page query)
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -48,7 +48,7 @@ async function openPage(port, wid = 0) {
   const page = await browser.newPage(); await page.setViewport({ width: W, height: H, deviceScaleFactor: 1 });
   page.on('console', (m) => { const t = m.text(); if (!/favicon|404/.test(t)) console.log(`[page${wid}]`, t); });
   page.on('pageerror', (e) => console.log(`[pageerror${wid}]`, e.message));
-  const q = `timing=${encodeURIComponent(TIMING)}&w=${W}&h=${H}&fps=${FPS}&wid=${wid}${args.plates ? '&plates=' + encodeURIComponent(args.plates) : ''}`;
+  const q = `timing=${encodeURIComponent(TIMING)}&w=${W}&h=${H}&fps=${FPS}&wid=${wid}${args.plates ? '&plates=' + encodeURIComponent(args.plates) : ''}${args.q ? '&' + args.q : ''}`;
   await page.goto(`http://127.0.0.1:${port}/fable/proof/index.html?${q}`, { waitUntil: 'load' });
   await page.waitForFunction('window.PROOF && (window.PROOF.ready === true || window.PROOF.error)', { timeout: 240000 });
   const err = await page.evaluate(() => window.PROOF.error); if (err) { await browser.close(); throw new Error('proof: ' + err); }
