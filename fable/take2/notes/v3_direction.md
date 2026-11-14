@@ -98,3 +98,6 @@ through the wrists, the glow moving over the fingers.
 
 Update (Jade, same day): at bar 26 the words written behind the light she releases are the lyric itself ("Each one a light I sent
 ahead", on its word times); no separate lyric and no piano commit message on that shot.
+
+Update (Jade, same day): easter egg at bar 45 (the braid from above): one extra quiet-gold written lane reading `banach–tarski`
+joins the braid. No golden ghost figure.

@@ -38,3 +38,4 @@
 - "something about the face in 0:34 doesn't quite read as me as much as the anime face" (bar 20, the wushu life plate, wushu_v2).
 - "0:43 the hands by the light feel a little bit too still" (bar 25, main_light).
 - "0:44 maybe instead of the words 'climed onto the piano bench before' and the lyric separate, maybe the words she sends out is the lyric" (bar 26, main_release).
+- Easter egg from Rewind (the Banach–Tarski book) around "every road", 1:17-ish. After the director's proposal (a gold lane written `banach–tarski`, plus optionally the golden ghost Jade as a runner): "don't add the golden ghost Jade, just add banach tarski, i think".
