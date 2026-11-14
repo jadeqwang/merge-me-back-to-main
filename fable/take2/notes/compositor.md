@@ -393,3 +393,24 @@ Checked locally that oa01 draws the plate without the flag; every committed file
   symlink keep_v1 -> keep_film_v1).
 - Counts: 185 shots; effective in film_v1: 93 plate, 57 v7, 15 proof, 12 code, 6 kit, 2 cards (the likeness shots, by the flag).
   Longest holds: credits ob03 7.69 s, the grid pc01 6.90 s, terminal ob02 6.83 s, graph ob01 6.82 s.
+
+## Film v2 (2026-11-14, compositor; brief: notes/v2_direction.md section A, Jade's notes: notes/jade_v1_notes.md)
+
+Plates from the other two agents (vio_write2, vio_release2, wave_run, stance/insert clips, orch_1..8, retakes) drop in by folder as
+before (`work_fable/take2/plates/<id>/`); until they land the current source is used. Item 9 (wiring them, the film v2 render) waits
+for the director's message. Nothing of film v2 rendered whole yet.
+
+Done:
+1. Lyrics: lines made only of vocables are not drawn (film.js `VOCABLE` filter in buildLyrics: line 13 "Ahh... ahh..."); the b100 "ooh"
+   adlib overlays removed from shots.js (the overlay code stays, unused). Line 12 now holds to its own end + 0.5 s (its next line was 13).
+2. Lives: fable/proof/lives.js `home` branch `jade/parenthood`, `band` branch `jade/rna-band` (ids unchanged). Drawn everywhere from
+   lives.js (proof chyrons and grid labels, kit lanes, git log, town chips, graph). `jade/1420-mhz` unchanged.
+   Proof identity after the change (`.venv/bin/python fable/take2/tools/proof_identity.py`): proofbug=1 max diff 0 on all 13 frames
+   (the proof imports the same lives.js). Film vs its own pre-change render: frames 400, 467, 470, 520 (the grid, bars 33-37) differ
+   only in x 1085-1919, y 497-825 = the band and home cell labels; every other frame identical. (The old band label ran off its cell.)
+3. Credits (outro.js credits, shots.js ob03): "animated by Fable 5.2 and Opus 5.5, with a supporting cast of models" (wraps after
+   the comma onto a continuation row with a graph `|`; credits now wrap any message wider than the frame); plates line
+   "Nano Banana Pro, GPT Image 2.5" (spend log: google/nano-banana-pro and openai/gpt-image-2.5-sunburst). Placeholder note removed.
+7 (part). Graph b149-152 dotted arc label: `cherry-pick HANDOFF.md`.
+8. b145-146: plate `wave_run` (P, push 0.02); a card until it lands. like_sing2 no longer used. First likeness shot unchanged.
+Stills: work_fable/take2/dev/v2/{credits,graph,ahh,b100}.jpg, check_lives_grid.jpg (before above, after below).

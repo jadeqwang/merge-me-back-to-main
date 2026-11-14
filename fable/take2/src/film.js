@@ -138,9 +138,13 @@ function effKind(s) {
 
 // ---------------------------------------------------------------- lyrics (every sung line, word by word on the word times)
 const CHORUS_IDS = new Set([7, 8, 9, 10, 20, 21, 22, 23, 24, 25]);
+// film v2 (Jade: "don't need 'Ahh' lyrics on the screen"): on-screen lyrics are for words; a line made only of vocables (line 13
+// "Ahh... ahh...") is not drawn, and neither is the wordless "ooh" adlib (b100; it was an overlay, removed from shots.js)
+const VOCABLE = /^(a+h+|o+h*|o+o+h*|m+|hm+|la+|na+)$/i;
 function buildLyrics() {
   const L = T.raw.lyrics.lines.map((l) => ({ id: l.id, text: l.text, slab: CHORUS_IDS.has(+l.id),
-    words: l.words.map((w) => ({ w: w.w.replace(/[^A-Za-z0-9'’]/g, ''), start: w.start, end: w.end })).filter((w) => w.w) }));
+    words: l.words.map((w) => ({ w: w.w.replace(/[^A-Za-z0-9'’]/g, ''), start: w.start, end: w.end })).filter((w) => w.w) }))
+    .filter((l) => l.words.length && !l.words.every((w) => VOCABLE.test(w.w)));
   L.sort((a, b) => a.words[0].start - b.words[0].start);
   L.forEach((l, i) => { const last = l.words[l.words.length - 1], next = L[i + 1];
     l.t0 = l.words[0].start; l.out = Math.max(last.start + 0.8, Math.min(last.end + 0.5, next ? next.words[0].start - 0.1 : 1e9)); });   // out: opaque at least 0.6 s, then a 0.2 s fade

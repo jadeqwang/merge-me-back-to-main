@@ -223,9 +223,9 @@ for (let k = 0; k < 3; k++) {
 for (let k = 0; k < 4; k++) V(93 + k, 94 + k, '2:52', ['Travelling phrases.', 'The close line of copies.', 'Orbit.', 'Travelling phrase, orbit.'][k] + ' (one cut per bar)', { row: 'b93-96' });
 V(97, 98, '2:44', 'The group fall, from her real set.', { row: 'b97-99' });
 V(98, 100, '2:44', 'From above the bodies spell MAIN; hold; they rise as one.', { row: 'b97-99' });
-// the wordless "ooh" (vocal stems 172.54-180.28; an adlib, not in the lyric lines) set on its time over both b100 shots
-V(100, [100, 3], '2:56', 'Arms wide.', { row: 'b100', ov: ['adlib:ooh:172.54'] });
-P([100, 3], 101, 'drop_face', 'missing', 'Close: her face in the sun, eyes closed, breathing ("ooh" 172.5).', { row: 'b100', ov: ['adlib:ooh:172.54'], opt: { adlibAt: [0.82, 0.86] } });
+// the wordless "ooh" (vocal stems 172.54-180.28) is sung, not shown: film v2 draws no type for it (Jade: lyrics on screen are for words)
+V(100, [100, 3], '2:56', 'Arms wide.', { row: 'b100' });
+P([100, 3], 101, 'drop_face', 'missing', 'Close: her face in the sun, eyes closed, singing the wordless "ooh" (172.5).', { row: 'b100' });
 V(101, 102, '2:57', 'Last phrase.', { row: 'b101-103' });
 shot(102, [102, 3], 'S', 'plate', 'drop_hero_4', 'missing', 'Insert: cel Jade, last phrase, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true } });
 V([102, 3], [103, 3], '2:58', 'Tornado kick.', { row: 'b101-103' });
@@ -297,17 +297,20 @@ shot(139, 141, 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the
 shot(141, 143, 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142',
   opt: { ...TOWN, x0: 3.41, runner: { dir: '/work_fable/take2/kit/day_run', x: 0.5, h: 0.62, y: 0.9, edge: 0.02 } } });
 P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true } });
-shot(145, 147, 'L', 'plate', 'like_sing2', 'missing', 'Jade again, wider, singing.', { row: 'b145-146', opt: { songLock: true, push: 0 } });
+// film v2: the second likeness shot is dropped (Jade: "it doesn't look like me"); plate wave_run (plates agent) instead: drawn Jade sprints
+// at the lens out of a breaking wave of the twelve lane colours. A card until work_fable/take2/plates/wave_run lands. Slab low.
+P(145, 147, 'wave_run', 'missing', 'Drawn Jade sprints at the lens on the orange road of main, hair streaming, out of a breaking wave made of the twelve lane colours (ribbons of written lanes curling over). Slab BACK TO MAIN low.', { row: 'b145-146', opt: { push: 0.02 } });
 shot(147, 149, 'S+C', 'code', 'aerial', 'missing', 'Aerial pull-back: the road, the town, the new forks.', { row: 'b147-148', opt: { code: 'aerial', lives: LIFE } });
 
 // ------------------------------------------------------------------ Outro B and C: bars 149-164
 section('outro_bc');
-shot(149, 153, 'C', 'code', 'graph', 'missing', 'The whole film as one git graph, labels 26 px or more. The violet branch leaves; its dot; a dotted arc forward to main: cherry-pick docs: start here. Riser at 261.0.',
+shot(149, 153, 'C', 'code', 'graph', 'missing', 'The whole film as one git graph, labels 26 px or more. The violet branch leaves; its dot; a dotted arc forward to main: cherry-pick HANDOFF.md. Riser at 261.0.',
   { row: 'b149-152', opt: { code: 'graph', lives: LIFE } });
 shot(153, 157, 'C', 'code', 'terminal', 'missing', 'Terminal: the real git log --graph of this branch, type 30 px or more, 7 s at most; $ git checkout main, $ git merge typed on beats.', { row: 'b153-156', opt: { code: 'terminal' } });
-// credits: PLACEHOLDER wording from PLAN section 10 item 3, not yet approved by Jade
+// credits: approved by Jade (film v1 notes, decision 11: "use as is", plus Opus 5.5). Plates: the spend log has both image models
+// (google/nano-banana-pro and openai/gpt-image-2.5)
 shot(157, [161, 3], 'C', 'code', 'credits', 'missing', 'Credits as commits, held.', { row: 'b157-160', opt: { code: 'credits', lines: [
-  ['main', 'Merge'], ['main', 'animated by Fable 5.2 and a supporting cast of models'], ['jade/plates', 'Nano Banana Pro'], ['jade/clips', 'Seedance 2.5'],
+  ['main', 'Merge'], ['main', 'animated by Fable 5.2 and Opus 5.5, with a supporting cast of models'], ['jade/plates', 'Nano Banana Pro, GPT Image 2.5'], ['jade/clips', 'Seedance 2.5'],
   ['jade/motion', 'motion capture: CMU, ACCAD'], ['jade/arrangement', 'Suno'], ['jade/type', 'Archivo, Instrument Serif, JetBrains Mono']] } });
 P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. A violet-gold light appears in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3', opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5 } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended
 

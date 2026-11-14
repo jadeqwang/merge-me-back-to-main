@@ -138,7 +138,7 @@ export function makeOutro(E) {
       if (k1 >= 1) { g.fillStyle = V.color; g.beginPath(); g.arc(xd, vy, 12 * S, 0, 6.2832); g.fill(); } }
     if (k2 > 0) { g.save(); g.setLineDash([10 * S, 12 * S]); g.strokeStyle = V.color; g.lineWidth = 3.5 * S; g.beginPath(); const N = 40;
       for (let i = 0; i <= N * ease.io(k2); i++) { const q = i / N, x = lerp(xd, xc, q), y = lerp(vy, my, q) - Math.sin(q * Math.PI) * 120 * S; if (i) g.lineTo(x, y); else g.moveTo(x, y); } g.stroke(); g.restore();
-      g.save(); g.globalAlpha = clamp01(k2 * 2); g.font = mono(28 * S, 600); g.fillStyle = INKP; const lab = 'cherry-pick docs: start here', tw = g.measureText(lab).width; g.fillText(lab, Math.min(W - 40 * S - tw, (xd + xc) / 2 - tw / 2), vy - 70 * S); g.restore();
+      g.save(); g.globalAlpha = clamp01(k2 * 2); g.font = mono(28 * S, 600); g.fillStyle = INKP; const lab = 'cherry-pick HANDOFF.md', tw = g.measureText(lab).width; g.fillText(lab, Math.min(W - 40 * S - tw, (xd + xc) / 2 - tw / 2), vy - 70 * S); g.restore();
       if (k2 >= 1) { g.fillStyle = PAPERW; g.strokeStyle = V.color; g.lineWidth = 4 * S; g.beginPath(); g.arc(xc, my, 11 * S, 0, 6.2832); g.fill(); g.stroke(); } }
   }
   // ---------------------------------------------------------------- terminal (b153-156)
@@ -157,11 +157,22 @@ export function makeOutro(E) {
   // ---------------------------------------------------------------- credits (b157-161)
   function credits(t, s) {
     g.fillStyle = '#0B0C10'; g.fillRect(0, 0, W, H);
-    const o = s.opt, ub = bposT(t) - Math.round(bposT(s.t0)), fpx = 38 * S, lh = 74 * S, n = o.lines.length, y0 = (H - n * lh) / 2 + lh * 0.7;
+    const o = s.opt, ub = bposT(t) - Math.round(bposT(s.t0)), fpx = 38 * S, lh = 74 * S, X0 = 160 * S, XR = W - 110 * S;
     g.font = mono(fpx, 600);
-    o.lines.forEach(([br, msg], i) => { const a = clamp01((ub - i) / 0.5); if (a <= 0) return; const y = y0 + i * lh; let x = 160 * S; g.save(); g.globalAlpha = a;
-      g.fillStyle = '#FF7A1A'; g.fillText('*', x, y); x += fpx * 1.2; g.fillStyle = '#FFD23F'; const h = hashOf('credits/' + i); g.fillText(h, x, y); x += g.measureText(h + ' ').width;
-      const col = br === 'main' ? MAIN : '#9B6BFF'; g.fillStyle = col; const b = `(${br})`; g.fillText(b, x, y); x += g.measureText(b + ' ').width; g.fillStyle = '#F3EFE6'; g.fillText(msg, x, y); g.restore(); });
+    // a message too wide for the frame wraps after its last comma (or space) that fits, continuing under itself (one commit per beat still)
+    const rows = o.lines.map(([br, msg], i) => { const h = hashOf('credits/' + i), b = `(${br})`, xm = X0 + fpx * 1.2 + g.measureText(h + ' ').width + g.measureText(b + ' ').width;
+      const parts = []; let rest = msg;
+      while (xm + g.measureText(rest).width > XR) {
+        const fits = [...rest.matchAll(/ /g)].map((m) => m.index).filter((k) => xm + g.measureText(rest.slice(0, k)).width <= XR);
+        if (!fits.length) break; const commas = fits.filter((k) => rest[k - 1] === ','), cut = commas.length ? commas[commas.length - 1] : fits[fits.length - 1];
+        parts.push(rest.slice(0, cut)); rest = rest.slice(cut + 1); }
+      parts.push(rest); return { br, h, b, xm, parts }; });
+    const nr = rows.reduce((a, r) => a + r.parts.length, 0); let y = (H - nr * lh) / 2 + lh * 0.7;
+    rows.forEach((R, i) => { const a = clamp01((ub - i) / 0.5); if (a > 0) { let x = X0; g.save(); g.globalAlpha = a;
+      g.fillStyle = '#FF7A1A'; g.fillText('*', x, y); x += fpx * 1.2; g.fillStyle = '#FFD23F'; g.fillText(R.h, x, y); x += g.measureText(R.h + ' ').width;
+      const col = R.br === 'main' ? MAIN : '#9B6BFF'; g.fillStyle = col; g.fillText(R.b, x, y); g.fillStyle = '#F3EFE6';
+      R.parts.forEach((p, k) => { if (k) { g.fillStyle = '#FF7A1A'; g.fillText('|', X0, y + k * lh); g.fillStyle = '#F3EFE6'; } g.fillText(p, R.xm, y + k * lh); }); g.restore(); }
+      y += R.parts.length * lh; });
   }
   function draw(s, t, sc) { const c = s.opt.code; if (c === 'fold') fold(t, s); else if (c === 'town') town(t, s); else if (c === 'aerial') aerial(t, s); else if (c === 'graph') graph(t, s); else if (c === 'terminal') term(t, s); else if (c === 'credits') credits(t, s); }
   return { load, ok, need, draw, forks };
