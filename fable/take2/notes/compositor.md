@@ -243,3 +243,37 @@ Nobody has watched it at speed with sound.
 - Render: same as v1 with `section2_v2` names (keep frames 870,1040,1335,1960,2130,2215,2365,2465,2630,2900). 38.2 MB.
   check.py: 36 hard cuts, mean 0.33 fr, 35 within 0.5 (pc03 +1.89, the proof's bar 38); type all pass; no word under 0.6 s;
   single frame vs full render 10 frames max diff 0. Proof identity with proofbug=1 still 0.
+
+## Section 2 v3 and the orchestra v1 (2026-11-13, late night)
+
+Section 2 fixes:
+- b51-52 fan: the fold flash is now a rim pulse BEHIND her (her silhouette in the life's colour, blurred, offset 6 px four ways,
+  drawn under her), and she is drawn on top in her own colours: face and hands are never tinted. The copies behind stay tinted.
+- Kit geometry (kit.js `geo`): depth p -> f = (p/(n-1))^2.4; figure height lerp(0.10, 0.86) H, lane (end of the visible figure)
+  lerp(0.50, 0.985) H, head = lane - visible part. Front four in b43 (poet, phd, wushu, main) are large on the right, main in front
+  with her head near the top; the far ones small and low. Slab region narrowed to the left (x 0.03-0.48), so it stacks into more rows.
+- b46-47 fuse: fusions now land on half beats (0.5, 1.5, 2.5, 3.5, 4.5, 6.5 beats from the shot start). Each pair comes to the front
+  over [bt-1, bt-0.5], converges (lanes join) over [bt-0.5, bt], is split for [bt, bt+1], then steps back over [bt+1, bt+1.5] to its
+  rank; front x alternates between two slots (0.64, 0.86). Runners standing back are packed one depth apart just behind the front.
+
+Orchestra (b81-84):
+- shots.js: eight V shots on the bar and beat 3 (names from notes/orchestra.md rev 2), `opt.v7dir: '/work_fable/take2/v7/orchestra'`;
+  shot 8 holds one beat into bar 85 (to bar 85 beat 2, the hit), seq 09 then starts on bar 85 beat 2.
+- film.js: per-shot v7 folders (V7S map, loadV7 at boot); `opt.paperLook: 'orch'` with `?orchpaper=solid|light` (default solid):
+  - solid: paperPass with { levels [0.2, 0.62], gamma 1, solid 0.6, layers 2, hatch 12, thresholds [0.2, 0.45, 0.7], inkSat 0.12,
+    ink + pale blue #9FC3EA }. The orchestra agent's suggestion alone left the jackets hatched (the 99.5th-pct level is the sky's
+    horizon glow); explicit levels made the backs solid light shapes. The disc comes through as a flat pale blue where it is large
+    enough (shots 3-6); in the wides (1, 7, 8) it is too small.
+  - light: the raw v7 frame, plus paperPass's contour only (skip 'h') added with 'lighter' at 0.6, then the film's grain/vignette.
+  - paper.js is unchanged (options only). Three non-orchestra v7 frames (film 4000, 4530, 6000) re-rendered: identical to the
+    animatic v1 keep frames (max diff 0).
+- Renders (range 137.237-147.606, bars 80-85, sound): work_fable/take2/out/film_orchestra_{solid,light}_master.mp4;
+  review/fable_take2/orchestra_v1.mp4 (solid, 18.2 MB) and orchestra_v1_light.mp4 (18.3 MB) (x264 crf 20 capped 13 Mb/s: the boil
+  needs the rate); review/fable_take2/orchestra_v1_sheet.jpg (shot middles, solid | light).
+- check.py treats the eight as one v7 sequence (no hard cuts by its rule); measured by hand on frame differences: cuts at
+  +0.05..+0.58 fr (the v7 render's own camera cuts, from the warped time), the b85 beat 2 cut -0.30 fr; light variant's b81 cut +1.05
+  fr (weak change into the orchestra). Single frame vs full render: 6 frames each, max diff 0.
+- What reads (stills): solid: 2, 3, 4, 5, 6 (white backs as solid shapes, disc blue in 4-6, instruments as lane-colour lines);
+  weak: 1 (streak firework of arcs), 7 and 8 (dense wides become a field of marks; the fan shape reads in 7), and the sky's horizon
+  glow is hatched in every low shot. light: all eight read as pictures, but it is close to the raw 3D (purple trousers, blue sky
+  gradient, shading): it breaks "v7 never raw" in spirit; 1 still a firework.
