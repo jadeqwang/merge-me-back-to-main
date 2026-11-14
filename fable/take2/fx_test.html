@@ -1,0 +1,43 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>take two: paper and glyph passes</title>
+<style>html,body{margin:0;background:#111;color:#ccc;font:13px monospace}canvas{display:block;max-width:100%}</style></head>
+<body><canvas id="c"></canvas>
+<script type="module">
+// Test page for fable/take2/src/paper.js and glyph.js, driven by fable/take2/tools/fx/fx.mjs (headless Chrome).
+// By hand: fx_test.html?pass=paper&src=/work_fable/take2/tests/paper/src/kick.png&opts={"paper":"black"}&side=1
+// Job: { pass, src (url), mask (url, optional: keep mask, white = kept), opts (object or array of objects: one panel each),
+//        side (source as the first panel), w, h (panel size), t (song time), key (frame key for the WebSocket readback) }
+import { paperPass } from './src/paper.js';
+import { glyphPass, loadGlyphFont } from './src/glyph.js';
+const cv = document.getElementById('c'), g = cv.getContext('2d', { willReadFrequently: true, alpha: false });
+const Q = new URLSearchParams(location.search);
+const BM = new Map();
+async function bitmap(u) { if (!u) return null; let p = BM.get(u); if (!p) { p = fetch(u).then((r) => { if (!r.ok) throw new Error('missing ' + u); return r.blob(); }).then((b) => createImageBitmap(b)); BM.set(u, p); if (BM.size > 24) { const [k, v] = BM.entries().next().value; BM.delete(k); v.then((b) => b.close()); } } return p; }
+let ws = null;
+function wsOpen() { return new Promise((res) => { ws = new WebSocket(`ws://${location.host}/__ws`); ws.binaryType = 'arraybuffer'; ws.onopen = () => res(); }); }
+function wsSend(key, buf) { return new Promise((res) => { ws.onmessage = () => res(); ws.send(key); ws.send(buf); }); }
+async function run(job) {
+  const src = await bitmap(job.src), mask = await bitmap(job.mask);
+  const list = Array.isArray(job.opts) ? job.opts : [job.opts || {}], w = job.w || 1920, h = job.h || 1080, n = list.length + (job.side ? 1 : 0);
+  if (cv.width !== w * n || cv.height !== h) { cv.width = w * n; cv.height = h; }
+  g.fillStyle = '#000'; g.fillRect(0, 0, cv.width, cv.height);
+  let x = 0; const ms = [];
+  if (job.side) { const k = Math.max(w / src.width, h / src.height); g.drawImage(src, (w - src.width * k) / 2, (h - src.height * k) / 2, src.width * k, src.height * k); x += w; }
+  for (const o0 of list) {
+    const o = { ...o0, t: job.t ?? o0.t ?? 0, out: {} };
+    if (mask) o.keep = { mask, luma: true, feather: o0.feather ?? 3 };
+    g.save(); g.beginPath(); g.rect(x, 0, w, h); g.clip();
+    (job.pass === 'glyph' ? glyphPass : paperPass)(g, src, { x, y: 0, w, h }, o); if (o.out.prof && job.prof) console.log(o.out.prof);
+    g.restore(); ms.push(o.out.ms); x += w;
+  }
+  if (job.key) await wsSend(job.key, g.getImageData(0, 0, cv.width, cv.height).data.buffer);
+  return { ms, W: cv.width, H: cv.height };
+}
+window.FX = { ready: false, run };
+(async () => {
+  await loadGlyphFont('/engine/fonts/JetBrainsMono[wght].ttf');
+  if (Q.get('ws') !== '0' && Q.get('driven') === '1') await wsOpen();
+  window.FX.ready = true;
+  if (Q.get('src')) { const r = await run({ pass: Q.get('pass') || 'paper', src: Q.get('src'), mask: Q.get('mask'), opts: JSON.parse(Q.get('opts') || '{}'), side: Q.get('side') === '1', t: +(Q.get('t') || 0) }); console.log('ms', r.ms); }
+})().catch((e) => { window.FX.error = String(e); console.error(e); });
+</script></body></html>
