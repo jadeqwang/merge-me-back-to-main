@@ -262,34 +262,54 @@ P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of he
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');
 V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121' });
-P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123' });
+P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { lyr: { x0: 0.45, x1: 0.97, align: 'right' } } });   // she is left: the slab right
 V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123' });
-for (let k = 0; k < 3; k++) P(124 + k, 125 + k, `runner_converge_${k + 1}`, 'missing', `The twelve runners converge on her from every side, each in her medium (shot ${k + 1} of 3).`, { code: 'K', row: 'b124-127' });
+// b124-126: the twelve converge on her (src/kit.js 'row' with conv): runners from the right run in toward main (large, centre), from the
+// left they are mirrored; each reaches her and fades into her as the bar ends. Lanes as section 2.
+const KC = (ids, xs) => ids.map((id, i) => ({ id, x: xs[i] }));
+const CONV = [
+  KC(['violet', 'home', 'chezjj', 'band', 'ames', 'poet', 'main'], [0.95, 0.85, 0.92, 0.8, 0.9, 0.88, 0.42]),
+  KC(['sandstorm', 'wetlab', 'piano', 'violin', 'phd', 'wushu', 'main'], [0.06, 0.15, 0.1, 0.2, 0.12, 0.08, 0.6]),
+  KC(['violet', 'piano', 'chezjj', 'violin', 'ames', 'phd', 'poet', 'wushu', 'main'], [0.05, 0.95, 0.1, 0.9, 0.15, 0.85, 0.02, 0.98, 0.5]),
+];
+for (let k = 0; k < 3; k++) shot(124 + k, 125 + k, 'K', 'kit', `runner_converge_${k + 1}`, 'missing', `The twelve runners converge on her from every side, each in her medium (shot ${k + 1} of 3).`,
+  { row: 'b124-127', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'row', lanes: CONV[k], conv: true } } });
 V(127, 128, 'seq 12', 'From above, the roads converge.', { row: 'b124-127' });
 P(128, 129, 'c2_hands', 'missing', 'Close on her hands opening.', { row: 'b128' });
-P(129, 130, 'catch', 'missing', 'She catches the violet light at her chest, eyes closed.', { row: 'b129' });
-shot(130, [130, 3], 'K+S', 'plate', 'patch_1', 'missing', 'The twelve fold into her, one per beat; each fold adds its medium to her. Patchwork stage 1 of 3.', { row: 'b130-131' });
-shot([130, 3], 131, 'K+S', 'plate', 'patch_2', 'missing', 'The folds continue. Patchwork stage 2 of 3.', { row: 'b130-131' });
-shot(131, 132, 'K+S', 'plate', 'patch_3', 'missing', 'The folds continue. Patchwork stage 3 of 3.', { row: 'b130-131' });
-P(132, 134, 'patchwork', 'missing', 'The poster frame: one Jade drawn in all twelve mediums at once. Her eyes open.', { row: 'b132-133' });
-P(134, 137, 'resolve', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136' });
+P(129, 130, 'catch', 'missing', 'She catches the violet light at her chest, eyes closed.', { row: 'b129', opt: { lyr: { x0: 0.03, x1: 0.33, align: 'left' } } });   // she is centred, hands at her chest: the slab left of her
+// b130-131: the folds, in code (opt.code 'fold'): night_jade on black paper; patchwork2's figure (aligned on the two cut-outs' bounding
+// boxes) shows through twelve patch masks, one more per beat for eight beats, then on the off-beats of beats 5-8; each new patch flashes
+// its life's lane colour on its edge
+shot(130, 132, 'K+S', 'code', 'fold', 'missing', 'The twelve fold into her, one per beat; each fold adds its medium to her (twelve patches on night_jade).', { row: 'b130-131',
+  opt: { lyr: { x0: 0.03, x1: 0.33, align: 'left' }, code: 'fold', base: 'night_jade', top: 'patchwork2', mattes: { night_jade: '/work_fable/take2/kit/night_jade', patchwork2: '/work_fable/take2/kit/patchwork2' }, beats: [0, 1, 2, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5] } });
+P(132, 134, 'patch_hold', 'missing', "The poster frame: one Jade drawn in all twelve mediums at once, on white paper: full colour and daylight arrive.", { row: 'b132-133', opt: { lyr: { x0: 0.03, x1: 0.37, align: 'left' } } });
+P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136', opt: { clip0: 0, clip1: 4.95, lyr: { x0: 0.03, x1: 0.37, align: 'left' } } });
 
 // ------------------------------------------------------------------ Outro A: bars 137-148 (full drums; has to top the drop)
 section('outro_a');
+// the sung likeness shots (code 'L'): used only if work_fable/take2/plates/like_sing1|2 exist locally; ?likeness=0 forces the cards
+// (every committed review file is rendered with likeness=0: likeness clips stay out of the public repo)
 shot(137, 139, 'L', 'plate', 'like_sing1', 'missing', 'The switch: on the impact the drawing becomes Jade herself, her traced likeness in the same jacket, singing.', { row: 'b137-138' });
-shot(139, 141, 'S+C', 'plate', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax.', { row: 'b139-140' });
-P(141, 143, 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142' });
-P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144' });
+// b139-140 and b141-142: the town (opt.code 'town'): white paper, far pencil hills, the twelve facades (cut out) along the road, the road =
+// main's written lane, dense (she is merged); side travel with parallax; a chip with the branch name under each building
+const TOWN = { code: 'town', lives: LIFE, speed: 1050, spacing: 0.3 };   // all twelve pass in the four bars (b139-142)
+shot(139, 141, 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax.', { row: 'b139-140', opt: { ...TOWN } });
+shot(141, 143, 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142',
+  opt: { ...TOWN, x0: 2 * 3.43, runner: { dir: '/work_fable/take2/kit/day_run', x: 0.5, h: 0.62, y: 0.9 } } });
+P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true } });
 shot(145, 147, 'L', 'plate', 'like_sing2', 'missing', 'Jade again, wider, singing.', { row: 'b145-146' });
-shot(147, 149, 'S+C', 'plate', 'aerial', 'missing', 'Aerial pull-back: the road, the town, the new forks.', { row: 'b147-148' });
+shot(147, 149, 'S+C', 'code', 'aerial', 'missing', 'Aerial pull-back: the road, the town, the new forks.', { row: 'b147-148', opt: { code: 'aerial', lives: LIFE } });
 
 // ------------------------------------------------------------------ Outro B and C: bars 149-164
 section('outro_bc');
-V(149, 153, 'seq 15', 'The whole film as one git graph, labels 26 px or more. The violet branch leaves; its dot; a dotted arc forward to main: cherry-pick docs: start here. Riser at 261.0.',
-  { code: 'V7/C', alt: 'C', ov: ['labels enlarged (to do)'], row: 'b149-152' });
-C(153, 157, 'terminal', 'Terminal: the real git log --graph of this branch, type 30 px or more, 7 s at most; $ git checkout main, $ git merge typed on beats.', { row: 'b153-156' });
-C(157, [161, 3], 'credits', 'Credits as commits, held.', { row: 'b157-160' });
-P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. A violet-gold light appears in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3' });
+shot(149, 153, 'C', 'code', 'graph', 'missing', 'The whole film as one git graph, labels 26 px or more. The violet branch leaves; its dot; a dotted arc forward to main: cherry-pick docs: start here. Riser at 261.0.',
+  { row: 'b149-152', opt: { code: 'graph', lives: LIFE } });
+shot(153, 157, 'C', 'code', 'terminal', 'missing', 'Terminal: the real git log --graph of this branch, type 30 px or more, 7 s at most; $ git checkout main, $ git merge typed on beats.', { row: 'b153-156', opt: { code: 'terminal' } });
+// credits: PLACEHOLDER wording from PLAN section 10 item 3, not yet approved by Jade
+shot(157, [161, 3], 'C', 'code', 'credits', 'missing', 'Credits as commits, held.', { row: 'b157-160', opt: { code: 'credits', lines: [
+  ['main', 'Merge'], ['main', 'animated by Fable 5.2 and a supporting cast of models'], ['jade/plates', 'Nano Banana Pro'], ['jade/clips', 'Seedance 2.5'],
+  ['jade/motion', 'motion capture: CMU, ACCAD'], ['jade/arrangement', 'Suno'], ['jade/type', 'Archivo, Instrument Serif, JetBrains Mono']] } });
+P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. A violet-gold light appears in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3', opt: { toFrame0: 1.5 } });
 
 // float_top geometry (plate fractions): her head (strand centre) and twelve hair ends in the lives' order; measured on the clip when it lands
 export const FLOAT = { at: 2.0, track: [[0, [0.555, 0.18], [0.297, 0.894]], [2.0, [0.588, 0.204], [0.266, 0.769]], [5.0, [0.623, 0.333], [0.259, 0.597]]], center: [0.59, 0.20], ends: [[0.31, 0.22], [0.344, 0.111], [0.4375, 0.037], [0.542, 0.019], [0.667, 0.015], [0.771, 0.056], [0.854, 0.148], [0.896, 0.278], [0.896, 0.426], [0.865, 0.556], [0.823, 0.667], [0.75, 0.74]] };   // measured on float_top frame 49

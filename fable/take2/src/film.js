@@ -15,6 +15,7 @@ import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
 import { scriptPaths, drawScript, penAt } from './script.js';
+import { makeOutro } from './outro.js';
 import { makeProof } from './proofscene.js';
 
 const Q = new URLSearchParams(location.search);
@@ -25,7 +26,8 @@ const PLATE_DIRS = (Q.get('plates') || '/work_fable/take2/plates,/work_fable/pro
 const PROOF_PLATES = '/work_fable/proof/plates';
 const V7DIR = Q.get('v7dir') || '/work_fable/take2/v7/full';
 const HUD = Q.get('hud') !== '0', USE_V7 = Q.get('v7') !== '0', USE_PAPER = Q.get('paper') !== '0', ALLCARDS = Q.get('cards') === '1', LANES = Q.get('lanes') !== '0';
-const PROOFBUG = Q.get('proofbug') === '1';
+const PROOFBUG = Q.get('proofbug') === '1', LIKENESS = Q.get('likeness') !== '0';
+let OUTRO = null;
 const canvas = document.getElementById('c'); canvas.width = W; canvas.height = H;
 const g = canvas.getContext('2d', { willReadFrequently: true, alpha: false });
 window.FILM = { ready: false, error: null };
@@ -127,10 +129,10 @@ const counterAt = (bar) => (bar < 3 ? 1 : Math.min(1024, 2 ** (bar - 2)));
 function effKind(s) {
   if (s.kind === 'proof') return 'proof';
   if (ALLCARDS) return 'card';
-  if (s.kind === 'plate') return PLATE[s.src] ? 'plate' : 'card';
+  if (s.kind === 'plate') return PLATE[s.src] && !(s.code === 'L' && !LIKENESS) ? 'plate' : 'card';   // likeness shots: ?likeness=0 forces the card
   if (s.kind === 'v7') return USE_V7 && v7Of(s) ? 'v7' : 'card';
   if (s.kind === 'kit') return KITX && !s.opt.kit.off && KITX.ok(s) ? 'kit' : 'card';
-  if (s.kind === 'code') return s.opt.code === 'tiles' ? (s.opt.lives.some((id) => PLATE['det_' + id]) ? 'code' : 'card') : 'code';
+  if (s.kind === 'code') { if (s.opt.code === 'tiles') return s.opt.lives.some((id) => PLATE['det_' + id]) ? 'code' : 'card'; if (s.opt.code === 'gitlog') return 'code'; return OUTRO && OUTRO.ok(s) ? 'code' : 'card'; }
   return 'card';
 }
 
@@ -241,6 +243,7 @@ function scene(t) {
   if (sc.eff === 'v7') { const k = v7Index(t, s); if (k < 0) sc.eff = 'card'; else sc.imgs.push({ url: v7Url(k, s), v7: true }); }
   if (sc.eff === 'plate') plateDraw(s, t, s.src, sc.imgs);
   if (sc.eff === 'kit') for (const u of KITX.need(s, t)) sc.imgs.push({ url: u });
+  if (sc.eff === 'code' && OUTRO && !['tiles', 'gitlog'].includes(s.opt.code)) for (const u of OUTRO.need(s, t)) sc.imgs.push({ url: u });
   if (sc.eff === 'code' && s.opt.code === 'tiles') for (const id of s.opt.lives) if (PLATE['det_' + id]) sc.imgs.push({ url: `${PLATE['det_' + id].dir}/still.jpg`, life: id });
   if (sc.eff === 'plate' && s.opt && s.opt.strands && s.opt.strands.window && PLATE[s.opt.strands.window]) {   // the life window (b61-62)
     sc.win = []; plateDraw({ t0: s.t0, t1: s.t1, opt: { clip0: 1.0, push: 0 } }, t, s.opt.strands.window, sc.win); }
@@ -553,9 +556,10 @@ function draw(t, sc) {
     if (s.opt.tips) tips(t, sc);
     if (s.opt.caption) caption(t, sc);
     if (s.opt.hand) hand(t, sc);
+    if (s.opt.forks && OUTRO) OUTRO.forks(t, s, sc.imgs[0]);
     if (s.opt.settle && sc.settle) settle(t, sc);
   }
-  else if (sc.eff === 'code') { try { if (s.opt.code === 'gitlog') gitlog(t, s); else tiles(t, sc); } catch (e) { console.log('ERROR code ' + e.stack); } }
+  else if (sc.eff === 'code') { try { if (s.opt.code === 'gitlog') gitlog(t, s); else if (s.opt.code === 'tiles') tiles(t, sc); else OUTRO.draw(s, t, sc); } catch (e) { console.log('ERROR code ' + e.stack); } }
   else if (sc.eff === 'v7') {
     let b = READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = s.opt && s.opt.v7crop;
     if (vc) { if (!CROPC) { CROPC = document.createElement('canvas'); CROPC.width = W; CROPC.height = H; } const x = CROPC.getContext('2d'); x.imageSmoothingQuality = 'high';
@@ -584,8 +588,14 @@ async function render1(t) {
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
   await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.win || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
-  draw(t, sc); if (HUD) hud(t, sc); return sc;
+  draw(t, sc);
+  const z = s.opt && s.opt.toFrame0; if (z) { const t0 = T.duration - z; if (t > t0) {   // the end: cross to the film's own frame 0 (the last frame equals it)
+    if (!F0) { const c = document.createElement('canvas'); c.width = W; c.height = H; const keep = g.getImageData(0, 0, W, H); const s0 = scene(0); READY.clear();
+      await Promise.all([...s0.imgs].map(async (im) => READY.set(im.url, await bitmap(im.url)))); draw(0, s0); c.getContext('2d').drawImage(canvas, 0, 0); F0 = c; g.putImageData(keep, 0, 0); }
+    const a = clamp01((t - t0) / (z - 1 / FPS)); g.save(); g.globalAlpha = a; g.drawImage(F0, 0, 0); g.restore(); } }
+  if (HUD) hud(t, sc); return sc;
 }
+let F0 = null;
 
 // ---------------------------------------------------------------- boot and harness interface
 async function boot() {
@@ -595,7 +605,7 @@ async function boot() {
   measureMono(g);
   T = await loadTiming(TIMING);
   SH = resolveShots(T);
-  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.strands && s.opt.strands.window) await findPlate(s.opt.strands.window); if (s.kind === 'code' && s.opt.lives) for (const id of s.opt.lives) await findPlate('det_' + id); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); }
+  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.strands && s.opt.strands.window) await findPlate(s.opt.strands.window); if (s.kind === 'code' && s.opt.lives) for (const id of s.opt.lives) await findPlate('det_' + id); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); if (s.opt && s.opt.base) { await findPlate(s.opt.base); await findPlate(s.opt.top); } }
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
@@ -615,6 +625,8 @@ async function boot() {
   // the proof range must be exactly the proof shots of the list
   const pr = SH.filter((s) => s.kind === 'proof'); if (Math.abs(pr[0].t0 - PROOF.t0) > 0.002 || Math.abs(pr[pr.length - 1].t1 - PROOF.tEnd) > 0.002) throw new Error('proof range does not match the shot list');
   LYR = buildLyrics(); buildGrain(); STRANDS = FLOAT || null;
+  OUTRO = makeOutro({ g, W, H, S, T, READY, LIVES, byId, MAIN, hashOf, drawWrittenLane, laneString, clamp01, lerp, ease, plateToScreen, cover, bposT, glowAt, hexA, json, PLATE });
+  await OUTRO.load(SH.filter((s) => s.kind === 'code'));
   for (const s of SH) if (s.opt && s.opt.settle) { const d = s.opt.settle.matte; if (!(d in SETTLE_OK)) { const mm = await json(`${d}/meta.json`); SETTLE_OK[d] = !!(mm && mm.n); } }
   const N = Math.ceil(T.duration * FPS - 1e-6);
   const sizes = {}; const meas = (k, f) => { setFont(f); sizes[k] = { font: f.font, capPx: +g.measureText('H').actualBoundingBoxAscent.toFixed(1) }; };

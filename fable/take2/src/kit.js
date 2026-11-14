@@ -49,7 +49,7 @@ export function makeKit(E) {
     const dw = img.width * q, dh = img.height * q, dx = x - k.headx * dw, dy = headY - k.top * dh;
     if (id === 'sandstorm') return glyphRunner(img, dx, dy, dw, dh, t, o);
     oc.setTransform(1, 0, 0, 1, 0, 0); oc.globalCompositeOperation = 'source-over'; oc.globalAlpha = 1; oc.clearRect(0, 0, W, H);
-    oc.imageSmoothingQuality = 'high'; oc.drawImage(img, dx, dy, dw, dh);
+    oc.imageSmoothingQuality = 'high'; if (o.flip) { oc.save(); oc.translate(2 * x, 0); oc.scale(-1, 1); oc.drawImage(img, dx, dy, dw, dh); oc.restore(); } else oc.drawImage(img, dx, dy, dw, dh);   // flip: mirrored about her head x
     if (k.cut) { const yb = dy + k.bottom * dh, y0 = yb - 0.16 * h * vis; const gr = oc.createLinearGradient(0, y0, 0, yb); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,1)');
       oc.globalCompositeOperation = 'destination-out'; oc.fillStyle = gr; oc.fillRect(dx - 2, y0, dw + 4, yb - y0 + dh); oc.globalCompositeOperation = 'source-over'; }
     if (o.clip) { oc.globalCompositeOperation = 'destination-in'; oc.beginPath(); o.clip(oc, x, headY); oc.fillStyle = '#000'; oc.fill(); oc.globalCompositeOperation = 'source-over'; }
@@ -77,7 +77,10 @@ export function makeKit(E) {
     g.fillStyle = PAPER; g.fillRect(0, 0, W, H);
     K.lanes.forEach((L, p) => { const cap = G.cap(p), y = G.laneY(p, L.id) + cap * 0.6;
       laneSeg(() => y, 0, W, laneString(msgs([L.id]), true), col(L.id), cap, 0.2, tt, 4 + 10 * G.f(p));
-      runner(L.id, t, b0, L.x * W, G.headY(p, L.id), G.figH(p)); });
+      if (!K.conv || L.id === 'main') { runner(L.id, t, b0, L.x * W, G.headY(p, L.id), G.figH(p)); return; }
+      // converge (chorus 2): run in toward main over the bar, accelerating, and fade into her in the last fifth
+      const mx = K.lanes.find((q) => q.id === 'main').x * W, u = clamp01((t - s.t0) / (s.t1 - s.t0)), x = lerp(L.x * W, mx, ease.in(u) * 0.92);
+      runner(L.id, t, b0, x, G.headY(p, L.id), G.figH(p), { flip: L.x * W < mx, alpha: 1 - clamp01((u - 0.8) / 0.2) }); });
   }
   // ---- 'fuse' (b46-47). events [beat, laneA, laneB] (beats from the shot start; a fusion lands ON its beat). For each event the
   // pair comes forward to the front over [bt-1, bt-0.5] (A on the front lane, B just behind it), converges over [bt-0.5, bt] (their
