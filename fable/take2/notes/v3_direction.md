@@ -83,3 +83,6 @@ Order: 1, 2, 3, 5, 6 first (the compositor waits on them), then 4, 7.
 Update (Jade, same day): for the chorus 1 sprint the variety is her singing. `hero_paper_v2` is generated from the still plus the
 song audio (about 69.2-74.2 s), she sings "Merge me back to main", the plate is song-locked (`t0_song`). This replaces the
 expression-arc brief for `hero_paper` in item B7; `wave_run_v3` keeps the expression change.
+
+Update (Jade, same day): retake the band life plate as `band_v2`, inside Hacker Dojo (a hackerspace, no bar), with the same time
+structure as `band` including the look-back, so it replaces `band` everywhere including the grid.
