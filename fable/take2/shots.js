@@ -237,23 +237,24 @@ section('verse2');
 // lyrics in the empty sky (cream); lane = the violet branch written sparse (merge 0) on the plate's violet line
 const VIO = '#9B6BFF';
 P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engraved Milky Way. Chip: ● jade/1420-mhz  ctx 97%.',
-  { ov: ['chip:● jade/1420-mhz  ctx 97%'], row: 'b105-106', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' }, lane: { pts: [[0.2, 0.825], [1, 0.955]], color: VIO, text: 'violet', cap: 20, scroll: -6, under: 0.2 } } });
-P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108', opt: { lane: { pts: [[0, 0.92], [1, 0.92]], color: VIO, text: 'violet', cap: 22, scroll: -10, under: 0.2 } } });
-P(108, 109, 'vio_close', 'missing', 'Her profile, the bun and two pencils.', { row: 'b107-108' });
-P(109, 111, 'vio_lookback', 'missing', 'She stops and looks back east: far off, a sliver of sunrise in full colour.', { row: 'b109-110', opt: { lyr: { y: 'top', x0: 0.42, x1: 0.97, align: 'right' } } });
+  { ov: ['chip:● jade/1420-mhz  ctx 97%'], row: 'b105-106', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' }, lane: { pts: [[0.27, 0.79], [1, 0.975]], color: VIO, text: 'violet', cap: 20, scroll: -6, under: 0.2 } } });
+P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, lane: { pts: [[0, 0.955], [1, 0.955]], color: VIO, text: 'violet', cap: 22, scroll: -10, under: 0.2 } } });
+P(108, 109, 'vio_close', 'missing', 'Her profile, the bun and two pencils.', { row: 'b107-108', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });   // clip 0-1.7 s, before the blink near 2.5 s
+P(109, 111, 'vio_lookback', 'missing', 'She stops and looks back east: far off, a sliver of sunrise in full colour.', { row: 'b109-110', opt: { clip0: 0, clip1: 2.5, lyr: { y: 'top', x0: 0.42, x1: 0.97, align: 'right' } } });   // clip 0-2.5 s: the sunrise stays a far sliver
 P(111, 112, 'vio_climb', 'missing', 'She climbs to the rim of the dish.', { row: 'b111-112' });
 P(112, 113, 'violet', 'exists', 'She sits on the rim of the dish.', { opt: { clip0: 0.5, push: 0.02 }, row: 'b111-112' });
-P(113, 114, 'vio_pencil', 'missing', 'She draws a pencil from her bun.', { row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.45, align: 'left' } } });
+P(113, 114, 'vio_pencil', 'missing', 'She draws a pencil from her bun.', { row: 'b113-115', opt: { clip0: 2.3, clip1: 4.0, lyr: { x0: 0.56, x1: 0.97, align: 'right' } } });   // clip: the pencil out of the bun by 3 s, held up by 4 s (ends on it)
 // the handwriting (src/script.js): written stroke by stroke where her pencil points; at = start of the line (plate fractions), size = x-height
-// (frame fraction), write = [from, to] fraction of the shot; on vio_release the finished line lifts off and arcs up and over to the sunrise
+// (frame fraction), write = [from, to] fraction of the shot; placed so the pen ends at her pencil tip (about 0.5-0.6, 0.07 in vio_write) and
+// the line runs left of it in the empty sky above the dish; on vio_release the finished line lifts off and arcs up and over to the sunrise
 // on the right (to), arriving on the bar 117 downbeat with a flash
-const HAND = { text: 'docs: start here', at: [0.12, 0.3], size: 0.045 };
+const HAND = { text: 'docs: start here', at: [0.21, 0.19], size: 0.045 };   // below the chip   
 P(114, 116, 'vio_write', 'missing', 'She writes in the air. The handwriting docs: start here is drawn in code, in violet light. ctx 99%.',
   { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 99%'], row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, write: [0.05, 0.92] } } });
 P(116, 118, 'vio_release', 'missing', 'She lets the line of light go; it lifts off east. Hit on b117, then the drums cut. ctx 100%.',
-  { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, release: { to: [0.96, 0.6], top: 0.04, arrive: 117 } } } });
+  { code: 'P+C', ov: ['chip:● jade/1420-mhz  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, hand: { ...HAND, release: { to: [0.93, 0.5], top: 0.04, arrive: 117 } } } });
 P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of her figure settle into the star field. Chip: detached, not merged. The stars keep twinkling.',
-  { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, settle: { matte: '/work_fable/take2/kit/vio_still' } } });
+  { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, settle: { matte: '/work_fable/take2/kit/vio_still', x0: 0.55 } } });
 
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');

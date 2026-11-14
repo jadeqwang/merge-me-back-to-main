@@ -503,11 +503,12 @@ let SETC = null;
 function settle(t, sc) {
   const m = READY.get(sc.settle); if (!m) return; const u = ease.io(seg(t, sc.s.t0, sc.s.t1)), im = sc.imgs[0], cr = cover(m.width, m.height, W, H, im.zoom || 1, im.fo[0], im.fo[1]);
   const gw = 192, gh = 108; if (!SETC) { SETC = document.createElement('canvas'); SETC.width = gw; SETC.height = gh; }
-  const x = SETC.getContext('2d', { willReadFrequently: true }); x.clearRect(0, 0, gw, gh); x.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, gw, gh);
+  const x0 = (sc.s.opt.settle.x0 || 0) * W;   // the matte also takes the dish: only the part right of x0 is her
+  const x = SETC.getContext('2d', { willReadFrequently: true }); x.clearRect(0, 0, gw, gh); x.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, gw, gh); x.clearRect(0, 0, Math.round(x0 * gw / W), gh);
   const A = x.getImageData(0, 0, gw, gh).data, al = (i, j) => (i < 0 || j < 0 || i >= gw || j >= gh ? 0 : A[(j * gw + i) * 4 + 3]);
   // dim the figure (her own matte, darkened) toward the night
   if (!FANC) { FANC = document.createElement('canvas'); FANC.width = W; FANC.height = H; }
-  const fc = FANC.getContext('2d'); fc.setTransform(1, 0, 0, 1, 0, 0); fc.globalCompositeOperation = 'source-over'; fc.clearRect(0, 0, W, H); fc.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, W, H);
+  const fc = FANC.getContext('2d'); fc.setTransform(1, 0, 0, 1, 0, 0); fc.globalCompositeOperation = 'source-over'; fc.clearRect(0, 0, W, H); fc.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, W, H); fc.clearRect(0, 0, x0, H);
   fc.globalCompositeOperation = 'source-in'; fc.fillStyle = '#05050C'; fc.fillRect(0, 0, W, H); g.save(); g.globalAlpha = 0.55 * u; g.drawImage(FANC, 0, 0); g.restore();
   const step = Math.floor(t * 12 + 1e-6); g.save(); g.globalCompositeOperation = 'lighter';
   for (let j = 1; j < gh - 1; j++) for (let i = 1; i < gw - 1; i++) { const a = al(i, j); if (a < 128) continue;
@@ -515,6 +516,12 @@ function settle(t, sc) {
     const h = mulberry32(i * 7349 + j * 9157)(); if (h > u * 0.85) continue;
     const tw = 0.55 + 0.45 * Math.sin(step * 0.9 + h * 40), px = (i + 0.5) * W / gw, py = (j + 0.5) * H / gh;
     glowAt(px, py, (3 + 5 * h) * S * (0.8 + 0.4 * tw), h < 0.3 ? '#9B6BFF' : '#EDE6FF', 0.7 * tw); }
+  // the sky's stars keep twinkling: glints on the plate's brightest cells above the horizon, outside her
+  const pb = READY.get(im.url); x.clearRect(0, 0, gw, gh); x.drawImage(pb, 0, 0, gw, gh); const P = x.getImageData(0, 0, gw, gh).data;
+  for (let j = 1; j < gh * 0.45; j++) for (let i = 1; i < gw - 1; i++) { const o = (j * gw + i) * 4; if (P[o] < 150 || al(i, j) > 20) continue;
+    const r0 = mulberry32(i * 3301 + j * 7919)(); if (r0 > 0.35) continue; const tw = Math.max(0, Math.sin(step * 0.7 + r0 * 60)); if (tw < 0.3) continue;
+    const px = (i + 0.5) * W / gw, py = (j + 0.5) * H / gh, r = (2 + 5 * tw) * S;
+    g.strokeStyle = `rgba(240,236,255,${0.6 * tw})`; g.lineWidth = 1.2 * S; g.beginPath(); g.moveTo(px - r * 1.6, py); g.lineTo(px + r * 1.6, py); g.moveTo(px, py - r * 1.6); g.lineTo(px, py + r * 1.6); g.stroke(); glowAt(px, py, r, '#EDE6FF', 0.5 * tw); }
   g.restore();
 }
 
