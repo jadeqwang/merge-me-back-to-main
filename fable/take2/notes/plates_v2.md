@@ -61,9 +61,10 @@ from the tree). **root** (proof plate, child from behind): the frost grows from 
 
 Stills (one ref `day_jade_a1`): `wave_run2_a1`/`a2` full length and scowling; `wave_run3_a1` large, towering saturated ribbon wave
 with crest and spray, white paper to the edge, but an open-mouth grin and framed to the shins. Fixed by one expression-only edit
-(`wave_run3_face_a1`, lips closed) and a free crop to knees-up: `wave_run3_knees.jpg`. Clip `t2_wave_run_t2` submitted (low camera
-retreating, "framing stays from the knees up for the whole shot"); NOT yet reviewed or intaken. Fallback if it pulls back: take 3
-with `wave_run3_knees` as the last frame too.
+(`wave_run3_face_a1`, lips closed) and a free crop to knees-up: `wave_run3_knees.jpg`. Clip `t2_wave_run_t2` (low camera retreating,
+"framing stays from the knees up for the whole shot") ACCEPTED and intaken as plate `wave_run` (replaces take 1 in the folder):
+framing held mid-thigh up for all 5 s, she sprints at the lens, arms pumping, hair streaming; the ribbon wave surges behind and its
+white spray rises round her from 2.5 s; no grey band; lips closed; patch on her left arm.
 
 ## Group (c) (in progress)
 
@@ -99,3 +100,4 @@ with `wave_run3_knees` as the last frame too.
 | `drop_hero_4_v2` | v1 `drop_hero_4` (hair whip) | 1.0-3.5 (whip), falls by 4.75 | right of the hair, x 0.75-1.0 | patch on the near arm |
 | `drop_hero_5_v2` | v1 `drop_hero_5` (landing) | 0.0-2.25 (squat, strap swing, dust); dust thins to 4.0 | upper band y 0.0-0.35 is black trousers/black | no rays |
 | `drop_hero_1_v2` (take 2) | v1 `drop_hero_2` (fist) as the brief's hero 1 | 1.0-4.5 (closes 1.0-3.75, held after) | black right half x 0.65-1.0 | small gold motion flicks at the knuckles 1.5-4.25 (from the v1 fist still), not burst rays |
+| `wave_run` (take 2) | second likeness shot b145-146 (`like_sing2`) | 1.4-4.8 (spray builds 2.5-5.0); whole 0-5.0 usable | slab low over her waist/trousers band y 0.75-0.97, or upper corners x 0.0-0.2 / x 0.8-1.0, y 0.0-0.3 (ribbons, busy) | do not mirror (patch); take 1 row above is void |
