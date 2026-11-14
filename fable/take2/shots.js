@@ -64,6 +64,8 @@ const INSERT = [['ins_violin', 'violin: the bow arm, a down-bow, the wrist leadi
   ['ins_poem', 'a pen finishing a line in a notebook, the hand lifts', { clip0: 3.4 }],
   ['ins_piano', 'both hands land a chord', { clip0: 0.82 }], ['ins_guitar', 'a strum on an acoustic guitar (the RNA band)', { clip0: 0.95 }]];
 
+// film v3: wushu_v3 (her face reads as her) replaces wushu_v2 wherever v2 is used, when it lands; same composition and timing (punch ~1.0 s)
+const WUSHU_IDS = ['wushu_v3', 'wushu_v2'];
 const S = [];
 let sec = null, n = 0;
 const PFX = { intro_a: 'ia', intro_b: 'ib', verse1: 'va', pre: 'pc', chorus1: 'ca', break_a: 'ba', break_b: 'bb', build: 'bu', drop: 'dr', verse2: 'vb', chorus2: 'cb', outro_a: 'oa', outro_bc: 'ob' };   // letters only, so ids read as letters + running number
@@ -99,7 +101,7 @@ V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Titl
 const FL = [['piano', 11], ['wushu', 12], ['ames', 13], ['violet', 14]];
 V(10, [11, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 FL.forEach(([id, b], i) => {
-  P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02, ...(id === 'wushu' ? { next: { id: 'wushu_v2', opt: { clip0: 1.0, clip1: 1.3 } } } : {}) }, row: 'b10-14' });   // wushu_v2: the landed punch
+  P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02, ...(id === 'wushu' ? { next: { id: WUSHU_IDS, opt: { clip0: 1.0, clip1: 1.3 } } } : {}) }, row: 'b10-14' });   // wushu_v2: the landed punch
   if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 });
 V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14' });
@@ -111,9 +113,11 @@ section('verse1');
 // Step 2 (bars 17-56): every plate shot picks up its plate when work_fable/take2/plates/<id>/ is complete (meta.json and its last
 // frame, or REAL); until then it is a card. Lyric places (lyr) and doorways (door) were measured on the first-frame stills
 // (work_fable/take2/stills/) and on the clips that had landed; see notes/compositor.md "Step 2".
-P(17, 18, 'main_face', 'missing', 'Close three-quarter on her face, eyes open, calm.', { row: 'b17', opt: { lyr: { x0: 0.05, x1: 0.47, align: 'left' } } });
+P(17, 18, 'main_face', 'missing', 'Close three-quarter on her face, eyes open, calm.', { row: 'b17', opt: { lyr: { x0: 0.05, x1: 0.47, align: 'left' },
+  next: { id: 'main_face_v2', opt: { songLock: true, push: 0 } } } });   // film v3: main_face_v2 sings "I split myself a thousand ways", song-locked (meta t0_song)
 P(18, 19, 'main_split', 'missing', 'She steps apart into two, then four (Banach-Tarski: each keeps a whole body). The copies\' bands take lane colours.',
-  { row: 'b18', opt: { clip0: 0.5, clip1: 3.2, push: 0.02 } });   // director: one figure to 0.7 s, two by 1.0, four apart by 2.8
+  { row: 'b18', opt: { clip0: 0.5, clip1: 3.2, push: 0.02,
+    next: { id: 'main_split_v2', opt: { songLock: true } } } });   // film v3: main_split_v2 (the copies sing as they split): song-locked if its meta has t0_song, else clip0/clip1 above until its wiring row   // director: one figure to 0.7 s, two by 1.0, four apart by 2.8
 V(19, 20, 'seq 01', 'From above and behind: eight, sixteen, more run out along their lanes.',
   { code: 'V7', alt: 'K runners + C', row: 'b19', opt: { v7crop: [0.3, 0.0, 0.7, 0.7] } });   // v7's own road lyric (I SPLIT MYSELF...) runs along the bottom left: cropped out
 const CROSS = [
@@ -126,7 +130,8 @@ CROSS.forEach(([id, m, life, c], i) =>
   P(20 + i, 21 + i, id, 'missing', `Crossing ${i + 1} of 4: a cel-drawn branch-Jade runs her lane toward a doorway of light; as she crosses, the whole picture turns into her medium: ${m}.`,
     { code: 'P+C', row: 'b20-23', opt: { push: 0, cross: { life, at: 0.58, end: 0.84, maxSpeed: 1.5, life0: 1.0, ...c }, lyr: { x0: 0.04, x1: 0.5, align: 'left' } } }));
 P(24, 25, 'cross_violet', 'missing', 'The fifth road has no doorway: the violet one runs out into engraved dark, and she keeps going.', { row: 'b24' });
-P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { row: 'b25', opt: { clip0: 2.0, clip1: 4.5, lyr: { y: 'top' } } });   // the light appears from about 2.2 s (director: use 2.0-4.5)
+P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { row: 'b25', opt: { clip0: 2.0, clip1: 4.5, lyr: { y: 'top' },
+  next: { id: 'main_light_v2', opt: {} } } });   // film v3: main_light_v2 (the hands move); clip window from the plates wiring row (item 7)   // the light appears from about 2.2 s (director: use 2.0-4.5)
 P(26, 27, 'main_release', 'missing', 'She opens her hands; the light leaves along the lane.',
   { code: 'P+C', row: 'b26', opt: { lyr: { x0: 0.04, x1: 0.55, align: 'left' },
     lane: { pts: [[0, 0.425], [0.04, 0.417], [0.111, 0.399], [0.181, 0.379], [0.331, 0.338], [0.548, 0.275], [0.595, 0.265]], color: '#FF3D7F', text: 'piano', cap: 30, scroll: -9,
@@ -235,14 +240,15 @@ for (let k = 0; k < 4; k++) {
 const ORCH = ['above', 'side_low_violins', 'above_behind', 'timpani', 'conductor_view', 'basses_side', 'high_wide', 'last_wide'];
 // film v2: the eight shots use the cel plates orch_1..8 raw (no paper pass), time-scaled per notes/orchestra.md revision 3 wiring so the
 // strokes land on beats: [clip0, speed]. Shot 1 stays the 3D arrival (solid paper look) and dissolves over 5 frames at 139.60 into orch_1
-// from 1.0 s (opt.tail); shot 8 is orch_8 to b84 beat 3.5, then the 3D for the rise and the bar-85 hit. ?orch=v7: the v1 route.
+// from 1.0 s (opt.tail); shot 8 is orch_8 to b84 beat 3.5, then the 3D for the rise and the bar-85 hit.
+// film v3 (Jade: "go back to the hatched 3D"): the plates are OFF by default (film.js ORCH_V7); ?orch=plates turns film v2's route back on.
 const ORCH_PLATE = [null, [0.65, 1.45], [1.5, 1.2], [1.55, 1.25], [0.4, 0.93], [1.8, 1.35], [0.3, 1], [0.3, 1]];
 const OV = { v7dir: '/work_fable/take2/v7/orchestra', paperLook: 'orch' };
 for (let k = 0; k < 8; k++) { const b = 81 + (k >> 1), a = k % 2 ? [b, 3] : b, e = k === 7 ? [84, 3.5] : k % 2 ? b + 1 : [b, 3];
   const o = k === 0 ? { ...OV, tail: { id: 'orch_1', at: 139.60, clip0: 1.0, frames: 5 } }
     : { ...OV, next: { id: 'orch_' + (k + 1), kind: 'plate', flag: 'orch', opt: { clip0: ORCH_PLATE[k][0], speed: ORCH_PLATE[k][1], push: 0 } } };
   V(a, e, 'orchestra ' + ORCH[k], `The orchestra of Jades (${k + 1} of 8): ${ORCH[k].replace(/_/g, ' ')}.`, { row: 'b81-84', opt: o }); }
-V([84, 3.5], [85, 2], 'orchestra rise', 'The orchestra of Jades (8 of 8, end): the rise and the bar-85 hit (3D).', { row: 'b81-84', opt: { ...OV } });
+V([84, 3.5], [85, 2], 'orchestra rise', 'The orchestra of Jades (8 of 8, end): the rise and the bar-85 hit (3D).', { row: 'b81-84', opt: { ...OV, seedPrev: true } });   // film v3: shot 8's paper seed, so the 3D runs on through the split without a change of hatching
 V([85, 2], 87, 'seq 09', 'Bass out in b86, snare build: all drop into a low stance; the view skims east.', { row: 'b85-88' });
 for (let k = 0; k < 12; k++) { const half = k >= 4, bar = half ? 88 : 87, beat = half ? 1 + (k - 4) / 2 : 1 + k;
   const nk = k + 1, to = nk === 12 ? 89 : nk >= 4 ? [88, 1 + (nk - 4) / 2] : [87, 1 + nk];
@@ -277,8 +283,11 @@ V(104, 105, '2:59', '1,024 salute the sun. Cut to night on b105.', { row: 'b104'
 section('verse2');
 // lyrics in the empty sky (cream); lane = the violet branch written sparse (merge 0) on the plate's violet line
 const VIO = '#9B6BFF';
+// film v3: vio_wide's feet and own violet road per clip time (tools/track_road.py vio_wide 3): [clip s, lead foot x, foot y, road a, road b, rear foot x]
+const ROAD_VW = [[0.0,0.7397,0.8883,0.7486,0.1852,0.7769],[0.25,0.7111,0.8836,0.749,0.1852,0.7584],[0.5,0.6727,0.8792,0.7495,0.1853,0.7295],[0.75,0.6488,0.8778,0.7497,0.1855,0.7114],[1.0,0.6333,0.8761,0.7492,0.1863,0.707],[1.25,0.6264,0.8728,0.7489,0.1871,0.6955],[1.5,0.6147,0.87,0.7477,0.1887,0.6698],[1.75,0.5914,0.8694,0.7476,0.1893,0.6498],[2.0,0.575,0.8683,0.7481,0.1892,0.6427],[2.25,0.5656,0.8644,0.7497,0.1879,0.6309],[2.5,0.5545,0.8606,0.7502,0.1879,0.6078],[2.75,0.5334,0.8589,0.7507,0.1878,0.5911],[3.0,0.517,0.8578,0.7508,0.1882,0.587],[3.25,0.5105,0.8542,0.75,0.1896,0.5781],[3.5,0.5038,0.8508,0.7495,0.1907,0.5567],[3.75,0.4845,0.85,0.7509,0.1896,0.5388],[4.0,0.4681,0.8497,0.7521,0.189,0.5317],[4.25,0.4588,0.8467,0.7517,0.1899,0.5238],[4.5,0.4537,0.8431,0.7522,0.1898,0.5041],[4.75,0.435,0.8414,0.7531,0.1892,0.4862],[5.0,0.4147,0.8417,0.7542,0.1883,0.4791]];
 P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engraved Milky Way. Chip: ● jade/rare-earth  ctx 97%.',
-  { ov: ['chip:● jade/rare-earth  ctx 97%'], row: 'b105-106', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' }, lane: { pts: [[0.27, 0.79], [1, 0.975]], color: VIO, text: 'violet', cap: 20, scroll: -6, under: 0.2 } } });
+  { ov: ['chip:● jade/rare-earth  ctx 97%'], row: 'b105-106', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' }, road: { track: ROAD_VW, color: VIO, text: 'violet', cap: 20 },
+    next: { id: 'vio_wide_v2', opt: { road: { track: null, color: VIO, text: 'violet', cap: 20 } } } } });   // film v3 item 4: the lane written only as far as she has got (src/film.js roadMask/roadLane). vio_wide_v2 (she runs, slowing): measure its track with tools/track_road.py and put it in place of null (a null track = no road drawn)
 P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, lane: { pts: [[0, 0.955], [1, 0.955]], color: VIO, text: 'violet', cap: 22, scroll: -10, under: 0.2 } } });
 P(108, 109, 'vio_close', 'missing', 'Her profile, the bun and two pencils.', { row: 'b107-108', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });   // clip 0-1.7 s, before the blink near 2.5 s
 P(109, 111, 'vio_lookback', 'missing', 'She stops and looks back east: far off, a sliver of sunrise in full colour.', { row: 'b109-110', opt: { clip0: 0, clip1: 2.5, lyr: { y: 'top', x0: 0.42, x1: 0.97, align: 'right' } } });   // clip 0-2.5 s: the sunrise stays a far sliver
@@ -297,6 +306,13 @@ const TYPE_LINES = ['HANDOFF.md', 'Read this first.', 'Where things stand.', 'Wh
 const TYPE_OLD = { lines: TYPE_LINES, at: [0.305, 0.12], px: 34, lead: 50, beats: [1, 2, 3, 5, 7], dur: 0.6, cloud: 0.6, from: [0.57, 0.1] };
 const TYPE_NEW = { ...TYPE_OLD, at: [0.035, 0.17], cloud: 0.45, from: [0.61, 0.485] };
 const REL = { to: [0.93, 0.5], top: 0.04, arrive: 117, close: 1.25 };
+// film v3 item 5 (Jade: "it would be cool if the violet light emerged from her hand"; src/film.js palmRelease): on vio_release2 the typed
+// lines gather down into the notebook as she shuts it (clip 1.0-1.4), the light then grows in her open palm (1.95-2.2) and rises a little
+// above it, lifts off at 2.3 and arcs up over the frame and down to the sunrise, landing on the b117 downbeat (clip 2.70). book / palm:
+// [clip s, x, y] plate fractions, measured by eye on gridded crops of the plate's frames (dev/v3/rel/palm_grid.jpg)
+const PALM_REL = { gather: [1.0, 0.26, 0.035], emerge: [1.95, 2.2], lift: 2.3, hover: 0.045,
+  book: [[0.9, 0.545, 0.50], [1.2, 0.552, 0.513], [1.4, 0.567, 0.547], [3.0, 0.567, 0.547]],
+  palm: [[1.7, 0.637, 0.469], [1.85, 0.639, 0.4375], [2.0, 0.637, 0.399], [2.15, 0.629, 0.368], [2.3, 0.637, 0.363], [2.5, 0.643, 0.353], [2.7, 0.646, 0.356], [3.0, 0.636, 0.356]] };
 const LYR_NEW = { x0: 0.03, x1: 0.37, align: 'left' };   // on vio_write2 / vio_release2 her boots reach x 0.38: the lyric keeps left of them
 // (the release path: up over the top of the frame and down to the sunrise right of her back, never across her)
 P(114, 116, 'vio_write', 'missing', 'She writes; in the sky, typed line by line on the beat in violet light: HANDOFF.md / Read this first. / Where things stand. / What it cost to learn. / What comes next. ctx 99%.',
@@ -304,9 +320,13 @@ P(114, 116, 'vio_write', 'missing', 'She writes; in the sky, typed line by line 
     next: { id: 'vio_write2', opt: { clip0: 0, type: TYPE_NEW, lyr: LYR_NEW } } } });
 P(116, 118, 'vio_release', 'missing', 'She lets it go: the block closes to one line of light and leaves east. Hit on b117, then the drums cut. ctx 100%.',
   { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, type: { ...TYPE_OLD, release: REL },
-    next: { id: 'vio_release2', opt: { clip0: 1.0, clip1: 4.4, lyr: LYR_NEW, type: { ...TYPE_NEW, release: { ...REL, to: [0.97, 0.55], ctrl: [[0.3, -0.14], [1.12, -0.14]] } } } } } });
-P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap; the lines of her figure settle into the star field. Chip: detached, not merged. The stars keep twinkling.',
-  { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
+    next: { id: 'vio_release2', opt: { clip0: 1.0, clip1: 4.4, lyr: LYR_NEW, type: { ...TYPE_NEW, release: { ...REL, to: [0.97, 0.55], ctrl: [[0.62, -0.14], [1.08, -0.12]], ...PALM_REL } } } } } });
+// film v3 item 6: she atomizes completely (src/film.js atomize(); data tools/atomize.py -> kit/vio_still/atom). The clean plate is vio_empty
+// (plates agent; meta.frame = the plate frame it was made from) when it lands, else a stand-in inpaint of frame 1 (atom/standin.jpg).
+// settle (the v2 stars along her outline) is the fallback when the atom data is missing.
+P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap, then atomizes: her figure breaks into points of light from the edges inward that drift out and up to take their places among the stars; the last to go is the pale-blue circle; the rim is empty. Chip: detached, not merged.',
+  { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' },
+    atom: { dir: '/work_fable/take2/kit/vio_still/atom', empty: 'vio_empty', standin: '/work_fable/take2/kit/vio_still/atom/standin.jpg', lead: 0.1, tail: 0.45, soft: 0.06 }, settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
 
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');
@@ -370,8 +390,15 @@ export const FLOAT = { at: 2.0, track: [[0, [0.555, 0.18], [0.297, 0.894]], [2.0
 // film v2: plates replaced wherever they are used by id (crossing doorways, flashes, windows, the fold sheet), when the new one exists.
 // focus = where she is in the new plate (cover crops). The proof range: only the b30 life shot (PROOF_A), not the b33-37 grid (the grid's
 // bar-37 look-back needs the old clip's turn; wushu_v2 has none)
-export const PLATE_ALIAS = { wushu: { id: 'wushu_v2', focus: [0.3, 0.3] } };
-export const PROOF_A = { wushu: { id: 'wushu_v2', land: 1.0, landBeat: 1, side: 'left' } };   // she stands left in wushu_v2 (face x 0.27)   // the punch lands at clip 1.0 s: put it on beat 2 of the 2-beat shot
+export const PLATE_ALIAS = { wushu: { id: WUSHU_IDS, focus: [0.3, 0.3] } };
+export const PROOF_A = { wushu: { id: WUSHU_IDS, land: 1.0, landBeat: 1, side: 'left' } };   // she stands left in wushu_v2 (face x 0.27)   // the punch lands at clip 1.0 s: put it on beat 2 of the 2-beat shot
+// film v3: a life plate retaken and swapped EVERYWHERE it is used (bars 28-32, the b33-37 grid and its bar-37 turn, the fold sheet, the
+// b54-55 window, flashes): the band at Hacker Dojo, not in a bar. side/tone (lives.js) from the plates wiring row when they change;
+// focus = her place in the new plate (cover crops). Picked up when work_fable/take2/plates/band_v2 is complete.
+export const LIFE_SWAP = { band: { id: 'band_v2', side: null, tone: null, focus: null } };
+// film v3: the chorus 1 sprint (b41-42) from hero_paper_v2 when it lands: she sings "Merge me back to main" as she runs, so it is
+// song-locked (clip time = song time - meta t0_song). opt overrides the hero crop/slab/gap (zoom, fx, fy, rows, gap) from the wiring row.
+export const HERO_NEXT = { id: 'hero_paper_v2', opt: {} };
 export const SHOTS = S;
 
 // ------------------------------------------------------------------ resolve bar/beat to song time

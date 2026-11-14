@@ -36,6 +36,9 @@ def patch(a, b):
 patch("const url = (id, i) => `${PLATES}/${id}/frames/f_${String(i + 1).padStart(4, '0')}.jpg`;",
       "const pdir = (id) => (o.dirs && o.dirs[id]) || `${PLATES}/${id}`;   // take two: o.dirs overrides a plate's folder\nconst url = (id, i) => `${pdir(id)}/frames/f_${String(i + 1).padStart(4, '0')}.jpg`;")
 # hero: nearest frame when it is not slowed (o.heroBlend false), as every take-two plate
+# film v3: o.hero.c0 shifts the hero's clip time (hero_paper_v2 is song-locked: c0 = bar 41 - its meta t0_song)
+patch("P.push({ id: 'hero', c: softcap(t - TL.t41, (META.hero.n - 1) / META.hero.fps),",
+      "P.push({ id: 'hero', c: softcap(Math.max(0, t - TL.t41 + ((o.hero && o.hero.c0) || 0)), (META.hero.n - 1) / META.hero.fps),")
 patch("rect: full, zoom: (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, blend: true }); sc.phase = 'E'; return sc; }",
       "rect: full, zoom: (o.hero ? o.hero.zoom : 1) * (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, fx: o.hero ? o.hero.fx : 0.5, fy: o.hero ? o.hero.fy : 0.5, blend: o.heroBlend !== false }); sc.phase = 'E'; return sc; }")
 # the hero's slab rows and the written lane's gap where her legs cross it (o.hero = { zoom, fx, fy, rows, gap: [x0, x1] })

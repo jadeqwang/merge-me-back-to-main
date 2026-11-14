@@ -15,6 +15,8 @@ OUT=work_fable/take2/out; mkdir -p "$OUT"
 MASTER="$OUT/film_${TAG}_master.mp4"
 # frames kept for the single-frame check: plate, cards, proof (A, grid, merge, hero), flash, last
 KEEP=15,870,1600,1900,1985,2205,2600,4000,4530,6000,8483
+# film v3: the terminal shot (b153-156) shows the branch as it is now: recapture its git log before rendering
+python3 fable/take2/tools/gitlog.py
 rm -rf "$OUT/keep_$TAG"
 node fable/take2/tools/render.mjs --mp4 "$MASTER" ${RANGE:+--range "$RANGE"} ${QUERY:+--q "$QUERY"} --audio "$AUDIO" --workers "${WORKERS:-6}" --crf 16 \
   --keep "$KEEP" --keepdir "$OUT/keep_$TAG"

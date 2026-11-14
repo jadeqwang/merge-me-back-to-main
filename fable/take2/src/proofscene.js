@@ -181,7 +181,7 @@ function scene(t) {
   if (t >= TL.tEnd - HF) { sc.black = true; return sc; }
   const full = { x: 0, y: 0, w: W, h: H };
   if (on(t, TL.t41)) { const f = fr(t, TL.t41), punch = f <= 8 ? 1 + 0.04 * Math.pow(1 - f / 8, 2) : 1;
-    P.push({ id: 'hero', c: softcap(t - TL.t41, (META.hero.n - 1) / META.hero.fps), rect: full, zoom: (o.hero ? o.hero.zoom : 1) * (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, fx: o.hero ? o.hero.fx : 0.5, fy: o.hero ? o.hero.fy : 0.5, blend: o.heroBlend !== false }); sc.phase = 'E'; return sc; }
+    P.push({ id: 'hero', c: softcap(Math.max(0, t - TL.t41 + ((o.hero && o.hero.c0) || 0)), (META.hero.n - 1) / META.hero.fps), rect: full, zoom: (o.hero ? o.hero.zoom : 1) * (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, fx: o.hero ? o.hero.fx : 0.5, fy: o.hero ? o.hero.fy : 0.5, blend: o.heroBlend !== false }); sc.phase = 'E'; return sc; }
   if (!on(t, TL.grid)) { const s = shotAt(t) || TL.shots[0]; sc.shot = s; sc.phase = 'A'; const AP = o.aPlates && o.aPlates[s.id]; P.push({ id: AP ? AP.key : s.id, c: AP ? Math.max(0, AP.clip0 + (t - s.t0)) : clipA(s, t), rect: full, zoom: 1 + s.push * seg(t, s.t0, s.t1), fy: clamp01(0.45 + (byId[s.id].yshift || 0)), blend: true }); return sc; }
   sc.phase = t < TL.t38 - HF ? 'B' : 'D';
   const GS = gridState(t); sc.grid = GS;

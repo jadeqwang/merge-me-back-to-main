@@ -10,7 +10,7 @@
 // Layers: source (proof | plate | v7 [paper pass] | card) -> grain + vignette -> overlays (chip, counter, title) -> lyrics -> HUD.
 // Source kinds: see shots.js. A missing plate, or a v7 time outside the delivered sequence, draws as a labelled card.
 import { loadTiming, clamp01, lerp, seg, ease } from './timing.js';
-import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A } from '../shots.js';
+import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT } from '../shots.js';
 import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
@@ -28,7 +28,9 @@ const PROOF_PLATES = '/work_fable/proof/plates';
 const V7DIR = Q.get('v7dir') || '/work_fable/take2/v7/full';
 const HUD = Q.get('hud') !== '0', USE_V7 = Q.get('v7') !== '0', USE_PAPER = Q.get('paper') !== '0', ALLCARDS = Q.get('cards') === '1', LANES = Q.get('lanes') !== '0';
 const PROOFBUG = Q.get('proofbug') === '1', LIKENESS = Q.get('likeness') !== '0';
-const ORCH_V7 = Q.get('orch') === 'v7';   // film v2: ?orch=v7 = the orchestra bars as v1 (3D through the paper look), not the orch_* plates
+// film v3 (Jade on v2: "go back to the hatched 3D"): the orchestra bars are the revision-3 3D through the solid paper look by default;
+// ?orch=plates brings back film v2's route (the cel plates orch_1..8 and shot 1's dissolve into orch_1)
+const ORCH_V7 = Q.get('orch') !== 'plates';
 let OUTRO = null, MAPF = null;
 const canvas = document.getElementById('c'); canvas.width = W; canvas.height = H;
 const g = canvas.getContext('2d', { willReadFrequently: true, alpha: false });
@@ -91,6 +93,7 @@ async function findPlate(id) {
     const b = await bitmap(`${p.dir}/frames/f_0001.jpg`); p.w = b.width; p.h = b.height; PLATE[id] = p; break; }
   return PLATE[id];
 }
+async function firstPlate(ids) { for (const id of [].concat(ids)) if (await findPlate(id)) return id; return null; }
 // runner kit (shots.js kind 'kit', src/kit.js): KITX = makeKit(...) at boot when fable/take2/kit.json loads
 let KITX = null;
 const plateUrl = (p, i) => `${p.dir}/frames/f_${String(i + 1).padStart(4, '0')}.jpg`;
@@ -381,6 +384,26 @@ function lane(t, sc) {
   drawWrittenLane(g, pts, { text: laneText(L.text), color: L.color || MAIN, cap: (L.cap || 22) * S, scroll: (L.scroll || 0) * (t - sc.s.t0), merge: L.merge || 0, under: L.under === undefined ? 0.35 : L.under, upto, from });
 }
 
+// film v3, b105-106 (vio_wide): the violet lane is written only as far as she has got ("This branch may never find the way").
+// opt.road = { track: [[clip s, lead foot x, foot y, road a, road b, rear foot x], ...] (plate fractions, tools/track_road.py; the plate's
+// own violet road is y = a + b x), text, cap, color, fade }. mask(): ahead of her lead foot the plate's road is painted out (the ground
+// is pure black there), fading into her foot over `fade`; lane(): behind her rear foot the road is written with the branch's commit
+// message, the glyphs fixed on the ground (no scroll), so new text appears at its near end as she walks on; a faint pen point of
+// violet light glows on the road just under her lead foot: the branch is being written as she goes, and nothing exists ahead.
+function roadAt(sc, t) { const R = sc.s.opt.road, K = R.track, cm = clipMap(sc.s), c = cm.c0 + (t - sc.s.t0) * cm.sp; let i = 0;
+  while (i < K.length - 2 && c > K[i + 1][0]) i++; const a = K[i], b = K[i + 1], u = clamp01((c - a[0]) / (b[0] - a[0])), q = a.map((v, k) => lerp(v, b[k], u));
+  const im = sc.imgs[0], P = (x) => plateToScreen(im, x, q[3] + q[4] * x), left = K[K.length - 1][1] < K[0][1];
+  return { lead: q[1], rear: q[5], P, left }; }
+function roadMask(t, sc) { const R = sc.s.opt.road; if (!R.track) return; const r = roadAt(sc, t), fade = R.fade || 0.018, w = (R.mask || 0.026) * H;
+  const far = r.left ? -0.05 : 1.05, sg = r.left ? 1 : -1, a = r.P(far), f0 = r.P(r.lead + sg * 0.004), b = r.P(r.lead + sg * (0.004 + fade));   // opaque to just under her toe, fading out under the shoe (nothing of the road shows ahead of her)
+  g.save(); const gr = g.createLinearGradient(f0.x, f0.y, b.x, b.y); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.strokeStyle = gr; g.lineWidth = w; g.lineCap = 'butt'; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); g.restore(); }
+function roadLane(t, sc) { const R = sc.s.opt.road; if (!R.track) return; const r = roadAt(sc, t), x0 = r.left ? -0.05 : 1.05, x1 = r.left ? 1.05 : -0.05;
+  const p0 = r.P(Math.min(x0, x1)), p1 = r.P(Math.max(x0, x1)), len = Math.hypot(p1.x - p0.x, p1.y - p0.y), st = r.P(r.rear + (r.left ? 0.008 : -0.008));
+  const at = Math.hypot(st.x - p0.x, st.y - p0.y);
+  drawWrittenLane(g, [p0, p1], { text: laneText(R.text), color: R.color || MAIN, cap: (R.cap || 20) * S, scroll: 0, merge: 0, under: R.under === undefined ? 0.2 : R.under, ...(r.left ? { from: at } : { upto: at }) });
+  const pen = r.P(r.lead), br = 0.75 + 0.25 * Math.sin(t * 9); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(pen.x, pen.y, 22 * S, R.color || MAIN, 0.6 * br); glowAt(pen.x, pen.y, 6 * S, '#FFFFFF', 0.7 * br); g.restore(); void len; }
+
 // b51-52: the fan of twelve afterimages (shots.js opt.fan): copies of her own cut-out (matte of the plate, same frame), each tinted in a
 // life's lane colour, rotated about a pivot low on her body; the fan opens over the first beat, then one folds into her every half beat
 // from beat 1.5 (twelve folds by beat 7), each with a short flash of its colour on her outline. She is redrawn on top: her face stays clear.
@@ -552,6 +575,7 @@ function typed(t, sc) {
     if (cur >= 0) { const n = shown[cur], cx = B.x + Math.round(g.measureText(o.lines[cur].slice(0, n)).width) + 4 * S, y = B.y + B.cap + cur * B.lead;
       if (n < o.lines[cur].length || Math.floor(t * 2.5) % 2 === 0) { g.save(); g.shadowColor = VIO_GLOW; g.shadowBlur = 14 * S; g.fillStyle = 'rgba(222,208,255,0.9)'; g.fillRect(cx, y - B.cap, Math.round(o.px * 0.55 * S), Math.round(B.cap * 1.15)); g.restore(); } }
     g.restore(); return; }
+  if (R.palm) { palmRelease(t, sc, B, cloud); g.restore(); return; }
   // release: close (lines converge on the block's middle and thin to one bright line), then the line of light leaves east
   const ta = T.bar(R.arrive), close = R.close || 1.25, kc = ease.io(clamp01(ub / close)), mid = B.y + B.h / 2;
   if (kc < 1) { cloud(1 - kc);
@@ -575,6 +599,55 @@ function typed(t, sc) {
   g.translate(p.x, p.y); g.rotate(ang); g.shadowColor = VIO_GLOW; g.shadowBlur = 26 * S; g.fillStyle = 'rgba(232,222,255,0.95)'; g.fillRect(-len / 2, -2 * S, len, 4 * S); g.restore();
 }
 
+// film v3, b116-117 (vio_release2; Jade: "it would be cool if the violet light emerged from her hand"). type.release.palm mode:
+//   gather [c0, dur, stagger] (clip s): as she shuts the notebook, each typed line flows down along a curve into it (R.book: the
+//     notebook per clip time, plate fractions), shrinking, with a short trail; each lands with a small flare, the cloud goes with them;
+//   then a faint violet glow breathes at the notebook while her hand leaves it;
+//   emerge [c0, c1]: the light grows in her open palm (R.palm: the palm per clip time, measured on the plate's own frames) and rises
+//     a little above it (R.hover, fraction of H) until lift (clip s); then it leaves: up over the top of the frame and down to the
+//     sunrise (R.to, cubic through R.ctrl, frame fractions), accelerating, arriving on the downbeat of bar R.arrive with the flash and
+//     horizon glow as before.
+function trackAt(K, c) { let i = 0; while (i < K.length - 2 && c > K[i + 1][0]) i++; const a = K[i], b = K[i + 1], u = clamp01((c - a[0]) / (b[0] - a[0])); return [lerp(a[1], b[1], u), lerp(a[2], b[2], u)]; }
+function palmRelease(t, sc, B, cloud) {
+  const s = sc.s, o = s.opt.type, R = o.release, cm = clipMap(s), c = cm.c0 + (t - s.t0) * cm.sp, im = sc.imgs[0];
+  const PT = (K, cc) => { const q = trackAt(K, cc); return plateToScreen(im, q[0], q[1]); };
+  const [g0, gd, gs] = R.gather, nb = PT(R.book, c), n = o.lines.length, gEnd = g0 + (n - 1) * gs + gd;
+  const ta = T.bar(R.arrive), tAt = (cc) => s.t0 + (cc - cm.c0) / cm.sp;
+  // 1. the lines flow down into the notebook
+  if (c < gEnd + 0.25) {
+    cloud(1 - clamp01((c - g0) / (gEnd - g0)));
+    g.save(); g.font = B.f; g.textBaseline = 'alphabetic';
+    o.lines.forEach((l, k) => { const p = clamp01((c - g0 - k * gs) / gd), wl = g.measureText(l).width;
+      const sx = B.x + wl / 2, sy = B.y + B.cap / 2 + k * B.lead, cx = lerp(sx, nb.x, 0.75), cy = sy - 0.02 * H;
+      const Q = (e) => ({ x: (1 - e) * (1 - e) * sx + 2 * e * (1 - e) * cx + e * e * nb.x, y: (1 - e) * (1 - e) * sy + 2 * e * (1 - e) * cy + e * e * nb.y });
+      if (p >= 1) { const f = (c - g0 - k * gs - gd) / 0.25; if (f < 1) { g.save(); g.globalCompositeOperation = 'lighter'; glowAt(nb.x, nb.y, (14 + 22 * (1 - f)) * S, VIO_GLOW, 0.8 * (1 - f)); g.restore(); } return; }
+      const e = ease.in(p);
+      if (p > 0) for (let j = 4; j >= 1; j--) { const ej = Math.max(0, e - 0.07 * j), q = Q(ej); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(q.x, q.y, (8 + 10 * (1 - ej)) * S, VIO_GLOW, 0.35 * (1 - j / 5)); g.restore(); }
+      const q = Q(e), sz = lerp(1, 0.05, e); g.save(); g.translate(Math.round(q.x), Math.round(q.y)); g.scale(sz, sz); vioText(l, -wl / 2, B.cap / 2, 1 - 0.3 * e, 1 + e); g.restore(); });
+    g.restore(); }
+  // 2. the glow in the shut notebook, breathing, handing over to her palm
+  const [e0, e1] = R.emerge, lift = R.lift;
+  if (c >= gEnd && c < e1) { const a = clamp01((c - gEnd) / 0.2) * (1 - clamp01((c - e0) / (e1 - e0))) * (0.75 + 0.25 * Math.sin(t * 7));
+    g.save(); g.globalCompositeOperation = 'lighter'; glowAt(nb.x, nb.y, 26 * S, VIO_GLOW, 0.55 * a); g.restore(); }
+  // 3. the light comes out of her palm, rises a little, then leaves east
+  if (c < e0) return;
+  const tl = tAt(lift), up = (R.hover || 0.04) * H;
+  if (t < tl) { const a = ease.out(clamp01((c - e0) / (e1 - e0))), pa = PT(R.palm, c), h = up * ease.io(clamp01((c - e0) / (lift - e0)));
+    const x = pa.x, y = pa.y - h, br = 0.9 + 0.1 * Math.sin(t * 11);
+    g.save(); g.globalCompositeOperation = 'lighter';
+    glowAt(pa.x, pa.y, 34 * S * a, VIO_GLOW, 0.35 * a);                    // the light on her palm
+    glowAt(x, y, (14 + 46 * a) * S, VIO_GLOW, 0.9 * a * br); glowAt(x, y, (4 + 8 * a) * S, '#FFFFFF', 0.95 * a); g.restore(); return; }
+  const p0 = PT(R.palm, lift), c0 = { x: p0.x, y: p0.y - up }, c2 = { x: R.to[0] * W, y: R.to[1] * H }, K = R.ctrl.map(([x, y]) => ({ x: x * W, y: y * H }));
+  const q = (k) => { const a = (1 - k) ** 3, b = 3 * k * (1 - k) ** 2, cc = 3 * k * k * (1 - k), d = k ** 3; return { x: a * c0.x + b * K[0].x + cc * K[1].x + d * c2.x, y: a * c0.y + b * K[0].y + cc * K[1].y + d * c2.y }; };
+  if (on(t, ta)) { const f = fr(t, ta); if (f <= 1) { g.fillStyle = `rgba(235,225,255,${f === 0 ? 0.8 : 0.4})`; g.fillRect(0, 0, W, H); }   // the hit
+    g.save(); g.globalCompositeOperation = 'lighter'; glowAt(c2.x, c2.y, (30 + 60 * Math.max(0, 1 - f / 20)) * S, VIO_GLOW, 0.5 + 0.5 * Math.max(0, 1 - f / 20)); g.restore(); return; }
+  const u = clamp01((t - tl) / (ta - tl)), e = u * u * (1.6 - 0.6 * u);   // leaves gently, arrives fast (on the downbeat)
+  g.save(); g.globalCompositeOperation = 'lighter';
+  if (u < 0.25) { const pa = PT(R.palm, c); glowAt(pa.x, pa.y, 34 * S, VIO_GLOW, 0.35 * (1 - u / 0.25)); }   // the palm's after-glow
+  for (let j = 10; j >= 1; j--) { const qj = q(Math.max(0, e - 0.022 * j)); glowAt(qj.x, qj.y, (8 + 3 * (10 - j)) * S * (1 - 0.4 * e), VIO_GLOW, 0.3 * (1 - j / 11)); }
+  const p = q(e); glowAt(p.x, p.y, (44 - 14 * e) * S, VIO_GLOW, 0.9); glowAt(p.x, p.y, 10 * S, '#FFFFFF', 0.95); g.restore();
+}
+
 // vio_still: she becomes stars. Her figure stays at full brightness; along her outline star points break away (each edge cell gets its own
 // moment through the three bars), drift outward from her centre and settle among the sky's stars, twinkling (12 fps steps). The matte
 // also took the dish and its ring, so only the part inside settle.poly (plate fractions, set by hand on the clip) counts as her.
@@ -596,13 +669,94 @@ function settle(t, sc) {
     const tw = 0.55 + 0.45 * Math.sin(step * 0.9 + h * 40), px = (i + 0.5) * W / gw + dx * drift, py = (j + 0.5) * H / gh + dy * drift;
     const rad = (2.5 + 4 * r()) * S * (0.8 + 0.4 * tw), a = (k < 0.15 ? k / 0.15 : 1) * 0.8 * tw;
     glowAt(px, py, rad, h < 0.25 ? '#9B6BFF' : '#EDE6FF', a); }
-  // the sky keeps twinkling: glints on the plate's brightest cells above the horizon, outside her
+  g.restore(); skyGlints(t, sc);
+}
+// the sky keeps twinkling: glints on the plate's brightest cells above the horizon, outside her
+function skyGlints(t, sc) {
+  const im = sc.imgs[0], gw = 240, gh = 135, step = Math.floor(t * 12 + 1e-6); if (!SETC) { SETC = document.createElement('canvas'); SETC.width = gw; SETC.height = gh; }
+  const x = SETC.getContext('2d', { willReadFrequently: true }); g.save(); g.globalCompositeOperation = 'lighter';
   const pb = READY.get(im.url); x.clearRect(0, 0, gw, gh); x.drawImage(pb, 0, 0, gw, gh); const P = x.getImageData(0, 0, gw, gh).data;
   for (let j = 1; j < gh * 0.45; j++) for (let i = 1; i < gw - 1; i++) { const o = (j * gw + i) * 4; if (P[o] < 150) continue;
     const r0 = mulberry32(i * 3301 + j * 7919)(); if (r0 > 0.25) continue; const tw = Math.max(0, Math.sin(step * 0.7 + r0 * 60)); if (tw < 0.3) continue;
     const px = (i + 0.5) * W / gw, py = (j + 0.5) * H / gh, rr = (2 + 5 * tw) * S;
     g.strokeStyle = `rgba(240,236,255,${0.6 * tw})`; g.lineWidth = 1.2 * S; g.beginPath(); g.moveTo(px - rr * 1.6, py); g.lineTo(px + rr * 1.6, py); g.moveTo(px, py - rr * 1.6); g.lineTo(px, py + rr * 1.6); g.stroke(); glowAt(px, py, rr, '#EDE6FF', 0.5 * tw); }
   g.restore();
+}
+
+// film v3, b118-120 (vio_still; Jade: "it would be interesting to see if we can have her fully atomize here"): she atomizes completely.
+// Data from tools/atomize.py (kit/vio_still/atom/, all in plate-frame-1 pixels): track.json (the clip dollies back: A_k maps frame-1
+// coords to frame k), release.png (her release time tau per pixel: outline first, inward by depth with a ragged front, the pale-blue
+// circle on her back last; a halo round her outline at tau 0), particles.json (her points every 3 px with tau and her own colour).
+// Release u runs 0..1 from the shot start + lead to the shot end - tail (linear). Per frame:
+//   - the clean plate (vio_empty when it lands: still.jpg, matching plate frame meta.frame, default 1; else the stand-in) is warped to
+//     the frame (A_k inv(A_ref)) and shown through a mask that opens pixel by pixel as u passes each pixel's tau (soft, 0.06 wide), so no
+//     part of her pops and no outline is left (the halo goes first);
+//   - each of her points is born at its tau where the plate pixel fades, first as a square of her own colour (source-over, so it
+//     replaces the pixel), then it shrinks to a point of light (white for light pixels, violet for violet/navy/dark ones), drifts out
+//     from her centre and up (a little east), easing to rest; one in six stays as a star and twinkles to the end, the rest fade;
+//   - the circle's points do not stay: they rise as one faint violet mote that drifts east and leaves the frame at the cut (b121, the
+//     violet light streaking east, is where she went).
+const ATOM = {};
+async function loadAtom(o) { const d = o.dir; if (d in ATOM) return ATOM[d]; ATOM[d] = null;
+  const tr = await json(`${d}/track.json`), pj = await json(`${d}/particles.json`); if (!tr || !pj) return null;
+  const rr = await fetch(`${d}/release.png`).catch(() => null); if (!rr || !rr.ok) return null; const rel = await createImageBitmap(await rr.blob(), { premultiplyAlpha: 'none' });   // own bitmap (the LRU cache closes evicted ones)
+  const ep = await findPlate(o.empty); const mf = ep && String(ep.meta.matches || '').match(/f_(\d+)/), emptyUrl = ep ? `${ep.dir}/still.jpg` : o.standin, ref = ep ? ep.meta.frame || (mf ? +mf[1] : 1) : 1;   // vio_empty meta: "matches": "vio_still f_0121"
+  const cp = pj.pts.filter((p) => p[2] >= 0.82), cc = cp.length ? [cp.reduce((a, p) => a + p[0], 0) / cp.length, cp.reduce((a, p) => a + p[1], 0) / cp.length] : pj.centre;
+  ATOM[d] = { tr, pts: pj.pts, centre: pj.centre, circle: cc, step: pj.step, rel, emptyUrl, ref, real: !!ep }; return ATOM[d]; }
+const aff = (A, x, y) => [A[0] * x + A[1] * y + A[2], A[3] * x + A[4] * y + A[5]];
+const affMul = (A, B) => [A[0] * B[0] + A[1] * B[3], A[0] * B[1] + A[1] * B[4], A[0] * B[2] + A[1] * B[5] + A[2], A[3] * B[0] + A[4] * B[3], A[3] * B[1] + A[4] * B[4], A[3] * B[2] + A[4] * B[5] + A[5]];
+const affInv = (A) => { const det = A[0] * A[4] - A[1] * A[3], a = A[4] / det, b = -A[1] / det, d = -A[3] / det, e = A[0] / det; return [a, b, -(a * A[2] + b * A[5]), d, e, -(d * A[2] + e * A[5])]; };
+let ATC = null, ATE = null;
+function atomize(t, sc) {
+  const s = sc.s, o = s.opt.atom, D = ATOM[o.dir], im = sc.imgs[0], pb = READY.get(im.url), eb = READY.get(D.emptyUrl); if (!pb || !eb) return;
+  const k = +(im.url.match(/f_(\d{4})\.jpg$/) || [0, 1])[1], Ak = D.tr.A[String(k)] || D.tr.A['1'];
+  const cr = cover(pb.width, pb.height, W, H, im.zoom || 1, im.fo[0], im.fo[1]), C = [W / cr.sw, 0, -cr.sx * W / cr.sw, 0, H / cr.sh, -cr.sy * H / cr.sh];
+  const M = affMul(C, Ak);                                                   // frame-1 plate px -> screen
+  const ta = s.t0 + (o.lead || 0.1), tb = s.t1 - (o.tail || 0.45), u = clamp01((t - ta) / (tb - ta)), tOf = (tau) => ta + tau * (tb - ta), wd = o.soft || 0.06;
+  // 1. the mask: released fraction per pixel, at 1/4 resolution
+  const mw = W / 4 | 0, mh = H / 4 | 0; if (!ATC) { ATC = document.createElement('canvas'); ATC.width = mw; ATC.height = mh; ATE = document.createElement('canvas'); ATE.width = W; ATE.height = H; }
+  const mx = ATC.getContext('2d', { willReadFrequently: true }); mx.setTransform(1, 0, 0, 1, 0, 0); mx.clearRect(0, 0, mw, mh);
+  mx.setTransform(M[0] / 4, M[3] / 4, M[1] / 4, M[4] / 4, M[2] / 4, M[5] / 4); mx.imageSmoothingEnabled = true; mx.drawImage(D.rel, 0, 0); mx.setTransform(1, 0, 0, 1, 0, 0);
+  const id = mx.getImageData(0, 0, mw, mh), q = id.data;
+  for (let i = 0; i < q.length; i += 4) { const a = q[i + 3]; if (!a) continue; const tau = Math.max(0, q[i] - 1) / 254;
+    const r = clamp01((u - tau) / wd + 0.5), v = r * r * (3 - 2 * r); q[i] = q[i + 1] = q[i + 2] = 255; q[i + 3] = Math.round(a * v); }
+  mx.putImageData(id, 0, 0);
+  // 2. the clean plate through it
+  const ex = ATE.getContext('2d'); ex.setTransform(1, 0, 0, 1, 0, 0); ex.globalCompositeOperation = 'source-over'; ex.clearRect(0, 0, W, H);
+  const Ae = affMul(M, affInv(D.tr.A[String(D.ref)] || D.tr.A['1'])), sx = pb.width / eb.width;   // empty still px -> screen (stills at the plate's size, else scaled)
+  ex.setTransform(Ae[0] * sx, Ae[3] * sx, Ae[1] * sx, Ae[4] * sx, Ae[2], Ae[5]); ex.imageSmoothingQuality = 'high'; ex.drawImage(eb, 0, 0); ex.setTransform(1, 0, 0, 1, 0, 0);
+  ex.globalCompositeOperation = 'destination-in'; ex.imageSmoothingEnabled = true; ex.drawImage(ATC, 0, 0, W, H); g.drawImage(ATE, 0, 0);
+  // 3. her points
+  const sc1 = Math.hypot(M[0], M[3]), cell = D.step * sc1, [cx, cy] = D.centre, step12 = Math.floor(t * 12 + 1e-6);
+  const young = [], light = [];
+  for (const P of D.pts) { const [x0, y0, tau, r0, g0, b0, sd] = P, tb0 = tOf(tau); if (t < tb0 - 0.12) continue; const age = t - tb0;
+    const circ = tau >= 0.82, lum = (0.3 * r0 + 0.59 * g0 + 0.11 * b0) / 255, vio = (b0 > g0 + 25 && r0 > g0) || lum < 0.35;
+    // drift in plate-frame-1 px: out from her centre, up, a little east; eases to rest over 1.8 s
+    let dx = x0 - cx, dy = y0 - cy; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    const rr = mulberry32(Math.floor(sd * 1e6)), star = sd < 0.1 && !circ, r1 = rr(), r2 = rr(), r3 = rr();
+    // a star rises to a place in the sky (above y 0.08-0.5 of the frame-1 plate, always at least 60 px up); the others drift and fade
+    const sky = Math.min(y0 - 60 - 120 * r1, (0.08 + 0.42 * r2) * D.tr.h), rise = star ? y0 - sky : circ ? 120 : 40 + 110 * r1;
+    const dist = (circ ? 40 : 30 + 150 * r1) * ease.out(clamp01(age / 1.8)), up = rise * ease.out(clamp01(age / (circ ? 1.2 : star ? 2.6 : 2.2)));
+    const wx = x0 + dx * dist * 0.6 + 0.25 * up + (r3 - 0.5) * 30 * clamp01(age), wy = y0 + dy * dist * 0.6 - up;
+    const [X, Y] = aff(M, wx, wy);
+    const born = clamp01((age + 0.12) / 0.24);                              // matches the mask's soft edge
+    if (age < 0.45) young.push([X, Y, r0, g0, b0, born * (1 - clamp01(age / 0.45)), cell * lerp(1.1, 0.5, clamp01(age / 0.45))]);
+    const glow = born * (star ? 1 : 1 - clamp01((age - 0.5) / (0.6 + 0.8 * rr()))); if (glow <= 0.01) continue;
+    const tw = star && age > 1.2 ? 0.55 + 0.45 * Math.sin(step12 * (0.6 + rr()) + sd * 90) : 1;
+    light.push([X, Y, vio ? (circ ? '#B9A6FF' : '#9B6BFF') : '#F1ECFF', glow * tw * (star ? 0.9 : 0.7) * (0.5 + 0.5 * Math.max(lum, vio ? 0.6 : 0)), (star ? 1.6 + 1.6 * rr() : 1.2 + 0.8 * rr()) * S, star && age > 1.2]);
+  }
+  g.save(); for (const [X, Y, r0, g0, b0, a, z] of young) { g.globalAlpha = a; g.fillStyle = `rgb(${r0},${g0},${b0})`; g.fillRect(X - z / 2, Y - z / 2, z, z); } g.restore();
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (const [X, Y, col, a, z, big] of light) { g.globalAlpha = Math.min(1, a); g.fillStyle = col; g.fillRect(X - z / 2, Y - z / 2, z, z); if (big && a > 0.6) { g.globalAlpha = 1; glowAt(X, Y, z * 3, col, 0.35 * a); } }
+  g.globalAlpha = 1;
+  // the circle's light leaves east: once the circle has gone (u past 1), one violet mote from where its points rose drifts east and out
+  const te = tOf(0.98) + 0.25, me = clamp01((t - te) / (s.t1 - te));
+  if (t >= te) { const [fx, fy] = aff(M, D.circle[0] + 30, D.circle[1] - 115);   // where the circle's points rose to
+    const e = me * me, X = lerp(fx, W * 1.06, e), Y = lerp(fy, fy - 0.12 * H, Math.sin(me * Math.PI / 2));
+    for (let j = 6; j >= 1; j--) { const e2 = Math.max(0, me - 0.03 * j) ** 2; glowAt(lerp(fx, W * 1.06, e2), lerp(fy, fy - 0.12 * H, Math.sin(Math.max(0, me - 0.03 * j) * Math.PI / 2)), (6 + 2 * (6 - j)) * S, '#9B6BFF', 0.25 * (1 - j / 7)); }
+    glowAt(X, Y, 26 * S, '#9B6BFF', 0.85); glowAt(X, Y, 6 * S, '#FFFFFF', 0.9); }
+  g.restore();
+  skyGlints(t, sc);
 }
 
 // c2_lookup: the arriving violet light (the plate's comet is cropped away): from `from` toward `to` (frame fractions), arriving on the shot's
@@ -657,7 +811,7 @@ function draw(t, sc) {
   else if (sc.eff === 'plate') {
     const st = s.opt && s.opt.strands, rot = st && st.mode === 'rotate';
     if (rot) { const u = seg(t, s.t0, s.t1), a = (-7 * ease.io(u)) * Math.PI / 180, z = 1 - 0.2 * ease.io(u); g.save(); g.translate(W / 2, H / 2); g.rotate(a); g.scale(z, z); g.translate(-W / 2, -H / 2); }
-    drawImgs(sc.imgs); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc);
+    drawImgs(sc.imgs); if (s.opt.road && LANES) roadMask(t, sc); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc);
     if (st && STRANDS) strands(t, sc);
     if (rot) g.restore();
     if (s.opt.tips) tips(t, sc);
@@ -666,7 +820,8 @@ function draw(t, sc) {
     if (s.opt.type) typed(t, sc);
     if (s.opt.forks && OUTRO) OUTRO.forks(t, s, sc.imgs[0]);
     if (s.opt.comet) comet(t, sc);
-    if (s.opt.settle && sc.settle) settle(t, sc);
+    if (s.opt.atom && ATOM[s.opt.atom.dir]) atomize(t, sc);
+    else if (s.opt.settle && sc.settle) settle(t, sc);
   }
   else if (sc.eff === 'code') { try { if (s.opt.code === 'gitlog') gitlog(t, s); else if (s.opt.code === 'tiles') tiles(t, sc); else if (s.opt.code === 'mapfold') MAPF.draw(s, t); else OUTRO.draw(s, t, sc); } catch (e) { console.log('ERROR code ' + e.stack); } }
   else if (sc.eff === 'v7') {
@@ -680,7 +835,7 @@ function draw(t, sc) {
       const lc = LIGHTC.getContext('2d'); paperPass(lc, b, rect, { paper: 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t, skip: 'h' });
       g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.6; g.drawImage(LIGHTC, 0, 0); g.restore(); }
     else if (paperPass && USE_PAPER) { const { extraInk, ...lk } = look || {};
-      g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ...(sec.stroke ? { stroke: sec.stroke } : {}), ink: [...(sec.ink || INKS), ...(extraInk || [])], seed: 1000 + s.i, t, ...lk }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
+      g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ...(sec.stroke ? { stroke: sec.stroke } : {}), ink: [...(sec.ink || INKS), ...(extraInk || [])], seed: 1000 + (s.opt && s.opt.seedPrev ? s.i - 1 : s.i), t, ...lk }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else g.drawImage(b, 0, 0, W, H);
     if (sc.wins) windows(t, sc);
     if (sc.tail) drawImgs(sc.tail);
@@ -689,6 +844,7 @@ function draw(t, sc) {
   if (s.opt && s.opt.white && sc.eff === 'plate') { const f = fr(t, s.t0); if (f <= 1) { g.fillStyle = `rgba(255,250,240,${f === 0 ? 0.85 : 0.4})`; g.fillRect(0, 0, W, H); } }   // 2-frame white flash (impact, snare)
   grain(t); vignette();
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.lane && !(sc.cross && sc.cross.u >= 1)) lane(t, sc);
+  if (sc.eff === 'plate' && LANES && s.opt && s.opt.road) roadLane(t, sc);
   overlays(t, sc);
   lyrics(t, sc.eff, s);
 }
@@ -698,7 +854,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(s.opt && s.opt.atom && ATOM[s.opt.atom.dir] ? [{ url: ATOM[s.opt.atom.dir].emptyUrl }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc);
   const z = s.opt && s.opt.toFrame0; if (z) { const t0 = T.duration - z; if (t > t0) {   // the end: cross to the film's own frame 0 (the last frame equals it)
     if (!F0) { const c = document.createElement('canvas'); c.width = W; c.height = H; const keep = g.getImageData(0, 0, W, H); const s0 = scene(0); READY.clear();
@@ -719,10 +875,11 @@ async function boot() {
   for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.strands && s.opt.strands.window) await findPlate(s.opt.strands.window); if (s.kind === 'code' && s.opt.lives) for (const id of s.opt.lives) await findPlate('det_' + id); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); if (s.opt && s.opt.base) { await findPlate(s.opt.base); await findPlate(s.opt.top); } if (s.opt && s.opt.windows) for (const id of s.opt.windows.lives) await findPlate(id); if (s.opt && s.opt.code === 'mapfold') { for (const id of s.opt.lives) await findPlate(id); await findPlate(s.opt.her); } }
   // film v2: a shot whose opt.next = { id, opt } switches to plate `id` (with `opt` merged over its own) when that plate has landed
   // next.kind: the shot's kind changes too (an orchestra v7 shot becomes a plate); next.flag 'orch': not with ?orch=v7
-  for (const s of SH) if (s.opt && s.opt.next && !(s.opt.next.flag === 'orch' && ORCH_V7) && (await findPlate(s.opt.next.id))) { s.src = s.opt.next.id; if (s.opt.next.kind) s.kind = s.opt.next.kind; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
+  // film v3: next.id (and PLATE_ALIAS / PROOF_A ids) may be a list, newest first: the first plate that exists wins (wushu_v3, wushu_v2)
+  for (const s of SH) if (s.opt && s.opt.next && !(s.opt.next.flag === 'orch' && ORCH_V7)) { const id = await firstPlate(s.opt.next.id); if (!id) continue; s.src = id; if (s.opt.next.kind) s.kind = s.opt.next.kind; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
   for (const s of SH) if (s.opt && s.opt.tail && !ORCH_V7) await findPlate(s.opt.tail.id);
   // film v2: plates replaced by id everywhere the film uses them (shots.js PLATE_ALIAS), when the new plate exists
-  for (const [k, a] of Object.entries(PLATE_ALIAS || {})) { const p = await findPlate(a.id); if (p) PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; }
+  for (const [k, a] of Object.entries(PLATE_ALIAS || {})) { const p = await findPlate(await firstPlate(a.id)); if (p) PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; }
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
@@ -732,16 +889,22 @@ async function boot() {
   { const KJ = await json('/fable/take2/kit.json'); if (KJ) KITX = makeKit({ g, W, H, S, T, KJ, READY, drawWrittenLane, laneString, glyphPass, byId, MAIN, clamp01, lerp, ease }); }
   // take-two changes inside the proof range (all off with proofbug=1): the black-paper hero (hero_paper, nearest frame; hero=old for the
   // first one), written lanes on the ten lives (prooflanes=0 off), bar 38 panel afterimages (trail=0 off)
-  const heroNew = !PROOFBUG && Q.get('hero') !== 'old' && (await findPlate('hero_paper'));
+  // film v3: hero_paper_v2 (she sings "Merge me back to main" as she runs) replaces hero_paper when it lands, song-locked to its meta t0_song
+  const heroV2 = !PROOFBUG && Q.get('hero') !== 'old' && HERO_NEXT && (await findPlate(HERO_NEXT.id));
+  const heroNew = heroV2 || (!PROOFBUG && Q.get('hero') !== 'old' && (await findPlate('hero_paper')));
   // film v2: a life's A shot in bars 28-32 from a new plate (shots.js PROOF_A): clip0 puts its `land` moment on beat `landBeat` of the shot
   const dirs = heroNew ? { hero: heroNew.dir } : {}, aPlates = {};
-  if (!PROOFBUG) for (const [k, a] of Object.entries(PROOF_A || {})) { const p = await findPlate(a.id), s = SH.find((q) => q.kind === 'proof' && q.src === 'A:' + k); if (!p || !s) continue;
+  // film v3: a life plate swapped everywhere, the proof's grid and bar-37 turn included (shots.js LIFE_SWAP; band_v2): the proof reads it
+  // through dirs[id], the film through PLATE[id]; side/tone in lives.js are overridden from the wiring row when given
+  if (!PROOFBUG) for (const [k, a] of Object.entries(LIFE_SWAP || {})) { const p = await findPlate(a.id); if (!p) continue;
+    dirs[k] = p.dir; PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; if (a.side) byId[k].side = a.side; if (a.tone) byId[k].tone = a.tone; }
+  if (!PROOFBUG) for (const [k, a] of Object.entries(PROOF_A || {})) { const p = await findPlate(await firstPlate(a.id)), s = SH.find((q) => q.kind === 'proof' && q.src === 'A:' + k); if (!p || !s) continue;
     const tb = T.beatT(Math.round(bposT(s.t0)) + a.landBeat); aPlates[k] = { key: k + '_A', clip0: a.land - (tb - s.t0), side: a.side }; dirs[k + '_A'] = p.dir; }
   PROOF = await makeProof(g, { W, H, FPS, T, plates: PROOF_PLATES, twos: false, fixStrip: !PROOFBUG,
     dirs, aPlates, heroBlend: !heroNew,
     // hero_paper has her in the centre: crop so she sits right of centre, the slab stacks one word per row on the left (rule 5: clear of
     // her face and hands), and the written lane passes behind her legs
-    hero: heroNew ? { zoom: 1.25, fx: 0, fy: 0.05, rows: [[0], [1], [2], [3], [4]], gap: [0.5, 0.77] } : null, writtenLanes: !PROOFBUG && Q.get('prooflanes') !== '0' ? { drawWrittenLane, laneString } : null,
+    hero: heroNew ? { zoom: 1.25, fx: 0, fy: 0.05, rows: [[0], [1], [2], [3], [4]], gap: [0.5, 0.77], ...(heroV2 ? { ...(HERO_NEXT.opt || {}), c0: heroV2.meta.t0_song !== undefined ? T.bar(41) - heroV2.meta.t0_song : 0 } : {}) } : null, writtenLanes: !PROOFBUG && Q.get('prooflanes') !== '0' ? { drawWrittenLane, laneString } : null,
     trail: !PROOFBUG && Q.get('trail') !== '0' });
   // the proof range must be exactly the proof shots of the list
   const pr = SH.filter((s) => s.kind === 'proof'); if (Math.abs(pr[0].t0 - PROOF.t0) > 0.002 || Math.abs(pr[pr.length - 1].t1 - PROOF.tEnd) > 0.002) throw new Error('proof range does not match the shot list');
@@ -749,6 +912,7 @@ async function boot() {
   OUTRO = makeOutro({ g, W, H, S, T, READY, LIVES, byId, MAIN, hashOf, drawWrittenLane, laneString, clamp01, lerp, ease, plateToScreen, cover, bposT, glowAt, hexA, json, PLATE });
   await OUTRO.load(SH.filter((s) => s.kind === 'code'));
   MAPF = makeMapfold({ g, W, H, S, READY, PLATE, byId, clamp01, lerp, ease, cover, bposT, hexA, hashOf });
+  for (const s of SH) if (s.opt && s.opt.atom) await loadAtom(s.opt.atom);
   for (const s of SH) if (s.opt && s.opt.settle) { const d = s.opt.settle.matte; if (!(d in SETTLE_OK)) { const mm = await json(`${d}/meta.json`); SETTLE_OK[d] = !!(mm && mm.n); } }
   const N = Math.ceil(T.duration * FPS - 1e-6);
   const sizes = {}; const meas = (k, f) => { setFont(f); sizes[k] = { font: f.font, capPx: +g.measureText('H').actualBoundingBoxAscent.toFixed(1) }; };
