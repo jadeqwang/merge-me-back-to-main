@@ -54,6 +54,14 @@ const DETAIL = ['fingers on keys', 'bow on string', 'a fist', 'a pipette', 'a pe
   'laptop keys', 'a lectern', 'a grapefruit by a lamp', 'a pencil in a bun'];
 // the four stance stills (Step 3: no true empty stance was generated, so the fourth is a second drop stance)
 const STANCE = [['stance_bow', 'bow stance punch'], ['stance_horse', 'horse stance'], ['stance_drop', 'drop stance'], ['stance_drop2', 'drop stance, second view']];
+// film v2: the moving stance clips (plates_v2 wiring: settled from bow 1.5, horse 2.0, drop2 2.25 s; stance_drop_v2 not delivered yet, its
+// settle point is a guess of 1.5 s until its wiring row exists). clip0 = settle - 0.11 s, so she settles about a quarter beat after the
+// bar line and holds, moving, through the beat
+const STANCE_V2 = [['stance_bow_v2', 1.5], ['stance_horse_v2', 2.0], ['stance_drop_v2', 1.5], ['stance_drop2_v2', 2.25]];
+// beat 3 of b77-80 (film v2): four close inserts instead of the stances (Jade: mix it up with writing poems and playing instruments).
+// clip0 measured on the clips: the piano chord lands at about 0.85-1.0 s, the guitar strum crosses the strings at about 1.0 s
+const INSERT = [['ins_violin', 'violin: the bow arm, a down-bow, the wrist leading', { clip0: 2.5, speed: 1.25 }], ['ins_poem', 'a pen finishing a line in a notebook, the hand lifts', { clip0: 3.4 }],
+  ['ins_piano', 'both hands land a chord', { clip0: 0.82 }], ['ins_guitar', 'a strum on an acoustic guitar (the RNA band)', { clip0: 0.95 }]];
 
 const S = [];
 let sec = null, n = 0;
@@ -75,7 +83,8 @@ section('intro_a');
 P(1, 3, 'root', 'exists', "Frame 0, no fade-in: the child's palm on the cold glass, frost already branching from it. Chip top-left: ● main  1 branch.",
   { ov: ['chip:● main  1 branch'], opt: { clip0: 1.0, push: 0.03 }, row: 'b1-2' });
 P(3, 5, 'root_fork', 'missing', 'Close on the glass: the frost forks in two, then four, on the bar lines. Counter 2, 4.', { ov: ['counter'], row: 'b3-4', opt: { clip0: 1.15, speed: 1.05 } });   // clip: forks in two at about 1.2 s (on the bar 3 line), branches on to about 3 s (bar 4)
-P(5, 7, 'root_face', 'missing', "The child's face in profile, lit by the frost, watching. First face. Counter 8, 16.", { ov: ['counter'], row: 'b5-6', opt: { counterSide: 'left', clip0: 0, clip1: 3.0 } });   // clip: first 3 s (a blink at 3.2-3.4, a late push crops the ponytail)
+P(5, 7, 'root_face', 'missing', "The child's face in profile, lit by the frost, watching. First face. Counter 8, 16.", { ov: ['counter'], row: 'b5-6', opt: { counterSide: 'left', clip0: 0, clip1: 3.0,
+  next: { id: 'root_face_v2', opt: { clip0: 0, clip1: 3.5, push: 0 } } } });   // v2 (plates_v2 wiring): 0-3.5 s keeps both blinks (0.25, 3.0) and the fog breath (1.25-2.5); no push   // clip: first 3 s (a blink at 3.2-3.4, a late push crops the ponytail)
 // b7-8: the root clip from 2.0 s (the frost has grown) slightly slowed, pulling back; twelve frost tips (plate fractions, measured on the
 // clip's frame 84) light up in the lives' lane colours one per half beat from beat 2 of b7
 P(7, 9, 'root', 'exists', 'Pull back: the frost tree fills the pane; its tips take lane colours one by one. Counter 32, 64.',
@@ -89,7 +98,7 @@ V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Titl
 const FL = [['piano', 11], ['wushu', 12], ['ames', 13], ['violet', 14]];
 V(10, [11, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 FL.forEach(([id, b], i) => {
-  P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02 }, row: 'b10-14' });
+  P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02, ...(id === 'wushu' ? { next: { id: 'wushu_v2', opt: { clip0: 1.0, clip1: 1.3 } } } : {}) }, row: 'b10-14' });   // wushu_v2: the landed punch
   if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 });
 V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14' });
@@ -162,7 +171,8 @@ shot(48, 49, 'K+C', 'kit', 'runner_one', 'missing', "One runner: main Jade, the 
 // commit message); the last flap's underside is her (fold_chest frame 0). The last panel grows to the full frame by the b51 cut, where
 // fold_chest takes over from clip 0. folds: [beat from the shot start, axis, crease after column/row k, moving side]. Grid cells 420 px
 // (the pre-chorus's were 470): the two-row slab FOLD ME IN / AGAIN sits under the sheet. (Replaces fold_reach.)
-const MAPFOLD = { code: 'mapfold', lives: LIFE, her: 'fold_chest', grid: { cw: 420, g: 10, y0: 22 }, clip0: 0.3, speed: 0.6, D: 1500, dur: 0.55, drift: 0.9,
+const MAPFOLD = { code: 'mapfold', lives: LIFE, her: 'fold_chest', grid: { cw: 420, g: 10, y0: 22 }, clip0: 0.3, speed: 0.6, D: 1500, dur: 0.55, drift: 0.9, fit: [0.94, 0.9], zmax: 3, viewY: 0.47,   // film v2 fix: the folded stack stays big (0.9 H tall), the slab over its lower edge
+ 
   folds: [[1, 'x', 2, 'hi'], [2, 'x', 0, 'lo'], [3, 'x', 1, 'lo'], [4, 'y', 1, 'hi'], [5, 'y', 0, 'lo']], final: [2, 1], grow: [5.6, 8] };
 shot(49, 51, 'P+C', 'code', 'mapfold', 'missing', 'The sheet of twelve lives folds like a map, one crease per beat, down to one panel: her, hands crossed at her chest.',
   { row: 'b49-50', opt: { ...MAPFOLD, lyr: { x0: 0.03, x1: 0.97, align: 'left' } } });
@@ -209,12 +219,13 @@ shot(72, 73, 'C', 'code', 'tile_collapse', 'missing', 'All twelve tile in on six
 // ------------------------------------------------------------------ Build: bars 73-88 (biggest impact on b73; four on the floor)
 section('build');
 for (let k = 0; k < 4; k++) {
-  shot(73 + k, [73 + k, 2], 'S', 'plate', STANCE[k][0], 'missing', `Impact frame on the bar line: cel Jade in a long-fist stance (${STANCE[k][1]}), rim-lit, blue hour.`, { row: 'b73-76', opt: { push: 0.04, white: true } });
+  shot(73 + k, [73 + k, 2], 'S', 'plate', STANCE[k][0], 'missing', `Impact frame on the bar line: cel Jade in a long-fist stance (${STANCE[k][1]}), rim-lit, blue hour.`, { row: 'b73-76', opt: { push: 0.04, white: true,
+    next: { id: STANCE_V2[k][0], opt: { clip0: STANCE_V2[k][1] - 0.11, push: 0.02 } } } });
   shot([73 + k, 2], 74 + k, 'C', 'code', 'gitlog', 'missing', `git log --graph racing on the beat, her real commit messages: ${2 ** (k + 1)} rows per beat.`, { row: 'b73-76', opt: { code: 'gitlog', rate: 2 ** (k + 1), bar: k } });
 }
 for (let k = 0; k < 4; k++) {
   V(77 + k, [77 + k, 3], 'seq 08', `Frontal formation: she forks on every kick (bar ${k + 1} of 4, toward 256).`, { row: 'b77-80' });
-  shot([77 + k, 3], [77 + k, 4], 'S', 'plate', STANCE[k][0], 'missing', `Stance frame on beat 3 (${STANCE[k][1]}).`, { row: 'b77-80', opt: { push: 0.04, white: true, zoom0: 1.06 } });
+  shot([77 + k, 3], [77 + k, 4], 'S', 'plate', INSERT[k][0], 'missing', `Insert on beat 3: ${INSERT[k][1]}.`, { row: 'b77-80', opt: { push: 0.02, ...INSERT[k][2] } });
   V([77 + k, 4], 78 + k, 'seq 08', 'Frontal formation, after the stance frame.', { row: 'b77-80' });
 }
 // b81-84: the orchestra of Jades (v7 seq 08 variant, fable/take2/notes/orchestra.md revision 2), eight shots on the bar and beat 3,
@@ -232,20 +243,24 @@ for (let k = 0; k < 12; k++) { const half = k >= 4, bar = half ? 88 : 87, beat =
 // ------------------------------------------------------------------ Drop: bars 89-104 (night to sunrise, full colour)
 section('drop');
 V(89, 90, '2:32', 'Butterfly kick at its apex against the huge sun.', { row: 'b89' });
+// film v2: the inserts as one sentence in motion (v2 ids: 1 fist, 2 palm, 3 eyes, 4 hair whip, 5 landing). [fallback (v1 still), v2 clip,
+// what, clip map]; ranges from plates_v2 wiring (drop_hero_1_v2 not delivered: the v1 fist still, v1 drop_hero_2, until it lands)
+const DROP = [['drop_hero_2', 'drop_hero_1_v2', 'the fist closes', { clip0: 0 }], ['drop_hero_3', 'drop_hero_2_v2', 'the open palm rises until the sun sits behind it', { clip0: 1.3, clip1: 2.9 }],
+  ['drop_hero_1', 'drop_hero_3_v2', 'her eyes open, the sun in them', { clip0: 0.7, clip1: 2.2 }]];
 for (let k = 0; k < 3; k++) {
   V(90 + k, [90 + k, 3], 'seq 10', 'The unison phrase, low and wide, the thousand in silhouette.', { row: 'b90-92' });
-  shot([90 + k, 3], 91 + k, 'S', 'plate', `drop_hero_${k + 1}`, 'missing', `Two-beat close insert ${k + 1} of 3: cel Jade in one of the phrase's key poses, lit gold.`, { row: 'b90-92', opt: { push: 0.035, white: true } });
+  const D = DROP[k]; shot([90 + k, 3], 91 + k, 'S', 'plate', D[0], 'missing', `Two-beat close insert ${k + 1} of 3: ${D[2]}, lit gold.`, { row: 'b90-92', opt: { push: 0.035, white: true, next: { id: D[1], opt: { push: 0, white: false, ...D[3] } } } });
 }
 for (let k = 0; k < 4; k++) V(93 + k, 94 + k, '2:52', ['Travelling phrases.', 'The close line of copies.', 'Orbit.', 'Travelling phrase, orbit.'][k] + ' (one cut per bar)', { row: 'b93-96' });
 V(97, 98, '2:44', 'The group fall, from her real set.', { row: 'b97-99' });
 V(98, 100, '2:44', 'From above the bodies spell MAIN; hold; they rise as one.', { row: 'b97-99' });
 // the wordless "ooh" (vocal stems 172.54-180.28) is sung, not shown: film v2 draws no type for it (Jade: lyrics on screen are for words)
-V(100, [100, 3], '2:56', 'Arms wide.', { row: 'b100' });
-P([100, 3], 101, 'drop_face', 'missing', 'Close: her face in the sun, eyes closed, singing the wordless "ooh" (172.5).', { row: 'b100' });
+// film v2: drop_face_v2 holds the whole bar, song-locked (meta t0_song 171.8: the mouth opens on the "ooh" at 172.54); no lyric
+P(100, 101, 'drop_face', 'missing', 'Close: her face in the sun, wind in her hair, singing the wordless "ooh" (172.5).', { row: 'b100', opt: { next: { id: 'drop_face_v2', opt: { songLock: true, push: 0 } } } });
 V(101, 102, '2:57', 'Last phrase.', { row: 'b101-103' });
-shot(102, [102, 3], 'S', 'plate', 'drop_hero_4', 'missing', 'Insert: cel Jade, last phrase, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true } });
+shot(102, [102, 3], 'S', 'plate', 'drop_hero_4', 'missing', 'Insert: her hair and jacket whip through the turn, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: { id: 'drop_hero_4_v2', opt: { push: 0, white: false, clip0: 1.2, speed: 1.5 } } } });
 V([102, 3], [103, 3], '2:58', 'Tornado kick.', { row: 'b101-103' });
-shot([103, 3], 104, 'S', 'plate', 'drop_hero_5', 'missing', 'Insert: the landing, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true } });
+shot([103, 3], 104, 'S', 'plate', 'drop_hero_5', 'missing', 'Insert: the landing, dust rising gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: { id: 'drop_hero_5_v2', opt: { push: 0, clip0: 0.05 } } } });   // v2: feet touch down at about 0.1 s: on the cut, with the white flash
 V(104, 105, '2:59', '1,024 salute the sun. Cut to night on b105.', { row: 'b104' });
 
 // ------------------------------------------------------------------ Verse 2: bars 105-120 (scratchboard, white on black, violet the only colour)
@@ -341,6 +356,11 @@ P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. A vi
 
 // float_top geometry (plate fractions): her head (strand centre) and twelve hair ends in the lives' order; measured on the clip when it lands
 export const FLOAT = { at: 2.0, track: [[0, [0.555, 0.18], [0.297, 0.894]], [2.0, [0.588, 0.204], [0.266, 0.769]], [5.0, [0.623, 0.333], [0.259, 0.597]]], center: [0.59, 0.20], ends: [[0.31, 0.22], [0.344, 0.111], [0.4375, 0.037], [0.542, 0.019], [0.667, 0.015], [0.771, 0.056], [0.854, 0.148], [0.896, 0.278], [0.896, 0.426], [0.865, 0.556], [0.823, 0.667], [0.75, 0.74]] };   // measured on float_top frame 49
+// film v2: plates replaced wherever they are used by id (crossing doorways, flashes, windows, the fold sheet), when the new one exists.
+// focus = where she is in the new plate (cover crops). The proof range: only the b30 life shot (PROOF_A), not the b33-37 grid (the grid's
+// bar-37 look-back needs the old clip's turn; wushu_v2 has none)
+export const PLATE_ALIAS = { wushu: { id: 'wushu_v2', focus: [0.3, 0.3] } };
+export const PROOF_A = { wushu: { id: 'wushu_v2', land: 1.0, landBeat: 1, side: 'left' } };   // she stands left in wushu_v2 (face x 0.27)   // the punch lands at clip 1.0 s: put it on beat 2 of the 2-beat shot
 export const SHOTS = S;
 
 // ------------------------------------------------------------------ resolve bar/beat to song time

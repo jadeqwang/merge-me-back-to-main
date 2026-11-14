@@ -63,7 +63,7 @@ export function makeMapfold(E) {
     g.fillStyle = '#05050A'; g.fillRect(0, 0, W, H);
     const st = state(o, G, u), ev = o.folds.find(([b]) => u >= b - dur && u < b), evn = ev ? o.folds.indexOf(ev) : -1;
     // camera: the face-up sheet's centre eases toward the view centre (drift) over the half beat after each landing; then the grow
-    const view = { x: W / 2, y: G.y0 + (3 * G.ch + 2 * G.gg) / 2 };
+    const view = { x: W / 2, y: o.viewY !== undefined ? o.viewY * H : G.y0 + (3 * G.ch + 2 * G.gg) / 2 };
     let R = bbox(G, state(o, G, -1).up);
     o.folds.forEach((e) => { const nx = bbox(G, state(o, G, e[0]).up), k = ease.io(clamp01((u - e[0]) / 0.6)); R = { x: lerp(R.x, nx.x, k), y: lerp(R.y, nx.y, k), w: lerp(R.w, nx.w, k), h: lerp(R.h, nx.h, k) }; });
     // and the camera closes in as the sheet gets smaller, so the face-up part stays a good size (o.fit = [max width, max height] as

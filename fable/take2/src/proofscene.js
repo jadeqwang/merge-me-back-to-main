@@ -102,7 +102,7 @@ function buildTimeline() {
 
 // ---------------------------------------------------------------- A: the lives, one at a time
 // section A: the lyric, chip and node go to the side away from her (lives.js side = her side)
-const awayRight = (id) => byId[id].side === 'left';
+const awayRight = (id) => ((o.aPlates && o.aPlates[id] && o.aPlates[id].side) || byId[id].side) === 'left';
 const nodeX = (id) => (awayRight(id) ? W - NX : NX);
 function shotAt(t) { let s = null; for (const q of TL.shots) if (on(t, q.t0)) s = q; return s; }
 function clipA(s, t) { const m = META[s.id]; const last = (m.n - 1) / m.fps; const lim = m.turn_t != null ? m.turn_t - 0.4 : last; return softcap(Math.max(0, t - s.t0), Math.min(lim, last)); }
@@ -182,7 +182,7 @@ function scene(t) {
   const full = { x: 0, y: 0, w: W, h: H };
   if (on(t, TL.t41)) { const f = fr(t, TL.t41), punch = f <= 8 ? 1 + 0.04 * Math.pow(1 - f / 8, 2) : 1;
     P.push({ id: 'hero', c: softcap(t - TL.t41, (META.hero.n - 1) / META.hero.fps), rect: full, zoom: (o.hero ? o.hero.zoom : 1) * (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, fx: o.hero ? o.hero.fx : 0.5, fy: o.hero ? o.hero.fy : 0.5, blend: o.heroBlend !== false }); sc.phase = 'E'; return sc; }
-  if (!on(t, TL.grid)) { const s = shotAt(t) || TL.shots[0]; sc.shot = s; sc.phase = 'A'; P.push({ id: s.id, c: clipA(s, t), rect: full, zoom: 1 + s.push * seg(t, s.t0, s.t1), fy: clamp01(0.45 + (byId[s.id].yshift || 0)), blend: true }); return sc; }
+  if (!on(t, TL.grid)) { const s = shotAt(t) || TL.shots[0]; sc.shot = s; sc.phase = 'A'; const AP = o.aPlates && o.aPlates[s.id]; P.push({ id: AP ? AP.key : s.id, c: AP ? Math.max(0, AP.clip0 + (t - s.t0)) : clipA(s, t), rect: full, zoom: 1 + s.push * seg(t, s.t0, s.t1), fy: clamp01(0.45 + (byId[s.id].yshift || 0)), blend: true }); return sc; }
   sc.phase = t < TL.t38 - HF ? 'B' : 'D';
   const GS = gridState(t); sc.grid = GS;
   if (o.trail && on(t, TL.t38)) for (const C of GS.cells) {   // take two: afterimages of the panel's last frame, from its place toward its node
@@ -476,7 +476,7 @@ async function render1(t) {
 // ---------------------------------------------------------------- init (from the proof's boot(), minus fonts, page and harness)
 for (const [face, wt] of [['mono', 600], ['mono', 500], ['serif'], ['slab']]) { setFont(face === 'mono' ? FACE.mono(100, wt) : FACE[face](100)); CAP[face + (wt || '')] = g.measureText('H').actualBoundingBoxAscent / 100; }
 T = o.T;
-for (const id of PLATE_IDS) { const r = await fetch(`${pdir(id)}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${pdir(id)}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
+for (const id of [...PLATE_IDS, ...Object.values(o.aPlates || {}).map((a) => a.key)]) { const r = await fetch(`${pdir(id)}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${pdir(id)}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
 buildTimeline(); TL.c0.sandstorm = clipA(TL.shots[9], TL.grid);
 { const c = cam(TL.t39); XROOT = ZAX + (NX - ZAX) / c.s; }
 buildGrain(); SLAB = slabLayout();

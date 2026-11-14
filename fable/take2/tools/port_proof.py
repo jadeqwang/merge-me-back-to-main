@@ -43,6 +43,13 @@ patch("const SLAB_ROWS = [[0], [1, 2], [3, 4]], SLAB_X = 100 * S, SLAB_TRACK = -
       "const SLAB_ROWS = (o.hero && o.hero.rows) || [[0], [1, 2], [3, 4]], SLAB_X = 100 * S, SLAB_TRACK = -0.01;   // take two: o.hero.rows")
 patch("  g.save(); g.beginPath(); g.rect(0, 0, gapL, H); g.rect(gapR, 0, W - gapR, H); g.clip();",
       "  g.save(); g.beginPath(); if (o.hero && o.hero.gap) { const a = o.hero.gap[0] * W, b = o.hero.gap[1] * W; g.rect(0, 0, gapL, H); g.rect(gapR, 0, a - gapR, H); g.rect(b, 0, W - b, H); }   // take two: her legs pass in front of the lane\n  else { g.rect(0, 0, gapL, H); g.rect(gapR, 0, W - gapR, H); } g.clip();")
+# film v2: a life's full-frame A shot (bars 28-32) can use another plate (o.aPlates = { id: { key, clip0 } }, its folder in o.dirs[key]):
+# the clip plays from clip0 at natural speed; the grid (bars 33-38) keeps the life's own plate and its look-back
+patch("P.push({ id: s.id, c: clipA(s, t), rect: full,",
+      "const AP = o.aPlates && o.aPlates[s.id]; P.push({ id: AP ? AP.key : s.id, c: AP ? Math.max(0, AP.clip0 + (t - s.t0)) : clipA(s, t), rect: full,")
+# ... and its own side (where SHE is in that plate: the chip, lyric and node go to the other side)
+patch("const awayRight = (id) => byId[id].side === 'left';",
+      "const awayRight = (id) => ((o.aPlates && o.aPlates[id] && o.aPlates[id].side) || byId[id].side) === 'left';")
 # bar 38: each panel's last frame trails behind it as it shrinks into its node (fills the empty top half); o.trail
 patch("""  for (const C of GS.cells) if (C.sigma > 0.004 && C.rect.w > 1) { const fo = META[C.L.id].focus || [0.5, 0.5];""",
 """  if (o.trail && on(t, TL.t38)) for (const C of GS.cells) {   // take two: afterimages of the panel's last frame, from its place toward its node
@@ -71,7 +78,7 @@ txt += '''
 // ---------------------------------------------------------------- init (from the proof's boot(), minus fonts, page and harness)
 for (const [face, wt] of [['mono', 600], ['mono', 500], ['serif'], ['slab']]) { setFont(face === 'mono' ? FACE.mono(100, wt) : FACE[face](100)); CAP[face + (wt || '')] = g.measureText('H').actualBoundingBoxAscent / 100; }
 T = o.T;
-for (const id of PLATE_IDS) { const r = await fetch(`${pdir(id)}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${pdir(id)}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
+for (const id of [...PLATE_IDS, ...Object.values(o.aPlates || {}).map((a) => a.key)]) { const r = await fetch(`${pdir(id)}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${pdir(id)}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
 buildTimeline(); TL.c0.sandstorm = clipA(TL.shots[9], TL.grid);
 { const c = cam(TL.t39); XROOT = ZAX + (NX - ZAX) / c.s; }
 buildGrain(); SLAB = slabLayout();
