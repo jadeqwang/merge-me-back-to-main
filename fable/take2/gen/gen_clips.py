@@ -45,6 +45,14 @@ C.update({
  "main_back_wide": ("main_back_wide_a1", "a flat cel-shaded anime drawing on black paper, with flat colours and no glow", "She stands still with her back to the viewer, her hair and trouser straps stirring in a light wind. The many thin coloured lines across the plain glimmer and waver slightly as in hand-drawn animation, the tiny lit windows flicker softly, the stars twinkle. The camera pulls back and rises very slowly and steadily, so that she becomes a little smaller and more of the plain comes into view.", {}),
  "runner_main": ("runner_main_p", "a flat cel-shaded anime drawing with a clean inked line and flat colours", RUN, {}),
 })
+
+KIT = {"piano": ("runner_piano_c1", "an opaque gouache painting with visible brush texture"), "wushu": ("runner_wushu_c1", "a woodblock print with bold carved key lines"),
+       "wetlab": ("runner_wetlab_c1", "a fine pen-and-ink drawing with stippling"), "phd": ("runner_phd_c1", "a pen-plotter drawing of single-weight hatched lines"),
+       "poet": ("runner_poet_c1", "a sumi ink-wash painting"), "ames": ("runner_ames_c1", "a smooth airbrushed gouache painting in one grey-teal hue"),
+       "band": ("runner_band_b1", "a two-colour risograph print with coarse halftone dots"), "chezjj": ("runner_chezjj_c1", "16-bit pixel art with crisp square pixels, moving in small pixel-art animation steps"),
+       "home": ("runner_home_c1", "a chalk and pastel drawing"), "violet": ("runner_violet_c1", "a scratchboard engraving of white lines cut out of black")}
+for _k, (_s, _m) in KIT.items():
+    C["runner_" + _k] = (_s, _m, RUN, {}); VIEWS["runner_" + _k] = "side"
 SPLIT = ("The video begins on the first frame and ends exactly on the last frame. It is a flat cel-shaded anime drawing on black paper and stays that in every frame; never photographic, never 3D. The camera is locked off. "
          "For the first half second one woman stands alone and still in the centre. Then she steps apart into two: an identical copy of her slides out sideways from her, so that two whole identical women stand side by side; then each of the two steps apart into two again, so that by about three seconds there are four identical women in a row, exactly as in the last frame. "
          "At every moment each one is a whole, complete, solid body with her own face, arms and legs: nobody is ever cut in half, stretched, melted or transparent. As they separate, the copies' arm bands, straps and headphones change colour to rose pink, golden yellow and mint green, and a thin drawn line of her own colour runs out under each one's feet. "

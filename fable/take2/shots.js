@@ -134,7 +134,7 @@ PR(41, 43, 'E:hero', 'Main Jade sprints at us on the orange line as the coloured
 // draws on black paper: thirteen written lanes in perspective (far = a hairline, near = readable), each runner on her lane at her
 // lane's scale; dir = the cut-out folder (rgba/f_%04d.png + meta.json). A card until the first runner's cut-out exists.
 shot(43, 44, 'K+C', 'kit', 'runner_kit', 'missing', 'Side-on: the twelve run in parallel on their lanes, each drawn in her own medium, main in front.',
-  { row: 'b43', ov: ['chip:runner kit 2 of 13 (partial)'], opt: { lyr: { y: 'top', top: 0.13, x0: 0.03, x1: 0.52, align: 'left' }, kit: { off: true,   // director 2026-11-13: runner_main take 1 is cropped at the feet and is being retaken: b43 stays a card (remove off to build it)
+  { row: 'b43', ov: ['chip:runner kit 2 of 13 (partial)'], opt: { lyr: { y: 'top', top: 0.13, x0: 0.03, x1: 0.52, align: 'left' }, kit: {   // runner_main take 1 (cropped at the soles; three retakes did not give a full-length figure): feet sit behind the lane
     lanes: ['piano', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'violin', 'sandstorm', 'home', 'violet', 'main'],
     runners: [{ id: 'runner_pencil', dir: '/work_fable/take2/tests/kit/runner_pencil', lane: 'violin', x: 0.84, clip0: 0.4 },
       { id: 'runner_main', dir: '/work_fable/take2/kit/runner_main', lane: 'main', x: 0.67, clip0: 0 }] } } });

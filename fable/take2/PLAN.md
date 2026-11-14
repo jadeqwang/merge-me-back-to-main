@@ -428,6 +428,16 @@ Each is small. Run them first, show Jade, then generate in bulk.
   (`fable/take2/tools/matte.py`), generation (`fable/take2/gen/`).
 - Next: Jade's notes on the animatic and on the open points below; then Step 2. Do not generate the sections before her notes.
 
+**State on 2026-11-13, night (Step 2 in progress):** `review/fable_take2/section2_v1.mp4` (bars 16 to 57 with sound): 14 new plates in,
+b43 a partial runner kit, b46-48 still cards. Ten more runner clips (one per medium) are queued; the 3D orchestra for bars 81-84 is
+being built in the v7 engine (`fable/take2/notes/orchestra.md`). Spent $437.52 of $600.
+- The video model will not keep a small full-length runner: three takes (padded 16:9 twice, 1:1 once) all reframed to a large figure
+  cropped at the soles or knees. The kit is therefore built large, with the feet behind the written lane.
+- Restyling one approved runner still into each medium works when the ONLY image input is that still. Adding the character sheet or
+  another plate as a second input made the model paste the runner into that picture or copy the sheet's labels.
+- Several clips do not start on their first-frame still (fold_reach mirrored, fold_chest and main_back_wide reframed): lay out type
+  against the clip's own frames.
+
 What Step 0 changed (apply from Step 2 on):
 - The running-shot jump was a repeated step in the generated clip (same foot twice, source frames 65 to 78). Measure the stride period
   of every running clip before accepting it (method in `review/fable_take2/step0/index.html`).

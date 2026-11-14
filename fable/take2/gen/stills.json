@@ -173,6 +173,87 @@
     "work_fable/take2/stills/main_split4_a1.jpg"
    ],
    "prompt": "Edit this picture so that it contains exactly ONE person. Erase the second, third and fourth women completely, together with their coloured lines, leaving plain bare black paper where they stood. Keep only the first woman, the one with ORANGE bands, and place her alone in the exact centre of the picture at the same size, standing upright and still with her feet together and arms relaxed at her sides, facing the viewer, calm, lips closed, no smile. One thin straight orange line runs from her feet to the bottom edge. The finished picture shows a single woman alone on empty black paper: count the people, there is only one. Same drawing style, flat cel colours and inked line. No text."
+  },
+  {
+   "id": "runner_piano",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in opaque matte gouache paint with visible brush texture and soft rounded shapes, like a mid-century children's picture book. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to ROSE PINK; that rose pink is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_wushu",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in a traditional East Asian woodblock print: bold carved black key lines and flat areas of colour with visible wood grain and slight misregistration. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to CORAL RED; that coral red is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_wetlab",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in a scientific pen-and-ink drawing like an early-1900s histology plate: very fine black and sepia pen lines and stippling, no solid fills. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to MINT GREEN; that mint green is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_phd",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in a pen-plotter drawing: single-weight technical ink lines, with cross-hatching made of parallel plotted strokes, precise and slightly mechanical. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to CYAN; that cyan is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_poet",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in sumi ink wash: wet grey washes and dry-brush blacks with a few confident strokes. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to MAGENTA; that magenta is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_ames",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in smooth airbrushed gouache in shades of one cool grey-teal, like a 1970s space-agency concept painting, with no pencil lines. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to BRIGHT BLUE; that bright blue is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_band",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg",
+    "work_fable/take2/stills/main_face_a1.jpg"
+   ],
+   "prompt": "Redraw the first picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in a two-colour risograph print like a hand-made gig poster: coral and navy inks, coarse halftone dots, slight misregistration, grainy solid areas. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the face of the second picture (use the second picture only for her face and design, not its background), lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to CORAL RED; that coral red is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in the first picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_chezjj",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in 16-bit pixel art with crisp square pixels in a few shades of navy blue-grey, like a sprite from an early handheld game, drawn large. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to MINT GREEN; that mint green is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_home",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in chalk and pale pastel: confident textured strokes of chalk white and pale blue-grey with a dark navy line. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to ROSE PINK; that rose pink is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
+  },
+  {
+   "id": "runner_violet",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/runner_pencil_a1.jpg"
+   ],
+   "prompt": "Redraw this picture in a different art medium. Keep exactly the same single running figure in exactly the same pose, the same place and the same size, on the same completely plain, empty, flat light-grey background, with nothing added: no ground, no shadow, no scenery. Change only the medium, and make the medium unmistakable at a glance, over the whole figure including her clothes, hair and skin: instead of coloured pencil, the figure is now made in a scratchboard engraving: her figure is solid black, with every form drawn in fine white lines and dense white parallel hatching cut out of the black, like a nineteenth-century wood engraving. The medium changes how the lines and tones are made, never her design or her features: her face, in profile, is the same face as in this picture, lips closed, calm, her eye OPEN and looking ahead. Her long hair stays BLACK. Change the yellow arm bands, trouser straps and headphones to VIOLET; that violet is the only strong colour in the picture, and everything else is white, black, navy and greys in this medium. The jacket stays white. The round white patch with a black ring on the upper arm we see reads 1420 MHz in small black letters, exactly as in this picture. No other words anywhere on the jacket, no stripe on its back. One figure only. No caption, no labels, no signature, no other text."
   }
  ]
 }
