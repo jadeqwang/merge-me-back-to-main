@@ -28,3 +28,8 @@
 8. Second "Back to main", the wave: Keep
 9. Drawn Jade singing the "ooh": Keep
 10. What next: Fix my notes and show me a v3 first
+
+## Follow-up, same day
+
+- On the director's answers for 3:02 (new message `still writing this one`; she runs and slows, the lane written only as far as her feet): "yes on 3:02, your intuition is right."
+- "I think the sprint at 1:09 could feature her mouth moving/singing to be the variety needed here." (bars 41-42, the chorus 1 sprint: she sings "Merge me back to main".)

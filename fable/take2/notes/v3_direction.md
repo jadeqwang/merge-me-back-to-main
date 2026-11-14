@@ -79,3 +79,7 @@ refuse, and note it).
    clip first): the same kind of arc: eyes narrowed, a blink, then the jaw sets and a small fierce grin. Framing must hold. One face.
 
 Order: 1, 2, 3, 5, 6 first (the compositor waits on them), then 4, 7.
+
+Update (Jade, same day): for the chorus 1 sprint the variety is her singing. `hero_paper_v2` is generated from the still plus the
+song audio (about 69.2-74.2 s), she sings "Merge me back to main", the plate is song-locked (`t0_song`). This replaces the
+expression-arc brief for `hero_paper` in item B7; `wave_run_v3` keeps the expression change.
