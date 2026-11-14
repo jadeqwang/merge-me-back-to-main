@@ -602,3 +602,37 @@ ins_violin_v3 (from 0.0 at 1.25x), drop_hero_5_v3 (from 0.62: strike on the cut)
 v2 facade may be 0.42 W wide, slots laid end to end, the town's speed scaled so the twelve pass in the same time). Waiting: band_v2
 (shots.js LIFE_SWAP: every use incl. the proof grid via makeProof dirs, side/tone overridable), main_split_v2 (songLock if t0_song),
 main_light_v2, vio_wide_v2 (needs its track), wave_run take 3 (id not known yet: not hooked).
+
+### Film v3, items 7 and 9: wiring and the render (2026-11-14, evening)
+Wiring (commit "film v3 wiring", plates_v3.md table):
+- band_v2 everywhere (shots.js LIFE_SWAP): film PLATE.band and the proof's dirs.band, so b32's life shot, the b33-37 grid and its
+  bar-37 turn, b38, the fold sheet, b54 window, b87 flash. lives.js side overridden to 'left' (chyron, lyric, node to the right). Her
+  head turned about 0.2 s after the other eleven with turn_t 2.6, so clip 2.8 is put on the bar-37 downbeat (`turn: 2.8`, makeProof
+  `o.turn`, port_proof.py patch on turnOf): offset +0.2 s; checked on crops of the band and ames cells at -0.2..+0.8 s (w7/turn37b.jpg).
+  b32 chyron sits on its dark box over her hip and reads; the strip lyric "And every branch remembers" keeps its fixed place across
+  b32-38 (it reads; not moved, for continuity).
+  Proof identity: proofbug=1 max 0 on all 13 frames. Film vs before band_v2 (every 15 frames): k 225 (b32 band shot, whole frame),
+  k 315-510 the band grid cell only (x 1445-1914, y 288-548), k 525-570 that cell's path into main at bar 38; nothing else.
+- main_light_v2 b25: 0.0-1.75, no push. main_split_v2 rejected: its hook removed (b18 stays main_split).
+- vio_wide_v2 b105-106: clip 0-3.4, road track from tools/track_road.py (now fits the road on violet pixels > 0.1 W from her feet). The
+  plates agent's track.json line sits above the painted line on the left of frame (its band cut the hills): not used. Checked: no line
+  ahead of her on 4 crops (w7/vw_crops.jpg), the written road behind her, pen point at her toe.
+- wave_run_v3 b145-146: 1.4-4.8 (glance at b145.2-3, smile from b146.1), slab as take 2 (checked on 3 frames + the beat strip).
+- float_hand_v2 b64: 0.5-2.6 (1.21x): the light settles in the palm on beat 3; fingers closing at the cut.
+- ins_violin_v3 from 0.0 at 1.25x (the down-bow). drop_hero_5_v3 from 0.62: feet strike 1-2 frames after the b103.3 cut, the stance
+  (straight leg picture left, bent right, facing camera) matches the hatched crowd that follows at b104.
+- wushu_v3: punch landed in the b12 flash (1.35-1.65) and on b30.2 (land 1.4). hero_paper_v2 and main_face_v2 song-locked; type clear
+  of their mouths (stacked slab left on b41-42, lyric bottom left on b17).
+- Facades: the reported matte flaws (wetlab_v2 left sliver, phd_v2 ragged right edge) do not show at town scale (a faint graph-paper
+  fringe at phd's right edge only); cut-outs left as delivered.
+Render (gitlog.py run once, by render_film.sh, before the public render; not again):
+    fable/take2/tools/render_film.sh film_v3 "" "likeness=0"      # 505.6 s; master work_fable/take2/out/film_film_v3_master.mp4
+    ffmpeg ... (v2's encode, CRF 20 capped 2.3 Mb/s) review/fable_take2/film_v3.mp4; sheets film_v3_sheet_01..05.jpg
+    node fable/take2/tools/render.mjs --mp4 work_fable/take2/out/film_v3_local_master.mp4 ... (likeness, 589 s) -> film_v3_local.mp4
+Outputs: review/fable_take2/film_v3.mp4 76.4 MB (282.8 s, likeness=0, HUD on); sheets 0.67-1.30 MB each; local
+work_fable/take2/out/film_v3_local.mp4 76.2 MB. check.py (out/check_v3.txt): 161 hard cuts, mean |error| 0.28 fr, 150 of 152 within
+0.5 fr; outliers pc03 +1.89 (the proof's bar 38), bu40 +2.80 (the 3-frame flash), ca08 +2.08 no clear change (the fold's match cut);
+no clear change also bb16, bb22, bb31, bu09, dr01, cb04, oa03, oa04 (as v2). Type all pass; 22 lyric lines, 119 words, none under 0.6 s;
+single frame vs full render 11 of 11 identical; last frame equals frame 0 with hud=0 (max diff 0).
+Looked at: the five sheets and one-frame-per-beat strips of b12, b17-18, b20, b25-26, b28-32, b33-38, b41-42, b45, b64, b77, b81-84,
+b103-104, b105-106, b114-120, b139-148 (work_fable/take2/dev/v3/strips/). Nobody has watched v3 at speed with sound.

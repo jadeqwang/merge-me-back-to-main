@@ -1,8 +1,17 @@
 {
 "cmd": "git log --graph --format=\"%h %s\" fable/merge",
 "note": "real lines of this repo branch, captured for the terminal shot (b153-156) by tools/gitlog.py at render time; messages cut at 86 characters",
-"head": "3cc03b3",
+"head": "1fa413c",
 "lines": [
+"* 1fa413c film v3 wiring: band_v2 everywhere (side left, bar-37 turn at clip 2.8), ma\u2026",
+"* 0829d0c take two v3 plates: band_v2, main_light_v2, vio_wide_v2, wave_run_v3; main_\u2026",
+"* b806603 film v3 compositor 2: b26 lyric written by the light, b45 banach\u2013tarski lan\u2026",
+"* e7eb3c0 take two v3 plates: float_hand_v2, ins_violin_v3, drop_hero_5_v3, wushu_v3,\u2026",
+"* 3730c97 film v3 compositor 1: orchestra back to the hatched 3D (?orch=plates for v2\u2026",
+"* f3959bb take two: v3 brief, banach\u2013tarski easter egg lane (Jade)",
+"* e5b3b4d take two: v3 brief, the released words are the lyric at bar 26 (Jade)",
+"* 562d740 take two: v3 brief, main_light hands (Jade)",
+"* b014267 take two: v3 brief, wushu plate face (Jade)",
 "* 3cc03b3 take two: v3 brief, she sings 'I split myself' at bars 17-18 (Jade)",
 "* 7c45160 take two: v3 brief, band life plate retake at Hacker Dojo (Jade)",
 "* 6d9b8cb take two: v3 brief, the chorus 1 sprint sings (Jade)",
