@@ -3,12 +3,16 @@
 //   page: /fable/take2/index.html?timing=/analysis_v3/timing.json&w=1920&h=1080&fps=30
 //   query flags: hud=0 (no bar/beat/section/shot overlay), v7=0 (v7 shots as cards), paper=0 (v7 raw even if paper.js exists),
 //     proofbug=1 (the proof range exactly as the proof renders it, without the strip-lyric fix), plates=/a,/b (plate folders, first
-//     wins), v7dir=/work_fable/take2/v7/full, cards=1 (every non-proof shot as a card), mode=lanetest (written-lane test 7)
+//     wins), v7dir=/work_fable/take2/v7/full, cards=1 (every non-proof shot as a card), mode=lanetest (written-lane test 7),
+//     hero=old (bars 41-42: the proof's first hero plate instead of hero_paper), prooflanes=0 (bars 28-32: the proof's solid lane
+//     line instead of the written lane), trail=0 (bar 38 without the panel afterimages), lanes=0 (no written lanes on plates)
+//     proofbug=1 also switches every take-two change inside bars 28-43 off (the proof exactly as it renders on its own)
 // Layers: source (proof | plate | v7 [paper pass] | card) -> grain + vignette -> overlays (chip, counter, title) -> lyrics -> HUD.
 // Source kinds: see shots.js. A missing plate, or a v7 time outside the delivered sequence, draws as a labelled card.
 import { loadTiming, clamp01, lerp, seg, ease } from './timing.js';
 import { resolveShots, SECTIONS } from '../shots.js';
-import { LIVES, MAIN } from '../../proof/lives.js';
+import { LIVES, MAIN, byId } from '../../proof/lives.js';
+import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeProof } from './proofscene.js';
 
 const Q = new URLSearchParams(location.search);
@@ -18,7 +22,8 @@ const TIMING = Q.get('timing') || '/analysis_v3/timing.json';
 const PLATE_DIRS = (Q.get('plates') || '/work_fable/take2/plates,/work_fable/proof/plates').split(',');
 const PROOF_PLATES = '/work_fable/proof/plates';
 const V7DIR = Q.get('v7dir') || '/work_fable/take2/v7/full';
-const HUD = Q.get('hud') !== '0', USE_V7 = Q.get('v7') !== '0', USE_PAPER = Q.get('paper') !== '0', ALLCARDS = Q.get('cards') === '1';
+const HUD = Q.get('hud') !== '0', USE_V7 = Q.get('v7') !== '0', USE_PAPER = Q.get('paper') !== '0', ALLCARDS = Q.get('cards') === '1', LANES = Q.get('lanes') !== '0';
+const PROOFBUG = Q.get('proofbug') === '1';
 const canvas = document.getElementById('c'); canvas.width = W; canvas.height = H;
 const g = canvas.getContext('2d', { willReadFrequently: true, alpha: false });
 window.FILM = { ready: false, error: null };
@@ -69,7 +74,9 @@ const PLATE = {};
 async function findPlate(id) {
   if (id in PLATE) return PLATE[id];
   PLATE[id] = null;
-  for (const d of PLATE_DIRS) { const m = await json(`${d}/${id}/meta.json`); if (!m || m.placeholder) continue;
+  // complete = meta.json (not a placeholder) and its last frame, or the intake's REAL marker (intake writes frames, meta, REAL in that order)
+  for (const d of PLATE_DIRS) { const m = await json(`${d}/${id}/meta.json`); if (!m || m.placeholder || !m.n) continue;
+    if (!(await exists(`${d}/${id}/REAL`)) && !(await exists(`${d}/${id}/frames/f_${String(m.n).padStart(4, '0')}.jpg`))) continue;
     const p = { id, dir: `${d}/${id}`, meta: m, still: await exists(`${d}/${id}/still.jpg`) };
     const b = await bitmap(`${p.dir}/frames/f_0001.jpg`); p.w = b.width; p.h = b.height; PLATE[id] = p; break; }
   return PLATE[id];
@@ -120,28 +127,36 @@ function buildLyrics() {
 const proofOwns = (t) => PROOF && t >= PROOF.t0 - HF && t < PROOF.tEnd - HF;
 const LAYOUT = new Map();
 // rows of words that fit maxW; returns [{x,y,w,txt,wi}] for placement 'strip' (cards) or 'low' (full-frame sources)
-function layoutLine(l, place) {
-  const key = l.id + ':' + place; if (LAYOUT.has(key)) return LAYOUT.get(key);
+// lyr (shot opt): {x0, x1, y: 'bottom'|'top', align: 'left'|'center'|'right'} region in frame fractions (full-frame sources only)
+// with a region, only the words sung before the shot ends (tEnd) are laid out, so a line that runs on into the next shot does not
+// reserve rows for words this shot never shows
+function layoutLine(l, place, lyr, tEnd) {
+  const key = l.id + ':' + place + ':' + (lyr ? JSON.stringify(lyr) + tEnd : ''); if (LAYOUT.has(key)) return LAYOUT.get(key);
   const f = l.slab ? capFont('slab', SZ.slab * S) : capFont('serif', SZ.verse * S); setFont(f);
   if (l.slab) g.letterSpacing = `${-0.01 * parseFloat(f.font.split(' ')[1])}px`;
-  const cap = (l.slab ? SZ.slab : SZ.verse) * S, lead = cap * (l.slab ? 1.3 : 1.5), maxW = W - 200 * S;
+  const R = lyr && place !== 'strip' ? { x0: (lyr.x0 === undefined ? 0 : lyr.x0) * W, x1: (lyr.x1 === undefined ? 1 : lyr.x1) * W, y: lyr.y || 'bottom', align: lyr.align || 'center' } : null;
+  const cap = (l.slab ? SZ.slab : SZ.verse) * S, lead = cap * (l.slab ? 1.3 : 1.5), maxW = R ? Math.min(R.x1 - R.x0, W - 200 * S) : W - 200 * S;
   const txt = (w) => (l.slab ? w.w.toUpperCase() : w.w), sp = g.measureText(' ').width * (l.slab ? 0.8 : 1);
   const rows = [[]]; let x = 0;
-  l.words.forEach((w, wi) => { const ww = g.measureText(txt(w)).width; if (x > 0 && x + sp + ww > maxW) { rows.push([]); x = 0; } if (x > 0) x += sp; rows[rows.length - 1].push({ wi, txt: txt(w), x, w: ww }); x += ww; });
+  l.words.forEach((w, wi) => { if (R && tEnd !== undefined && !(w.start < tEnd - HF)) return; const ww = g.measureText(txt(w)).width; if (x > 0 && x + sp + ww > maxW) { rows.push([]); x = 0; } if (x > 0) x += sp; rows[rows.length - 1].push({ wi, txt: txt(w), x, w: ww }); x += ww; });
   g.letterSpacing = '0px';
   const top = CARD_H, n = rows.length; let y0;
   if (place === 'strip') y0 = top + (H - top) / 2 - ((n - 1) * lead) / 2 + cap / 2;          // centred in the strip under the card
+  else if (R && R.y === 'top') y0 = 70 * S + cap;                                                // a shot's region: top
   else y0 = H - (l.slab ? 96 : 84) * S - (n - 1) * lead;                                      // full-frame: bottom, rising with rows
-  const out = []; rows.forEach((r, ri) => { const rw = r.length ? r[r.length - 1].x + r[r.length - 1].w : 0; const x0 = l.slab && place !== 'strip' ? 100 * S : (W - rw) / 2;
+  const out = []; rows.forEach((r, ri) => { const rw = r.length ? r[r.length - 1].x + r[r.length - 1].w : 0;
+    const x0 = R ? (R.align === 'left' ? R.x0 : R.align === 'right' ? R.x1 - rw : (R.x0 + R.x1 - rw) / 2) : l.slab && place !== 'strip' ? 100 * S : (W - rw) / 2;
     for (const q of r) out.push({ ...q, x: x0 + q.x, y: y0 + ri * lead }); });
-  const res = { f, words: out, slab: l.slab, top: y0 - cap - 30 * S }; LAYOUT.set(key, res); return res;
+  const bx0 = Math.min(...out.map((q) => q.x)), bx1 = Math.max(...out.map((q) => q.x + q.w));
+  const res = { f, words: out, slab: l.slab, top: y0 - cap - 30 * S, region: R, box: { x: bx0, y: y0 - cap, w: bx1 - bx0, h: (n - 1) * lead + cap * 1.3 } }; LAYOUT.set(key, res); return res;
 }
-function lyrics(t, eff) {
+function lyrics(t, eff, s) {
   if (proofOwns(t)) return;
   for (const l of LYR) {
     if (!on(t, l.t0) || t > l.out) continue;
-    const la = 1 - clamp01((t - l.out + 0.2) / 0.2), place = eff === 'card' ? 'strip' : 'low', Lx = layoutLine(l, place);
-    if (place === 'low') { const gr = g.createLinearGradient(0, Lx.top - 60 * S, 0, H); gr.addColorStop(0, 'rgba(5,6,26,0)'); gr.addColorStop(1, `rgba(5,6,26,${0.5 * la})`); g.fillStyle = gr; g.fillRect(0, Lx.top - 60 * S, W, H - Lx.top + 60 * S); }
+    const la = 1 - clamp01((t - l.out + 0.2) / 0.2), place = eff === 'card' ? 'strip' : 'low', Lx = layoutLine(l, place, s && s.opt && s.opt.lyr, s && s.t1);
+    if (place === 'low' && Lx.region) { const B = Lx.box, p = 50 * S; g.save(); g.filter = `blur(${Math.round(36 * S)}px)`; g.fillStyle = `rgba(5,6,26,${0.42 * la})`; g.fillRect(B.x - p, B.y - p, B.w + 2 * p, B.h + 2 * p); g.restore(); }   // a soft dark cloud behind the words only
+    else if (place === 'low') { const gr = g.createLinearGradient(0, Lx.top - 60 * S, 0, H); gr.addColorStop(0, 'rgba(5,6,26,0)'); gr.addColorStop(1, `rgba(5,6,26,${0.5 * la})`); g.fillStyle = gr; g.fillRect(0, Lx.top - 60 * S, W, H - Lx.top + 60 * S); }
     setFont(Lx.f); if (Lx.slab) g.letterSpacing = `${-0.01 * parseFloat(Lx.f.font.split(' ')[1])}px`;
     for (const q of Lx.words) { const w = l.words[q.wi]; if (!on(t, w.start)) continue;
       const ff = fr(t, w.start), a = clamp01((ff + 1) / 3) * la; if (a <= 0) continue;
@@ -179,12 +194,19 @@ function vignette() {
 }
 
 // ---------------------------------------------------------------- sources
-// plate: clip time from the shot start; nearest frame by default (no blend), twos = 12 fps, still = still.jpg
+// plate: clip time from the shot start; nearest frame unless the clip is slowed (then a frame blend), twos = 12 fps, still = still.jpg
+// clip map of a shot: { c0, sp } with clip time = c0 + (t - t0) * sp (see shots.js opt: clip0/clip1/speed, cross)
+function clipMap(s) {
+  const o = s.opt || {}, D = s.t1 - s.t0;
+  if (o.cross) { const x = o.cross, ta = x.at * D, sp = Math.max(1, Math.min(x.maxSpeed || 1.5, x.reach / ta)); return { c0: Math.max(0, x.reach - sp * ta), sp }; }
+  if (o.clip1 !== undefined) return { c0: o.clip0 || 0, sp: (o.clip1 - (o.clip0 || 0)) / D };
+  return { c0: o.clip0 || 0, sp: o.speed || 1 };
+}
 function plateDraw(s, t, id, out) {
-  const p = PLATE[id], m = p.meta, o = s.opt || {}, last = (m.n - 1) / m.fps;
-  let c = softcap(Math.max(0, (o.clip0 || 0) + (t - s.t0) * (o.speed || 1)), last);
+  const p = PLATE[id], m = p.meta, o = s.opt || {}, last = (m.n - 1) / m.fps, cm = clipMap(s), blend = o.blend !== undefined ? o.blend : cm.sp < 0.999;
+  let c = softcap(Math.max(0, cm.c0 + (t - s.t0) * cm.sp), last);
   if (o.twos) c = Math.floor(c * 12 + 1e-6) / 12;
-  const f = c * m.fps, i0 = Math.min(m.n - 1, o.blend ? Math.floor(f) : Math.round(f)), i1 = Math.min(m.n - 1, i0 + 1), fb = o.blend ? f - i0 : 0;
+  const f = c * m.fps, i0 = Math.min(m.n - 1, blend ? Math.floor(f) : Math.round(f)), i1 = Math.min(m.n - 1, i0 + 1), fb = blend ? f - i0 : 0;
   const u = seg(t, s.t0, s.t1), zoom = (o.zoom0 || 1) + (o.push === undefined ? 0.03 : o.push) * ease.io(u);
   const fo = o.fx !== undefined ? [o.fx, o.fy] : [0.5, 0.45];
   if (o.still && p.still) out.push({ url: `${p.dir}/still.jpg`, zoom, fo });
@@ -194,6 +216,11 @@ function scene(t) {
   const s = shotAt(t); const sc = { t, s, eff: effKind(s), imgs: [] };
   if (sc.eff === 'v7') { const k = v7Index(t); if (k < 0) sc.eff = 'card'; else sc.imgs.push({ url: v7Url(k), v7: true }); }
   if (sc.eff === 'plate') plateDraw(s, t, s.src, sc.imgs);
+  const x = s.opt && s.opt.cross;   // the crossing: from `at` the doorway grows into the life plate
+  if (sc.eff === 'plate' && x && PLATE[x.life] && !ALLCARDS) { const D = s.t1 - s.t0, ta = s.t0 + x.at * D, te = s.t0 + x.end * D;
+    if (on(t, ta)) { sc.cross = { u: t >= te - HF ? 1 : seg(t, ta - HF, te - HF), life: [], door: x.door, col: (byId[x.life] || {}).color || MAIN };
+      plateDraw({ t0: ta, t1: s.t1 + 1, opt: { clip0: x.life0 || 0, push: 0.04 } }, t, x.life, sc.cross.life);
+      if (sc.cross.u >= 1) sc.imgs = []; } }
   const fl = s.opt && s.opt.flash;   // a few frames of a life plate at the head of the shot
   if (fl && fr(t, s.t0) < fl.frames && PLATE[fl.id] && !ALLCARDS) { sc.flash = []; plateDraw({ ...s, opt: { clip0: 1.5, push: 0 } }, t, fl.id, sc.flash); }
   return sc;
@@ -271,6 +298,37 @@ function hud(t, sc) {
   g.fillStyle = 'rgba(0,0,0,0.6)'; g.fillRect(x - 10 * S, y - 26 * S, tw + 20 * S, 34 * S); g.fillStyle = '#9EF0B0'; g.fillText(txt, x, y);
 }
 
+// ---------------------------------------------------------------- crossing wipe and written lanes (Step 2)
+let CROPC = null;
+// plate fraction (px, py) -> screen, through the first image's cover crop (zoom and focus): overlays stay on the drawn plate
+function plateToScreen(im, px, py) { const b = READY.get(im.url), cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
+  return { x: ((px * b.width - cr.sx) / cr.sw) * W, y: ((py * b.height - cr.sy) / cr.sh) * H }; }
+function crossing(sc) {
+  const c = sc.cross; if (c.u >= 1) { drawImgs(c.life); return; }
+  const a = plateToScreen(sc.imgs[0], c.door[0], c.door[1]), b = plateToScreen(sc.imgs[0], c.door[2], c.door[3]);
+  const e = ease.io3(c.u), m = 6 * S;   // grows past the frame edge by m, so no edge pixel of the old picture survives the last wipe frame
+  const r = { x: lerp(a.x, -m, e), y: lerp(a.y, -m, e), w: lerp(b.x - a.x, W + 2 * m, e), h: lerp(b.y - a.y, H + 2 * m, e) };
+  g.save(); g.beginPath(); g.rect(r.x, r.y, r.w, r.h); g.clip();
+  for (const im of c.life) { const bb = READY.get(im.url), cr = cover(bb.width, bb.height, r.w, r.h, im.zoom || 1, 0.5, 0.5);
+    g.globalAlpha = im.alpha === undefined ? 1 : im.alpha; g.imageSmoothingQuality = 'high'; g.drawImage(bb, cr.sx, cr.sy, cr.sw, cr.sh, r.x, r.y, r.w, r.h); }
+  g.restore();
+  // the doorway's light edge, in the life's lane colour, fading as it opens
+  const ea = 1 - clamp01(e * 1.3); if (ea > 0.01) { g.save(); g.globalAlpha = ea; g.shadowColor = c.col; g.shadowBlur = 24 * S; g.strokeStyle = c.col; g.lineWidth = 5 * S; g.strokeRect(r.x, r.y, r.w, r.h);
+    g.shadowBlur = 0; g.strokeStyle = '#FFF6E8'; g.lineWidth = 1.5 * S; g.strokeRect(r.x, r.y, r.w, r.h); g.restore(); }
+}
+const MAIN_LANE = laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true);
+const laneText = (k) => (k === 'main' ? MAIN_LANE : laneString([byId[k].msg], true));
+function lane(t, sc) {
+  const L = sc.s.opt.lane, im = sc.imgs[0]; if (!im) return;
+  const pts = L.pts.map(([x, y]) => plateToScreen(im, x, y));
+  let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+  // grow [a, b]: the lane is written out over that part of the shot, from its first point, or from its last with growEnd (paths run
+  // left to right so the type is upright; a lane leaving her hand on the right is written from its end)
+  const u = seg(t, sc.s.t0, sc.s.t1), p = L.grow ? ease.out(seg(u, L.grow[0], L.grow[1])) : 1;
+  const upto = L.grow && !L.growEnd ? len * p : undefined, from = L.grow && L.growEnd ? len * (1 - p) : 0;
+  drawWrittenLane(g, pts, { text: laneText(L.text), color: L.color || MAIN, cap: (L.cap || 22) * S, scroll: (L.scroll || 0) * (t - sc.s.t0), merge: L.merge || 0, under: L.under === undefined ? 0.35 : L.under, upto, from });
+}
+
 // ---------------------------------------------------------------- the frame
 function drawImgs(list) {
   for (const im of list) { const b = READY.get(im.url); const cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
@@ -281,15 +339,18 @@ function draw(t, sc) {
   g.fillStyle = BG; g.fillRect(0, 0, W, H);
   const s = sc.s, sec = SECTIONS[s.sec];
   if (sc.flash) drawImgs(sc.flash);
-  else if (sc.eff === 'plate') drawImgs(sc.imgs);
+  else if (sc.eff === 'plate') { drawImgs(sc.imgs); if (sc.cross) crossing(sc); }
   else if (sc.eff === 'v7') {
-    const b = READY.get(sc.imgs[0].url), rect = { x: 0, y: 0, w: W, h: H };
+    let b = READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = s.opt && s.opt.v7crop;
+    if (vc) { if (!CROPC) { CROPC = document.createElement('canvas'); CROPC.width = W; CROPC.height = H; } const x = CROPC.getContext('2d'); x.imageSmoothingQuality = 'high';
+      x.drawImage(b, vc[0] * b.width, vc[1] * b.height, vc[2] * b.width, vc[3] * b.height, 0, 0, W, H); b = CROPC; }
     if (paperPass && USE_PAPER) { g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
-    else drawImgs(sc.imgs);
+    else g.drawImage(b, 0, 0, W, H);
   } else card(t, s);
   grain(t); vignette();
+  if (sc.eff === 'plate' && LANES && s.opt && s.opt.lane && !(sc.cross && sc.cross.u >= 1)) lane(t, sc);
   overlays(t, sc);
-  lyrics(t, sc.eff);
+  lyrics(t, sc.eff, s);
 }
 let LOCK = Promise.resolve();
 function render(t) { const p = LOCK.then(() => render1(t)); LOCK = p.catch(() => {}); return p; }
@@ -297,7 +358,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc); if (HUD) hud(t, sc); return sc;
 }
 
@@ -306,15 +367,24 @@ async function boot() {
   await Promise.all(FONTS.map(async ([name, u, desc]) => { const f = new FontFace(name, `url("${encodeURI(u)}")`, desc); await f.load(); document.fonts.add(f); }));
   await document.fonts.ready;
   for (const [face, wt] of [['mono', 600], ['mono', 500], ['serif'], ['slab'], ['sans', 500]]) { setFont(face === 'mono' || face === 'sans' ? FACE[face](100, wt) : FACE[face](100)); CAP[face + (wt || '')] = g.measureText('H').actualBoundingBoxAscent / 100; }
+  measureMono(g);
   T = await loadTiming(TIMING);
   SH = resolveShots(T);
-  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); }
+  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); }
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
   try { ({ paperPass } = await import('./paper.js')); } catch (e) { console.log('paper.js not loaded (' + String(e).slice(0, 80) + '); v7 shots are raw'); }
   try { ({ glyphPass } = await import('./glyph.js')); } catch (e) { console.log('glyph.js not loaded'); }
-  PROOF = await makeProof(g, { W, H, FPS, T, plates: PROOF_PLATES, twos: false, fixStrip: Q.get('proofbug') !== '1' });
+  // take-two changes inside the proof range (all off with proofbug=1): the black-paper hero (hero_paper, nearest frame; hero=old for the
+  // first one), written lanes on the ten lives (prooflanes=0 off), bar 38 panel afterimages (trail=0 off)
+  const heroNew = !PROOFBUG && Q.get('hero') !== 'old' && (await findPlate('hero_paper'));
+  PROOF = await makeProof(g, { W, H, FPS, T, plates: PROOF_PLATES, twos: false, fixStrip: !PROOFBUG,
+    dirs: heroNew ? { hero: heroNew.dir } : {}, heroBlend: !heroNew,
+    // hero_paper has her in the centre: crop so she sits right of centre, the slab stacks one word per row on the left (rule 5: clear of
+    // her face and hands), and the written lane passes behind her legs
+    hero: heroNew ? { zoom: 1.25, fx: 0, fy: 0.05, rows: [[0], [1], [2], [3], [4]], gap: [0.5, 0.77] } : null, writtenLanes: !PROOFBUG && Q.get('prooflanes') !== '0' ? { drawWrittenLane, laneString } : null,
+    trail: !PROOFBUG && Q.get('trail') !== '0' });
   // the proof range must be exactly the proof shots of the list
   const pr = SH.filter((s) => s.kind === 'proof'); if (Math.abs(pr[0].t0 - PROOF.t0) > 0.002 || Math.abs(pr[pr.length - 1].t1 - PROOF.tEnd) > 0.002) throw new Error('proof range does not match the shot list');
   LYR = buildLyrics(); buildGrain();
@@ -326,7 +396,7 @@ async function boot() {
   Object.assign(sizes, PROOF.sizes);
   // font px of each mono label too (the 24 px rule for chips and labels is a font-size rule)
   for (const k of Object.keys(sizes)) sizes[k].fontPx = parseFloat(sizes[k].font.match(/(\d+(\.\d+)?)px/)[1]);
-  const shots = SH.map((s) => ({ id: s.id, sec: s.sec, from: s.from, to: s.to, t0: s.t0, t1: s.t1, code: s.code, kind: s.kind, src: s.src, status: s.status, eff: effKind(s), flash: s.opt && s.opt.flash ? s.opt.flash : null, pic: s.pic }));
+  const shots = SH.map((s) => ({ id: s.id, sec: s.sec, from: s.from, to: s.to, t0: s.t0, t1: s.t1, code: s.code, kind: s.kind, src: s.src, status: s.status, eff: effKind(s), found: s.kind === 'plate' ? !!PLATE[s.src] : null, flash: s.opt && s.opt.flash ? s.opt.flash : null, pic: s.pic }));
   let ws = null, ack = null;
   async function post(i) {
     if (!ws) { ws = new WebSocket(`ws://${location.host}/__ws`); ws.binaryType = 'arraybuffer'; await new Promise((r) => (ws.onopen = r)); ws.onmessage = () => ack && ack(); }
@@ -334,7 +404,7 @@ async function boot() {
   }
   await render(+(Q.get('t') || 0));
   Object.assign(window.FILM, { ready: true, W, H, FPS, t0: 0, tStop: T.duration, n: N, timing: TIMING, barBeatWorst: T.barBeatWorst, sizes, shots,
-    proof: { t0: PROOF.t0, tEnd: PROOF.tEnd }, v7: V7, paper: !!paperPass, glyph: !!glyphPass, plates: Object.fromEntries(Object.entries(PLATE).map(([k, p]) => [k, p ? p.dir : null])),
+    proof: { t0: PROOF.t0, tEnd: PROOF.tEnd, hero: heroNew ? heroNew.dir : 'proof hero' }, v7: V7, paper: !!paperPass, glyph: !!glyphPass, plates: Object.fromEntries(Object.entries(PLATE).map(([k, p]) => [k, p ? p.dir : null])),
     lyrics: LYR.map((l) => ({ id: l.id, slab: l.slab, t0: l.t0, out: l.out, words: l.words })), render, async renderAndPost(t, i) { await render(t); await post(i); } });
 }
 async function main() {

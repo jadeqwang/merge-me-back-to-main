@@ -52,7 +52,8 @@ const SZ = { chyron: 36, commit: 26, lyricUL: 68, lyricStrip: 70, slab: 106, cel
 
 // ---------------------------------------------------------------- plates
 const META = {}, DIM = {}, CACHE = new Map(); const CMAX = 160;
-const url = (id, i) => `${PLATES}/${id}/frames/f_${String(i + 1).padStart(4, '0')}.jpg`;
+const pdir = (id) => (o.dirs && o.dirs[id]) || `${PLATES}/${id}`;   // take two: o.dirs overrides a plate's folder
+const url = (id, i) => `${pdir(id)}/frames/f_${String(i + 1).padStart(4, '0')}.jpg`;
 async function bitmap(id, i) {
   const k = url(id, i); let p = CACHE.get(k);
   if (p) { CACHE.delete(k); CACHE.set(k, p); return p; }
@@ -180,10 +181,17 @@ function scene(t) {
   if (t >= TL.tEnd - HF) { sc.black = true; return sc; }
   const full = { x: 0, y: 0, w: W, h: H };
   if (on(t, TL.t41)) { const f = fr(t, TL.t41), punch = f <= 8 ? 1 + 0.04 * Math.pow(1 - f / 8, 2) : 1;
-    P.push({ id: 'hero', c: softcap(t - TL.t41, (META.hero.n - 1) / META.hero.fps), rect: full, zoom: (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, blend: true }); sc.phase = 'E'; return sc; }
+    P.push({ id: 'hero', c: softcap(t - TL.t41, (META.hero.n - 1) / META.hero.fps), rect: full, zoom: (o.hero ? o.hero.zoom : 1) * (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, fx: o.hero ? o.hero.fx : 0.5, fy: o.hero ? o.hero.fy : 0.5, blend: o.heroBlend !== false }); sc.phase = 'E'; return sc; }
   if (!on(t, TL.grid)) { const s = shotAt(t) || TL.shots[0]; sc.shot = s; sc.phase = 'A'; P.push({ id: s.id, c: clipA(s, t), rect: full, zoom: 1 + s.push * seg(t, s.t0, s.t1), fy: clamp01(0.45 + (byId[s.id].yshift || 0)), blend: true }); return sc; }
   sc.phase = t < TL.t38 - HF ? 'B' : 'D';
   const GS = gridState(t); sc.grid = GS;
+  if (o.trail && on(t, TL.t38)) for (const C of GS.cells) {   // take two: afterimages of the panel's last frame, from its place toward its node
+    const m = C.m, c0 = CELL[C.i]; if (!on(t, TL.col[m.col]) || C.sigma > 0.98) continue;
+    const cLast = gridClip(C.i, TL.shrunk[m.col]), fade = 1 - ease.io(seg(t, TL.shrunk[m.col], TL.t39 + 0.3)), fo = META[C.L.id].focus || [0.5, 0.5];
+    for (let k = 0; k < 5; k++) { const sg = 1 - k * 0.19; if (C.sigma > sg - 0.03) continue;
+      const wr = { x: m.n.x + (c0.x - m.n.x) * sg, y: m.n.y + (c0.y - m.n.y) * sg, w: c0.w * sg, h: c0.h * sg };
+      const a = toScr(GS.cam, { x: wr.x, y: wr.y }), b = toScr(GS.cam, { x: wr.x + wr.w, y: wr.y + wr.h });
+      P.push({ id: C.L.id, c: cLast, rect: { x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y }, alpha: fade * (0.55 - 0.08 * k), ghost: C.L.color, fx: fo[0], fy: fo[1] }); } }
   for (const C of GS.cells) if (C.sigma > 0.004 && C.rect.w > 1) { const fo = META[C.L.id].focus || [0.5, 0.5];
     P.push({ id: C.L.id, c: C.c, rect: C.rect, alpha: C.alpha, cell: C, fx: fo[0], fy: fo[1], blend: (gridClip(C.i, t + 0.02) - C.c) / 0.02 < 0.85 }); }
   if (on(t, TL.t39)) {
@@ -255,8 +263,12 @@ const plen = (pts) => { let l = 0; for (let i = 1; i < pts.length; i++) l += Mat
 function linesA(t, s) {
   const L = byId[s.id], prev = s.i > 0 ? byId[TL.shots[s.i - 1].id].color : MAIN, f = fr(t, s.t0), nx = nodeX(s.id);
   const maxD = Math.max(nx, W - nx), r = f >= 2 ? 1e9 : ((f + 1) / 3) * maxD;     // the new colour wipes out from wherever the node now is
+  if (o.writtenLanes) { const WL = o.writtenLanes, pts = [{ x: 0, y: YM }, { x: W, y: YM }], a = Math.max(0, nx - r), b = Math.min(W, nx + r), sc = (t - s.t0) * 7;   // take two
+    if (s.i > 0 && (a > 0 || b < W)) line(0, YM, W, YM, prev, 4 * S);
+    WL.drawWrittenLane(g, pts, { text: WL.laneString([L.msg], true), color: L.color, cap: 24 * S, scroll: sc, from: a, upto: b, under: 0.45 }); }
+  else {
   line(0, YM, W, YM, prev, 6 * S);
-  line(Math.max(0, nx - r), YM, Math.min(W, nx + r), YM, L.color, 6 * S, false);
+  line(Math.max(0, nx - r), YM, Math.min(W, nx + r), YM, L.color, 6 * S, false); }
   if (f < 2) for (const x of [nx - r, nx + r]) if (x > 0 && x < W) glow(x, YM, 18 * S, L.color, 0.9);
   ring(nx, YM, 13 * S + (f < 4 ? 5 * S * (1 - f / 4) : 0), L.color);
 }
@@ -328,7 +340,8 @@ function linesHero(t) {
   const cap = 22 * S, f = FACE.mono(pxFor('mono', cap, 600), 600); setFont(f);
   if (!LANE_TXT) { const str = ['merge me back to main', ...LIVES.map((l) => l.msg)].join(' \u00b7 ').toUpperCase() + ' \u00b7 '; LANE_TXT = { str, w: g.measureText(str).width }; }
   const yb = YM + cap / 2, off = ((t - TL.t41) * 46 * S) % LANE_TXT.w, gapL = NX - 34 * S, gapR = NX + 34 * S;
-  g.save(); g.beginPath(); g.rect(0, 0, gapL, H); g.rect(gapR, 0, W - gapR, H); g.clip();
+  g.save(); g.beginPath(); if (o.hero && o.hero.gap) { const a = o.hero.gap[0] * W, b = o.hero.gap[1] * W; g.rect(0, 0, gapL, H); g.rect(gapR, 0, a - gapR, H); g.rect(b, 0, W - b, H); }   // take two: her legs pass in front of the lane
+  else { g.rect(0, 0, gapL, H); g.rect(gapR, 0, W - gapR, H); } g.clip();
   textShadow(0.55, 6); g.fillStyle = MAIN; for (let x = -off; x < W; x += LANE_TXT.w) g.fillText(LANE_TXT.str, x, yb); noShadow();
   line(0, yb + 7 * S, W, yb + 7 * S, MAIN, 2.5 * S); g.restore();
   line(gapL, yb + 7 * S, gapR, yb + 7 * S, MAIN, 2.5 * S);
@@ -393,7 +406,7 @@ function lyricStrip(t) {
     L.words.forEach((w, i) => { const a = wordAlpha(t, w) * la; if (a > 0) { const rise = (1 - clamp01((fr(t, w.start) + 1) / 4)) * 8 * S; g.save(); g.globalAlpha = a; textShadow(0.8, 14); g.fillStyle = CREAM; g.fillText(w.w, x, STRIP_BASE + rise); noShadow(); g.restore(); } x += ws[i] + sp; });
   }
 }
-const SLAB_ROWS = [[0], [1, 2], [3, 4]], SLAB_X = 100 * S, SLAB_TRACK = -0.01;
+const SLAB_ROWS = (o.hero && o.hero.rows) || [[0], [1, 2], [3, 4]], SLAB_X = 100 * S, SLAB_TRACK = -0.01;   // take two: o.hero.rows
 function slabLayout() {
   const cap = SZ.slab * S, f = FACE.slab(pxFor('slab', cap)); setFont(f); g.letterSpacing = `${SLAB_TRACK * pxFor('slab', cap)}px`;
   const sp = g.measureText(' ').width * 0.8, lead = cap * 1.34, yLast = YM - 130 * S, words = [];
@@ -427,6 +440,8 @@ function draw(t, sc) {
   for (const P of sc.plates) {
     if (P.iris && !P.iris.done) { g.save(); g.beginPath(); g.arc(P.iris.node.x, P.iris.node.y, P.iris.r, 0, 6.2832); g.clip(); drawPlate(P); g.restore(); }
     else if (P.cell) { g.save(); g.beginPath(); g.rect(P.rect.x, P.rect.y, P.rect.w, P.rect.h); g.clip(); drawPlate(P); g.restore(); }
+    else if (P.ghost) { g.save(); g.beginPath(); g.rect(P.rect.x, P.rect.y, P.rect.w, P.rect.h); g.clip(); drawPlate(P);   // take two: bar 38 afterimage, tinted
+      g.globalAlpha = P.alpha; g.fillStyle = hexA(P.ghost, 0.22); g.fillRect(P.rect.x, P.rect.y, P.rect.w, P.rect.h); g.strokeStyle = hexA(P.ghost, 0.8); g.lineWidth = 2 * S; g.strokeRect(P.rect.x + S, P.rect.y + S, P.rect.w - 2 * S, P.rect.h - 2 * S); g.restore(); }
     else drawPlate(P);
   }
   // ---- finish: grain over the plates, vignette
@@ -461,7 +476,7 @@ async function render1(t) {
 // ---------------------------------------------------------------- init (from the proof's boot(), minus fonts, page and harness)
 for (const [face, wt] of [['mono', 600], ['mono', 500], ['serif'], ['slab']]) { setFont(face === 'mono' ? FACE.mono(100, wt) : FACE[face](100)); CAP[face + (wt || '')] = g.measureText('H').actualBoundingBoxAscent / 100; }
 T = o.T;
-for (const id of PLATE_IDS) { const r = await fetch(`${PLATES}/${id}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${PLATES}/${id}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
+for (const id of PLATE_IDS) { const r = await fetch(`${pdir(id)}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${pdir(id)}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
 buildTimeline(); TL.c0.sandstorm = clipA(TL.shots[9], TL.grid);
 { const c = cam(TL.t39); XROOT = ZAX + (NX - ZAX) / c.s; }
 buildGrain(); SLAB = slabLayout();
