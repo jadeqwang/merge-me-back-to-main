@@ -18,6 +18,7 @@
 //   opt       per-shot source options: clip0 (s into the clip), speed, push (zoom over the shot), zoom0, blend (frame blend, default
 //             off), twos (12 fps), still (use still.jpg), fx/fy (crop focus), flash {id, frames}
 //   alt       an alternative source named in the table
+// paper / ink: the paper pass for v7 sources in the section (default black paper, every lane hue kept)
 export const SECTIONS = {
   intro_a: { name: 'Intro A', color: '#FF7A1A' },
   intro_b: { name: 'Intro B', color: '#FF7A1A' },
@@ -27,10 +28,10 @@ export const SECTIONS = {
   break_a: { name: 'Breakdown A', color: '#22D3EE' },
   break_b: { name: 'Breakdown B', color: '#3DDC97' },
   build: { name: 'Build', color: '#3D8BFF' },
-  drop: { name: 'Drop', color: '#FFB020' },
+  drop: { name: 'Drop', color: '#FFB020', paper: 'black', ink: ['#FFB020'] },   // the sunrise drop: two colours, gold and black
   verse2: { name: 'Verse 2', color: '#9B6BFF' },
   chorus2: { name: 'Chorus 2', color: '#FF7A1A' },
-  outro_a: { name: 'Outro A', color: '#FF7A1A' },
+  outro_a: { name: 'Outro A', color: '#FF7A1A', paper: 'white' },              // day
   outro_bc: { name: 'Outro B-C', color: '#E24BD6' },
 };
 

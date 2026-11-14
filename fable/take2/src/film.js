@@ -24,6 +24,7 @@ const g = canvas.getContext('2d', { willReadFrequently: true, alpha: false });
 window.FILM = { ready: false, error: null };
 
 const BG = '#05061A', CREAM = '#FFF1D6', INK = '#14122B';
+const INKS = [...new Set([MAIN, ...LIVES.map((l) => l.color)])];   // paper pass: lane hues kept from the v7 source
 const fr = (t, e) => Math.round((t - e) * FPS);
 const on = (t, e) => t >= e - HF;
 const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
@@ -283,7 +284,7 @@ function draw(t, sc) {
   else if (sc.eff === 'plate') drawImgs(sc.imgs);
   else if (sc.eff === 'v7') {
     const b = READY.get(sc.imgs[0].url), rect = { x: 0, y: 0, w: W, h: H };
-    if (paperPass && USE_PAPER) { g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ink: sec.color, seed: 1000 + s.i, t }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
+    if (paperPass && USE_PAPER) { g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else drawImgs(sc.imgs);
   } else card(t, s);
   grain(t); vignette();
