@@ -245,7 +245,7 @@ function plateDraw(s, t, id, out) {
 const CROPS = { b: { z: 1.55, f: [[0.3, 0.35], [0.7, 0.6], [0.55, 0.3], [0.35, 0.65]] }, c: { z: 2.1, f: [[0.6, 0.45], [0.4, 0.5], [0.5, 0.6], [0.45, 0.35]] } };
 function scene(t) {
   const s = shotAt(t); const sc = { t, s, eff: effKind(s), imgs: [] };
-  if (sc.eff === 'v7') { const k = v7Index(t, s); if (k < 0) sc.eff = 'card'; else sc.imgs.push({ url: v7Url(k, s), v7: true }); }
+  if (sc.eff === 'v7') { const k = v7Index(t, s); if (k < 0) sc.eff = 'card'; else { sc.imgs.push({ url: v7Url(k, s), v7: true }); if (s.opt.windows) sc.wins = windowUrls(s, t); } }
   if (sc.eff === 'plate') plateDraw(s, t, s.src, sc.imgs);
   if (sc.eff === 'kit') for (const u of KITX.need(s, t)) sc.imgs.push({ url: u });
   if (sc.eff === 'code' && OUTRO && !['tiles', 'gitlog'].includes(s.opt.code)) for (const u of OUTRO.need(s, t)) sc.imgs.push({ url: u });
@@ -548,6 +548,39 @@ function comet(t, sc) { const o = sc.s.opt.comet, u = seg(t, sc.s.t0, sc.s.t1), 
   const P = (k) => ({ x: lerp(o.from[0], o.to[0], k) * W, y: lerp(o.from[1], o.to[1], k) * H - Math.sin(k * Math.PI) * 0.04 * H });
   g.save(); g.globalCompositeOperation = 'lighter'; for (let j = 8; j >= 0; j--) { const p = P(Math.max(0, e - 0.025 * j)); glowAt(p.x, p.y, (6 + 14 * (1 - j / 8) + 18 * e) * S, '#9B6BFF', (1 - j / 9) * 0.8); } g.restore(); }
 
+// b54-55 (film v2): the twelve worlds as small lit windows on the night world's horizon, and a commit node locking on under each one.
+// The v7 roads cannot be tracked through the paper pass, so the windows sit on a FIXED HORIZON BAND: the horizon row measured on the
+// raw v7 frames (o.horizon [[song s, y], ...], linear between), windows at o.xs (frame fractions, life order), bottom on the horizon,
+// each playing its life plate (cropped on her, plate meta focus) from clip 0.6 s. Each waits dark and lights when its commit node
+// locks on (o.locks[k] beats from the shot start): a ring closes onto the horizon under the window over the quarter beat before, a
+// lane-colour flash, the window flares on, then a steady node and a short light stem window->node. A dim reflection under each window (the ground is water).
+function horizonAt(o, t) { const K = o.horizon; let i = 0; while (i < K.length - 2 && t > K[i + 1][0]) i++; const a = K[i], b = K[i + 1]; return lerp(a[1], b[1], clamp01((t - a[0]) / (b[0] - a[0]))); }
+function windowUrls(s, t) { const o = s.opt.windows; return o.lives.map((id) => { const p = PLATE[id]; if (!p) return null;
+  const c = 0.6 + (t - s.t0) * 0.8, k = Math.min(p.meta.n - 1, Math.round(c * p.meta.fps)); return { url: plateUrl(p, k), life: id, fo: p.meta.focus || [0.5, 0.4] }; }).filter(Boolean); }
+function windows(t, sc) {
+  const s = sc.s, o = s.opt.windows, hy = horizonAt(o, t) * H, ub = bposT(t) - Math.round(bposT(s.t0)), wh = o.h * H, ww = wh * 16 / 9;
+  sc.wins.forEach((im, k) => { const b = READY.get(im.url); if (!b) return; const L = byId[im.life], cx = o.xs[k] * W, x = cx - ww / 2, y = hy - wh - 3 * S;
+    // every window waits dark (a faint shape on the horizon) and lights on its own lock: the continent lights up life by life on the beats
+    const lk = o.locks[k], dl = ub - lk, locked = dl >= 0, flare = locked && dl < 0.6 ? 1 - dl / 0.6 : 0;
+    const a = (locked ? 1 : 0.16) * (0.94 + 0.06 * Math.sin(t * 3 + k));
+    const cr = cover(b.width, b.height, ww, wh, o.zoom || 1.6, im.fo[0], im.fo[1]);
+    g.save(); g.globalAlpha = a; g.shadowColor = L.color; g.shadowBlur = (14 + 30 * flare) * S; g.fillStyle = L.color; g.fillRect(x - 2 * S, y - 2 * S, ww + 4 * S, wh + 4 * S); g.shadowBlur = 0;
+    g.drawImage(b, cr.sx, cr.sy, cr.sw, cr.sh, x, y, ww, wh);
+    if (flare > 0) { g.globalCompositeOperation = 'lighter'; g.fillStyle = hexA(L.color, 0.5 * flare); g.fillRect(x, y, ww, wh); g.globalCompositeOperation = 'source-over'; }
+    // reflection on the water: flipped, squashed, dim, broken into a few horizontal strips that drift
+    g.globalAlpha = a * 0.22; for (let j = 0; j < 4; j++) { const sy = cr.sy + cr.sh * (1 - (j + 1) / 4), dy = hy + 4 * S + j * wh * 0.16, dx = Math.sin(t * 2.2 + j * 1.7 + k) * 3 * S;
+      g.save(); g.translate(0, dy + wh * 0.16); g.scale(1, -1); g.drawImage(b, cr.sx, sy, cr.sw, cr.sh / 4, x + dx, 0, ww, wh * 0.16); g.restore(); }
+    g.restore();
+    // the commit node: a ring closing in over the quarter beat before the lock, a flash on it, then a steady node with a light stem
+    const ny = hy + 1.5 * S, pre = clamp01((ub - (lk - 0.25)) / 0.25);
+    if (pre > 0 && !locked) { g.save(); g.strokeStyle = hexA(L.color, 0.4 + 0.6 * pre); g.lineWidth = 3 * S; g.beginPath(); g.arc(cx, ny, lerp(46, 10, ease.in(pre)) * S, 0, 6.2832); g.stroke(); g.restore(); }
+    if (locked) { g.save(); g.globalCompositeOperation = 'lighter'; if (flare > 0) glowAt(cx, ny, (20 + 50 * flare) * S, L.color, flare);
+      g.strokeStyle = hexA(L.color, 0.55); g.lineWidth = 2 * S; g.beginPath(); g.moveTo(cx, y + wh + 2 * S); g.lineTo(cx, ny - 8 * S); g.stroke(); g.restore();
+      g.save(); g.fillStyle = '#05061A'; g.strokeStyle = L.color; g.lineWidth = 3.5 * S; g.beginPath(); g.arc(cx, ny, 8 * S, 0, 6.2832); g.fill(); g.stroke();
+      g.fillStyle = L.color; g.beginPath(); g.arc(cx, ny, 3.5 * S, 0, 6.2832); g.fill(); g.restore(); }
+  });
+}
+
 // ---------------------------------------------------------------- the frame
 function drawImgs(list) {
   for (const im of list) { const b = READY.get(im.url); const cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
@@ -585,6 +618,7 @@ function draw(t, sc) {
     else if (paperPass && USE_PAPER) { const { extraInk, ...lk } = look || {};
       g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ...(sec.stroke ? { stroke: sec.stroke } : {}), ink: [...(sec.ink || INKS), ...(extraInk || [])], seed: 1000 + s.i, t, ...lk }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else g.drawImage(b, 0, 0, W, H);
+    if (sc.wins) windows(t, sc);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
   if (s.opt && s.opt.white && sc.eff === 'plate') { const f = fr(t, s.t0); if (f <= 1) { g.fillStyle = `rgba(255,250,240,${f === 0 ? 0.85 : 0.4})`; g.fillRect(0, 0, W, H); } }   // 2-frame white flash (impact, snare)
@@ -599,7 +633,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.win || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.win || []), ...(sc.wins || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc);
   const z = s.opt && s.opt.toFrame0; if (z) { const t0 = T.duration - z; if (t > t0) {   // the end: cross to the film's own frame 0 (the last frame equals it)
     if (!F0) { const c = document.createElement('canvas'); c.width = W; c.height = H; const keep = g.getImageData(0, 0, W, H); const s0 = scene(0); READY.clear();
@@ -617,7 +651,7 @@ async function boot() {
   measureMono(g);
   T = await loadTiming(TIMING);
   SH = resolveShots(T);
-  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.strands && s.opt.strands.window) await findPlate(s.opt.strands.window); if (s.kind === 'code' && s.opt.lives) for (const id of s.opt.lives) await findPlate('det_' + id); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); if (s.opt && s.opt.base) { await findPlate(s.opt.base); await findPlate(s.opt.top); } }
+  for (const s of SH) { if (s.kind === 'plate') await findPlate(s.src); if (s.opt && s.opt.strands && s.opt.strands.window) await findPlate(s.opt.strands.window); if (s.kind === 'code' && s.opt.lives) for (const id of s.opt.lives) await findPlate('det_' + id); if (s.opt && s.opt.flash) await findPlate(s.opt.flash.id); if (s.opt && s.opt.cross) await findPlate(s.opt.cross.life); if (s.opt && s.opt.base) { await findPlate(s.opt.base); await findPlate(s.opt.top); } if (s.opt && s.opt.windows) for (const id of s.opt.windows.lives) await findPlate(id); }
   const vm = await json(`${V7DIR}/meta.json`);
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }

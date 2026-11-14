@@ -424,3 +424,12 @@ Stills: work_fable/take2/dev/v2/{credits,graph,ahh,b100}.jpg, check_lives_grid.j
    scroll leaves one empty glyph cell at the start). She moves to x 0.58 (lead room on the left, the way she runs). `dir: -1` = v1.
    Checked: 6 stills (dev/v2/town_sheet.jpg) and the clip dev/v2/town_v2.mp4 (238.45-245.27) as a 3-frame strip of the road
    (town_road_strip.jpg): facades, road and chips move together, about 35 px a frame.
+5. Bars 54-55 (ca10, film.js `windows()`, shots.js `NIGHT_WIN`): built on a FIXED HORIZON BAND, not on tracked roads (the v7 roads do
+   not survive the paper pass well enough to track; the raw horizon is a clean line, measured per 6 frames on v7/full 2766-2874:
+   y 0.4602 at 92.2 s to 0.4324 at 95.8 s, linear). Twelve 16:9 windows (h 0.042 H) in life order, nine left of her and three right
+   (her figure is x 0.64-0.80), bottom on the horizon, each playing its life plate (proof plates, cropped on her via meta focus, zoom
+   1.7) from clip 0.6 s, with a broken reflection under it. Each waits dark (alpha 0.16) and lights when its commit node locks on:
+   locks at beats 0,1,2,3 then 4,4.5,...,7.5 from the shot start (all twelve in two bars, the b130-131 rhythm); a ring closes in over
+   the quarter beat before, a lane-colour flash, a node with a light stem. Lyric for this shot: `tail: 4` ("LIVED CAN COME UNDONE",
+   three rows under the horizon): with the whole line the slab's rows crossed the horizon and the windows (tried, looked bad).
+   Checked: stills dev/v2/n54_{a,b,c}.jpg and the clip dev/v2/night_v2.mp4 (91.9-96.1 s) as a 9-frame strip (night_strip.jpg).

@@ -160,8 +160,15 @@ P(49, 51, 'fold_reach', 'missing', 'Close: she reaches one hand to the lens, the
 P(51, 53, 'fold_chest', 'missing', 'Hands crossed at her chest; a fan of twelve afterimages, each in a medium, folds into her one per beat.', { code: 'P+K', row: 'b51-52', opt: { lyr: { x0: 0.03, x1: 0.97, align: 'left' },   // one row along the bottom (her trousers): clear of the fan, face and hands
     fan: { matte: '/work_fable/take2/kit/fold_chest', pivot: [0.5, 0.98], lives: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'sandstorm', 'home', 'violet'] } } });
 P(53, 54, 'look_back', 'missing', "She stops and looks back over her shoulder: the same look as the lives'.", { row: 'b53', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });
+// b54-55 (film v2): the twelve worlds as small lit windows on the horizon (src/film.js windows()): a fixed horizon band, measured on the raw
+// v7 frames (the roads do not survive the paper pass well enough to track); xs = window centres in life order (frame fractions), clear of
+// her figure (x 0.64-0.80); locks = beats from the shot start when each commit node locks on (one per beat in bar 54, two per beat in bar
+// 55, so all twelve lock in the two bars, as the b130-131 folds do)
+const NIGHT_WIN = { lives: LIFE, h: 0.042, zoom: 1.7, horizon: [[92.2, 0.4602], [95.8, 0.4324]],
+  xs: [0.04, 0.105, 0.17, 0.235, 0.3, 0.365, 0.43, 0.495, 0.56, 0.845, 0.907, 0.969],
+  locks: [0, 1, 2, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5] };
 V(54, 56, 'night world', 'Wide: every road still glows to the horizon; along them the twelve worlds as small lit windows; commit nodes lock on, one per beat.',
-  { code: 'V7+P+C', ov: ['plate thumbnails (to do)', 'commit nodes per beat (to do)'], row: 'b54-55', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' } } });
+  { code: 'V7+P+C', row: 'b54-55', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left', tail: 4 }, windows: NIGHT_WIN } });   // lyric: only "lived can come undone" (the line's first words were set on the two shots before), so the slab stays under the horizon
 P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { clip0: 0, clip1: 3.0, push: 0, lyr: { y: 'top', top: 0.025, tail: 1 } } });   // the whole pull-out (close on the jacket back to the wide by 3 s); only the held UNDONE, one row at the very top, above her head
 
 // ------------------------------------------------------------------ Breakdown A: bars 57-64 (crash on b57, strings)
