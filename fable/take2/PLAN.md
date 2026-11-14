@@ -410,9 +410,26 @@ Each is small. Run them first, show Jade, then generate in bulk.
 
 ## 11. Order of work
 
-**State on 2026-11-13, end of session:** proof round 2 is in `review/fable_proof/` and Jade has approved the direction, the look and
-the faces. Spent $387.84 of the $600 project cap. Nothing in the table below has been started; the next step is Step 0.
+**State on 2026-11-13, late:** Steps 0 and 1 are done and waiting for Jade's notes. Spent $399.45 of the $600 project cap.
+- Step 0 results: `review/fable_take2/step0/index.html` (all ten tests and the running-shot diagnosis). Step 1: `review/fable_take2/animatic_v1.mp4`.
+- Code: compositor `fable/take2/` (`shots.js`, 187 shots; `src/film.js`; notes in `fable/take2/notes/compositor.md`), v7 time map and
+  hide flags (`fable/take2/notes/v7.md`; plates in `work_fable/take2/v7/full/`), paper and glyph passes (`notes/effects.md`), cut-outs
+  (`fable/take2/tools/matte.py`), generation (`fable/take2/gen/`).
+- Next: Jade's notes on the animatic and on the open points below; then Step 2. Do not generate the sections before her notes.
 
+What Step 0 changed (apply from Step 2 on):
+- The running-shot jump was a repeated step in the generated clip (same foot twice, source frames 65 to 78). Measure the stride period
+  of every running clip before accepting it (method in `review/fable_take2/step0/index.html`).
+- Plates play nearest-frame; blend only when a clip is slowed (24-to-30 blending pulsed sharpness at 6 Hz).
+- Clip prompts must say where lettering may appear for that view (`LETTER` in `fable/take2/gen/gen_clips.py`). "RARE EARTH stays as
+  drawn" made the model write it on the chest and move the sleeve patch.
+- The video model pushes in on full-length figures on a flat ground: runner-kit stills need a smaller figure and more margin, and one
+  must pass before the other eleven are made.
+- Paper pass: black paper only for now; white paper loses the picture. Its 12 fps boil makes large files; try `boil` below 1.
+- Patchwork and its settle work; build the real plate from an approved main-Jade still so the face is the sheet's.
+- Sung insert: both takes look pained; ask for a glad, open face. Jade to choose the likeness image (trace as is, or redrawn in the
+  Merge jacket). Lip-sync was not measured; lag variants exist. Likeness clips stay out of the public repo.
+- v7's lyrics written along its roads are part of the picture and are still in the re-timed plates.
 
 | Step | Work | Jade sees |
 |---|---|---|
