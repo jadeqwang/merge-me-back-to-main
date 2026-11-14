@@ -376,3 +376,20 @@ Outro B-C:
 - b157-161 'credits': commits, one per beat. **PLACEHOLDER wording from PLAN section 10 item 3, not approved by Jade.**
 - b161.3-end root_light; the last 1.5 s cross to the film's own frame 0 (rendered at t = 0 into a cache): checked, the last frame (8483)
   equals frame 0 with hud=0 (max diff 0).
+
+### Director's Step 5 clip notes applied; renders (2026-11-14, ~01:10)
+c2_lookup clip 0.3-3.5, zoom 1.19 anchored left (left 84 %: the stray arm never shows), the violet light drawn in code (`comet`, from
+the upper right toward her, arriving on the b123 downbeat), slab right; catch from clip 0; day_run cut-out drawn without its outer 2 %
+(`runner.edge`); root_light clip 2.5-5.0 slowed and blended (hand and light never touch), crossing to frame 0 over the last 1.5 s.
+Likeness (oa01, oa05): `opt.songLock` plays like_sing1/2 at natural speed locked to song time (meta t0_song); `?likeness=0` = cards.
+Checked locally that oa01 draws the plate without the flag; every committed file uses likeness=0.
+- section5_v1 (206.11-282.8, bars 120-end, likeness=0): 34.8 MB, 7 sheets. check: 19 clear cuts, max 0.49 fr, mean 0.20; no clear
+  change on cb04 (v7 into the converge kit: both dark), oa03 (town into the same town travel with the runner: by design a continuation),
+  oa04 (day_run into day_fork: both white paper); type and lyrics pass; 13 of 13 single frames identical.
+- film_v1 (whole film, likeness=0, HUD on): master work_fable/take2/out/film_film_v1_master.mp4 (444 s render, 6 workers); review
+  encode review/fable_take2/film_v1.mp4 76.0 MB (x264 slow CRF 20 capped 2.3 Mb/s, AAC 192k); sheets film_v1_sheet_01..05 (1 fps).
+  check: 153 clear cuts, mean |error| 0.29 fr, 150 within 0.5; outliers pc03 (+1.89, the proof's bar 38 move) and bu37/bu39 (+2.8,
+  the 3-frame flashes); type and lyrics pass; 15 of 15 single frames identical. check.py names the tag 'v1' for film_film_v1 (keep dir
+  symlink keep_v1 -> keep_film_v1).
+- Counts: 185 shots; effective in film_v1: 93 plate, 57 v7, 15 proof, 12 code, 6 kit, 2 cards (the likeness shots, by the flag).
+  Longest holds: credits ob03 7.69 s, the grid pc01 6.90 s, terminal ob02 6.83 s, graph ob01 6.82 s.
