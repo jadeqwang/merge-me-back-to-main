@@ -503,3 +503,37 @@ port_proof.py -> proofscene.js `o.aPlates`; the b33-38 grid keeps the old plate,
 - Not yet: wave_run take 2 slab layout (waiting), stance_drop_v2, drop_hero_1_v2, orch_*.
 Check clips (hud on, likeness default, sound): dev/v2/check_b73-93.mp4, check_b96-104.mp4; beat sheets (one frame per beat at beat +
 0.25, 6 across, 480 px cells) check_b73-93_beats.jpg, check_b96-104_beats.jpg (scratchpad tool beatsheet.py).
+
+### Film v2, item 9 part 2: the rest wired, film v2 rendered (2026-11-14)
+Wiring (commit "film v2 wiring 2"):
+- Orchestra b81-84 (notes/orchestra.md rev 3 wiring): shots 2-7 = orch_2..7 raw (no paper pass) via `next {kind: 'plate', flag:
+  'orch'}`, [clip0, speed] = orch_2 [0.65, 1.45], orch_3 [1.5, 1.2], orch_4 [1.55, 1.25] (strikes on the kicks), orch_5 [0.4, 0.93],
+  orch_6 [1.8, 1.35], orch_7 [0.3, 1]; shot 1 = the rev-3 3D arrival (solid paper look) with `opt.tail` dissolving over 5 frames from
+  139.60 into orch_1 from 1.0 s (the restyle kept the 3D layout: blocks, dais and walkers line up, checked on stills); shot 8 split:
+  orch_8 [0.3, 1] to b84 beat 3.5, then a new shot "orchestra rise" = 3D to b85 beat 2 (the hit). `?orch=v7` = the v1 route.
+- stance_drop_v2 at b75 from 0.89 s (holds from 1.0); drop_hero_1_v2 at b90 clip 2.0-3.6 (curls from 2.0, closed by 3.5 = at the end
+  of the two beats); ins_violin take 2 from 1.0 at 1.25x; wave_run take 2 clip 1.4-4.8, BACK TO MAIN slab low across the trousers
+  band (lyr bottom, centred, x 0.03-0.97, `cloud` 0.62: cream on a darker cloud; ink type would die on her navy trousers).
+- Checked on stills: dev/v2/w9/orch_cuts.jpg (every orchestra cut, the dissolve, rise and hit), misc.jpg (wave_run 3 frames, fist end,
+  b75, violin).
+- Shot count: 185 (b100 merged into one shot, shot 8 split in two).
+
+### Film v2 renders and checks (2026-11-14)
+Commands:
+    fable/take2/tools/render_film.sh film_v2 "" "likeness=0"          # public master work_fable/take2/out/film_film_v2_master.mp4 (465 s)
+    ffmpeg -i work_fable/take2/out/film_film_v2_master.mp4 -c:v libx264 -preset slow -crf 20 -maxrate 2300k -bufsize 4600k \
+      -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a aac -b:a 192k \
+      -movflags +faststart review/fable_take2/film_v2.mp4             # v1's encode
+    cp work_fable/take2/out/film_v2_sheet_0*.jpg review/fable_take2/; ln -sfn keep_film_v2 work_fable/take2/out/keep_v2
+    .venv/bin/python fable/take2/tools/check.py work_fable/take2/out/film_film_v2_master.mp4   # -> out/check_v2.txt
+    node fable/take2/tools/render.mjs --mp4 work_fable/take2/out/film_v2_local_master.mp4 --audio "inputs/Merge (keychange down).wav" --workers 6 --crf 16
+      then the same encode -> work_fable/take2/out/film_v2_local.mp4 (likeness, local only)
+Outputs: review/fable_take2/film_v2.mp4 75.9 MB (282.8 s, likeness=0, HUD on); film_v2_sheet_01..05.jpg (1 fps, 10x6).
+check.py: 169 hard cuts, mean |error| 0.29 fr, 158 of 161 within 0.5 fr; outliers pc03 +1.89 (the proof's bar 38), bu38/bu40 +2.8 (the
+3-frame flashes, as v1), ca08 +2.08 "no clear change" (the fold's match cut into fold_chest, by design); no clear change also on bb16,
+bb22, bb31, bu09, dr01, cb04, oa03 (as v1). Type all pass; 22 lyric lines, 119 words, none under 0.6 s; single frame vs full render 11 of
+11 identical; last frame equals frame 0 with hud=0 (max diff 0).
+Counts: 185 shots; effective (likeness=0): 100 plate, 50 v7, 15 proof, 13 code, 6 kit, 1 card (oa01, the likeness shot). Longest holds:
+credits ob03 7.69 s, grid pc01 6.90, terminal ob02 6.83, graph ob01 6.82.
+Looked at: the five sheets and one-frame-per-beat strips of b5-6, b28-32, b49-52, b54-55, b73-84, b85-93, b100, b114-117, b139-146
+(work_fable/take2/dev/v2/strips/). Nobody has watched v2 at speed with sound.
