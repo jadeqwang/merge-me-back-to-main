@@ -779,6 +779,34 @@
     "work_fable/take2/stills/drop_palm_sun_a1.jpg"
    ],
    "prompt": "Edit this picture; keep everything exactly as it is, in the same flat cel-shaded gold-and-black style: the same sun disc of gold pencil hatching in the same place and size, the same black paper. Change only one thing: remove the hand and the sleeve completely, so only the sun disc on the black paper is left. No other change. No text."
+  },
+  {
+   "id": "wave_run2",
+   "lane": "orange",
+   "view": "front",
+   "refs": [
+    "work_fable/take2/stills/day_jade_a1.jpg"
+   ],
+   "style": "A new picture of the same woman as the reference, in the same style as the reference: a cel-shaded anime drawing with a clean bold inked line on WHITE paper, coloured with strong, saturated coloured pencil; two tones of shading, no gradients, no glow, no 3D, no photographic sky; the white paper and its tooth show between the pencil strokes. Same face, same hair, same clothes as the reference. A powerful, dynamic action composition, like the climax of an anime film.",
+   "scene": "Seen from a LOW camera close in front of her: she sprints straight at the viewer, mid-stride, leaning forward into the run, one knee driving up toward the viewer and the opposite arm pumping forward, fists loose, her long black hair streaming straight back behind her; glad, fierce determination, lips closed. She fills the frame from the knees up: her head is near the top third of the picture, her body fills the middle, her knees are at the bottom edge. Under her feet a broad orange pencil road (orange #FF7A1A) runs straight toward the viewer to the bottom edge. Behind her and above her a TOWERING breaking wave rises higher than the picture and its crest curls forward over her head, throwing spray of white paper and small drops; the wave is made of THICK ribbons of saturated coloured pencil running along its curve, each ribbon one strong colour: rose pink, golden yellow, coral red, mint green, cyan, magenta, bright blue and violet, with thin gaps of white paper between the ribbons. The wave fills the whole background from edge to edge. There is NO grey ground, NO horizon line, NO band across the bottom, no city, no buildings: only white paper, the orange road, the wave and her."
+  },
+  {
+   "id": "wave_run3",
+   "lane": "orange",
+   "view": "front",
+   "refs": [
+    "work_fable/take2/stills/day_jade_a1.jpg"
+   ],
+   "style": "A new picture of the same woman as the reference, in the same style as the reference: a cel-shaded anime drawing with a clean bold inked line on WHITE paper, coloured with strong, saturated coloured pencil; two tones of shading, no gradients, no glow, no 3D, no photographic sky; the white paper and its tooth show between the pencil strokes. Same face, same hair, same clothes as the reference. A powerful, dynamic action composition, like the climax of an anime film.",
+   "scene": "Seen from a LOW camera close in front of her: she sprints straight at the viewer, mid-stride, leaning forward into the run, one knee driving up toward the viewer and the opposite arm pumping forward, fists loose, her long black hair streaming straight back behind her; her face open and glad, eyes bright and determined, brows relaxed, NO frown, lips closed. CLOSE framing, a medium shot: the bottom edge of the picture cuts across her thighs just above the knees, so her knees, shins and feet are NOT in the picture; her head is in the upper third of the picture, near the top; her torso and swinging arms fill the middle of the picture; she is large in the frame. Below her, at the bottom corners of the picture, the broad orange pencil road (orange #FF7A1A) she runs on widens toward the viewer. Behind her and above her a TOWERING breaking wave rises higher than the picture and its crest curls forward over her head, throwing spray of white paper and small drops; the wave is made of THICK ribbons of saturated coloured pencil running along its curve, each ribbon one strong colour: rose pink, golden yellow, coral red, mint green, cyan, magenta, bright blue and violet, with thin gaps of white paper between the ribbons. The wave fills the whole background from edge to edge. There is NO grey ground, NO horizon line, NO band across the bottom, no city, no buildings: only white paper, the orange road, the wave and her."
+  },
+  {
+   "id": "wave_run3_face",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/wave_run3_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same cel-shaded coloured-pencil style: the same woman, pose, clothes, hair, wave, road and framing. Change only her expression: her lips are CLOSED, her face calm, open and glad, eyes bright and determined, brows relaxed, no grin, no teeth, no frown. No other change. No text."
   }
  ]
 }

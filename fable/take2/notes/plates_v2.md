@@ -57,13 +57,37 @@ about 4.5 s, hair whipping all through, gold streaks of light cross in the first
 and the clip opens with the tree already grown (v1 grows it from nothing). Keep v1; not intaken; no second take (v1's life comes
 from the tree). **root** (proof plate, child from behind): the frost grows from her hand; left as is.
 
+## wave_run take 2 (director's note)
+
+Stills (one ref `day_jade_a1`): `wave_run2_a1`/`a2` full length and scowling; `wave_run3_a1` large, towering saturated ribbon wave
+with crest and spray, white paper to the edge, but an open-mouth grin and framed to the shins. Fixed by one expression-only edit
+(`wave_run3_face_a1`, lips closed) and a free crop to knees-up: `wave_run3_knees.jpg`. Clip `t2_wave_run_t2` submitted (low camera
+retreating, "framing stays from the knees up for the whole shot"); NOT yet reviewed or intaken. Fallback if it pulls back: take 3
+with `wave_run3_knees` as the last frame too.
+
+## Group (c) (in progress)
+
+- `stance_bow_v2`, `stance_horse_v2`, `stance_drop2_v2`: accepted, intaken (arrival swing and dust, then the stance holds exactly).
+- `stance_drop_v2` (from `stance_empty_a1`): t1 rejected (model zoomed in, legs cut off from 0.25 s); t2 with the still as first and
+  last frame submitted, not reviewed.
+- `ins_violin`, `ins_poem`: accepted, intaken. Insert stills: attempt 1 failed for all four (violin two crossed arms; poem light
+  jeans; piano wrong keys; guitar letterboxed); attempt 2 passed (guitar cropped from a drawn frame: `ins_guitar_b1c`).
+- `ins_piano`, `ins_guitar`, `drop_hero_1_v2` (t2 only; t1 used a wrong last frame and is discarded), `drop_hero_2_v2`..`_5_v2`:
+  submitted, not reviewed. New drop stills: `drop_hand_open`, `drop_eyes_closed` (edits, first frames toward the approved v1 stills),
+  `drop_sun_only` -> `drop_palm_sun` (palm rises over the sun, no rays), `drop_land_clean` (v1 landing with the burst rays removed).
+
 ## Wiring
 
 | plate id | replaces (shot) | clip range (s) | type room (frame fractions, 1280x720) | trim / notes |
 |---|---|---|---|---|
 | `vio_write2` | `vio_write` b113-115 | 0.0-5.0 (any 2.5 s; writing all through) | notebook at x 0.55-0.66, y 0.44-0.55. Clear dark sky: upper left x 0.02-0.30, y 0.05-0.50 (stars only; the Milky Way band runs from x 0.17 at the top to x 0.60 at y 0.45); upper right x 0.82-0.98, y 0.02-0.40 | page has scribble marks, not readable; cover with a small dark patch if the shot is ever held close |
 | `vio_release2` | `vio_release` b116-117 | 0.0-5.0: close 0.9-1.25, hand lifts 1.6-2.4, hold 2.5-5.0. For a 3.4 s slot use 1.0-4.4 | hand at x 0.57-0.68, y 0.30-0.38 at the hold; sky clear x 0.0-0.20 and x 0.88-1.0, y 0-0.45; sunrise sliver at x 0.95-1.0, y 0.52-0.58 (east) | the line of light can leave from the hand toward the sunrise (right) |
-| `wave_run` | second likeness shot b145-146 (`like_sing2`) | 1.4-4.8 (3.4 s; wave crest breaks 3.5-4.8). Whole clip 0-5.04 usable | slab low: y 0.72-0.96 is white paper either side of the orange road (x 0.0-0.40 and x 0.60-1.0); her feet reach y 0.97 at the road centre | she is full length and centred, about 0.9 of frame height; do not mirror (patch text) |
+| ~~`wave_run`~~ take 1 REJECTED by the director (small jogging figure, pastel spiral, grey band); take 2 pending | second likeness shot b145-146 (`like_sing2`) | 1.4-4.8 (3.4 s; wave crest breaks 3.5-4.8). Whole clip 0-5.04 usable | slab low: y 0.72-0.96 is white paper either side of the orange road (x 0.0-0.40 and x 0.60-1.0); her feet reach y 0.97 at the road centre | she is full length and centred, about 0.9 of frame height; do not mirror (patch text) |
 | `root_face_v2` | `root_face` b5-6 | 0.0-3.5 (both blinks 0.25, 3.0; one fog breath 1.25-2.5) or 0.6-4.1 | frost area x 0.0-0.45 | no push; ponytail tip at top edge as before |
 | `wushu_v2` | `wushu` life plate b30, the b12 flash, and wherever the proof `wushu` plate is used | 0.6-2.6 puts the punch landing at 0.4 s into the slot; for a flash use 1.0-1.3 | plain wall x 0.40-0.75, y 0.02-0.35; floor y 0.85-1.0 | 1280x720; face is profile at x 0.27, y 0.17 |
 | `drop_face_v2` | `drop_face` b100 | lay clip 0 at song 171.8 (so 0.0-1.7 for the bar); mouth opens 0.6-0.75 on the "ooh" | sun disc behind her, x 0.2-0.75; dark sides x 0.0-0.18, x 0.80-1.0 | sung clip: likeness rules do not apply (drawn Jade); no "ooh" lyric on screen (brief A1) |
+| `stance_bow_v2` | `stance_bow` (b73-76 impact, beat 3 of b77-80) | 0.0-5.0; settled hold from 1.5 | black paper either side of her (x 0.0-0.25, x 0.75-1.0) | figure about 0.8 of frame height |
+| `stance_horse_v2` | `stance_horse` | 0.0-5.0; dust gone and still from 2.0 | same | big cartoon dust puffs 0-2.0 s |
+| `stance_drop2_v2` | `stance_drop2` | 0.25-5.0; settled from 2.25 | upper left x 0.0-0.4, y 0.0-0.4 | frame 0 sits slightly off; start at 0.25 |
+| `ins_violin` | new insert, beat 3 of b77-80 | 2.5-4.75 is the clearest bow travel (hand moves out to the right) | upper left above the strings x 0.0-0.45, y 0.0-0.30 | one bow, one hand throughout |
+| `ins_poem` | new insert, beat 3 of b77-80 | 0.0-5.0, writing all through; small pencil lift about 3.75 | upper left x 0.0-0.3 (black) | page lines faint and unreadable |
