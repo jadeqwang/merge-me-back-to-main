@@ -674,6 +674,111 @@
     "work_fable/take2/stills/day_jade_a1.jpg"
    ],
    "prompt": "Edit this picture; keep the woman exactly as she is: the same pose, the same framing, the same face, the same clothes, the same flat cel colours and clean inked line, but with her eyes gently closed. Change only the background: it is now bare BLACK paper with a slight tooth, at first light: low across the picture, at her hip height, one thin level band of gold drawn with horizontal strokes of golden pencil replaces the orange line, and everything above it is plain black paper with no sky strokes. No glow, no gradient. The picture runs to every edge with no frame or border. No text."
+  },
+  {
+   "id": "vio_write2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/vio_write_a1.jpg"
+   ],
+   "prompt": "Edit this picture. Keep the place, the framing, the dish, the night sky and the woman exactly as they are, seated on the rim of the dish seen from behind and a little to the side, facing toward the left. Keep the scratchboard engraving style exactly: fine white lines cut out of solid black, dense parallel hatching for every tone; violet (her bands, straps and headphones) and the pale blue of the circle on her back are the only colours. Keep her clothes exactly: white cropped bomber jacket, the back plain white with only the large pale-blue circle and the small words RARE EARTH and NO band or stripe across the back; a violet band round each upper arm; the round white 1420 MHz patch with a black ring on her LEFT upper arm only, which is the arm nearer the viewer, on the left side of her back in the picture; her right arm, on the far side, has a violet band and no patch; violet headphones round her neck; very wide dark trousers with violet straps; chunky white trainers; black hair in a bun with two yellow pencils through it. Change only her pose: she is no longer writing in the air. Her knees are drawn up and a small open notebook rests on her nearer raised knee; she bends her head down over it, absorbed, and writes in it with the yellow pencil held like a pen in her right hand, her hand low and close to the page; her left hand holds the notebook steady. Her arms are lowered, close to her body; nothing is raised into the sky. The hand holding the pencil is the slender hand of a young woman with smooth skin, five fingers. The pages of the notebook are blank white with at most a few tiny grey scribble marks that cannot be read: no letters, no words, no numbers. The sky above and to the upper left is clear dark sky with faint stars and nothing written in it. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than RARE EARTH and 1420 MHz on her jacket."
+  },
+  {
+   "id": "vio_release2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/vio_release_b1.jpg"
+   ],
+   "prompt": "Edit this picture. Keep the place, the framing, the dish, the night sky, the small sliver of gold sunrise on the horizon and the woman exactly as they are: seated on the rim of the dish seen from behind, her head tilted up, her right hand lifted and open toward the upper right as if she has just let something go into the sky. Keep the scratchboard engraving style exactly: fine white lines cut out of solid black, dense parallel hatching for every tone; violet (her bands, straps and headphones) and the pale blue of the circle on her back are the only colours. Keep her clothes exactly: white cropped bomber jacket, the back plain white with only the large pale-blue circle and the small words RARE EARTH and NO band or stripe across the back; a violet band round each upper arm; the round white 1420 MHz patch with a black ring on her LEFT upper arm only, which is the arm nearer the viewer, on the left side of her back in the picture; her right arm, on the far side, has a violet band and no patch; violet headphones round her neck; very wide dark trousers with violet straps; chunky white trainers; black hair in a bun with two yellow pencils through it. Add one thing only: a small closed notebook rests on her lap, under her lowered left hand. Nothing else changes. The upper right of the picture stays clear dark sky with faint stars and nothing in it. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, and no lettering other than RARE EARTH and 1420 MHz on her jacket."
+  },
+  {
+   "id": "wave_run",
+   "lane": "orange",
+   "view": "front",
+   "refs": [
+    "work_fable/take2/v2refs/rewind_F1_kf1.jpg"
+   ],
+   "style": "Use the reference picture ONLY for its composition: a woman sprinting at the viewer with a great wave of colour curling behind her. Draw a new picture: a flat cel-shaded anime drawing with a clean inked line on WHITE paper in full colour, coloured with coloured pencil; flat colours with two tones of shading, no gradients, no glow, no 3D, no photographic sky; the white paper and its slight tooth show everywhere.",
+   "scene": "Daylight, on white paper, drawn in coloured pencil with a clean inked line. She sprints straight toward the viewer down the middle of the picture, seen from the front, from the top of her head to her knees, her face and body large in the frame, her long black hair streaming out behind her, one arm swinging forward, a look of open, glad determination, lips closed. She runs along a single broad orange pencil line that comes toward the viewer like a road through the centre of the picture. Behind her, filling the whole background from edge to edge, a great breaking wave curls over toward her like a huge ocean breaker, drawn in coloured pencil; the wave is made of many long parallel ribbons in exactly these colours: rose pink, golden yellow, coral red, mint green, cyan, magenta, bright blue, violet and orange; each ribbon is a thin lane drawn with fine pencil hatching along its length, so the wave looks like many coloured lines of writing swept up into one breaker; its crest breaks into white paper spray at the top. There is no city, no buildings, no skyline, no shapes floating in the sky: only the white paper, the orange road and the wave. The lower fifth of the picture is calm: the plain white paper and the orange road, so that words can be set there. She wears the white jacket open over a black cropped top; on the front of the jacket there are no words, no letters and no badge except one small plain pale-blue dot on the left chest."
+  },
+  {
+   "id": "wave_run_m",
+   "lane": "orange",
+   "view": "front",
+   "refs": [
+    "work_fable/take2/stills/day_jade_a1.jpg"
+   ],
+   "style": "A new picture of the same woman as the reference, in exactly the same style as the reference: a flat cel-shaded anime drawing with a clean inked line on WHITE paper in full colour, coloured with coloured pencil; flat colours with two tones of shading, no gradients, no glow, no 3D, no photographic sky; the white paper and its slight tooth show everywhere. Same face, same hair, same clothes as the reference, now running.",
+   "scene": "Daylight, on white paper, drawn in coloured pencil with a clean inked line. She sprints straight toward the viewer down the middle of the picture, seen from the front, from the top of her head to her knees, her face and body large in the frame, her long black hair streaming out behind her, one arm swinging forward, a look of open, glad determination, lips closed. She runs along a single broad orange pencil line that comes toward the viewer like a road through the centre of the picture. Behind her, filling the whole background from edge to edge, a great breaking wave curls over toward her like a huge ocean breaker, drawn in coloured pencil; the wave is made of many long parallel ribbons in exactly these colours: rose pink, golden yellow, coral red, mint green, cyan, magenta, bright blue, violet and orange; each ribbon is a thin lane drawn with fine pencil hatching along its length, so the wave looks like many coloured lines of writing swept up into one breaker; its crest breaks into white paper spray at the top. There is no city, no buildings, no skyline, no shapes floating in the sky: only the white paper, the orange road and the wave. The lower fifth of the picture is calm: the plain white paper and the orange road, so that words can be set there. "
+  },
+  {
+   "id": "wushu_v2",
+   "lane": "coral red",
+   "view": "side",
+   "style": "A traditional East Asian woodblock print: bold carved black key lines, flat areas of colour with visible wood grain and slight misregistration, on warm handmade paper; a limited palette of ink black, indigo, pale grey and coral red. The print has a clear hierarchy, like a master printmaker's: one figure carries all the detail and the strongest contrast, everything else is simplified to flat quiet shapes, and large areas of the picture are left plain.",
+   "scene": "A martial-arts training hall lit by a single tall window off the LEFT edge of the picture: one broad shaft of warm light falls from the left across her face and her leading fist, everything to the right falls into flat indigo shadow. She is in the left half of the picture, the nearest and largest figure, from head to knee, seen exactly side-on and facing LEFT, in a deep long-fist bow stance (front knee bent over the foot, back leg straight), her LEFT fist punched straight out toward the left edge, level with her shoulder, her right fist drawn back to her hip, her sleeves snapping, her hair swinging; her face in profile, calm and focused, lips closed. She is the only figure drawn in detail and the only place the coral red appears. Behind her, to the right and further back, only THREE teammates in the same stance, each smaller than her, overlapping one another, simplified to flat pale-grey and indigo shapes with almost no inner lines and no faces drawn, partly lost in the shadow. The wall behind is one plain flat area of pale grey with the grain of the wood block showing; the floor is a bare plain area of warm paper with at most two or three carved lines. Large quiet empty areas: no rack of weapons, no banners, no pattern on the floor."
+  },
+  {
+   "id": "ins_violin",
+   "raw": true,
+   "refs": [],
+   "prompt": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. Blue hour: a cool blue rim of light is drawn along the edges with strokes of blue pencil; the only strong colour is orange. A close insert with ONE arm and ONE hand only: her right forearm and right hand drawing a violin bow. The violin lies across the lower left of the picture, seen from above at an angle: its dark varnished body, two f-holes, the bridge and four strings, the scroll out of frame to the left. A single straight bow crosses the strings near the bridge at a right angle to them and runs out to the upper right; her right hand holds it at the frog end in the upper right of the picture, in a correct violinist's grip: thumb bent under the stick, fingers draped over the top, the little finger curved on top of the stick, the wrist slightly raised and leading. Her white jacket sleeve with a thin orange cuff band comes in from the right edge. A few white gel-pen specks of rosin dust above the strings. There is only one bow and only one hand. The hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone, bare hands, not gloves: no wrinkles, no veins, no rings, no watch, nails short and plain; each hand has exactly five fingers, simply and correctly drawn. Where a sleeve is seen it is the white cuff of a cropped bomber jacket, plain, with no badge and no lettering. The drawing fills the whole 16:9 frame from edge to edge: no black bars at the top or bottom, no border. No face is in the picture. Nothing that can be read anywhere: no letters, numbers, words, logos or brand names. No caption, no signature, no text."
+  },
+  {
+   "id": "ins_poem",
+   "raw": true,
+   "refs": [],
+   "prompt": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. Blue hour: a cool blue rim of light is drawn along the edges with strokes of blue pencil; the only strong colour is orange. A close insert from above and to the side: her right hand holds a yellow pencil like a pen and is finishing a line in a small open notebook resting on her knee; the paper is cream; on the page there are only a few lines of loose, faint grey pencil scribble that are not letters and cannot be read. Her left hand holds the notebook's edge. The white jacket cuffs with a thin orange band. Under the notebook is her knee in VERY WIDE DARK NAVY cargo trousers (deep navy blue, almost black, never light blue denim, never jeans). The hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone, bare hands, not gloves: no wrinkles, no veins, no rings, no watch, nails short and plain; each hand has exactly five fingers, simply and correctly drawn. Where a sleeve is seen it is the white cuff of a cropped bomber jacket, plain, with no badge and no lettering. The drawing fills the whole 16:9 frame from edge to edge: no black bars at the top or bottom, no border. No face is in the picture. Nothing that can be read anywhere: no letters, numbers, words, logos or brand names. No caption, no signature, no text."
+  },
+  {
+   "id": "ins_piano",
+   "raw": true,
+   "refs": [],
+   "prompt": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. Blue hour: a cool blue rim of light is drawn along the edges with strokes of blue pencil; the only strong colour is orange. A close insert, from the side and a little above, along a piano keyboard running diagonally across the picture: long WHITE keys side by side, and behind them the short narrow BLACK keys raised between them, in alternating groups of two and three, exactly as on a real piano; most of the keyboard is white keys. Her two hands are just landing a big chord on the white keys, fingers curved, wrists dropping: her left hand on the left, her right hand on the right, the thumbs toward each other. The white jacket cuffs with a thin orange band at each wrist. The hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone, bare hands, not gloves: no wrinkles, no veins, no rings, no watch, nails short and plain; each hand has exactly five fingers, simply and correctly drawn. Where a sleeve is seen it is the white cuff of a cropped bomber jacket, plain, with no badge and no lettering. The drawing fills the whole 16:9 frame from edge to edge: no black bars at the top or bottom, no border. No face is in the picture. Nothing that can be read anywhere: no letters, numbers, words, logos or brand names. No caption, no signature, no text."
+  },
+  {
+   "id": "ins_guitar",
+   "raw": true,
+   "refs": [],
+   "prompt": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper: flat colours, no gradients, no neon glow, no bloom, no 3D, no photographic sky; the black paper and its slight tooth show everywhere; light is drawn only as hand-made strokes of coloured pencil and white gel pen. Blue hour: a cool blue rim of light is drawn along the edges with strokes of blue pencil; the only strong colour is orange. A close insert of an acoustic guitar played by her: her right hand is in the middle of a strum across the strings over the round sound hole, the fingers loose, a plain pick held between thumb and first finger; her left hand frets a chord on the neck at the upper left. The guitar's warm wooden top and the six strings are drawn simply and correctly; no logo on the headstock or the guitar. The white jacket cuff with a thin orange band. The hands are the slender hands of a young East Asian woman with smooth skin and a light warm skin tone, bare hands, not gloves: no wrinkles, no veins, no rings, no watch, nails short and plain; each hand has exactly five fingers, simply and correctly drawn. Where a sleeve is seen it is the white cuff of a cropped bomber jacket, plain, with no badge and no lettering. The drawing fills the whole 16:9 frame from edge to edge: no black bars at the top or bottom, no border. No face is in the picture. Nothing that can be read anywhere: no letters, numbers, words, logos or brand names. No caption, no signature, no text."
+  },
+  {
+   "id": "drop_eyes_closed",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/plates/drop_hero_1/still.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same flat cel-shaded gold-and-black style: the same face, framing, hair strands, bar of gold pencil light. Change only one thing: her eyes are gently CLOSED, the upper lids down, lashes resting, calm. No other change. No text."
+  },
+  {
+   "id": "drop_hand_open",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/plates/drop_hero_2/still.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same flat cel-shaded gold-and-black style: the same framing, the same white jacket cuff, the same rim of gold pencil light. Change only the hand: it is OPEN and relaxed, fingers loosely spread and slightly curled, about to close, palm facing down and a little toward the viewer. The hand is a bare hand in her flat warm skin tone, the slender hand of a young woman with smooth skin, exactly five fingers, simply and correctly drawn. Remove the short strokes flying off the knuckles. No other change. No text."
+  },
+  {
+   "id": "drop_palm_sun",
+   "raw": true,
+   "refs": [],
+   "prompt": "A flat cel-shaded anime drawing with a clean inked line, drawn on black paper, at sunrise: the only colours in the whole picture are GOLD and BLACK, plus the white of her jacket and her own flat skin and hair tones; light is drawn only as hand-made strokes of golden pencil; no gradients, no glow, no bloom, no photographic sky, no 3D. A close picture: a huge sun disc drawn as a flat circle of gold pencil hatching on the black paper sits in the upper middle of the picture. Low in the picture, below the sun, her bare open hand is raised, palm toward the viewer, fingers together and upright, thumb relaxed, in her flat warm skin tone, with the plain white cuff of her jacket sleeve at the bottom edge; a thin rim of gold pencil light along the edge of the hand. The hand is the slender hand of a young woman with smooth skin, a bare hand, not a glove, exactly five fingers, simply and correctly drawn. No rays, no burst lines, no speed lines. No face, no body. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "drop_land_clean",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/plates/drop_hero_5/still.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same flat cel-shaded gold-and-black style: the same two white trainers, the same trousers and orange strap, the same level gold ground line. Change only one thing: remove all the burst of short gold strokes around the feet; in their place, a few small soft puffs of dust drawn with light gold pencil hatching are just beginning to rise from the ground at the soles. No rays, no burst lines. No other change. No text."
+  },
+  {
+   "id": "drop_sun_only",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/drop_palm_sun_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is, in the same flat cel-shaded gold-and-black style: the same sun disc of gold pencil hatching in the same place and size, the same black paper. Change only one thing: remove the hand and the sleeve completely, so only the sun disc on the black paper is left. No other change. No text."
   }
  ]
 }
