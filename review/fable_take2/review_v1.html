@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Merge film v1: notes and decisions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: dark; --bg:#111016; --panel:#1b1924; --line:#3c394a; --ink:#f3ead8; --dim:#b3ab9d; --acc:#ff7a1a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui,sans-serif; }
+  main { max-width:1500px; margin:0 auto; padding:16px; display:grid; grid-template-columns:minmax(0,1.5fr) minmax(340px,1fr); gap:18px; }
+  @media (max-width:1050px){ main{ grid-template-columns:1fr; } }
+  h1 { font-size:19px; margin:0 0 4px; } h2 { font-size:16px; margin:22px 0 8px; } h3 { font-size:14px; margin:0 0 6px; }
+  p { margin:6px 0; color:var(--dim); }
+  video { width:100%; background:#000; border-radius:6px; display:block; }
+  .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:8px 0; }
+  button, select, input[type=text], textarea { font:inherit; color:inherit; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:7px 11px; }
+  button { cursor:pointer; } button:hover { border-color:var(--acc); } button.primary { background:var(--acc); border-color:var(--acc); color:#14122b; font-weight:600; }
+  textarea, input[type=text] { width:100%; }
+  #pos { font:600 15px ui-monospace,monospace; min-width:250px; }
+  .note { display:grid; grid-template-columns:150px 1fr 30px; gap:8px; align-items:start; padding:6px 0; border-top:1px solid var(--line); }
+  .note a { color:var(--acc); cursor:pointer; font:13px ui-monospace,monospace; text-decoration:none; }
+  .note textarea { min-height:38px; resize:vertical; }
+  .note button { padding:3px 8px; }
+  .dec { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:10px 0; }
+  .dec label { display:block; margin:4px 0; cursor:pointer; }
+  .dec .rec { color:var(--acc); font-size:13px; }
+  .dec .links a { color:var(--acc); margin-right:12px; font-size:13px; }
+  .thumbs { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin:8px 0; }
+  .thumbs figure { margin:0; } .thumbs img { width:100%; border-radius:4px; display:block; } .thumbs figcaption { font-size:12px; color:var(--dim); }
+  kbd { background:#26232f; border:1px solid var(--line); border-radius:4px; padding:0 5px; font:12px ui-monospace,monospace; }
+  #out { min-height:160px; font:12px ui-monospace,monospace; }
+  .side { max-height:calc(100vh - 32px); overflow:auto; position:sticky; top:16px; }
+  @media (max-width:1050px){ .side{ position:static; max-height:none; } }
+</style>
+</head>
+<body>
+<main>
+<section>
+  <h1>Merge, film v1: timestamped notes and decisions</h1>
+  <p>Everything you type is kept in this browser (it survives a reload). When you are done, press <b>Copy everything</b> at the bottom of the right column and paste it to Fable, or download it as a file.</p>
+  <div class="bar">
+    <span>Video</span>
+    <select id="src">
+      <option value="../../work_fable/take2/out/film_v1_local.mp4">Film v1, local, with the likeness shots (best quality)</option>
+      <option value="film_v1.mp4">Film v1, pushed version (cards for the likeness shots)</option>
+      <option value="section1_v1.mp4" data-t0="0">Section 1 (bars 1-17)</option>
+      <option value="section2_v3.mp4" data-t0="26.367">Section 2 (bars 16-57)</option>
+      <option value="section3_v3.mp4" data-t0="95.733">Section 3 (bars 56-89)</option>
+      <option value="section4_v2.mp4" data-t0="151.067">Section 4 (bars 88-121)</option>
+      <option value="section5_v1.mp4" data-t0="206.133">Section 5 (bars 120-end)</option>
+    </select>
+    <select id="rate"><option value="1">1x</option><option value="0.5">0.5x</option><option value="0.25">0.25x</option></select>
+  </div>
+  <video id="v" controls playsinline></video>
+  <div class="bar">
+    <span id="pos"></span>
+    <button class="primary" id="add">Add note here (N)</button>
+    <button id="b5">-5 s</button><button id="b1">-1 s</button><button id="f1">+1 s</button><button id="f5">+5 s</button>
+    <button id="pf">frame -</button><button id="nf">frame +</button>
+  </div>
+  <p>Keys (when not typing): <kbd>N</kbd> add a note at the current time, <kbd>space</kbd> play or pause, <kbd>&larr;</kbd> <kbd>&rarr;</kbd> one second, <kbd>,</kbd> <kbd>.</kbd> one frame, <kbd>Esc</kbd> leave a text box. Adding a note pauses the film and puts the cursor in the note. Note times are song times, whichever file is playing. The section files have more detail than the whole film but their times are approximate to a few frames.</p>
+  <h2>Notes <span id="count" style="color:var(--dim);font-weight:400"></span></h2>
+  <div id="notes"></div>
+</section>
+
+<section class="side">
+  <h2 style="margin-top:0">Decisions Fable needs from you</h2>
+  <div id="decisions"></div>
+  <h2>Send it back</h2>
+  <div class="bar"><button class="primary" id="copy">Copy everything</button><button id="dl">Download as a file</button><button id="clear">Clear all (asks first)</button></div>
+  <textarea id="out" readonly></textarea>
+</section>
+</main>
+<script>
+const BARS = [0.219, 1.971, 3.72, 5.468, 7.214, 8.959, 10.702, 12.444, 14.185, 15.925, 17.664, 19.402, 21.14, 22.877, 24.614, 26.35, 28.087, 29.823, 31.559, 33.296, 35.033, 36.77, 38.508, 40.246, 41.985, 43.725, 45.465, 47.206, 48.945, 50.683, 52.419, 54.15, 55.876, 57.6, 59.323, 61.046, 62.773, 64.504, 66.239, 67.977, 69.716, 71.454, 73.19, 74.924, 76.659, 78.392, 80.126, 81.859, 83.594, 85.329, 87.064, 88.798, 90.532, 92.264, 93.996, 95.727, 97.457, 99.187, 100.917, 102.647, 104.376, 106.106, 107.835, 109.565, 111.295, 113.025, 114.754, 116.484, 118.214, 119.944, 121.674, 123.403, 125.133, 126.862, 128.592, 130.321, 132.05, 133.779, 135.508, 137.237, 138.965, 140.694, 142.422, 144.15, 145.878, 147.606, 149.333, 151.06, 152.787, 154.514, 156.241, 157.967, 159.693, 161.419, 163.144, 164.87, 166.594, 168.319, 170.042, 171.766, 173.489, 175.211, 176.933, 178.655, 180.375, 182.095, 183.815, 185.534, 187.253, 188.972, 190.69, 192.408, 194.125, 195.842, 197.558, 199.271, 200.982, 202.691, 204.401, 206.11, 207.819, 209.526, 211.231, 212.935, 214.637, 216.338, 218.038, 219.737, 221.436, 223.135, 224.833, 226.532, 228.231, 229.931, 231.632, 233.335, 235.038, 236.744, 238.45, 240.156, 241.861, 243.565, 245.268, 246.971, 248.673, 250.376, 252.079, 253.782, 255.485, 257.188, 258.892, 260.596, 262.301, 264.006, 265.712, 267.419, 269.126, 270.834, 272.543, 274.253, 275.964, 277.675, 279.386, 281.097];
+const SECS = [[1, "Intro A"], [9, "Intro B"], [17, "Verse 1"], [33, "Pre-Chorus"], [41, "Chorus 1"], [57, "Breakdown A"], [65, "Breakdown B"], [73, "Build Up A"], [86, "Build Up B"], [89, "Instrumental Drop"], [105, "Verse 2 A"], [117, "Verse 2 B"], [121, "Chorus 2"], [137, "Outro A"], [149, "Outro B"], [153, "Outro C"]];
+const DECISIONS = [
+ { id:'orchestra', title:'1. Orchestra look, bars 81-84 (2:19-2:26)', why:'The 3D orchestra of Jades. The paper pass makes the wide shots hard to read; the raw render reads but breaks the rule that v7 is never shown raw.',
+   links:[['orchestra_v1.mp4','solid'],['orchestra_v1_light.mp4','light'],['orchestra_v1_sheet.jpg','side by side']],
+   opts:['Solid (as in film v1): white jackets filled, hatching elsewhere','Light: the raw 3D render with a drawn outline and grain','Light, stripped back: black sky, flat ground, no shading gradient (not built yet)','Drop the orchestra; go back to the wushu crowd'], rec:2 },
+ { id:'orch_first', title:'2. The first orchestra shot (they fly in and sit)', why:'It still reads as a firework of arcs, not as people sitting down to play.',
+   opts:['Fix it (slower, fewer, visibly sitting)','Cut it and start on the seated orchestra','Fine as it is'], rec:0 },
+ { id:'sing1', title:'3. First "Back to main" (3:54-3:58): which take', why:'Listen in the picker page. Film v1 local uses take E at +80 ms.',
+   links:[['step0/likeness_local/index.html','open the lag picker']],
+   opts:['Take E (thoughtful)','Take F (thoughtful, second take)','Take D (glad, wide smile at the end)','None of them: retake'], rec:0, extra:'Lag that looks right in Chrome (ms), and anything about the face' },
+ { id:'sing2', title:'4. Second "Back to main" (4:08-4:11): the wide shot', why:'Your face is small in this framing. File: step0/likeness_local/like_s2_lag+80.mp4 (also in the local film).',
+   links:[['step0/likeness_local/like_s2_lag+80.mp4','play it']],
+   opts:['It reads as me: keep','Retake closer (waist up)','Reuse the first shot here instead','Drop the second likeness shot'], rec:0 },
+ { id:'slab', title:'5. Type on the likeness shots', why:'In the first one the BACK TO MAIN slab sits across your outstretched arm and jacket (clear of your face).',
+   opts:['Move it clear of me entirely','Fine where it is','No type on the likeness shots'], rec:0 },
+ { id:'stances', title:'6. Are these true wushu stances? (bars 73-80, 2:05-2:19)', why:'Only you can judge. The fourth "empty stance" came out wrong twice and was dropped; the third slot now holds a second drop stance.',
+   imgs:[['stance_bow.jpg','bow stance with punch'],['stance_horse.jpg','horse stance'],['stance_empty.jpg','used as a drop stance'],['stance_drop.jpg','drop stance, arm raised']],
+   opts:['All four are fine','Some are wrong (say which below)','Use no generated stances: keep the martial arts to the 3D motion capture'], rec:null, extra:'Which are wrong, and what a correct one looks like' },
+ { id:'runners', title:'7. Runners at bar 43 and 46-48 (1:13-1:23)', why:'The video model would not keep a small full-length runner, so the kit is built large with feet behind the lane text. A change from the plan.',
+   opts:['Large is good','Prefer small full-length runners (needs another approach)'], rec:0 },
+ { id:'hand', title:'8. The hand on the water (bar 63-64, 1:48)', why:'The plan had her hand opening as the light arrives; the clip has it closing round the light.',
+   opts:['Closing round it is right (receiving)','Retake so it opens'], rec:0 },
+ { id:'counter', title:'9. Intro counter', why:'It counts 2, 4, 8 ... 64 over the frost, then stops, because the v7 tree cannot be matched to a true number.',
+   opts:['Stopping at 64 is fine','Remove the counter','Keep counting to 1,024 even if approximate'], rec:0 },
+ { id:'windows', title:'10. Bars 54-55 (1:32-1:35): lit windows and commit nodes on the wide night shot', why:'Not built: the roads move under the paper pass, so the windows need tracking.',
+   opts:['Build it','Leave the shot as it is'], rec:null },
+ { id:'credits', title:'11. Credits wording (4:29-4:37)', why:'Placeholder now, as commits: "Merge" / "animated by Fable 5.2 and a supporting cast of models" / Nano Banana Pro / Seedance 2.5 / motion capture: CMU, ACCAD / Suno / Archivo, Instrument Serif, JetBrains Mono.',
+   opts:['Use as is','Change (write below)'], rec:null, extra:'Your wording, names to add or drop' },
+ { id:'lives', title:'12. The twelve lives and their commit messages', why:'Still open from the plan: Cloudflare is not one of them. piano, violin, wushu, wet lab, PhD, poet, NASA Ames, the band, hacker houses, open source, home, 1420 MHz.',
+   opts:['Keep the twelve','Change (write below)'], rec:null, extra:'Lives or commit messages to add, drop or reword' },
+ { id:'spend', title:'13. Budget', why:'$480.10 of the $600 cap is spent. Fixes and retakes after your notes should stay under about $30.',
+   opts:['Go ahead up to the $600 cap','Ask me before each paid retake','No more paid generation'], rec:0 },
+];
+const KEY='merge_film_v1_review';
+let S = JSON.parse(localStorage.getItem(KEY) || '{"notes":[],"dec":{}}');
+const v=document.getElementById('v'), src=document.getElementById('src'), pos=document.getElementById('pos');
+const save=()=>{ localStorage.setItem(KEY, JSON.stringify(S)); out(); };
+const t0=()=>+(src.selectedOptions[0].dataset.t0||0);
+const song=()=>v.currentTime+t0();
+function barAt(t){ let i=0; while(i+1<BARS.length && BARS[i+1]<=t) i++; const len=(i+1<BARS.length?BARS[i+1]:BARS[i]+1.74)-BARS[i]; const beat=Math.max(0,Math.min(3.99,(t-BARS[i])/len*4)); return {bar:i+1, beat:Math.floor(beat)+1}; }
+function secAt(bar){ let n=''; for(const [b,name] of SECS) if(bar>=b) n=name; return n; }
+function fmt(t){ const m=Math.floor(t/60), s=t-m*60; return m+':'+(s<10?'0':'')+s.toFixed(2); }
+function label(t){ const b=barAt(t); return fmt(t)+'  bar '+b.bar+'.'+b.beat+'  '+secAt(b.bar); }
+function tick(){ pos.textContent=label(song()); requestAnimationFrame(tick); } tick();
+function load(){ const t=song(); v.src=src.value; v.playbackRate=+document.getElementById('rate').value; v.addEventListener('loadedmetadata',()=>{ const want=t-t0(); if(want>0 && want<v.duration) v.currentTime=want; },{once:true}); }
+src.onchange=load; document.getElementById('rate').onchange=e=>v.playbackRate=+e.target.value;
+v.addEventListener('error',()=>{ if(src.selectedIndex===0){ src.selectedIndex=1; load(); } });
+const seek=d=>{ v.currentTime=Math.max(0,v.currentTime+d); };
+b5.onclick=()=>seek(-5); b1.onclick=()=>seek(-1); f1.onclick=()=>seek(1); f5.onclick=()=>seek(5); pf.onclick=()=>{v.pause();seek(-1/30)}; nf.onclick=()=>{v.pause();seek(1/30)};
+function addNote(){ v.pause(); const n={t:+song().toFixed(2), text:''}; S.notes.push(n); S.notes.sort((a,b)=>a.t-b.t); save(); renderNotes(S.notes.indexOf(n)); }
+add.onclick=addNote;
+function renderNotes(focus){ const box=document.getElementById('notes'); box.innerHTML=''; document.getElementById('count').textContent=S.notes.length?'('+S.notes.length+')':'';
+  S.notes.forEach((n,i)=>{ const row=document.createElement('div'); row.className='note';
+    const a=document.createElement('a'); a.textContent=label(n.t); a.title='jump to this time'; a.onclick=()=>{ const w=n.t-t0(); if(w>=0) v.currentTime=w; };
+    const ta=document.createElement('textarea'); ta.value=n.text; ta.placeholder='what you see, what you want'; ta.oninput=()=>{ n.text=ta.value; save(); };
+    const x=document.createElement('button'); x.textContent='x'; x.title='delete this note'; x.onclick=()=>{ S.notes.splice(i,1); save(); renderNotes(); };
+    row.append(a,ta,x); box.append(row); if(i===focus) ta.focus(); }); }
+function renderDec(){ const box=document.getElementById('decisions'); box.innerHTML='';
+  DECISIONS.forEach(d=>{ const st=S.dec[d.id]||(S.dec[d.id]={pick:null,text:''}); const el=document.createElement('div'); el.className='dec';
+    let h='<h3>'+d.title+'</h3><p>'+d.why+'</p>';
+    if(d.links) h+='<div class="links">'+d.links.map(l=>'<a href="'+l[0]+'" target="_blank">'+l[1]+'</a>').join('')+'</div>';
+    if(d.imgs) h+='<div class="thumbs">'+d.imgs.map(m=>'<figure><a href="'+m[0]+'" target="_blank"><img src="'+m[0]+'" alt="'+m[1]+'"></a><figcaption>'+m[1]+'</figcaption></figure>').join('')+'</div>';
+    el.innerHTML=h;
+    d.opts.forEach((o,i)=>{ const l=document.createElement('label'); const r=document.createElement('input'); r.type='radio'; r.name=d.id; r.checked=st.pick===i; r.onchange=()=>{ st.pick=i; save(); };
+      l.append(r,' '+o); if(d.rec===i){ const s=document.createElement('span'); s.className='rec'; s.textContent='  (Fable\'s lean)'; l.append(s); } el.append(l); });
+    const ta=document.createElement('textarea'); ta.placeholder=d.extra||'anything to add (optional)'; ta.value=st.text; ta.oninput=()=>{ st.text=ta.value; save(); }; el.append(ta); box.append(el); }); }
+function text(){ let s='MERGE FILM V1: JADE\'S NOTES\n\nTIMESTAMPED NOTES ('+S.notes.length+')\n';
+  S.notes.forEach(n=>{ s+='- '+label(n.t)+': '+(n.text.trim()||'(no text)')+'\n'; });
+  s+='\nDECISIONS\n'; DECISIONS.forEach(d=>{ const st=S.dec[d.id]||{}; s+='- '+d.title+': '+(st.pick==null?'(not answered)':d.opts[st.pick])+(st.text&&st.text.trim()?'\n    note: '+st.text.trim():'')+'\n'; }); return s; }
+function out(){ document.getElementById('out').value=text(); }
+copy.onclick=async()=>{ const o=document.getElementById('out'); try{ await navigator.clipboard.writeText(o.value); copy.textContent='Copied'; }catch(e){ o.select(); document.execCommand('copy'); copy.textContent='Copied'; } setTimeout(()=>copy.textContent='Copy everything',1500); };
+dl.onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text()],{type:'text/plain'})); a.download='merge_film_v1_notes.txt'; a.click(); };
+let armed=0; clear.onclick=()=>{ if(Date.now()-armed<4000){ S={notes:[],dec:{}}; save(); renderNotes(); renderDec(); clear.textContent='Clear all (asks first)'; } else { armed=Date.now(); clear.textContent='Press again to clear everything'; setTimeout(()=>clear.textContent='Clear all (asks first)',4000); } };
+addEventListener('keydown',e=>{ const typing=/TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName);
+  if(e.key==='Escape'){ document.activeElement.blur(); return; } if(typing) return;
+  if(e.key==='n'||e.key==='N'){ e.preventDefault(); addNote(); } else if(e.key===' '){ e.preventDefault(); v.paused?v.play():v.pause(); }
+  else if(e.key==='ArrowLeft') seek(-1); else if(e.key==='ArrowRight') seek(1); else if(e.key===','){ v.pause(); seek(-1/30); } else if(e.key==='.'){ v.pause(); seek(1/30); } });
+load(); renderNotes(); renderDec(); out();
+</script>
+</body>
+</html>
