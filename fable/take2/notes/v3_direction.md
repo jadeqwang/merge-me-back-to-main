@@ -86,3 +86,6 @@ expression-arc brief for `hero_paper` in item B7; `wave_run_v3` keeps the expres
 
 Update (Jade, same day): retake the band life plate as `band_v2`, inside Hacker Dojo (a hackerspace, no bar), with the same time
 structure as `band` including the look-back, so it replaces `band` everywhere including the grid.
+
+Update (Jade, same day): at 0:28 the drawn Jade sings "I split myself a thousand ways": `main_face_v2` (bar 17, sung, song-locked)
+and, if one attempt works, `main_split_v2` (bar 18, the copies singing as they split).

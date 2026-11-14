@@ -34,3 +34,4 @@
 - On the director's answers for 3:02 (new message `still writing this one`; she runs and slows, the lane written only as far as her feet): "yes on 3:02, your intuition is right."
 - "I think the sprint at 1:09 could feature her mouth moving/singing to be the variety needed here." (bars 41-42, the chorus 1 sprint: she sings "Merge me back to main".)
 - On retaking the band's life plate (it should be Hacker Dojo, not a bar): "yes, please update the band's plate".
+- "at 0:28, maybe the anime version could sing 'I split myself' as she splits" (bars 17-18).
