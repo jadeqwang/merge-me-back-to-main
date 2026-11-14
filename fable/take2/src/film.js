@@ -184,8 +184,9 @@ function layoutLine(l, place, lyr, tEnd) {
 }
 function lyrics(t, eff, s) {
   if (proofOwns(t)) return;
+  const skip = s && s.opt && s.opt.lane && s.opt.lane.lyric !== undefined && eff === 'plate' ? String(s.opt.lane.lyric) : null;   // b26: the lane carries it
   for (const l of LYR) {
-    if (!on(t, l.t0) || t > l.out) continue;
+    if (!on(t, l.t0) || t > l.out || String(l.id) === skip) continue;
     const la = 1 - clamp01((t - l.out + 0.2) / 0.2), place = eff === 'card' ? 'strip' : 'low', Lx = layoutLine(l, place, s && s.opt && s.opt.lyr, s && s.t1);
     if (place === 'low' && Lx.region) { const B = Lx.box, p = 50 * S; g.save(); g.filter = `blur(${Math.round(36 * S)}px)`; g.fillStyle = `rgba(5,6,26,${(s.opt.lyr.cloud || 0.42) * la})`; g.fillRect(B.x - p, B.y - p, B.w + 2 * p, B.h + 2 * p); g.restore(); }   // a soft dark cloud behind the words only
     else if (place === 'low') { const gr = g.createLinearGradient(0, Lx.top - 60 * S, 0, H); gr.addColorStop(0, 'rgba(5,6,26,0)'); gr.addColorStop(1, `rgba(5,6,26,${0.5 * la})`); g.fillStyle = gr; g.fillRect(0, Lx.top - 60 * S, W, H - Lx.top + 60 * S); }
@@ -381,7 +382,50 @@ function lane(t, sc) {
     for (let i = 1; i < k.length; i++) if (c < k[i][0]) { x = lerp(k[i - 1][1], k[i][1], clamp01((c - k[i - 1][0]) / (k[i][0] - k[i - 1][0]))); break; }
     const X = plateToScreen(im, x, 0).x; let acc = 0; from = len;
     for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i], l = Math.hypot(b.x - a.x, b.y - a.y); if (b.x >= X) { from = acc + l * clamp01((X - a.x) / ((b.x - a.x) || 1)); break; } acc += l; } }
+  if (L.lyric !== undefined) { lyricLane(t, sc, pts, from, len); return; }
   drawWrittenLane(g, pts, { text: laneText(L.text), color: L.color || MAIN, cap: (L.cap || 22) * S, scroll: (L.scroll || 0) * (t - sc.s.t0), merge: L.merge || 0, under: L.under === undefined ? 0.35 : L.under, upto, from });
+}
+// film v3, b45 (Jade's easter egg from Rewind, where Banach-Tarski is a running idea): ONE extra written lane joining the braid, its text
+// `banach–tarski` repeated as the real lanes repeat their commit messages, in a quiet gold, no chip, no label, no figure. v7's braid
+// cannot be tracked through the paper pass, so it is a drawn cubic (opt.egg.pts, frame fractions) from the junction on main's band out to
+// the frame edge (path from the junction so the type reads left to right); it is written outward from the junction over the first part
+// of the shot (grow), and its text closes up toward main (merge rises) as the shot goes on.
+function egg(t, sc) { const o = sc.s.opt.egg, u = seg(t, sc.s.t0, sc.s.t1), [a, b, c, d] = o.pts.map(([x, y]) => ({ x: x * W, y: y * H }));
+  const pts = []; for (let i = 0; i <= 48; i++) { const k = i / 48, A = (1 - k) ** 3, B = 3 * k * (1 - k) ** 2, C = 3 * k * k * (1 - k), D = k ** 3; pts.push({ x: A * a.x + B * b.x + C * c.x + D * d.x, y: A * a.y + B * b.y + C * c.y + D * d.y }); }
+  let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+  const gr = ease.out(clamp01(u / (o.grow || 0.45)));
+  g.save(); g.globalAlpha = o.alpha || 0.7;
+  drawWrittenLane(g, pts, { text: laneString([o.text], false), color: o.color, cap: (o.cap || 26) * S, merge: lerp(o.merge[0], o.merge[1], ease.io(u)), under: 0.18, scroll: (o.scroll || 0) * (t - sc.s.t0), upto: len * gr });
+  g.restore(); }
+
+// film v3, b26 (Jade: "maybe the words she sends out is the lyric"): the lane written behind the light carries the lyric line L.lyric
+// itself, once, in the lyric's serif (cream, cap L.cap px at 1080p), laid on the lane so it ends L.endX (frame fraction) short of her
+// hands. Words sung before the shot are sent out along the lane from her hands over the shot's first 8 frames (ahead of the light: "each
+// one a light I sent ahead"); later words appear on their word times with the lyric's own 3-frame fade and rise. The lane itself is a rose hairline with a
+// soft glow from the light to her hand, under the words. The separate lyric is not drawn on this shot (lyrics() skips L.lyric).
+function lyricLane(t, sc, pts, from, len) {
+  const L = sc.s.opt.lane, line = LYR.find((l) => String(l.id) === String(L.lyric)); if (!line) return;
+  const f = capFont('serif', (L.cap || 46) * S); setFont(f);
+  const words = line.words.map((w) => ({ ...w, wd: g.measureText(w.w).width })), sp = g.measureText(' ').width, tot = words.reduce((a, w) => a + w.wd, 0) + sp * (words.length - 1);
+  const acc = [0]; for (let i = 1; i < pts.length; i++) acc.push(acc[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+  const at = (a) => { let i = 1; while (i < pts.length - 1 && acc[i] < a) i++; const p = pts[i - 1], q = pts[i], u = (a - acc[i - 1]) / ((acc[i] - acc[i - 1]) || 1); return { x: lerp(p.x, q.x, u), y: lerp(p.y, q.y, u), ang: Math.atan2(q.y - p.y, q.x - p.x) }; };
+  let aEnd = len; if (L.endX !== undefined) { const X = L.endX * W; for (let i = 1; i < pts.length; i++) if (pts[i].x >= X) { aEnd = acc[i - 1] + (acc[i] - acc[i - 1]) * clamp01((X - pts[i - 1].x) / ((pts[i].x - pts[i - 1].x) || 1)); break; } }
+  const a0 = aEnd - tot, col = L.color || MAIN, lift = (L.lift || 10) * S;
+  // the lane: a hairline with a glow, from the light to the hand
+  g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = hexA(col, 0.55); g.shadowColor = col; g.shadowBlur = 10 * S; g.lineWidth = 2.2 * S; g.lineCap = 'round';
+  g.beginPath(); let first = true; for (let a = Math.max(0, from); a <= len; a += 6 * S) { const p = at(a); if (first) { g.moveTo(p.x, p.y); first = false; } else g.lineTo(p.x, p.y); } g.stroke(); g.restore();
+  // the words, glyph by glyph along the lane (sitting just above it). Words sung before the shot are sent out ahead of the light over its
+  // first L.wipe s (default 8 frames), from her hands outward; later words appear on their word times
+  const wipe = L.wipe || 8 / FPS, rv = Math.min(from, aEnd - (aEnd - a0 + 60 * S) * ease.out(clamp01((t - sc.s.t0 + HF) / wipe)));
+  setFont(f); let a = a0;
+  words.forEach((w, wi) => {
+    const sung = on(t, w.start), ff = fr(t, w.start), wa = sung ? clamp01((ff + 1) / 3) : 0, rise = (1 - clamp01((ff + 1) / 4)) * 8 * S;
+    for (const ch of w.w) { const cw = g.measureText(ch).width, mid = a + cw / 2;
+      if (wa > 0 && mid >= rv) { const p = at(mid), nx = Math.sin(p.ang), ny = -Math.cos(p.ang), passed = clamp01((mid - rv) / (60 * S));
+        g.save(); g.translate(p.x + nx * (lift + rise), p.y + ny * (lift + rise)); g.rotate(p.ang); g.globalAlpha = wa * (w.start < sc.s.t0 ? passed : 1);
+        textShadow(0.85, 12); g.fillStyle = CREAM; g.fillText(ch, -cw / 2, 0); noShadow(); g.restore(); }
+      a += cw; }
+    a += sp; });
 }
 
 // film v3, b105-106 (vio_wide): the violet lane is written only as far as she has got ("This branch may never find the way").
@@ -838,6 +882,7 @@ function draw(t, sc) {
       g.save(); paperPass(g, b, rect, { paper: sec.paper || 'black', ...(sec.stroke ? { stroke: sec.stroke } : {}), ink: [...(sec.ink || INKS), ...(extraInk || [])], seed: 1000 + (s.opt && s.opt.seedPrev ? s.i - 1 : s.i), t, ...lk }); g.restore(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; }
     else g.drawImage(b, 0, 0, W, H);
     if (sc.wins) windows(t, sc);
+    if (s.opt && s.opt.egg && LANES) egg(t, sc);
     if (sc.tail) drawImgs(sc.tail);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
@@ -876,6 +921,8 @@ async function boot() {
   // film v2: a shot whose opt.next = { id, opt } switches to plate `id` (with `opt` merged over its own) when that plate has landed
   // next.kind: the shot's kind changes too (an orchestra v7 shot becomes a plate); next.flag 'orch': not with ?orch=v7
   // film v3: next.id (and PLATE_ALIAS / PROOF_A ids) may be a list, newest first: the first plate that exists wins (wushu_v3, wushu_v2)
+  // ... or next itself a list of { id, opt, kind } (per-take timings): the first whose plate exists wins
+  for (const s of SH) if (s.opt && s.opt.next && Array.isArray(s.opt.next)) { for (const nx of s.opt.next) if (await firstPlate(nx.id)) { s.opt = { ...s.opt, next: nx }; break; } if (Array.isArray(s.opt.next)) s.opt = { ...s.opt, next: null }; }
   for (const s of SH) if (s.opt && s.opt.next && !(s.opt.next.flag === 'orch' && ORCH_V7)) { const id = await firstPlate(s.opt.next.id); if (!id) continue; s.src = id; if (s.opt.next.kind) s.kind = s.opt.next.kind; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
   for (const s of SH) if (s.opt && s.opt.tail && !ORCH_V7) await findPlate(s.opt.tail.id);
   // film v2: plates replaced by id everywhere the film uses them (shots.js PLATE_ALIAS), when the new plate exists
@@ -898,7 +945,8 @@ async function boot() {
   // through dirs[id], the film through PLATE[id]; side/tone in lives.js are overridden from the wiring row when given
   if (!PROOFBUG) for (const [k, a] of Object.entries(LIFE_SWAP || {})) { const p = await findPlate(a.id); if (!p) continue;
     dirs[k] = p.dir; PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; if (a.side) byId[k].side = a.side; if (a.tone) byId[k].tone = a.tone; }
-  if (!PROOFBUG) for (const [k, a] of Object.entries(PROOF_A || {})) { const p = await findPlate(await firstPlate(a.id)), s = SH.find((q) => q.kind === 'proof' && q.src === 'A:' + k); if (!p || !s) continue;
+  if (!PROOFBUG) for (const [k, a0] of Object.entries(PROOF_A || {})) { let a = a0; if (Array.isArray(a0)) { a = null; for (const x of a0) if (await findPlate(x.id)) { a = x; break; } if (!a) continue; }
+    const p = await findPlate(await firstPlate(a.id)), s = SH.find((q) => q.kind === 'proof' && q.src === 'A:' + k); if (!p || !s) continue;
     const tb = T.beatT(Math.round(bposT(s.t0)) + a.landBeat); aPlates[k] = { key: k + '_A', clip0: a.land - (tb - s.t0), side: a.side }; dirs[k + '_A'] = p.dir; }
   PROOF = await makeProof(g, { W, H, FPS, T, plates: PROOF_PLATES, twos: false, fixStrip: !PROOFBUG,
     dirs, aPlates, heroBlend: !heroNew,

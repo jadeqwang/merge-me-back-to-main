@@ -20,7 +20,8 @@ export function makeOutro(E) {
   async function load(shots) {
     for (const s of shots) { const o = s.opt || {};
       if ((o.code === 'town' || o.code === 'aerial') && !st.facades) { st.facades = {};
-        for (const id of o.lives) { const u = `/work_fable/take2/kit/facade_${id}/rgba/f_0001.png`, b = await bmp(u); if (b) st.facades[id] = { url: u, img: b, bb: bboxOf(b) }; } }
+        // film v3: the new facade cut-outs (kit/facade_<id>_v2: real places, parenthood a cut-away living room) when they exist
+        for (const id of o.lives) for (const v of ['_v2', '']) { const u = `/work_fable/take2/kit/facade_${id}${v}/rgba/f_0001.png`, b = await bmp(u); if (b) { st.facades[id] = { url: u, img: b, bb: bboxOf(b), v2: v === '_v2' }; break; } } }
       if (o.code === 'fold' && !st.fold) { st.fold = {}; for (const k of ['night_jade', 'patchwork2']) { const b = await bmp(`${o.mattes[k]}/rgba/f_0001.png`); if (b) st.fold[k] = { img: b, bb: bboxOf(b) }; } }
       if (o.code === 'terminal' && !st.log) { const j = await json('/fable/take2/data/gitlog.json'); st.log = j ? j.lines : null; }
       if (o.runner && !st.run) { const m = await json(`${o.runner.dir}/meta.json`); st.run = m && m.n ? m : null; } }
@@ -72,6 +73,12 @@ export function makeOutro(E) {
   const seg = (t, a, b) => clamp01((t - a) / (b - a));
 
   // ---------------------------------------------------------------- town (b139-142)
+  let LAY = null;
+  function townLayout(o) { if (LAY) return LAY; const sp = o.spacing * W, q = [], c = []; let acc = 0, prev = null;
+    o.lives.forEach((id, k) => { const F = st.facades[id]; let slot = sp;
+      if (F) { const bw = (F.bb.x1 - F.bb.x0) * F.img.width, bh = (F.bb.y1 - F.bb.y0) * F.img.height, s1 = Math.min((0.4 * H) / bh, ((F.v2 ? 0.42 : 0.25) * W) / bw); q[k] = { bw, bh, q: s1 }; slot = Math.max(sp, bw * s1 + 0.05 * W); }
+      acc += prev === null ? 0 : (prev + slot) / 2; c[k] = acc; prev = slot; });
+    LAY = { q, c, ratio: (acc / Math.max(1, o.lives.length - 1)) / sp }; return LAY; }
   function pencilLine(pts, w = 1.6, a = 0.55, col = INKP) { g.save(); g.strokeStyle = col; g.globalAlpha = a; g.lineWidth = w * S; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y))); g.stroke(); g.restore(); }
   function hills(off, y0, amp, seed, a) { for (let pass = 0; pass < 2; pass++) { const pts = []; for (let x = -40; x <= W + 40; x += 18 * S) { const wx = x + off; pts.push({ x, y: y0 + amp * (Math.sin(wx * 0.0021 + seed) * 0.6 + Math.sin(wx * 0.0057 + seed * 2) * 0.3) + pass * 2 * S }); } pencilLine(pts, 1.4, a * (pass ? 0.5 : 1)); } }
   function chipAt(x, y, L) { g.save(); g.font = mono(26 * S, 600); const tw = g.measureText(L.branch).width, pad = 10 * S, h = 40 * S, d = 8 * S, w = tw + 2 * pad + 2 * d + 10 * S;
@@ -84,10 +91,13 @@ export function makeOutro(E) {
     const o = s.opt, dir = o.dir === undefined ? 1 : o.dir, v = o.speed * S, tt = (t - s.t0) + (o.x0 || 0), scroll = v * tt, roadY = 0.86 * H, baseY = 0.74 * H, sp = o.spacing * W;
     g.fillStyle = PAPERW; g.fillRect(0, 0, W, H);
     hills(-dir * scroll * 0.18, 0.42 * H, 40 * S, 1.3, 0.35); hills(-dir * scroll * 0.32, 0.5 * H, 26 * S, 4.1, 0.45);
-    // the facades along the road
-    o.lives.forEach((id, k) => { const F = st.facades[id]; if (!F) return; const L = byId[id], bb = F.bb, img = F.img;
-      const bw = (bb.x1 - bb.x0) * img.width, bh = (bb.y1 - bb.y0) * img.height, q = Math.min((0.4 * H) / bh, (0.25 * W) / bw),
-        cx = dir > 0 ? 0.22 * W - k * sp + scroll : 0.78 * W + k * sp - scroll;
+    // the facades along the road. film v3: a v2 facade may be wider (up to 0.42 W: Hangar One, the cut-away living room), and every facade
+    // gets a slot of max(spacing, its width + 0.05 W); the slots are laid end to end (with the v1 facades all slots equal the spacing, so
+    // the v1 layout is unchanged) and the travel speed scales with the total so the twelve still pass in the same time
+    const lay = townLayout(o), vs = lay.ratio;
+    o.lives.forEach((id, k) => { const F = st.facades[id]; if (!F) return; const L = byId[id], bb = F.bb, img = F.img, Q = lay.q[k];
+      const bw = Q.bw, bh = Q.bh, q = Q.q, sc2 = scroll * vs,
+        cx = dir > 0 ? 0.22 * W - lay.c[k] + sc2 : 0.78 * W + lay.c[k] - sc2;
       if (cx < -0.4 * W || cx > 1.4 * W) return;
       g.drawImage(img, bb.x0 * img.width, bb.y0 * img.height, bw, bh, cx - bw * q / 2, baseY - bh * q, bw * q, bh * q);
       pencilLine([{ x: cx - bw * q / 2 - 20 * S, y: baseY + 1 }, { x: cx + bw * q / 2 + 20 * S, y: baseY + 2 }], 1.4, 0.5);

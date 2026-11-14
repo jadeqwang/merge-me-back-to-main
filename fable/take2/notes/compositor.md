@@ -537,3 +537,68 @@ Counts: 185 shots; effective (likeness=0): 100 plate, 50 v7, 15 proof, 13 code, 
 credits ob03 7.69 s, grid pc01 6.90, terminal ob02 6.83, graph ob01 6.82.
 Looked at: the five sheets and one-frame-per-beat strips of b5-6, b28-32, b49-52, b54-55, b73-84, b85-93, b100, b114-117, b139-146
 (work_fable/take2/dev/v2/strips/). Nobody has watched v2 at speed with sound.
+
+## Film v3 (2026-11-14, compositor; brief: notes/v3_direction.md section A, Jade's notes: notes/jade_v2_notes.md)
+
+State: items 1-6, 8 done in code, plus the coordinator's additions (hero_paper_v2, main_face_v2 / main_split_v2 song-locked, band_v2
+everywhere, wushu_v3, main_light_v2, items 10 and 11). Item 7 (checking the plates agent's wiring) and item 9 (the film v3 render) wait for
+the director's message. Nothing of film v3 rendered whole. Check renders: `work_fable/take2/dev/v3/` (960 px review stills `v3_*.jpg`).
+
+1. Orchestra b81-84 back to the hatched 3D (rev-3 frames, solid paper look, as film v1). film.js `ORCH_V7` is now on unless
+   `?orch=plates` (film v2's orch_1..8 route and shot 1's dissolve). The split "orchestra rise" shot reuses shot 8's paper seed
+   (`opt.seedPrev`) so the hatching does not change at b84.3.5. Boot: 57 v7 shots (as v1). Still: v3_01_orchestra_hatched.jpg.
+2. Labels: lives.js wetlab `jade/biology`, phd `jade/phd-neuroscience` (ids unchanged). Checked on stills: grid cell labels (phd fits
+   its cell), b29-30 chyrons, graph, git log b73-76, town chips, fold backs, kit lanes; float strands run off the frame edge as all do.
+   v7 frames (old code film) still have old names baked in where its road text is legible; not re-rendered (b19 crop, illegible elsewhere).
+3. violet's message `still writing this one` (lives.js): vio_wide/vio_walk lanes, gitlog, town road, kit, fold back, det caption.
+   Proof identity (`tools/proof_identity.py`): proofbug=1 max diff 0 on all 13 frames, before and after the port change below. Film vs
+   its own pre-change render (every 15 frames of bars 28-43): labels only change k 135-150 (wetlab chyron, x 1011-1215 y 758-805),
+   k 165-180 (phd chyron and written lane, x 769-1684 y 748-859), k 300-510 (grid labels, x 173-1670 y 231-538). Later, with the new
+   plates landed: k 105-120 (b30 wushu shot = wushu_v3) and k 675-765 (b41-42 hero = hero_paper_v2), whole frame; nothing else.
+4. vio_wide b105-106 (film.js `roadMask`/`roadLane`, shots.js `ROAD_VW` from `tools/track_road.py vio_wide 3`: per 0.25 s her lead
+   foot, rear foot and the plate's own violet road as a line y = a + b x). The plate's road AHEAD of her lead foot is painted out (the
+   ground is pure black), opaque to just under her toe, fading under the shoe; behind her rear foot the road is written with her branch's
+   message, glyphs fixed on the ground (no scroll) so new text appears as she walks on; a small violet-white pen point glows at her toe.
+   vio_wide_v2 (she runs, slowing): `next` is wired with `road.track: null` (no road) until its track is measured with the same tool.
+   Checked on 6 stills and crops of her feet (vw/road_sheet.jpg, road_crops.jpg).
+5. vio_release2 b116-117 (film.js `palmRelease`, shots.js `PALM_REL`): the typed block flows down into the notebook as she shuts it
+   (clip 1.0-1.4, line by line along curves, shrinking, small flares), a violet glow breathes at the notebook, then the light grows IN
+   her palm (clip 1.95-2.2; palm per clip time measured by eye on gridded crops, rel/palm_grid.jpg), rises 0.045 H above it, lifts off at
+   clip 2.3 and arcs up in front of her face, over her head and down to the sunrise, accelerating, landing on the b117 downbeat (flash
+   as before). Her hand is open from 2.0 and raised from 2.15 (palm up), so the light sits on the open palm. Checked: a 16-still sheet
+   (rel/rel_sheet.jpg) and every frame of the flight to the downbeat (rel/rel_frames.jpg, rel_top.jpg). The light goes out of the top of
+   the frame for about one frame at the apex.
+6. vio_still b118-120: she atomizes (film.js `atomize`, data `tools/atomize.py` -> kit/vio_still/atom/: track.json, release.png,
+   particles.json, standin.jpg). The clip dollies back (scale 0.86 by frame 121), so every frame uses an ECC affine (background only)
+   from plate frame 1 to frame k. Her mask on frame 1: matte inside a hand-set polygon (the matte also took the dish; trusted only away from
+   the dish: below y 0.8 the soles, above y 0.2 the pencils of her bun). Release time per pixel: half depth from her outline, half nearness
+   to the pale-blue circle, plus slow noise (ragged front closing in on her back); the circle 0.74-0.97, last; a halo round her at 0. Per
+   frame the clean plate is warped in (vio_empty landed: still from plate frame 121, read from its meta `matches`; the stand-in is only
+   used if vio_empty is missing) through a mask that opens pixel by pixel (0.06 soft); 21k points every 3 px are born where the pixel fades,
+   first a square of her own colour (no pop), then a point of light (white or violet), drift out and up; one in ten rises to a place in
+   the sky (above the horizon) and twinkles to the end; the circle's points go up and the last of them becomes one violet mote that
+   drifts east and leaves the frame at the cut into b121. Release runs from shot start + 0.1 s to end - 0.45 s: the last 0.45 s is the
+   empty rim. Checked: 13-still strip across the three bars (v3_05), close crops of the late phase (atom/atom_close.jpg), and a rendered
+   clip (atom/atom_clip.mp4, 202.5-208.6) measured frame to frame: mean change 0.6-4.5 per frame inside the shot, spikes only at the two
+   cuts (no pop); cut strip atom/cut_strip.jpg. Fixed on the way: a pencil and a hair strand were left floating (not in the matte).
+8. Terminal b153-156: `tools/gitlog.py` writes fable/take2/data/gitlog.json from `git log --graph --format="%h %s" fable/merge`;
+   render_film.sh runs it before every film render. Do not re-run it between the master render and check.py's single-frame check.
+10. b26 main_release (coordinator item 10): the lane behind the light carries lyric line 3 itself (`lane.lyric: 3`, film.js
+   `lyricLane`): Instrument Serif cap 46, cream with a dark shadow, on a rose hairline, once, ending at x 0.55 (short of her hands).
+   Words sung before the shot ("Each one a light") are sent out from her hands over the first 8 frames, ahead of the light; "I", "sent",
+   "ahead" appear on their word times (3-frame fade and rise). The separate lyric is not drawn on this shot. b25 unchanged; the cut
+   reads (b25's top lyric, then the words flying out). Checked: 9-still sheet (b26/new_sheet.jpg), crop n7_crop.jpg.
+11. b45 easter egg (film.js `egg`): one written lane `banach–tarski` (lower case, en dash), #FFB020 at 0.55, cap 26, a drawn cubic from
+   main's band (0.66, 0.15) out to the right edge (1.03, 0.41) over the dark ground clear of the slab, written outward over the first half
+   of the shot, merge 0 to 0.3 (above 0.35 a second row fades in and doubled it). Not added to the b46-47 fuse (kit lanes are tied to
+   runners; not trivial). Checked: 6-still strip.
+
+Plate hooks (picked up when the folder exists, current source until then): `opt.next` may now be a LIST of {id, opt} (first existing
+wins: per-take timings) and `next.id` / PLATE_ALIAS / PROOF_A ids may be lists. Landed and so active now, values from plates_v3.md's
+wiring table, NOT yet checked as item 7: wushu_v3 (b12 flash 1.35-1.65, b30 land 1.4, alias everywhere v2 was), hero_paper_v2
+(song-locked: c0 = bar 41 - t0_song through makeProof `hero.c0`, port_proof.py; crop/slab as hero_paper, HERO_NEXT.opt to override; the
+slab clears her face on stills), main_face_v2 (songLock; lyric bottom left clears her mouth on stills), float_hand_v2 (0.9-2.6),
+ins_violin_v3 (from 0.0 at 1.25x), drop_hero_5_v3 (from 0.62: strike on the cut), facade_*_v2 (outro.js prefers kit/facade_<id>_v2; a
+v2 facade may be 0.42 W wide, slots laid end to end, the town's speed scaled so the twelve pass in the same time). Waiting: band_v2
+(shots.js LIFE_SWAP: every use incl. the proof grid via makeProof dirs, side/tone overridable), main_split_v2 (songLock if t0_song),
+main_light_v2, vio_wide_v2 (needs its track), wave_run take 3 (id not known yet: not hooked).

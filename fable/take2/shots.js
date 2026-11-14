@@ -60,7 +60,7 @@ const STANCE = [['stance_bow', 'bow stance punch'], ['stance_horse', 'horse stan
 const STANCE_V2 = [['stance_bow_v2', 1.5], ['stance_horse_v2', 2.0], ['stance_drop_v2', 1.0], ['stance_drop2_v2', 2.25]];   // drop_v2: use 0.5-5.0, holds from 1.0
 // beat 3 of b77-80 (film v2): four close inserts instead of the stances (Jade: mix it up with writing poems and playing instruments).
 // clip0 measured on the clips: the piano chord lands at about 0.85-1.0 s, the guitar strum crosses the strings at about 1.0 s
-const INSERT = [['ins_violin', 'violin: the bow arm, a down-bow, the wrist leading', { clip0: 1.0, speed: 1.25 }],   // take 2 (warm wood violin): use 1.0-4.75
+const INSERT = [['ins_violin', 'violin: the bow arm, a down-bow, the wrist leading', { clip0: 1.0, speed: 1.25, next: { id: 'ins_violin_v3', opt: { clip0: 0.0, speed: 1.25 } } }],   // take 2 (warm wood violin): use 1.0-4.75; film v3: ins_violin_v3 (staged with a body) down-bow 0.0-2.25 (plates_v3), timing to check in item 7
   ['ins_poem', 'a pen finishing a line in a notebook, the hand lifts', { clip0: 3.4 }],
   ['ins_piano', 'both hands land a chord', { clip0: 0.82 }], ['ins_guitar', 'a strum on an acoustic guitar (the RNA band)', { clip0: 0.95 }]];
 
@@ -101,7 +101,7 @@ V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Titl
 const FL = [['piano', 11], ['wushu', 12], ['ames', 13], ['violet', 14]];
 V(10, [11, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 FL.forEach(([id, b], i) => {
-  P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02, ...(id === 'wushu' ? { next: { id: WUSHU_IDS, opt: { clip0: 1.0, clip1: 1.3 } } } : {}) }, row: 'b10-14' });   // wushu_v2: the landed punch
+  P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02, ...(id === 'wushu' ? { next: [{ id: 'wushu_v3', opt: { clip0: 1.35, clip1: 1.65 } }, { id: 'wushu_v2', opt: { clip0: 1.0, clip1: 1.3 } }] } : {}) }, row: 'b10-14' });   // wushu_v2: the landed punch
   if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
 });
 V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14' });
@@ -134,7 +134,7 @@ P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { 
   next: { id: 'main_light_v2', opt: {} } } });   // film v3: main_light_v2 (the hands move); clip window from the plates wiring row (item 7)   // the light appears from about 2.2 s (director: use 2.0-4.5)
 P(26, 27, 'main_release', 'missing', 'She opens her hands; the light leaves along the lane.',
   { code: 'P+C', row: 'b26', opt: { lyr: { x0: 0.04, x1: 0.55, align: 'left' },
-    lane: { pts: [[0, 0.425], [0.04, 0.417], [0.111, 0.399], [0.181, 0.379], [0.331, 0.338], [0.548, 0.275], [0.595, 0.265]], color: '#FF3D7F', text: 'piano', cap: 30, scroll: -9,
+    lane: { pts: [[0, 0.425], [0.04, 0.417], [0.111, 0.399], [0.181, 0.379], [0.331, 0.338], [0.548, 0.275], [0.595, 0.265]], color: '#FF3D7F', lyric: 3, cap: 46, endX: 0.55,   // film v3: the lane carries the lyric (line 3), not the piano message
       track: [[0, 0.595], [0.375, 0.548], [0.5, 0.331], [0.625, 0.181], [0.75, 0.111], [1.0, 0.064], [1.5, 0.044]] } } });   // the light's path, measured on the clip (warmest point per frame): the lane is written behind it
 V(27, 28, 'lane shot', 'The light races down the rose lane and becomes the lamp in the piano room (match cut).', { row: 'b27' });
 // b28-32: the proof edit, ten lives, 4,4,2,2,2,2,1,1,1,1 beats
@@ -160,7 +160,9 @@ shot(43, 44, 'K+C', 'kit', 'runner_kit', 'missing', 'Side-on: the twelve run in 
   { row: 'b43', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.48, align: 'left' }, kit: { mode: 'row', lanes: KIT_ROW } } });
 P(44, 45, 'hero_feet', 'missing', 'Low and close: her trainers strike the orange line.',
   { row: 'b44', opt: { lyr: { y: 'top', x0: 0.04, x1: 0.96, align: 'left' }, lane: { pts: [[0, 0.845], [1, 0.845]], color: '#FF7A1A', text: 'main', cap: 34, scroll: -14 } } });   // written just under the plate's own line (y 0.80-0.81 in the clip)
-V(45, 46, '1:16-1:20', 'From above: the lanes braid into one. Slab type.', { row: 'b45' });
+// film v3 item 11 (Jade's easter egg from Rewind): one extra written lane, `banach–tarski`, quiet gold, joining the braid where the lanes
+// meet main's band; a drawn curve from the junction out to the right edge, over the dark ground clear of the slab (src/film.js egg())
+V(45, 46, '1:16-1:20', 'From above: the lanes braid into one. Slab type.', { row: 'b45', opt: { egg: { text: 'banach–tarski', color: '#FFB020', alpha: 0.55, cap: 26, pts: [[0.66, 0.15], [0.74, 0.30], [0.88, 0.37], [1.03, 0.41]], grow: 0.5, merge: [0, 0.3], scroll: 4 } } });
 // fusions on the measured half beats (a fusion lands ON its beat): [beat from the shot start, lane a, lane b]; 8 -> 4 at beats 0.5, 1.5,
 // 2.5, 3.5 of b46, 4 -> 2 at 4.5 and 6.5 (b47 beats 1.5 and 3.5). Each pair comes to the front (src/kit.js 'fuse'), large, so the
 // half-and-half beat reads; slots = the two front x places, alternating.
@@ -207,7 +209,8 @@ P(59, 60, 'float_face', 'missing', 'Close on her face, eyes closed, water lappin
 P(60, 61, 'float_top', 'missing', 'Back above: the strands branch outward, doubling.', { code: 'C+P', row: 'b59-60', opt: { clip0: 2.0, strands: { mode: 'double' } } });
 P(61, 63, 'float_top', 'missing', 'Slow rotation and pull-out; along one strand a life window glides past.', { code: 'C+P', row: 'b61-62', opt: { clip0: 0.5, speed: 0.75, push: 0, strands: { mode: 'rotate', window: 'piano', on: 3 } } });
 P(63, 64, 'float_top', 'missing', 'Pulses of light come home along every strand.', { code: 'C+P', row: 'b63-64', opt: { clip0: 3.0, strands: { mode: 'pulses' } } });
-P(64, 65, 'float_hand', 'missing', 'Her hand opens on the water as one arrives.', { row: 'b63-64', opt: { clip0: 1.0, clip1: 3.5, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });   // clip: the light reaches her palm at about 2.5 s, a loose fist by 3.5
+P(64, 65, 'float_hand', 'missing', 'Her hand opens on the water as one arrives.', { row: 'b63-64', opt: { clip0: 1.0, clip1: 3.5, lyr: { x0: 0.03, x1: 0.5, align: 'left' },
+  next: { id: 'float_hand_v2', opt: { clip0: 0.9, clip1: 2.6 } } } });   // film v3 (plates_v3 wiring): the light settles in the palm at 1.5 s, fingers closed by 2.5; to check in item 7   // clip: the light reaches her palm at about 2.5 s, a loose fist by 3.5
 
 // ------------------------------------------------------------------ Breakdown B: bars 65-72 ("Ahh"; snare crescendo from b68, roll in b72)
 section('break_b');
@@ -276,7 +279,7 @@ P(100, 101, 'drop_face', 'missing', 'Close: her face in the sun, wind in her hai
 V(101, 102, '2:57', 'Last phrase.', { row: 'b101-103' });
 shot(102, [102, 3], 'S', 'plate', 'drop_hero_4', 'missing', 'Insert: her hair and jacket whip through the turn, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: { id: 'drop_hero_4_v2', opt: { push: 0, white: false, clip0: 1.2, speed: 1.5 } } } });
 V([102, 3], [103, 3], '2:58', 'Tornado kick.', { row: 'b101-103' });
-shot([103, 3], 104, 'S', 'plate', 'drop_hero_5', 'missing', 'Insert: the landing, dust rising gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: { id: 'drop_hero_5_v2', opt: { push: 0, clip0: 0.05 } } } });   // v2: feet touch down at about 0.1 s: on the cut, with the white flash
+shot([103, 3], 104, 'S', 'plate', 'drop_hero_5', 'missing', 'Insert: the landing, dust rising gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: [{ id: 'drop_hero_5_v3', opt: { push: 0, clip0: 0.62 } }, { id: 'drop_hero_5_v2', opt: { push: 0, clip0: 0.05 } }] } });   // v3 (plates_v3): feet strike at 0.67 s, so it lands on the cut with the flash   // v2: feet touch down at about 0.1 s: on the cut, with the white flash
 V(104, 105, '2:59', '1,024 salute the sun. Cut to night on b105.', { row: 'b104' });
 
 // ------------------------------------------------------------------ Verse 2: bars 105-120 (scratchboard, white on black, violet the only colour)
@@ -391,7 +394,7 @@ export const FLOAT = { at: 2.0, track: [[0, [0.555, 0.18], [0.297, 0.894]], [2.0
 // focus = where she is in the new plate (cover crops). The proof range: only the b30 life shot (PROOF_A), not the b33-37 grid (the grid's
 // bar-37 look-back needs the old clip's turn; wushu_v2 has none)
 export const PLATE_ALIAS = { wushu: { id: WUSHU_IDS, focus: [0.3, 0.3] } };
-export const PROOF_A = { wushu: { id: WUSHU_IDS, land: 1.0, landBeat: 1, side: 'left' } };   // she stands left in wushu_v2 (face x 0.27)   // the punch lands at clip 1.0 s: put it on beat 2 of the 2-beat shot
+export const PROOF_A = { wushu: [{ id: 'wushu_v3', land: 1.4, landBeat: 1, side: 'left' }, { id: 'wushu_v2', land: 1.0, landBeat: 1, side: 'left' }] };   // v3 (plates_v3 wiring): the punch lands at 1.40 s   // she stands left in wushu_v2 (face x 0.27)   // the punch lands at clip 1.0 s: put it on beat 2 of the 2-beat shot
 // film v3: a life plate retaken and swapped EVERYWHERE it is used (bars 28-32, the b33-37 grid and its bar-37 turn, the fold sheet, the
 // b54-55 window, flashes): the band at Hacker Dojo, not in a bar. side/tone (lives.js) from the plates wiring row when they change;
 // focus = her place in the new plate (cover crops). Picked up when work_fable/take2/plates/band_v2 is complete.
