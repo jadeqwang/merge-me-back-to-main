@@ -273,6 +273,7 @@ function scene(t) {
     if (on(t, ta)) { sc.cross = { u: t >= te - HF ? 1 : seg(t, ta - HF, te - HF), life: [], door: x.door, col: (byId[x.life] || {}).color || MAIN };
       plateDraw({ t0: ta, t1: s.t1 + 1, opt: { clip0: x.life0 || 0, push: 0.04 } }, t, x.life, sc.cross.life);
       if (sc.cross.u >= 1) sc.imgs = []; } }
+  if (sc.eff === 'plate' && s.opt.page && s.opt.page.quad && V7) { const P = s.opt.page, k = Math.round((P.v7[0] + (t - s.t0) * P.v7[1]) * V7.fps); if (k >= V7.first && k < V7.first + V7.n) sc.pageImg = { url: v7Url(k) }; }   // film v6 A5: the crowd on the page
   const fl = s.opt && s.opt.flash;   // a few frames of a life plate at the head of the shot
   if (fl && fr(t, s.t0) < fl.frames && PLATE[fl.id] && !ALLCARDS) { sc.flash = []; plateDraw({ ...s, opt: { clip0: 1.5, push: 0 } }, t, fl.id, sc.flash); }
   return sc;
@@ -416,6 +417,28 @@ function vlane(t, V) { if (t < V.grow[0]) return; const A = V.anchor; let i = 0;
   else { const k = ((t - V.grow[1]) * 0.45) % 1, h = P(k); glowAt(h.x, h.y, 14 * S, '#9B6BFF', 0.6 * Math.sin(k * Math.PI)); }
   g.restore(); }
 
+// film v6 A5, the reveal at b105: the live gold crowd frames (v7 at song time page.v7[0] + (t - shot start) * page.v7[1], through the
+// drop's paper look: gold on black) mapped onto the notebook page of page_reveal. page.quad = [[clip s, [x, y] x 4 (top-left, top-right,
+// bottom-right, bottom-left)], ...] plate fractions, interpolated per clip time; drawn as two affine triangles; page.fade [c0, c1] (clip
+// s): the drawing fades into the page's own ink as the camera pulls back (optional).
+let PGC = null;
+function triMap(src, s0, s1, s2, d0, d1, d2) {   // draw the triangle s0 s1 s2 of src onto d0 d1 d2
+  const den = s0.x * (s1.y - s2.y) + s1.x * (s2.y - s0.y) + s2.x * (s0.y - s1.y); if (Math.abs(den) < 1e-6) return;
+  const a = (d0.x * (s1.y - s2.y) + d1.x * (s2.y - s0.y) + d2.x * (s0.y - s1.y)) / den, b = (d0.x * (s2.x - s1.x) + d1.x * (s0.x - s2.x) + d2.x * (s1.x - s0.x)) / den,
+    c = (d0.x * (s1.x * s2.y - s2.x * s1.y) + d1.x * (s2.x * s0.y - s0.x * s2.y) + d2.x * (s0.x * s1.y - s1.x * s0.y)) / den,
+    d = (d0.y * (s1.y - s2.y) + d1.y * (s2.y - s0.y) + d2.y * (s0.y - s1.y)) / den, e = (d0.y * (s2.x - s1.x) + d1.y * (s0.x - s2.x) + d2.y * (s1.x - s0.x)) / den,
+    f = (d0.y * (s1.x * s2.y - s2.x * s1.y) + d1.y * (s2.x * s0.y - s0.x * s2.y) + d2.y * (s0.x * s1.y - s1.x * s0.y)) / den;
+  g.save(); g.beginPath(); g.moveTo(d0.x, d0.y); g.lineTo(d1.x, d1.y); g.lineTo(d2.x, d2.y); g.closePath(); g.clip(); g.transform(a, d, b, e, c, f); g.drawImage(src, 0, 0); g.restore(); }
+function pageMap(t, sc) {
+  const s = sc.s, P = s.opt.page, cm = clipMap(s), c = cm.c0 + (t - s.t0) * cm.sp, K = P.quad; let i = 0; while (i < K.length - 2 && c > K[i + 1][0]) i++;
+  const u = K.length > 1 ? clamp01((c - K[i][0]) / ((K[i + 1] || K[i])[0] - K[i][0] || 1)) : 0, Q = [0, 1, 2, 3].map((j) => { const a = K[i][1 + j], b = (K[i + 1] || K[i])[1 + j]; return plateToScreen(sc.imgs[0], lerp(a[0], b[0], u), lerp(a[1], b[1], u)); });
+  if (!PGC) { PGC = document.createElement('canvas'); PGC.width = W; PGC.height = H; }
+  const pc = PGC.getContext('2d'), b = READY.get(sc.pageImg.url), sec = SECTIONS.drop; pc.setTransform(1, 0, 0, 1, 0, 0); pc.globalAlpha = 1; pc.globalCompositeOperation = 'source-over';
+  if (paperPass && USE_PAPER) paperPass(pc, b, { x: 0, y: 0, w: W, h: H }, { paper: 'black', stroke: sec.stroke, ink: sec.ink, seed: 1000 + s.i, t }); else pc.drawImage(b, 0, 0, W, H);
+  pc.setTransform(1, 0, 0, 1, 0, 0); pc.globalAlpha = 1; pc.globalCompositeOperation = 'source-over';
+  const fa = P.fade ? 1 - seg(c, P.fade[0], P.fade[1]) : 1; if (fa <= 0) return;
+  g.save(); g.globalAlpha = fa; const S0 = { x: 0, y: 0 }, S1 = { x: W, y: 0 }, S2 = { x: W, y: H }, S3 = { x: 0, y: H };
+  triMap(PGC, S0, S1, S2, Q[0], Q[1], Q[2]); triMap(PGC, S0, S2, S3, Q[0], Q[2], Q[3]); g.restore(); }
 // film v6 A5: the strokes under her pencil (pencil_lead, pencil_draw). opt.pencil.track = [[clip s, x, y], ...] the pencil tip in plate
 // fractions (measured on the plate's frames); the gold line it leaves is drawn in code from the track's start to now, with fine hatch
 // ticks across it every few samples (her shading), a glow at the tip. No track: nothing is drawn (the plate's own strokes, if any, stay).
@@ -989,6 +1012,7 @@ function draw(t, sc) {
     if (s.opt.pageFly) pageFly(t, s);
     if (s.opt.arrive) arrive(t, s);
     if (s.opt.pencil && s.opt.pencil.track) pencilStrokes(t, sc);
+    if (sc.pageImg && READY.get(sc.pageImg.url)) pageMap(t, sc);
     if (s.opt.atom && ATOM[s.opt.atom.dir]) atomize(t, sc);
     else if (s.opt.settle && sc.settle) settle(t, sc);
   }
@@ -1045,7 +1069,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(s.opt && s.opt.atom && ATOM[s.opt.atom.dir] ? [{ url: ATOM[s.opt.atom.dir].emptyUrl }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(s.opt && s.opt.atom && ATOM[s.opt.atom.dir] ? [{ url: ATOM[s.opt.atom.dir].emptyUrl }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || []), ...(sc.pageImg ? [sc.pageImg] : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc);
   const z = s.opt && s.opt.toFrame0; if (z) { const t0 = T.duration - z; if (t > t0) {   // the end: cross to the film's own frame 0 (the last frame equals it)
     if (!F0) { const c = document.createElement('canvas'); c.width = W; c.height = H; const keep = g.getImageData(0, 0, W, H); const s0 = scene(0); READY.clear();
