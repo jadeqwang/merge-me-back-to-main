@@ -449,14 +449,16 @@ function roadLane(t, sc) { const R = sc.s.opt.road; if (!R.track) return; const 
   const pen = r.P(r.lead), br = 0.75 + 0.25 * Math.sin(t * 9); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(pen.x, pen.y, 22 * S, R.color || MAIN, 0.6 * br); glowAt(pen.x, pen.y, 6 * S, '#FFFFFF', 0.7 * br); g.restore(); void len; }
 
 // b51-52: the fan of twelve afterimages (shots.js opt.fan): copies of her own cut-out (matte of the plate, same frame), each tinted in a
-// life's lane colour, rotated about a pivot low on her body; the fan opens over the first beat, then one folds into her every half beat
+// life's lane colour, rotated about a pivot low on her body; the fan is open from the first frame (v4; v3 opened it over the first beat), then one folds into her every half beat
 // from beat 1.5 (twelve folds by beat 7), each with a short flash of its colour on her outline. She is redrawn on top: her face stays clear.
 let FANC = null;
 function fan(t, sc) {
   const s = sc.s, F = s.opt.fan, im = sc.imgs[0], m = READY.get(sc.fan); if (!KITX) return;
   if (!FANC) { FANC = document.createElement('canvas'); FANC.width = W; FANC.height = H; }
   const fc = FANC.getContext('2d'), cr = cover(m.width, m.height, W, H, im.zoom || 1, im.fo[0], im.fo[1]);
-  const piv = plateToScreen(im, F.pivot[0], F.pivot[1]), b0 = Math.round(KITX.bpos(s.t0)), u = KITX.bpos(t) - b0, open = ease.out(clamp01(u));
+  // film v4 (Jade: "start with all the shadow Jades already fanned out and being folded in"): fully open on the shot's first frame (the b51
+  // downbeat), held through the first beat, then the folds as before; no outward motion (F.open: the beats it takes to open, 0 = none)
+  const piv = plateToScreen(im, F.pivot[0], F.pivot[1]), b0 = Math.round(KITX.bpos(s.t0)), u = KITX.bpos(t) - b0, open = F.open ? ease.out(clamp01(u / F.open)) : 1;
   const ids = F.lives, n = ids.length;
   const herOnly = () => { fc.setTransform(1, 0, 0, 1, 0, 0); fc.globalCompositeOperation = 'source-over'; fc.globalAlpha = 1; fc.clearRect(0, 0, W, H); fc.drawImage(m, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, W, H); };
   let flash = null;
@@ -681,6 +683,7 @@ function palmRelease(t, sc, B, cloud) {
     g.save(); g.globalCompositeOperation = 'lighter';
     glowAt(pa.x, pa.y, 34 * S * a, VIO_GLOW, 0.35 * a);                    // the light on her palm
     glowAt(x, y, (14 + 46 * a) * S, VIO_GLOW, 0.9 * a * br); glowAt(x, y, (4 + 8 * a) * S, '#FFFFFF', 0.95 * a); g.restore(); return; }
+  if (R.float) { floatUp(t, sc, R, PT, c, tl, ta, up); return; }
   const p0 = PT(R.palm, lift), c0 = { x: p0.x, y: p0.y - up }, c2 = { x: R.to[0] * W, y: R.to[1] * H }, K = R.ctrl.map(([x, y]) => ({ x: x * W, y: y * H }));
   const q = (k) => { const a = (1 - k) ** 3, b = 3 * k * (1 - k) ** 2, cc = 3 * k * k * (1 - k), d = k ** 3; return { x: a * c0.x + b * K[0].x + cc * K[1].x + d * c2.x, y: a * c0.y + b * K[0].y + cc * K[1].y + d * c2.y }; };
   if (on(t, ta)) { const f = fr(t, ta); if (f <= 1) { g.fillStyle = `rgba(235,225,255,${f === 0 ? 0.8 : 0.4})`; g.fillRect(0, 0, W, H); }   // the hit
@@ -690,6 +693,24 @@ function palmRelease(t, sc, B, cloud) {
   if (u < 0.25) { const pa = PT(R.palm, c); glowAt(pa.x, pa.y, 34 * S, VIO_GLOW, 0.35 * (1 - u / 0.25)); }   // the palm's after-glow
   for (let j = 10; j >= 1; j--) { const qj = q(Math.max(0, e - 0.022 * j)); glowAt(qj.x, qj.y, (8 + 3 * (10 - j)) * S * (1 - 0.4 * e), VIO_GLOW, 0.3 * (1 - j / 11)); }
   const p = q(e); glowAt(p.x, p.y, (44 - 14 * e) * S, VIO_GLOW, 0.9); glowAt(p.x, p.y, 10 * S, '#FFFFFF', 0.95); g.restore();
+}
+
+// film v4 item 3 (Jade: the light's speed is "very fast for the mood"): after its breath on the palm the light rises like a lantern let go:
+// from rest it eases (R.float.ease s) into one steady speed (vx, vy: frame fractions per second), no acceleration after that, a slight sway
+// (sway: amplitude W, period s), shrinking a little with distance (shrink); it stays in frame and is still rising at the cut. No white flash
+// on the b117 downbeat: the light itself swells softly there (swell: [gain, s before, s after]).
+const hump = (t, a, m, b) => (t <= a || t >= b ? 0 : t < m ? ease.io((t - a) / (m - a)) : 1 - ease.io((t - m) / (b - m)));
+function floatUp(t, sc, R, PT, c, tl, ta, up) {
+  const F = R.float, p0 = PT(R.palm, R.lift), x0 = p0.x, y0 = p0.y - up, e = F.ease || 0.5;
+  const pos = (tau) => { tau = Math.max(0, tau); const d = tau < e ? (tau * tau) / (2 * e) : tau - e / 2;
+    return { x: x0 + F.vx * W * d + F.sway[0] * W * Math.sin((2 * Math.PI * tau) / F.sway[1]) * clamp01(tau / 0.6), y: y0 + F.vy * H * d }; };
+  const tau = t - tl, k = 1 - (F.shrink || 0) * clamp01(tau / (sc.s.t1 - tl)), sw = 1 + F.swell[0] * hump(t, ta - F.swell[1], ta, ta + F.swell[2]);
+  const br = 0.92 + 0.08 * Math.sin(t * 5);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  if (tau < 0.6) { const pa = PT(R.palm, c); glowAt(pa.x, pa.y, 34 * S, VIO_GLOW, 0.35 * (1 - tau / 0.6)); }   // the palm's after-glow
+  for (let j = 5; j >= 1; j--) { const q = pos(tau - 0.06 * j); glowAt(q.x, q.y, 22 * k * S, VIO_GLOW, 0.07 * (1 - j / 6)); }   // a faint wake
+  const p = pos(tau); glowAt(p.x, p.y, 60 * k * sw * S, VIO_GLOW, Math.min(1, 0.9 * br * (0.85 + 0.15 * sw))); glowAt(p.x, p.y, 12 * k * (0.9 + 0.1 * sw) * S, '#FFFFFF', 0.95);
+  g.restore();
 }
 
 // vio_still: she becomes stars. Her figure stays at full brightness; along her outline star points break away (each edge cell gets its own

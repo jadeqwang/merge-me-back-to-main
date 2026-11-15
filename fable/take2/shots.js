@@ -315,7 +315,11 @@ const REL = { to: [0.93, 0.5], top: 0.04, arrive: 117, close: 1.25 };
 // lines gather down into the notebook as she shuts it (clip 1.0-1.4), the light then grows in her open palm (1.95-2.2) and rises a little
 // above it, lifts off at 2.3 and arcs up over the frame and down to the sunrise, landing on the b117 downbeat (clip 2.70). book / palm:
 // [clip s, x, y] plate fractions, measured by eye on gridded crops of the plate's frames (dev/v3/rel/palm_grid.jpg)
-const PALM_REL = { gather: [1.0, 0.26, 0.035], emerge: [1.95, 2.2], lift: 2.3, hover: 0.045,
+// film v4 item 3 (Jade: "very fast for the mood"): it sits on the palm a breath (2.2-2.7), lifts at clip 2.7 = the b117 downbeat with a soft
+// swell of its own light (no white flash), then rises like a lantern let go (film.js floatUp): steady, a slight sway, nearly straight up in
+// front of her upturned face (she faces west; "east" would cross her face), drifting a little east, still rising and in frame at the cut
+const PALM_REL = { gather: [1.0, 0.26, 0.035], emerge: [1.95, 2.2], lift: 2.7, hover: 0.045,
+  float: { vx: 0.014, vy: -0.115, ease: 0.5, sway: [0.006, 1.8], shrink: 0.35, swell: [0.45, 0.15, 0.6] },
   book: [[0.9, 0.545, 0.50], [1.2, 0.552, 0.513], [1.4, 0.567, 0.547], [3.0, 0.567, 0.547]],
   palm: [[1.7, 0.637, 0.469], [1.85, 0.639, 0.4375], [2.0, 0.637, 0.399], [2.15, 0.629, 0.368], [2.3, 0.637, 0.363], [2.5, 0.643, 0.353], [2.7, 0.646, 0.356], [3.0, 0.636, 0.356]] };
 const LYR_NEW = { x0: 0.03, x1: 0.37, align: 'left' };   // on vio_write2 / vio_release2 her boots reach x 0.38: the lyric keeps left of them
@@ -368,9 +372,14 @@ shot(137, 139, 'L', 'plate', 'like_sing1', 'missing', 'The switch: on the impact
 // main's written lane, dense (she is merged); side travel with parallax; a chip with the branch name under each building
 // film v2: dir 1 = the world slides right (she faces frame left, unmirrored: her sleeve patch has text); x 0.58 gives her lead room on the left
 const TOWN = { code: 'town', lives: LIFE, speed: 1050, spacing: 0.3, dir: 1 };   // all twelve pass in the four bars (b139-142), piano first
-shot(139, 141, 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax.', { row: 'b139-140', opt: { ...TOWN } });
+// film v4 item 4 (Jade: "she seems to pop into existence partway thru this run"): she runs from the first frame of b139, one continuous run
+// across both shots (runner.t0 = the seconds of run before the shot: b141 picks up b139's stride phase). foot = day_run's standing foot
+// in plate px per clip frame (tools/feet.py on kit/day_run: 20.84, step every 15 frames); outro.js sets the clip rate from it so her
+// planted foot moves with the road (about 2.26x at h 0.62 and speed 1050). loop: frames 35..94 (frame 95 matches 35, two strides).
+const RUNNER = { dir: '/work_fable/take2/kit/day_run', x: 0.58, h: 0.62, y: 0.9, edge: 0.02, foot: 20.84, loop: [35, 95] };
+shot(139, 141, 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax. She runs down the road from the first frame.', { row: 'b139-140', opt: { ...TOWN, runner: { ...RUNNER, t0: 0 } } });
 shot(141, 143, 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142',
-  opt: { ...TOWN, x0: 3.41, runner: { dir: '/work_fable/take2/kit/day_run', x: 0.58, h: 0.62, y: 0.9, edge: 0.02 } } });
+  opt: { ...TOWN, x0: 3.41, runner: { ...RUNNER, t0: 3.41 } } });
 P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true } });
 // film v2: the second likeness shot is dropped (Jade: "it doesn't look like me"); plate wave_run (plates agent) instead: drawn Jade sprints
 // at the lens out of a breaking wave of the twelve lane colours. A card until work_fable/take2/plates/wave_run lands. Slab low.

@@ -636,3 +636,30 @@ no clear change also bb16, bb22, bb31, bu09, dr01, cb04, oa03, oa04 (as v2). Typ
 single frame vs full render 11 of 11 identical; last frame equals frame 0 with hud=0 (max diff 0).
 Looked at: the five sheets and one-frame-per-beat strips of b12, b17-18, b20, b25-26, b28-32, b33-38, b41-42, b45, b64, b77, b81-84,
 b103-104, b105-106, b114-120, b139-148 (work_fable/take2/dev/v3/strips/). Nobody has watched v3 at speed with sound.
+
+## Film v4 (2026-11-14, compositor; brief: notes/v4_direction.md section A, Jade's notes: notes/jade_v3_notes.md)
+
+State: items 2, 3, 4 done in code and checked on stills and frame strips (none at speed with sound). Item 1 in progress. Items 5-7
+(plate hooks) next; item 8 (the film v4 render) waits for the director's word. Check renders: `work_fable/take2/dev/v4/`.
+
+2. ca08 b51-52 fan (film.js `fan`): the fan is fully open on the shot's first frame (the b51 downbeat), held through beat 1, then the folds
+   as before (first starts at beat 1, twelfth gone at beat 7); no outward motion. `opt.fan.open` (beats to open) brings v3's opening back.
+   Checked: 12-still sheet 87.03-90.0 (fan/fan_sheet.jpg): ca07's last frame shows her alone, ca08's first frame the full fan.
+3. vb09 b116-117 violet light (film.js `floatUp`, shots.js `PALM_REL.lift` 2.7 + `float`): it grows in the palm as before (clip 1.95-2.2),
+   sits on the palm a breath to clip 2.7 (= the b117 downbeat), swells softly there (radius x1.45, 0.15 s up, 0.6 s down; no white flash,
+   no horizon glow), then rises like a lantern: eased from rest over 0.5 s to a steady 0.115 H/s up and 0.014 W/s east, sway 0.006 W
+   over 1.8 s, shrinking to 0.65; a faint wake. She faces WEST (frame left) and the sunrise is behind her, so a path "east" would cross
+   her face: it rises nearly straight up in front of her upturned face (x 0.635 -> ~0.66) and ends at y ~0.15, in frame, still rising at
+   the cut. Her eyes are turned up toward it in the plate (reads as following on stills). The b121 streak east is unchanged. vb10's
+   atomize mote is unchanged. Checked: 12 stills 200.3-202.68 (dot/dot_sheet.jpg), grid stills (dot/grid_sheet.jpg).
+4. oa02-oa03 b139-142 town (outro.js `runFrame`, shots.js `RUNNER`): the runner is drawn from the first frame of b139; one continuous run
+   (`runner.t0`: b141 continues b139's run, same stride phase; checked across the cut, town/b141_cut.jpg). Feet: `tools/feet.py` on
+   kit/day_run (alpha-based soles): a step every 15 frames, standing foot 20.84 plate px per clip frame (mean over stance frames); the clip
+   rate is derived in code from it so the standing foot moves with the road (rate = 1050 px/s / (20.84 x 24 x 0.93) = 2.26x; v3 played it
+   at 1x: the foot moved 446 px/s on a 1050 px/s road). Loop frames 35..94 (frame 95 matches 35; best of all pairs). The chips are drawn
+   over her (she no longer covers a branch name). Checked: 14 stills (town/town_sheet.jpg); proof strips with a red mark fixed to the road
+   started at a standing toe: after (town/town_feet_proof.jpg) the shoe rides the mark through the stance, creeping ~15 px/frame ahead
+   only in the last 2 frames of push-off (the source foot accelerates 17 -> 30 px/frame within a stance); before (town_feet_before.jpg,
+   v3 rate) the shoe stays put while the mark runs past at 35 px/frame. Locking every frame (x driven by the foot) was computed and
+   rejected: it needs a +/-40 px body lurch every step (the source's stance speeds are not physical). At 2.26x her cadence is ~3.6 steps/s
+   and the pencil twirl is quicker: to judge at speed.

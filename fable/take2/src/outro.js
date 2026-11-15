@@ -28,10 +28,18 @@ export function makeOutro(E) {
   }
   const ok = (s) => { const o = s.opt; if (o.code === 'town' || o.code === 'aerial') return st.facades && Object.keys(st.facades).length >= 6 && (!o.runner || !!st.run);
     if (o.code === 'fold') return st.fold && st.fold.night_jade && st.fold.patchwork2 && E.PLATE.night_jade && E.PLATE.patchwork2; if (o.code === 'terminal') return !!st.log; return true; };
+  // film v4 item 4: the runner's frame. R.t0: seconds of the run already gone at the shot start (b141 continues b139's run: same stride
+  // phase across the cut). R.foot: her standing foot's travel in plate px per clip frame (tools/feet.py on the cut-out); the clip rate is
+  // set so that foot moves exactly with the road under it (rate = road px/s / (foot px/s at her drawn scale)): no sliding. R.loop
+  // [a, b] (1-based frames, frame b looks like frame a): the run is played from a and cycles a..b-1.
+  function runFrame(s, t) { const R = s.opt.runner, m = st.run, v = s.opt.speed * S, q = (R.h * H) / (m.h || 720);
+    const rate = R.foot ? v / (R.foot * m.fps * q) : 1, c = Math.max(0, t - s.t0 + (R.t0 || 0)) * rate;
+    if (!R.loop) return Math.min(m.n - 1, Math.round(c * m.fps));
+    const [a, b] = R.loop, P = b - a; return a - 1 + (Math.round(c * m.fps) % P); }
   // urls a shot needs at t (the harness preloads them into READY)
   function need(s, t) { const o = s.opt, out = [];
     if (o.code === 'town' || o.code === 'aerial') for (const id of o.lives) if (st.facades[id]) out.push(st.facades[id].url);
-    if (o.runner && st.run) { const c = Math.max(0, t - s.t0) * 1.0, f = Math.min(st.run.n - 1, Math.round(c * st.run.fps)); out.push(`${o.runner.dir}/rgba/f_${String(f + 1).padStart(4, '0')}.png`); }
+    if (o.runner && st.run) out.push(`${o.runner.dir}/rgba/f_${String(runFrame(s, t) + 1).padStart(4, '0')}.png`);
     if (o.code === 'fold') out.push(`${E.PLATE.night_jade.dir}/still.jpg`, `${E.PLATE.patchwork2.dir}/still.jpg`, `${o.mattes.patchwork2}/rgba/f_0001.png`);
     return out; }
 
@@ -94,21 +102,24 @@ export function makeOutro(E) {
     // the facades along the road. film v3: a v2 facade may be wider (up to 0.42 W: Hangar One, the cut-away living room), and every facade
     // gets a slot of max(spacing, its width + 0.05 W); the slots are laid end to end (with the v1 facades all slots equal the spacing, so
     // the v1 layout is unchanged) and the travel speed scales with the total so the twelve still pass in the same time
-    const lay = townLayout(o), vs = lay.ratio;
+    const lay = townLayout(o), vs = lay.ratio, chips = [];
     o.lives.forEach((id, k) => { const F = st.facades[id]; if (!F) return; const L = byId[id], bb = F.bb, img = F.img, Q = lay.q[k];
       const bw = Q.bw, bh = Q.bh, q = Q.q, sc2 = scroll * vs,
         cx = dir > 0 ? 0.22 * W - lay.c[k] + sc2 : 0.78 * W + lay.c[k] - sc2;
       if (cx < -0.4 * W || cx > 1.4 * W) return;
       g.drawImage(img, bb.x0 * img.width, bb.y0 * img.height, bw, bh, cx - bw * q / 2, baseY - bh * q, bw * q, bh * q);
       pencilLine([{ x: cx - bw * q / 2 - 20 * S, y: baseY + 1 }, { x: cx + bw * q / 2 + 20 * S, y: baseY + 2 }], 1.4, 0.5);
-      chipAt(cx, baseY + 14 * S, L); });
+      chips.push([cx, baseY + 14 * S, L]); });
+    // film v4: the chips are drawn after the runner (over her legs as they pass), so she never covers a branch name
+    if (!o.runner) chips.forEach((c) => chipAt(...c));
     // the road: main written dense (she is merged), scrolling with the ground (the path starts off-frame: a negative scroll leaves up to
     // one glyph cell empty at the path's start)
     const adv = 26 * S / 0.73 * 0.6, x0r = -3 * adv;
     drawWrittenLane(g, [{ x: x0r, y: roadY }, { x: W, y: roadY }], { text: laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true), color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: dir * -(scroll / adv) });
-    if (o.runner && st.run) { const R = o.runner, c = Math.max(0, t - s.t0), f = Math.min(st.run.n - 1, Math.round(c * st.run.fps)), img = READY.get(`${R.dir}/rgba/f_${String(f + 1).padStart(4, '0')}.png`);
+    if (o.runner && st.run) { const R = o.runner, f = runFrame(s, t), img = READY.get(`${R.dir}/rgba/f_${String(f + 1).padStart(4, '0')}.png`);
       if (img) { const h = R.h * H, q = h / img.height, w = img.width * q, e = R.edge || 0;   // edge: the outer margin of the cut-out is dropped (stray specks)
-        g.drawImage(img, e * img.width, e * img.height, img.width * (1 - 2 * e), img.height * (1 - 2 * e), R.x * W - w / 2 + e * w, R.y * H - h + e * h, w * (1 - 2 * e), h * (1 - 2 * e)); } }
+        g.drawImage(img, e * img.width, e * img.height, img.width * (1 - 2 * e), img.height * (1 - 2 * e), R.x * W - w / 2 + e * w, R.y * H - h + e * h, w * (1 - 2 * e), h * (1 - 2 * e)); }
+      chips.forEach((c) => chipAt(...c)); }
   }
   // ---------------------------------------------------------------- aerial (b147-148)
   function aerial(t, s) {
