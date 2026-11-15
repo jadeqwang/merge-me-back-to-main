@@ -724,8 +724,7 @@ b116-117, b139-142, b145-146 (work_fable/take2/dev/v4/strips/).
 
 ## Master (2026-11-14, night; brief: notes/master_direction.md section B, Jade's words: notes/jade_v4_notes.md)
 
-State: B1 done (messages, layout fix), B2 hook in (home_v3 not landed yet), B3 audit stills rendering, B4 not started (waits for
-home_v3; if it has not landed within 40 minutes of polling: report and stop without the master).
+State: B1-B3 done; home_v3 landed and checked; B4 (the master renders) in progress (commands below).
 
 B1. Commit messages (fable/proof/lives.js): ames `landed a 747 in a class 4 sim`, phd `language and music cognition, auditory
    neuroscience` (Jade's words). Checked with hud=0 stills (dev/master/msg/msg_sheet.jpg, msg_sheet2.jpg, gitlog.jpg): b31 phd and b32
@@ -740,3 +739,21 @@ Lyric word times (for the subtitle agent): analysis_v3/timing.json, key `lyrics.
    start, end, start_pos, words: [{w, start, end}, ...]}, seconds from the first sample of "inputs/Merge (keychange down).wav" = film
    time (frame k = t x 30). The film shows 22 of them: it drops lines that are only vocables (film.js buildLyrics, VOCABLE regex), strips
    punctuation per word, and holds a line until min(last end + 0.5, next line start - 0.1), at least last start + 0.8 s.
+   home_v3 landed (plates_v5 Wiring: as home_v2, turn_t 2.85, focus [0.66, 0.3]): picked up by the id list, nothing else changed.
+   Checked (dev/master/home/): grid cell at 60.0, 62.7 (profile) and 63.3 (turned with the others), the kids' ears, necks and hands
+   warm; the b88 flash; the fold sheet. Proof identity after B1/B2: proofbug=1 max diff 0 on all 13 frames.
+B3. Step 6 audit, hud=0, likeness on (local), one still 2 frames after every beat, 680 stills (dev/master/audit/f/, sheets
+   sheet_00..14.jpg, 48 beats each, sheet NN = bars 12xNN+1 .. 12xNN+12). Costume and text, what I saw:
+   - Costume, NOT mine (plate): b56 `main_back_wide` (from behind): the 1420 MHz patch is on the picture-right sleeve = her RIGHT arm,
+     the orange band on her left: swapped against the canon (patch left arm, band right). Not mirrored (RARE EARTH would read
+     backwards). Every other back view checked closer (b16 main_palm, b53 look_back, b109-115 violet shots, b143-144 day_fork): no
+     stripe across the back, patch side right where it shows. Front views: patch on picture right (her left) in b17, b100, b122,
+     b129, b145-146. One face everywhere I could see at sheet size; the b137-138 likeness shot is the only photo face (by design).
+   - Text, fixed (mine): the git log b73-76 phd row overflowed the right edge (B1).
+   - Text, by design / as before: strand labels b57-64 run off the frame edge (each strand is written to the edge); detail captions
+     b65-71 write on over their beat (partly written at a beat's start); the terminal b153-156 cuts long commit subjects with an
+     ellipsis at the right margin (it shows this branch's real log, recaptured at each render); day_fork b144 slab is cream on near-white
+     paper over a soft dark gradient (v3 weak point, legible); the town chips are small (26 px cap) but legible at 1080p.
+   - Text, NOT mine: v7 frames (old code film) with old branch names baked into their roads: legible nowhere at 1080p that I saw
+     (b19 is cropped to cut its road lyric).
+   - Nothing else clipped at a frame edge; every lyric line fully inside the frame on the strips.
