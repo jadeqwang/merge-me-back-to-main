@@ -125,9 +125,16 @@ const CROSS = [
   ['cross_ames', 'wind tunnel (painting)', 'ames', { reach: 2.7, door: [0.20, 0.09, 0.43, 0.80] }],   // clip: half through at 2.75 s, in at 3.25 s
   ['cross_hackerhouses', 'hacker houses (pixel)', 'chezjj', { reach: 2.7, door: [0.20, 0.07, 0.38, 0.50] }],   // clip: at the door's edge 2.25 s, inside and glowing at 3.0 s
 ];
+// film v4 item 1 (Jade: "green and blue's sneakers slip on the floor but others don't"): b21 (wetlab, green) uses a derived plate rebuilt
+// by tools/recross.py from the plate's own frames (nothing generated): her figure separated from the doorway and moved at a constant
+// extra speed (4.0 plate px per clip frame) so her standing toe keeps its place against the doorway (the floor is black: the doorway is
+// the only floor mark), reaching her own place at `reach`, where the wipe starts. Same timing and doorway; the plate's own frames from
+// reach on. b22 (ames, blue): its standing toe measures planted against the doorway (only the heel lifts): not rebuilt (notes).
+const CROSS_V4 = { cross_wetlab: 'cross_wetlab_v4' };
 CROSS.forEach(([id, m, life, c], i) =>
   P(20 + i, 21 + i, id, 'missing', `Crossing ${i + 1} of 4: a cel-drawn branch-Jade runs her lane toward a doorway of light; as she crosses, the whole picture turns into her medium: ${m}.`,
-    { code: 'P+C', row: 'b20-23', opt: { push: 0, cross: { life, at: 0.58, end: 0.84, maxSpeed: 1.5, life0: 1.0, ...c }, lyr: { x0: 0.04, x1: 0.5, align: 'left' } } }));
+    { code: 'P+C', row: 'b20-23', opt: { push: 0, cross: { life, at: 0.58, end: 0.84, maxSpeed: 1.5, life0: 1.0, ...c }, lyr: { x0: 0.04, x1: 0.5, align: 'left' },
+      ...(CROSS_V4[id] ? { next: { id: CROSS_V4[id], opt: {} } } : {}) } }));
 P(24, 25, 'cross_violet', 'missing', 'The fifth road has no doorway: the violet one runs out into engraved dark, and she keeps going.', { row: 'b24' });
 P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { row: 'b25', opt: { clip0: 2.0, clip1: 4.5, lyr: { y: 'top' },
   next: { id: 'main_light_v2', opt: { clip0: 0.0, clip1: 1.75, push: 0 } } } });   // film v3: main_light_v2 take 2 (the hands move in waves; locked camera): 0.0-1.75 (plates_v3)   // the light appears from about 2.2 s (director: use 2.0-4.5)

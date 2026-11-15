@@ -639,8 +639,8 @@ b103-104, b105-106, b114-120, b139-148 (work_fable/take2/dev/v3/strips/). Nobody
 
 ## Film v4 (2026-11-14, compositor; brief: notes/v4_direction.md section A, Jade's notes: notes/jade_v3_notes.md)
 
-State: items 2, 3, 4 done in code and checked on stills and frame strips (none at speed with sound). Item 1 in progress. Items 5-7
-(plate hooks) next; item 8 (the film v4 render) waits for the director's word. Check renders: `work_fable/take2/dev/v4/`.
+State: items 1-4 done in code and checked on stills and frame strips (none at speed with sound). Items 5-7 (plate hooks) next; item 8
+(the film v4 render) waits for the director's word. Check renders: `work_fable/take2/dev/v4/`.
 
 2. ca08 b51-52 fan (film.js `fan`): the fan is fully open on the shot's first frame (the b51 downbeat), held through beat 1, then the folds
    as before (first starts at beat 1, twelfth gone at beat 7); no outward motion. `opt.fan.open` (beats to open) brings v3's opening back.
@@ -663,3 +663,28 @@ State: items 2, 3, 4 done in code and checked on stills and frame strips (none a
    v3 rate) the shoe stays put while the mark runs past at 35 px/frame. Locking every frame (x driven by the foot) was computed and
    rejected: it needs a +/-40 px body lurch every step (the source's stance speeds are not physical). At 2.26x her cadence is ~3.6 steps/s
    and the pencil twirl is quicker: to judge at speed.
+1. b21-22 the door runners. What the measurement found (tools/feet.py, then the toe measure inside tools/recross.py): the floor is
+   black, so the doorway's foot is the only floor mark; measured as the standing shoe's TOE (front-most point; the heel lifts, the toe
+   should stay) against the doorway's bottom-left corner mapped into each frame (ORB + homography on the door):
+   - cross_wetlab (b21, green): the toe slides back 3.3-5.1 plate px per clip frame in every stance (271->315, 178->239, 135->171 over
+     ~11 frames): real slip; she gains little on the door per stride (a treadmill). At 1.5x and 1080p that is ~7 px per film frame.
+   - cross_ames (b22, blue): the toe is planted (348 for clip frames 29-42, 240 for 53-62); only the heel lifts. Film frames 1103-1110
+     agree on stills. NOT rebuilt. If Jade still sees blue slide, my guess is the plate's held frames (many on twos) at 1.5x, or the
+     lyric "Down every road the night" sitting over her feet in va06; not changed.
+   - cross_wushu (b20) and cross_hackerhouses (b23): not measured (BiRefNet's matte takes the door and, on hackerhouses, the floor);
+     she visibly covers ground stride for stride in both (raw sheets dev/v4/feet/raw_*.jpg).
+   Fix for wetlab: `tools/recross.py` builds the derived plate `cross_wetlab_v4` (work_fable/take2/plates/, nothing generated; meta has
+   src_plate and the parameters): her matte (kit/fig_cross_wetlab, tools/matte.py on the source clip) minus the door (the clean late frame
+   116's matte, warped by a homography, grown 3 px), keyed on the door by difference (> 26), closed and hole-filled; she is moved by
+   o_k = slip x (73 - k), slip (4.0, -0.25) plate px per clip frame (the per-stance mean; the frame-pair mean, 2.9, is diluted by held
+   frames), i.e. she starts 172 px further back and reaches her own place at clip frame 73 = reach 3.0, where the wipe starts (the wipe
+   is unchanged and continuous, dev/v4/feet/va05_after_wipe.jpg). The ground she uncovers is filled from frames k-6, -10, -14, -20, -28,
+   then 12 and 116, each aligned by homography and used only where she is not within 5 px. shots.js `CROSS_V4` hooks it via opt.next.
+     work_fable/venv_hybrid/bin/python fable/take2/tools/matte.py media/gen/t2_cross_wetlab_t1_92785f7480.mp4 work_fable/take2/kit/fig_cross_wetlab
+     work_fable/venv_hybrid/bin/python fable/take2/tools/recross.py cross_wetlab cross_wetlab_v4 116 30 73 --fill -6,-10,-14,-20,-28,12,116 --slip 4.0,-0.25 --sheet <jpg>
+   Toe against the doorway after: 440-449 (stance 1), 290-300 (stance 2), 185-193 (stance 3) plate px, i.e. within +/-5 (log
+   dev/v4/feet/cross_wetlab_v4.log). Proof strips (film frames 1055-1066, a ruler fixed to the doorway's foot, dev/v4/feet/ruler.py):
+   va05_before.jpg (the shoe slides ~50 px over 6 frames against the ruler) and va05_after.jpg (it stays on its tick through the
+   stance). Looked at: va05_after_sheet.jpg (every 2nd frame), va05_after_close.jpg (full-size crops where she overlaps the door).
+   Still weak: a short step in the green lane line where the fill meets it in 2-3 frames (1065-1066); her size is not changed for the
+   extra depth at the start (she starts ~0.13 W further back along the lane at the same size); checked on stills and strips only.
