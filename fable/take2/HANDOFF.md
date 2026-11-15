@@ -1,30 +1,37 @@
-# Take two: handoff (updated 2026-11-14 after film v3)
+# Take two: handoff (updated 2026-11-14, night, after film v4)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
-**If Jade's first message is a paste headed "MERGE FILM V3: JADE'S NOTES"**: that is the export of `review/fable_take2/review_v3.html`.
-Follow "How a notes round runs" below. The two previous rounds are the worked examples: `notes/jade_v1_notes.md` ->
-`notes/v2_direction.md`, and `notes/jade_v2_notes.md` -> `notes/v3_direction.md`.
+**If Jade's first message is a paste headed "MERGE FILM V4: JADE'S NOTES"**: that is the export of `review/fable_take2/review_v4.html`.
+Follow "How a notes round runs" below. Worked examples: `notes/jade_v1_notes.md` -> `notes/v2_direction.md`, `notes/jade_v2_notes.md`
+-> `notes/v3_direction.md`, `notes/jade_v3_notes.md` -> `notes/v4_direction.md`. A line like "lipsync v4: face +340 ms, hero -40 ms"
+is her pick from the lip-sync picker (`review/fable_take2/lipsync_v4.html`, media local in `work_fable/take2/lipsync_v4/`): put the
+two numbers in shots.js (or try them with `--q "lagface=X&laghero=Y"`); + means the sound plays later than the picture.
 
 ## Where things stand
 
-**Film v3** exists (2026-11-14, evening): 185 shots, 282.8 s, 1080p30. It answers Jade's notes on film v2
-(`notes/jade_v2_notes.md`, verbatim, with her same-day follow-ups; what each became: `notes/v3_direction.md`). **Nobody has watched
-v3 at speed with sound**; checks were stills, beat strips, measurements. Jade is about to watch it.
+**Film v4** exists (2026-11-14, night): 282.8 s, 1080p30. It answers Jade's notes on film v3 (`notes/jade_v3_notes.md`, verbatim; what
+each became: `notes/v4_direction.md`). **Nobody has watched v4 at speed with sound**; checks were stills, beat strips, measurements.
 
-- Pushed (a card for the one likeness shot): `review/fable_take2/film_v3.mp4`, sheets `film_v3_sheet_01..05.jpg`.
-- Local only (her likeness): `work_fable/take2/out/film_v3_local.mp4`. v1 and v2 files are kept.
-- Her review page: `review/fable_take2/review_v3.html` (eight decisions; she pastes the export back).
-- Spend: **$541.82** (`tools/gen/spend.py`). Jade lifted the cap; the tools' constant is still 600 and was not hit. Nothing queued.
-- Per-owner detail: `notes/compositor.md` ("Film v2", "Film v3"), `notes/plates_v2.md`, `notes/plates_v3.md`, `notes/orchestra.md`.
-- Decided by Jade: orchestra is the hatched 3D (revision 3 frames; `?orch=plates` shows the video-model version she turned down);
-  labels `jade/parenthood`, `jade/rna-band`, `jade/rare-earth`, `jade/biology`, `jade/phd-neuroscience`; violet's message
-  `still writing this one`; no lyrics for wordless vocals; second likeness shot dropped (`wave_run`); real places in the town.
+- Pushed (a card for the one likeness shot): `review/fable_take2/film_v4.mp4`, sheets `film_v4_sheet_01..05.jpg`.
+- Local only (her likeness): `work_fable/take2/out/film_v4_local.mp4`. v1 to v3 files are kept.
+- Her review page: `review/fable_take2/review_v4.html` (nine decisions; she pastes the export back).
+- Spend: **$548.46** (`tools/gen/spend.py`). Jade lifted the cap; the tools' constant is still 600 and was not hit. Nothing queued.
+- Per-owner detail: `notes/compositor.md` ("Film v2", "Film v3", "Film v4"), `notes/plates_v2.md` to `plates_v4.md`, `notes/orchestra.md`.
+- Decided by Jade: orchestra is the hatched 3D; labels `jade/parenthood`, `jade/rna-band`, `jade/rare-earth`, `jade/biology`,
+  `jade/phd-neuroscience`; violet's message `still writing this one`; no lyrics for wordless vocals; second likeness shot dropped;
+  real places in the town, biology = Bio-X (Clark Center); on v3 she accepted the violin insert, the wushu face, both drawn sung
+  shots, the atomizing, the verse 2 opening, the lyric lane and banach-tarski.
 
-Known weak points in v3 (told to Jade): the b33-38 grid keeps the old wushu plate (the new ones have no look-back); `main_split`
-does not sing (one attempt failed); the violin stroke starts mid-bow; `float_hand_v2` fingers are mid-curl at the cut; the runner
-covers a chip as she passes in the town; the slab on `day_fork` is cream on white paper; the hero shot opens on a washed-out frame;
-old branch names survive where they are baked into v7 frames (mostly illegible).
+What v4 changed: lip-sync lags measured on consonants (b17 `main_face_v2` +340 ms, b41-42 `hero_paper_v2` -40 ms; her ear decides);
+b21 green runner rebuilt so the foot holds (`tools/recross.py`, `cross_wetlab_v4`; blue measured planted, unchanged); b25
+`main_light_v3` one slow opening; `home_v2` warm skin everywhere; b51 fan starts open and only folds; b116-117 violet light rises
+slowly, no flash; town runner from b139, clip rate 2.26x so feet ride the road; `wave_run_v4` no look-back, small closed smile.
+
+Known weak points in v4 (told to Jade): the wave-run smile arrives over half a second, not across the run; the town runner's
+cadence is quick (3.6 steps/s) and her feet creep a little at push-off; a short step in the green lane line at b21 for 2-3 frames;
+blue's feet unchanged; plus v3's: `main_split` does not sing, violin stroke starts mid-bow, `float_hand_v2` fingers mid-curl at the
+cut, cream slab on `day_fork`, hero shot opens washed-out, old branch names baked into v7 frames (mostly illegible).
 
 ## What Jade has decided (binding)
 
@@ -46,7 +53,7 @@ old branch names survive where they are baked into v7 frames (mostly illegible).
 
 ## Next work, in order
 
-1. Apply her notes on film v3 (she chose "show me a v3 first" last round; the v3 page asks whether she wants a v4 or the master).
+1. Apply her notes on film v4 and her lip-sync picks (the v4 page asks whether she wants a v5 or the master).
 2. Step 6 of the plan: costume audit of every plate in motion; readable-text pass (the terminal git log is recaptured by `render_film.sh`).
 3. Step 7: master without the review HUD (`--q hud=0`), X and YouTube encodes, subtitles. The loop is exact with the HUD off.
 

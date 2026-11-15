@@ -1226,3 +1226,27 @@
 {"ts": "2026-11-14T23:11:08Z", "model": "bytedance/seedance-2.5", "tag": "t2_band_v2_t1", "job": "mergemain/t2_band_v2_t1-dbc765d337", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T23:13:11Z", "model": "bytedance/seedance-2.5", "tag": "t2_vio_wide_v2_t1", "job": "mergemain/t2_vio_wide_v2_t1-9a67662742", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-14T23:14:13Z", "model": "bytedance/seedance-2.5", "tag": "t2_wave_run_v3_t1", "job": "mergemain/t2_wave_run_v3_t1-85235369b3", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T00:30:47Z", "model": "google/nano-banana-pro", "tag": "t2_home_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:30:48Z", "model": "google/nano-banana-pro", "tag": "t2_home_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:31:00Z", "model": "google/nano-banana-pro", "tag": "t2_det_home_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:31:31Z", "model": "google/nano-banana-pro", "tag": "t2_det_home_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:32:09Z", "model": "bytedance/seedance-2.5", "tag": "t2_home_v2_t1", "job": "mergemain/t2_home_v2_t1-4d39ecb880", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T00:33:04Z", "model": "google/nano-banana-pro", "tag": "t2_main_light_v3_closed", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:33:05Z", "model": "google/nano-banana-pro", "tag": "t2_main_light_v3_open", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:33:30Z", "model": "google/nano-banana-pro", "tag": "t2_main_light_v3_closed", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:33:40Z", "model": "google/nano-banana-pro", "tag": "t2_main_light_v3_open", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:34:12Z", "model": "bytedance/seedance-2.5", "tag": "t2_main_light_v3_t1", "job": "mergemain/t2_main_light_v3_t1-25fc9fc654", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T00:35:00Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run4_set", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:35:05Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run4_set", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:35:07Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run4_smile", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:35:35Z", "model": "google/nano-banana-pro", "tag": "t2_wave_run4_smile", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:35:55Z", "model": "bytedance/seedance-2.5", "tag": "t2_wave_run_v4_t1", "job": "mergemain/t2_wave_run_v4_t1-3bbd3f6534", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T00:37:12Z", "model": "google/nano-banana-pro", "tag": "t2_facade_wetlab_v3", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:37:30Z", "model": "google/nano-banana-pro", "tag": "t2_facade_wetlab_v3", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:37:57Z", "model": "bytedance/seedance-2.5", "tag": "t2_home_v2_t1", "job": "mergemain/t2_home_v2_t1-4d39ecb880", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T00:41:06Z", "model": "bytedance/seedance-2.5", "tag": "t2_main_light_v3_t1", "job": "mergemain/t2_main_light_v3_t1-25fc9fc654", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T00:42:08Z", "model": "bytedance/seedance-2.5", "tag": "t2_wave_run_v4_t1", "job": "mergemain/t2_wave_run_v4_t1-3bbd3f6534", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T00:42:42Z", "model": "google/nano-banana-pro", "tag": "t2_home_turn_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:42:42Z", "model": "google/nano-banana-pro", "tag": "t2_home_turn_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T00:42:55Z", "model": "bytedance/seedance-2.5", "tag": "t2_home_v2_t2", "job": "mergemain/t2_home_v2_t2-1af647b2f6", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T00:50:02Z", "model": "bytedance/seedance-2.5", "tag": "t2_home_v2_t2", "job": "mergemain/t2_home_v2_t2-1af647b2f6", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
