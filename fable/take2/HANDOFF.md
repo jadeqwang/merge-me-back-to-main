@@ -1,14 +1,24 @@
-# Take two: handoff (updated 2026-11-14, night, after film v4)
+# Take two: handoff (updated 2026-11-14, late night: the MASTER exists)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
-**If Jade's first message is a paste headed "MERGE FILM V4: JADE'S NOTES"**: that is the export of `review/fable_take2/review_v4.html`.
-Follow "How a notes round runs" below. Worked examples: `notes/jade_v1_notes.md` -> `notes/v2_direction.md`, `notes/jade_v2_notes.md`
--> `notes/v3_direction.md`, `notes/jade_v3_notes.md` -> `notes/v4_direction.md`. A line like "lipsync v4: face +340 ms, hero -40 ms"
-is her pick from the lip-sync picker (`review/fable_take2/lipsync_v4.html`, media local in `work_fable/take2/lipsync_v4/`): put the
-two numbers in shots.js (or try them with `--q "lagface=X&laghero=Y"`); + means the sound plays later than the picture.
+## The master (2026-11-14, late night)
 
-## Where things stand
+Jade accepted film v4 ("looks good!", `notes/jade_v4_notes.md`) and chose "Go to the master"; brief `notes/master_direction.md`.
+Changes after v4: `home_v3` (the kids' visible skin warm), ames message `landed a 747 in a class 4 sim`, phd message
+`language and music cognition, auditory neuroscience` (git log rows 31 px to fit), lip-sync kept at +340 / -40 ms.
+
+- Release master, local only (her likeness): `work_fable/take2/out/merge_master_1080p.mp4` (1080p30, no HUD, CRF 16, 1.13 GB).
+- Deliverables, local only: `work_fable/take2/out/deliver/merge_youtube_1080p.mp4` (CRF 14, 1.38 GB), `merge_x_1080p.mp4`
+  (10 Mb/s, 360 MB), `merge.en.srt`, `merge.en.vtt` (22 cues, the film's own line timing). Audio from the WAV, lag 0 ms measured.
+- Pushed: `review/fable_take2/merge_master_public.mp4` (likeness=0, capped, 80 MB), sheets, `merge.en.srt/.vtt`.
+- Spend **$550.02**. Details: `notes/compositor.md` "Master", `notes/plates_v5.md`.
+- **Nobody has watched the master or the encodes at speed with sound.** Open with Jade: (1) b56 `main_back_wide` has the 1420 MHz
+  patch on her right arm (canon: left), found by the Step 6 audit; a retake means re-rendering the master; her call. (2) She wrote
+  "1040p"; taken as 1080p (the plan's master size). Anything she asks next is a fix to the master, then re-run the encodes
+  (settings in the encode agent's report, summarised above; X script ancestor `fable/tools/deliver_uhd.sh`).
+
+## Where things stood at film v4
 
 **Film v4** exists (2026-11-14, night): 282.8 s, 1080p30. It answers Jade's notes on film v3 (`notes/jade_v3_notes.md`, verbatim; what
 each became: `notes/v4_direction.md`). **Nobody has watched v4 at speed with sound**; checks were stills, beat strips, measurements.

@@ -1250,3 +1250,9 @@
 {"ts": "2026-11-15T00:42:42Z", "model": "google/nano-banana-pro", "tag": "t2_home_turn_v2", "ok": true, "est_usd": 0.1344, "where": "box"}
 {"ts": "2026-11-15T00:42:55Z", "model": "bytedance/seedance-2.5", "tag": "t2_home_v2_t2", "job": "mergemain/t2_home_v2_t2-1af647b2f6", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-15T00:50:02Z", "model": "bytedance/seedance-2.5", "tag": "t2_home_v2_t2", "job": "mergemain/t2_home_v2_t2-1af647b2f6", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T02:25:20Z", "model": "google/nano-banana-pro", "tag": "t2_home_v3", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T02:25:20Z", "model": "google/nano-banana-pro", "tag": "t2_home_v3", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T02:25:34Z", "model": "google/nano-banana-pro", "tag": "t2_home_v3_turn", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T02:25:56Z", "model": "google/nano-banana-pro", "tag": "t2_home_v3_turn", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-15T02:26:23Z", "model": "bytedance/seedance-2.5", "tag": "t2_home_v3_t1", "job": "mergemain/t2_home_v3_t1-369480f3ba", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-15T02:31:45Z", "model": "bytedance/seedance-2.5", "tag": "t2_home_v3_t1", "job": "mergemain/t2_home_v3_t1-369480f3ba", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
