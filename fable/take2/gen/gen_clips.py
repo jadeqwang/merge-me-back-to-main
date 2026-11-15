@@ -210,6 +210,12 @@ C["wave_run_v4"] = ("wave_run4_set_a2", "a cel-shaded anime drawing on white pap
   "Behind and above her the towering wave of thick coloured-pencil ribbons surges forward and its crest curls over above her head; the ribbons ripple as in hand-drawn animation. White paper fills every gap. Her hands are the slender hands of a young woman with smooth skin, each with exactly five fingers.", {"last": "wave_run4_smile_a2"})
 VIEWS["wave_run_v4"] = "front"
 
+# home_v3 (film v5 / master): as home_v2 t2, with the children's visible skin (ears, cheek edge, necks, hands) warm instead of blue.
+C["home_v3"] = ("home_v3_a1", CRAYON, None, {"last": "home_v3_turn_a2"})
+OVR["home_v3"] = OVR["home_v2"].replace("the children never turn around and their faces are never seen. ",
+  "the children never turn around and their faces are never seen; their ears, necks, arms and hands keep their natural warm skin tone, lit by the lamp, in every frame, never blue. ")
+VIEWS["home_v3"] = "back"
+
 def ref(src, out):
     os.makedirs(os.path.dirname(out), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-vf", "scale=2048:1152:flags=lanczos", "-q:v", "2", out], check=True)
