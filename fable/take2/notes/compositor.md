@@ -639,8 +639,9 @@ b103-104, b105-106, b114-120, b139-148 (work_fable/take2/dev/v3/strips/). Nobody
 
 ## Film v4 (2026-11-14, compositor; brief: notes/v4_direction.md section A, Jade's notes: notes/jade_v3_notes.md)
 
-State: items 1-7 done and checked on stills/strips (none at speed with sound). Director's word received (all v4 plates accepted; wire
-and render): item 8, the film v4 render, in progress (commands below). Check renders: `work_fable/take2/dev/v4/`.
+State: film v4 rendered (2026-11-14, evening), items 1-8 done. Nobody has watched v4 at speed with sound; checks were stills, beat
+strips, measurements. Next: Jade's picker numbers for the two sung shots -> re-render with `--q "lagface=X&laghero=Y"` (or change the
+two values in shots.js and re-render the film). Check renders: `work_fable/take2/dev/v4/`.
 
 2. ca08 b51-52 fan (film.js `fan`): the fan is fully open on the shot's first frame (the b51 downbeat), held through beat 1, then the folds
    as before (first starts at beat 1, twelfth gone at beat 7); no outward motion. `opt.fan.open` (beats to open) brings v3's opening back.
@@ -706,3 +707,17 @@ and render): item 8, the film v4 render, in progress (commands below). Check ren
      0.42 W wide: it is drawn 0.42 W x ~0.22 H, a wide low building). Chip under it (dev/v4/wire/facade.jpg). The town's road speed is
      unchanged (only the facade travel scales with the layout), so the runner's rate is unchanged.
    Proof range: tools/proof_identity.py, proofbug=1 max diff 0 on all 13 frames.
+
+### Film v4, item 8: the render (2026-11-14, evening)
+Commands (wiring committed first, so the terminal's git log has it; gitlog.py ran once, by render_film.sh, before the public master):
+    fable/take2/tools/render_film.sh film_v4 "" "likeness=0"      # 669 s; master work_fable/take2/out/film_film_v4_master.mp4
+    ffmpeg ... (v2's encode, CRF 20 capped 2.3 Mb/s) review/fable_take2/film_v4.mp4; cp out/film_v4_sheet_0*.jpg review/fable_take2/
+    node fable/take2/tools/render.mjs --mp4 work_fable/take2/out/film_v4_local_master.mp4 ... (likeness) -> same encode -> out/film_v4_local.mp4
+    ln -sfn keep_film_v4 work_fable/take2/out/keep_v4; .venv/bin/python fable/take2/tools/check.py out/film_film_v4_master.mp4  # out/check_v4.txt
+Outputs: review/fable_take2/film_v4.mp4 76.3 MB (likeness=0, HUD on); film_v4_sheet_01..05.jpg; local work_fable/take2/out/film_v4_local.mp4
+76.2 MB. check.py: 161 hard cuts, mean |error| 0.27 fr, 151 of 153 within 0.5 fr; outliers pc03 +1.89 and bu40 +2.80 (as v3); ca08 is no
+longer "no clear change" (the fan is on the first frame now); oa03 "no clear change" by design (one continuous run); no clear change also
+bb16, bb22, bb31, bu09, dr01, cb04, oa04 (as v3). Type all pass; 22 lines, 119 words, none under 0.6 s; single frame vs full 11 of 11
+identical; last frame equals frame 0 with hud=0 (max diff 0).
+Looked at: the five sheets and one-frame-per-beat strips (2 frames after each beat) of b17-18, b21-22, b25, b33-38, b41-42, b51-52,
+b116-117, b139-142, b145-146 (work_fable/take2/dev/v4/strips/).
