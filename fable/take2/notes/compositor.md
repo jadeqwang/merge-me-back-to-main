@@ -774,10 +774,9 @@ B4. The masters (1080p30, hud=0). Commands (notes committed first; gitlog.py ran
 
 ## Film v6 (2026-11-15, compositor; brief: notes/v6_direction.md section A, Jade's words: notes/jade_v5_notes.md)
 
-**Resume here.** Code for A1-A8 that needs no new plate is in (commit "film v6 code 1" and later). Plates wired so far: vio_grid_stay,
-vio_cutaway, main_back_wide_v2 (plates_v6 Wiring). Waiting on the plates agent (poll `notes/plates_v6.md`): page_reveal, pencil_lead,
-pencil_draw, det_pad, pad_handover, intuit_piano/violin/stance, car_confess, like_sing0 (only on the director's word). Each has a hook
-that falls back to the present source (below). Then: render `film_v6` (local likeness + public likeness=0), check.py, sheets.
+**Resume here.** All code for A1-A8 is in and every plate of plates_v6 is wired except two by choice: `like_sing0` (shots.js
+`LIKE0_ON = false`: waits for the director's word on her likeness) and `pad_handover` (not wired: see "Wiring" below). Next / last
+step: the film_v6 renders (commands under "Film v6 renders"), check.py, sheets, report.
 Check stills: `work_fable/take2/dev/v6/` (c1..c5 sheets; `sheet.sh out.jpg cols files...` tiles 640 px).
 Mid-round answers from Jade (via the director): det_pad KEEPS the parenthood message as its caption; the camera is in the DRIVER's seat
 (she is the passenger, the camera looks across at her; the road is seen ahead from the driver's side); wire main_back_wide_v2 (b56).
@@ -821,3 +820,30 @@ What changed, by section of the brief (song times):
   when it lands, else the road at speed; type (film.js carType) whole lines, Instrument Serif at verse size: camera's line 0.35-3.35 s
   lower third (two rows), hers 3.6-6.45 s; window b161.3-end: the road's page-light glides into the frost light at the palm (0.56, 0.35)
   over 1.4 s; the last 1.5 s cross to frame 0 as before.
+
+Wiring of the plates_v6 table (checked on stills, dev/v6/c6..c8):
+- page_reveal (vb01 b105-106, 180.38-183.82): next list [page_reveal, vio_wide_v2]; clip 0.3-4.6 (1.25x); the crowd = v7 at 179.4 s + 0.25x
+  (must stay before 180.37, where v7's night starts: a first try at 179.9 put a single verse-2 figure on the page at the end), through
+  the drop's gold-on-black paper pass. page_track.json is the LEFT page in every frame (drawn on the frames, dev/v6/quads.jpg; the
+  plates note's "both pages from 2.0" did not hold), its corners in varying order: film.js pageOrder labels them TL/TR/BR/BL from
+  frame 0 (indices [3,0,1,2]) and then by continuity; pageMap lays the crowd on the spread = the left page extended across the spine by
+  its width, as a parallelogram, kept only where the plate is dark (< 42), so hands, pencil and page edges stay in front. Lyric top
+  left (y 0.14). vio_wide's written violet road is gone with the shot (the brief: it replaces the wide opening).
+- pencil_lead (b77.1, one beat): clip 0.3-1.5 (2.8x); the hatching is code (film.js pencilStrokes: from the tip track, parallel gold
+  strokes laid down-right of the tip every 4 px of travel, the newest bright); the formation then enters on b77.2 through the hatch
+  wipe with the pen point. pencil_draw (b97.1, one beat): clip 0.5 at 2x, same hatching.
+- det_pad: through the det_home alias (b68.2, b71.2, b72 tiles); caption = the parenthood message (Jade).
+- intuit_piano b140.3-141.1 clip 1.0 (1x); intuit_violin b142.1-142.3 clip 1.5-2.9; intuit_stance b144.2-145.1 clip 0.6-2.5 (keeps the
+  landing); "Back to main" starts inside the stance insert (247.76): its first word sits in the sky strip at the top on a dark cloud.
+- car_confess (b157.3-161.3): clip 1.5-5.0 slowed to 0.51x, blended (the hold 3.75-5.0 becomes 2.4 s); she turns at shot 3.4-4.4 s.
+  The night road (the same travel as the road shots) shows through the black windows (film.js carRoadFrame/carWindows: kept where the
+  plate is < 22). Type: the camera's line in the dark door panel lower left (x 0.025-0.245, cap 50 px, four rows; the only place in the
+  lower third clear of her arm and hand) 0.35-3.6 s; hers top left in the windscreen beside her, verse size, one row, 4.3-6.5 s (after
+  she has turned). Brief asked lower third for the camera's line: it is lower third but narrow, at 50 px cap (verse lyric size is 66).
+- pad_handover: NOT wired. The brief's place (between "something that I learned" and "Comes home", 199.9-200.0) has no gap: line 18
+  ends 199.99 and line 19 starts 200.00, and the bar around it is vio_release2's light: the typed lines flowing into the notebook
+  (199.27-199.67), then the page-light growing in her palm (200.2) and lifting on the b117 downbeat (200.98). One bar there cuts the
+  violet light (the brief's own rule: "if it crowds the lyric or the violet light, it goes"). The plate is ready if the director wants
+  it elsewhere (2 beats from b116.1 would cost the type flowing into the notebook).
+- like_sing0: hook ready (LIKE0_ON in shots.js: b63 ends on beat 4, one 'L' shot b63.4-65 song-locked, t0_song 109.0, lyric region
+  left); off until the director says her likeness passed.

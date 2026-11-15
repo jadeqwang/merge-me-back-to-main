@@ -259,10 +259,13 @@ for (let k = 0; k < 4; k++) {
 // film v6 A5: 2:12 (b77), the first pencil figure: a pencil tip leads the first hatch strokes. Until pencil_lead lands, the v7 formation is
 // revealed over its first beat by the hatch wipe with a gold pencil point at the head of the newest stroke; when it lands, b77 beat 1 is
 // the plate (her hand and pencil, gold on black; the strokes are code, src/film.js pencilStrokes) and the formation follows on beat 2.
-const PENCIL_LEAD = { id: 'pencil_lead', kind: 'plate', opt: { clip0: 0, push: 0.02, hatch: null, pencil: { strokes: true } } };
+// plates_v6 wiring: pencil_lead 0-5.0 (hand and pencil travel up-left, the left of the frame empty paper); tip_track.json per frame. One
+// beat is short: clip 0.3-1.5 (2.8x), the hatching laid by the tip in code (film.js pencilStrokes); the formation then enters on beat 2
+// through the hatch wipe with the pen point.
+const PENCIL_LEAD = { id: 'pencil_lead', kind: 'plate', opt: { clip0: 0.3, clip1: 1.5, push: 0.02, hatch: null, pencil: { trackUrl: '/work_fable/take2/plates/pencil_lead/tip_track.json', from: 0.3, len: 80, step: 4 } } };
 for (let k = 0; k < 4; k++) {
   if (k === 0) { V(77, [77, 2], 'seq 08', 'The first pencil figure: a pencil tip leads the first hatch strokes, gold on black.', { row: 'b77-80', opt: { hatch: { frames: 13, seed: 77, pen: true }, next: PENCIL_LEAD } });
-    V([77, 2], [77, 3], 'seq 08', 'Frontal formation: she forks on every kick (bar 1 of 4, toward 256).', { row: 'b77-80' }); }
+    V([77, 2], [77, 3], 'seq 08', 'Frontal formation: she forks on every kick (bar 1 of 4, toward 256); enters through the hatch wipe after the pencil.', { row: 'b77-80', opt: { hatch: { frames: 9, seed: 78, pen: true } } }); }
   else V(77 + k, [77 + k, 3], 'seq 08', `Frontal formation: she forks on every kick (bar ${k + 1} of 4, toward 256).`, { row: 'b77-80' });
   shot([77 + k, 3], [77 + k, 4], 'S', 'plate', INSERT[k][0], 'missing', `Insert on beat 3: ${INSERT[k][1]}.`, { row: 'b77-80', opt: { push: 0.02, ...INSERT[k][2] } });
   V([77 + k, 4], 78 + k, 'seq 08', 'Frontal formation, after the stance frame.', { row: 'b77-80' });
@@ -319,7 +322,7 @@ const DROP_V7 = [[93, [93, 3], 'Travelling phrases.'], [94, [94, 3], 'The close 
     else shot(r[0], r[1], 'S', 'plate', r[2], 'exists', `Life insert in its own medium (${r[4]}), entering through a pencil-hatch wipe.`, { row: 'b93-96', opt: { clip0: r[3], push: 0.03, hatch: { ...HATCH, seed: r[2].length * 7 + (r[0][0] || r[0]) } } }); } }
 // film v6 A5: one more hand-and-pencil insert inside the drop: pencil_draw (her hand and pencil, gold strokes on black paper; the strokes are
 // code) on the first beat of b97 when it lands; until then the v7 group fall plays whole
-V(97, [97, 2], '2:44', 'The group fall, from her real set.', { row: 'b97-99', opt: { next: { id: 'pencil_draw', kind: 'plate', opt: { clip0: 0, push: 0.02, pencil: { strokes: true } } } } });
+V(97, [97, 2], '2:44', 'The group fall, from her real set.', { row: 'b97-99', opt: { next: { id: 'pencil_draw', kind: 'plate', opt: { clip0: 0.5, speed: 2, push: 0.02, pencil: { trackUrl: '/work_fable/take2/plates/pencil_draw/tip_track.json', from: 0.5, len: 60, step: 4 } } } } });   // plates_v6: tip moves little (x 0.42-0.50); the hatching is laid in code
 V([97, 2], 98, '2:44', 'The group fall, from her real set.', { row: 'b97-99' });
 V(98, 100, '2:44', 'From above the bodies spell MAIN; hold; they rise as one.', { row: 'b97-99' });
 // the wordless "ooh" (vocal stems 172.54-180.28) is sung, not shown: film v2 draws no type for it (Jade: lyrics on screen are for words)
@@ -350,7 +353,13 @@ const ROAD_VW2 = [[0.0,0.7445,0.8828,0.7506,0.1842,0.7789],[0.25,0.7244,0.8803,0
 const ROAD_VW = [[0.0,0.7397,0.8883,0.7486,0.1852,0.7769],[0.25,0.7111,0.8836,0.749,0.1852,0.7584],[0.5,0.6727,0.8792,0.7495,0.1853,0.7295],[0.75,0.6488,0.8778,0.7497,0.1855,0.7114],[1.0,0.6333,0.8761,0.7492,0.1863,0.707],[1.25,0.6264,0.8728,0.7489,0.1871,0.6955],[1.5,0.6147,0.87,0.7477,0.1887,0.6698],[1.75,0.5914,0.8694,0.7476,0.1893,0.6498],[2.0,0.575,0.8683,0.7481,0.1892,0.6427],[2.25,0.5656,0.8644,0.7497,0.1879,0.6309],[2.5,0.5545,0.8606,0.7502,0.1879,0.6078],[2.75,0.5334,0.8589,0.7507,0.1878,0.5911],[3.0,0.517,0.8578,0.7508,0.1882,0.587],[3.25,0.5105,0.8542,0.75,0.1896,0.5781],[3.5,0.5038,0.8508,0.7495,0.1907,0.5567],[3.75,0.4845,0.85,0.7509,0.1896,0.5388],[4.0,0.4681,0.8497,0.7521,0.189,0.5317],[4.25,0.4588,0.8467,0.7517,0.1899,0.5238],[4.5,0.4537,0.8431,0.7522,0.1898,0.5041],[4.75,0.435,0.8414,0.7531,0.1892,0.4862],[5.0,0.4147,0.8417,0.7542,0.1883,0.4791]];
 P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engraved Milky Way. Chip: ● jade/rare-earth  ctx 97%.',
   { ov: ['chip:● jade/rare-earth  ctx 97%'], row: 'b105-106', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left' }, road: { track: ROAD_VW, color: VIO, text: 'violet', cap: 20 },
-    next: { id: 'vio_wide_v2', opt: { clip0: 0, clip1: 3.4, road: { track: ROAD_VW2, color: VIO, text: 'violet', cap: 20 } } } } });   // film v3 item 4: the lane written only as far as she has got (src/film.js roadMask/roadLane). vio_wide_v2 (she runs, slowing): measure its track with tools/track_road.py and put it in place of null (a null track = no road drawn)
+    next: [
+      // film v6 A5, the reveal at 3:00 (b105): page_reveal pulls back from the black notebook page to her at the dish; the live gold crowd
+      // frames (v7 at 179.4 s on, at 0.25x: the salute; it must stay before 180.37, where v7's night begins) are mapped onto the pages (film.js pageMap, page_track.json from the plates agent);
+      // clip 0.3-4.6 (1.25x: the fast part 0.5-2.5, the wide from ~4.0). vio_wide's written road is not used (it replaces that shot).
+      { id: 'page_reveal', opt: { clip0: 0.3, clip1: 4.6, push: 0, road: null, page: { v7: [179.4, 0.25], quadUrl: '/work_fable/take2/plates/page_reveal/page_track.json', single: 99 },
+        lyr: { y: 'top', top: 0.14, x0: 0.03, x1: 0.42, align: 'left' } } },
+      { id: 'vio_wide_v2', opt: { clip0: 0, clip1: 3.4, road: { track: ROAD_VW2, color: VIO, text: 'violet', cap: 20 } } }] } });   // film v3 item 4: the lane written only as far as she has got (src/film.js roadMask/roadLane). vio_wide_v2 (she runs, slowing): measure its track with tools/track_road.py and put it in place of null (a null track = no road drawn)
 P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, lane: { pts: [[0, 0.955], [1, 0.955]], color: VIO, text: 'violet', cap: 22, scroll: -10, under: 0.2 } } });
 P(108, 109, 'vio_close', 'missing', 'Her profile, the bun and two pencils.', { row: 'b107-108', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });   // clip 0-1.7 s, before the blink near 2.5 s
 P(109, 111, 'vio_lookback', 'missing', 'She stops and looks back east: far off, a sliver of sunrise in full colour.', { row: 'b109-110', opt: { clip0: 0, clip1: 2.5, lyr: { y: 'top', x0: 0.42, x1: 0.97, align: 'right' } } });   // clip 0-2.5 s: the sunrise stays a far sliver
@@ -442,14 +451,17 @@ const RUNNER = { dir: '/work_fable/take2/kit/day_run', x: 0.58, h: 0.62, y: 0.9,
 // (or day_fork) shot that becomes the plate when it lands (next); until then the run simply continues. townFrom: the town's first moment,
 // so every piece of the run is one continuous travel and stride (outro.js town/runFrame).
 const TOWN_RUN = { ...TOWN, townFrom: [139, 1], runner: { ...RUNNER } };
-const INTUIT = (id) => ({ id, kind: 'plate', opt: { clip0: 0, push: 0.02, clipFrom: null, forks: false, lyr: { x0: 0.03, x1: 0.4, align: 'left' } } });
+const INTUIT = (id, o) => ({ id, kind: 'plate', opt: { clip0: 0, push: 0.02, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.03, x1: 0.4, align: 'left' }, ...o } });
+// plates_v6 wiring: piano any 2-3 beats (1.0 on); violin most finger movement 1.5-3.0; stance 0.4-3.4 keeps the landing (settles 1.25).
+// "Back to main" (247.76) starts inside the stance insert: the slab goes in the sky strip at the top on a dark cloud
+const INT_O = { intuit_piano: { clip0: 1.0 }, intuit_violin: { clip0: 1.5, clip1: 2.9 }, intuit_stance: { clip0: 0.6, clip1: 2.5, lyr: { y: 'top', top: 0.03, x0: 0.03, x1: 0.97, align: 'center', cloud: 0.62 } } };
 shot(139, [140, 3], 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax. She runs down the road from the first frame.', { row: 'b139-140', opt: { ...TOWN_RUN } });
-shot([140, 3], 141, 'S+C', 'code', 'facades', 'missing', 'Intuition (a): her fingers play a piano figure on the hem of her jacket. Close, cel on white paper, daylight, no chip. (Until intuit_piano lands: the run.)', { row: 'b139-140', opt: { ...TOWN_RUN, next: INTUIT('intuit_piano') } });
+shot([140, 3], 141, 'S+C', 'code', 'facades', 'missing', 'Intuition (a): her fingers play a piano figure on the hem of her jacket. Close, cel on white paper, daylight, no chip. (Until intuit_piano lands: the run.)', { row: 'b139-140', opt: { ...TOWN_RUN, next: INTUIT('intuit_piano', INT_O.intuit_piano) } });
 shot(141, [142, 1], 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142', opt: { ...TOWN_RUN } });
-shot([142, 1], [142, 3], 'P+K', 'code', 'day_run', 'missing', 'Intuition (b): her left hand curls into violin fingering on her own forearm. Close, no chip. (Until intuit_violin lands: the run.)', { row: 'b141-142', opt: { ...TOWN_RUN, next: INTUIT('intuit_violin') } });
+shot([142, 1], [142, 3], 'P+K', 'code', 'day_run', 'missing', 'Intuition (b): her left hand curls into violin fingering on her own forearm. Close, no chip. (Until intuit_violin lands: the run.)', { row: 'b141-142', opt: { ...TOWN_RUN, next: INTUIT('intuit_violin', INT_O.intuit_violin) } });
 shot([142, 3], 143, 'P+K', 'code', 'day_run', 'missing', 'The run, on past the last facades.', { row: 'b141-142', opt: { ...TOWN_RUN } });
 P(143, [144, 2], 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]] } });
-P([144, 2], 145, 'day_fork', 'missing', 'Intuition (c): her feet land in a true bow stance at a kerb; she notices, a quiet look down. (Until intuit_stance lands: day_fork continues.)', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]], clipFrom: [143, 1], next: INTUIT('intuit_stance') } });
+P([144, 2], 145, 'day_fork', 'missing', 'Intuition (c): her feet land in a true bow stance at a kerb; she notices, a quiet look down. (Until intuit_stance lands: day_fork continues.)', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]], clipFrom: [143, 1], next: INTUIT('intuit_stance', INT_O.intuit_stance) } });
 // film v2: the second likeness shot is dropped (Jade: "it doesn't look like me"); plate wave_run (plates agent) instead: drawn Jade sprints
 // at the lens out of a breaking wave of the twelve lane colours. A card until work_fable/take2/plates/wave_run lands. Slab low.
 P(145, 147, 'wave_run', 'missing', 'Drawn Jade sprints at the lens on the orange road of main, hair streaming, out of a breaking wave made of the twelve lane colours (ribbons of written lanes curling over). Slab BACK TO MAIN low.', { row: 'b145-146', opt: { clip0: 1.4, clip1: 4.8, push: 0,
@@ -480,8 +492,14 @@ shot(156, [157, 3], 'C', 'code', 'road', 'missing', 'From the cursor a dashed li
 // when car_confess lands (next.opt.carType)
 const CAR_TYPE = { lines: [{ text: 'You could tell me anything and I would find it strangely plausible', at: [0.35, 3.35], box: [0.08, 0.92], y: 0.8, align: 'center' },
   { text: 'I have a confession to make', at: [3.6, 6.45], box: [0.42, 0.98], y: 0.36, align: 'left' }] };
+// on car_confess (plates_v6 wiring: clip 1.5-5.0, turn 3.25-3.75, hold to 5.0; windows x 0.02-0.55 y 0.05-0.47 and x 0.65-0.93 y 0.05-0.33;
+// the dark door panel lower left): the clip slowed to fit the shot (0.51x, blended); the camera's line on the lower left over the door
+// and dashboard, clear of her hand; hers in the windscreen's dark beside her once she has turned (clip 3.75 = shot 4.4 s)
+const CAR_TYPE_P = { lines: [{ text: 'You could tell me anything and I would find it strangely plausible', at: [0.35, 3.6], box: [0.025, 0.245], y: 0.8, align: 'left', cap: 50 },   // the dark door panel only (x 0.02-0.26): her arm starts at x ~0.27; 50 px cap so it fits in four rows
+  { text: 'I have a confession to make', at: [4.3, 6.5], box: [0.04, 0.55], y: 0.22, align: 'left' }] };
+const CAR_ROAD = { from: [156, 1], wins: [[[0.0, 0.0, 0.57, 0.5], [0.0, 0.18, 0.78, 0.86]], [[0.62, 0.0, 0.95, 0.36], [0.5, 0.0, 1.0, 0.42]]], dark: 22, alpha: 0.95 };
 shot([157, 3], [161, 3], 'P', 'code', 'road', 'missing', 'Inside the car at night: the camera in the driver\'s seat, drawn main Jade in the passenger seat, lit by the dash and the passing dashes; she turns to the camera with a mysterious almost-smile. The secret is not told.',
-  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carType: CAR_TYPE, next: { id: 'car_confess', kind: 'plate', opt: { clip0: 0, push: 0.02, carType: CAR_TYPE } } } });
+  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carType: CAR_TYPE, next: { id: 'car_confess', kind: 'plate', opt: { clip0: 1.5, clip1: 5.0, blend: true, push: 0.015, carType: CAR_TYPE_P, carRoad: CAR_ROAD } } } });
 P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. The violet page-light from the road arrives in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3',
   opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5, arrive: { to: [0.56, 0.35], dur: 1.4 } } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended; arrive: the road's page-light glides into the frost light (film v6)
 

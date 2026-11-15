@@ -429,25 +429,70 @@ function triMap(src, s0, s1, s2, d0, d1, d2) {   // draw the triangle s0 s1 s2 o
     d = (d0.y * (s1.y - s2.y) + d1.y * (s2.y - s0.y) + d2.y * (s0.y - s1.y)) / den, e = (d0.y * (s2.x - s1.x) + d1.y * (s0.x - s2.x) + d2.y * (s1.x - s0.x)) / den,
     f = (d0.y * (s1.x * s2.y - s2.x * s1.y) + d1.y * (s2.x * s0.y - s0.x * s2.y) + d2.y * (s0.x * s1.y - s1.x * s0.y)) / den;
   g.save(); g.beginPath(); g.moveTo(d0.x, d0.y); g.lineTo(d1.x, d1.y); g.lineTo(d2.x, d2.y); g.closePath(); g.clip(); g.transform(a, d, b, e, c, f); g.drawImage(src, 0, 0); g.restore(); }
+// page_track.json gives the dark page area per plate frame: the LEFT page alone to page.single (clip s), both pages after. The crowd
+// frame is laid along the notebook: its vertical along the spine (the quad's longer edges, pointing down), its horizontal across the
+// pages; while only the left page is tracked the spread is that page extended across the spine (the long edge further right) by its
+// own width. Drawn into an offscreen canvas, clipped to the spread, and kept only where the plate is dark (the black pages: her hand,
+// the pencil and the page edges stay in front).
+let PWC = null, PMK = null;
+// the tracker lists the four corners in whatever order it found them; label them TL, TR (spine top), BR (spine bottom), BL once from
+// frame 0 (page.first: the indices of TL, TR, BR, BL there, checked on the plate) and then by continuity: each frame takes the labelling
+// (of the 24 orders) closest to the previous frame's corners
+function pageOrder(K, first) { const P = []; const perms = []; const pm = (a, l) => { if (!a.length) { perms.push(l); return; } a.forEach((x, i) => pm(a.filter((_, j) => j !== i), [...l, x])); }; pm([0, 1, 2, 3], []);
+  let prev = first.map((i) => K[0][1][i]);
+  for (const [c, q, ar] of K) { let best = null, bd = 1e9; for (const o of perms) { const d = o.reduce((a, i, k) => a + Math.hypot(q[i][0] - prev[k][0], q[i][1] - prev[k][1]), 0); if (d < bd) { bd = d; best = o; } }
+    prev = best.map((i) => q[i]); P.push([c, prev, ar]); }
+  return P; }
+// the spread: the tracked LEFT page (TL, TR, BR, BL; TR-BR the spine) extended across the spine by its own width; the crowd frame is laid
+// on it as a parallelogram (its x along TL->TR, its y along the spine), drawn offscreen, and kept only where the plate is dark (the black
+// pages: her hands, the pencil and the page edges stay in front)
 function pageMap(t, sc) {
   const s = sc.s, P = s.opt.page, cm = clipMap(s), c = cm.c0 + (t - s.t0) * cm.sp, K = P.quad; let i = 0; while (i < K.length - 2 && c > K[i + 1][0]) i++;
-  const u = K.length > 1 ? clamp01((c - K[i][0]) / ((K[i + 1] || K[i])[0] - K[i][0] || 1)) : 0, Q = [0, 1, 2, 3].map((j) => { const a = K[i][1 + j], b = (K[i + 1] || K[i])[1 + j]; return plateToScreen(sc.imgs[0], lerp(a[0], b[0], u), lerp(a[1], b[1], u)); });
+  const u0 = clamp01((c - K[i][0]) / ((K[i + 1][0] - K[i][0]) || 1)), Q = [0, 1, 2, 3].map((j) => plateToScreen(sc.imgs[0], lerp(K[i][1][j][0], K[i + 1][1][j][0], u0), lerp(K[i][1][j][1], K[i + 1][1][j][1], u0)));
+  const [TL, TR, BR, BL] = Q, vx = ((TR.x - TL.x) + (BR.x - BL.x)) / 2, vy = ((TR.y - TL.y) + (BR.y - BL.y)) / 2, ux = ((BL.x - TL.x) + (BR.x - TR.x)) / 2, uy = ((BL.y - TL.y) + (BR.y - TR.y)) / 2;
+  // spread: origin TL, across = 2 v, down = u
   if (!PGC) { PGC = document.createElement('canvas'); PGC.width = W; PGC.height = H; }
+  if (!PWC) { PWC = document.createElement('canvas'); PWC.width = W; PWC.height = H; PMK = document.createElement('canvas'); PMK.width = W / 2 | 0; PMK.height = H / 2 | 0; }
   const pc = PGC.getContext('2d'), b = READY.get(sc.pageImg.url), sec = SECTIONS.drop; pc.setTransform(1, 0, 0, 1, 0, 0); pc.globalAlpha = 1; pc.globalCompositeOperation = 'source-over';
   if (paperPass && USE_PAPER) paperPass(pc, b, { x: 0, y: 0, w: W, h: H }, { paper: 'black', stroke: sec.stroke, ink: sec.ink, seed: 1000 + s.i, t }); else pc.drawImage(b, 0, 0, W, H);
   pc.setTransform(1, 0, 0, 1, 0, 0); pc.globalAlpha = 1; pc.globalCompositeOperation = 'source-over';
-  const fa = P.fade ? 1 - seg(c, P.fade[0], P.fade[1]) : 1; if (fa <= 0) return;
-  g.save(); g.globalAlpha = fa; const S0 = { x: 0, y: 0 }, S1 = { x: W, y: 0 }, S2 = { x: W, y: H }, S3 = { x: 0, y: H };
-  triMap(PGC, S0, S1, S2, Q[0], Q[1], Q[2]); triMap(PGC, S0, S2, S3, Q[0], Q[2], Q[3]); g.restore(); }
+  const sw = 2 * Math.hypot(vx, vy), sh = Math.hypot(ux, uy), cr = cover(W, H, Math.max(1, sw), Math.max(1, sh));
+  const wc = PWC.getContext('2d'); wc.setTransform(1, 0, 0, 1, 0, 0); wc.globalCompositeOperation = 'source-over'; wc.clearRect(0, 0, W, H);
+  wc.setTransform(2 * vx / cr.sw, 2 * vy / cr.sw, ux / cr.sh, uy / cr.sh, TL.x, TL.y); wc.imageSmoothingQuality = 'high'; wc.drawImage(PGC, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, cr.sw, cr.sh); wc.setTransform(1, 0, 0, 1, 0, 0);
+  const mk = PMK.getContext('2d', { willReadFrequently: true }); mk.drawImage(canvas, 0, 0, PMK.width, PMK.height); const id = mk.getImageData(0, 0, PMK.width, PMK.height), d = id.data, th = P.dark || 42;
+  for (let k = 0; k < d.length; k += 4) { const l = 0.3 * d[k] + 0.59 * d[k + 1] + 0.11 * d[k + 2]; d[k + 3] = Math.round(255 * clamp01((th - l) / 18)); } mk.putImageData(id, 0, 0);
+  wc.globalCompositeOperation = 'destination-in'; wc.imageSmoothingEnabled = true; wc.drawImage(PMK, 0, 0, W, H); wc.globalCompositeOperation = 'source-over';
+  const fa = P.fade ? 1 - seg(c, P.fade[0], P.fade[1]) : 1; if (fa <= 0) return; g.save(); g.globalAlpha = fa; g.drawImage(PWC, 0, 0); g.restore(); }
+// film v6 A8, car_confess: the night road (outro.js road, drive phase, the same travel as the road shots) seen through the car's black
+// windows. carRoadFrame renders it full frame into an offscreen canvas; carWindows draws a crop of it into each window rect (opt.carRoad
+// .wins: [[dest x0, y0, x1, y1], [src x0, y0, x1, y1]] frame fractions), kept only where the plate is near-black (the empty windows).
+let RCVC = null, CWM = null, CWT = null;
+function carRoadFrame(t, s) { if (!RCVC) { RCVC = document.createElement('canvas'); RCVC.width = W; RCVC.height = H; }
+  OUTRO.draw({ ...s, opt: { code: 'road', phase: 'drive', from: s.opt.carRoad.from } }, t, null); const x = RCVC.getContext('2d'); x.drawImage(canvas, 0, 0);
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.fillStyle = BG; g.fillRect(0, 0, W, H); return RCVC; }
+function carWindows(RCV, o) {
+  if (!CWM) { CWM = document.createElement('canvas'); CWM.width = W / 2 | 0; CWM.height = H / 2 | 0; CWT = document.createElement('canvas'); CWT.width = W; CWT.height = H; }
+  const mk = CWM.getContext('2d', { willReadFrequently: true }); mk.drawImage(canvas, 0, 0, CWM.width, CWM.height); const id = mk.getImageData(0, 0, CWM.width, CWM.height), d = id.data, th = o.dark || 22;
+  for (let k = 0; k < d.length; k += 4) { const l = 0.3 * d[k] + 0.59 * d[k + 1] + 0.11 * d[k + 2]; d[k + 3] = Math.round(255 * clamp01((th - l) / 8)); } mk.putImageData(id, 0, 0);
+  const x = CWT.getContext('2d'); x.globalCompositeOperation = 'source-over'; x.clearRect(0, 0, W, H);
+  for (const [D, Sr] of o.wins) x.drawImage(RCV, Sr[0] * W, Sr[1] * H, (Sr[2] - Sr[0]) * W, (Sr[3] - Sr[1]) * H, D[0] * W, D[1] * H, (D[2] - D[0]) * W, (D[3] - D[1]) * H);
+  x.globalCompositeOperation = 'destination-in'; x.drawImage(CWM, 0, 0, W, H); x.globalCompositeOperation = 'source-over';
+  g.save(); g.globalAlpha = o.alpha || 0.9; g.drawImage(CWT, 0, 0); g.restore(); }
 // film v6 A5: the strokes under her pencil (pencil_lead, pencil_draw). opt.pencil.track = [[clip s, x, y], ...] the pencil tip in plate
 // fractions (measured on the plate's frames); the gold line it leaves is drawn in code from the track's start to now, with fine hatch
 // ticks across it every few samples (her shading), a glow at the tip. No track: nothing is drawn (the plate's own strokes, if any, stay).
-function pencilStrokes(t, sc) { const o = sc.s.opt.pencil, K = o.track, cm = clipMap(sc.s), c = cm.c0 + (t - sc.s.t0) * cm.sp, im = sc.imgs[0]; if (!im || c < K[0][0]) return;
-  const pts = []; for (let cc = K[0][0]; cc <= c + 1e-6; cc += 1 / 48) { const q = trackAt(K, cc); pts.push(plateToScreen(im, q[0], q[1])); }
-  g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineJoin = 'round';
-  for (const [w, col] of [[7, 'rgba(255,176,32,0.25)'], [2.6, 'rgba(255,194,58,0.95)']]) { g.strokeStyle = col; g.lineWidth = w * S; g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y))); g.stroke(); }
-  g.strokeStyle = 'rgba(255,194,58,0.7)'; g.lineWidth = 1.4 * S;
-  for (let i = 3; i < pts.length; i += 3) { const a = pts[i - 1], b = pts[i], dx = b.x - a.x, dy = b.y - a.y, l = Math.hypot(dx, dy) || 1, nx = -dy / l * 9 * S, ny = dx / l * 9 * S; g.beginPath(); g.moveTo(b.x - nx + dx * 0.4, b.y - ny + dy * 0.4); g.lineTo(b.x + nx - dx * 0.4, b.y + ny - dy * 0.4); g.stroke(); }
+function pencilStrokes(t, sc) { const o = sc.s.opt.pencil, K = o.track, cm = clipMap(sc.s), c = cm.c0 + (t - sc.s.t0) * cm.sp, im = sc.imgs[0], c0 = o.from !== undefined ? o.from : cm.c0; if (!im || c < c0) return;
+  // hatching: as the tip travels, it lays parallel strokes (angle o.angle, length o.len px) from the tip down and to the right, one every
+  // o.step px of travel; the newest bright gold, older ones settling to a quieter gold; a glow at the tip
+  const ang = o.angle !== undefined ? o.angle : 1.05, L = (o.len || 70) * S, step = (o.step || 5) * S, d = [Math.cos(ang), Math.sin(ang)];
+  const pts = []; for (let cc = c0; cc <= c + 1e-6; cc += 1 / 96) { const q = trackAt(K, cc); pts.push(plateToScreen(im, q[0], q[1])); }
+  const marks = []; let acc = 0; for (let i = 1; i < pts.length; i++) { acc += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y); if (acc >= step || i === 1) { acc = 0; marks.push({ p: pts[i], i }); } }
+  // a hatch is drawn quickly after the tip: each mark grows over its first 3 samples (1/32 s)
+  g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+  marks.forEach((m, k) => { const age = (pts.length - 1 - m.i) / 96, gr = clamp01(age / 0.035 + 0.15), r = mulberry32(k * 977 + 13)(), len = L * (0.7 + 0.5 * r) * gr, jit = (r - 0.5) * 0.08;
+    const dx = Math.cos(ang + jit), dy = Math.sin(ang + jit), new_ = Math.max(0, 1 - age / 0.4);
+    g.strokeStyle = `rgba(255,${Math.round(176 + 40 * new_)},${Math.round(32 + 60 * new_)},${(0.55 + 0.4 * new_).toFixed(3)})`; g.lineWidth = (2.2 + 0.8 * new_) * S;
+    g.beginPath(); g.moveTo(m.p.x, m.p.y); g.lineTo(m.p.x + dx * len, m.p.y + dy * len); g.stroke(); });
   const h = pts[pts.length - 1]; glowAt(h.x, h.y, 22 * S, '#FFC23A', 0.9); glowAt(h.x, h.y, 5 * S, '#FFFFFF', 0.9); g.restore(); }
 // film v6 A7: a page-light flying from `from` to `to` (frame fractions) over the shot (or arriving at fraction `arrive`), a slight arc, a
 // faint trail; then held, opening over `open` [u0, u1] (fractions of the shot)
@@ -999,7 +1044,8 @@ function draw(t, sc) {
   else if (sc.eff === 'plate') {
     const st = s.opt && s.opt.strands, rot = st && st.mode === 'rotate';
     if (rot) { const u = seg(t, s.t0, s.t1), a = (-7 * ease.io(u)) * Math.PI / 180, z = 1 - 0.2 * ease.io(u); g.save(); g.translate(W / 2, H / 2); g.rotate(a); g.scale(z, z); g.translate(-W / 2, -H / 2); }
-    drawImgs(sc.imgs); if (s.opt.road && LANES) roadMask(t, sc); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc);
+    const RCV = s.opt.carRoad && OUTRO ? carRoadFrame(t, s) : null;
+    drawImgs(sc.imgs); if (RCV) carWindows(RCV, s.opt.carRoad); if (s.opt.road && LANES) roadMask(t, sc); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc);
     if (st && STRANDS) strands(t, sc);
     if (rot) g.restore();
     if (s.opt.tips) tips(t, sc);
@@ -1049,10 +1095,10 @@ function draw(t, sc) {
 // film v6 A8: the car's two lines (shots.js CAR_TYPE): lyric serif at verse size, cream with a soft shadow, each line WHOLE (no word by
 // word), wrapped inside its box [x0, x1] (frame fractions) around y (the block's centre), on screen over at [a, b] s from the shot start
 // with 0.3 s fades. No punctuation is added.
-function carType(t, s) { const f = capFont('serif', SZ.verse * S), lead = SZ.verse * S * 1.5;
-  for (const L of s.opt.carType.lines) { const ta = s.t0 + L.at[0], tb = s.t0 + L.at[1]; if (t < ta - HF || t > tb) continue;
+function carType(t, s) {
+  for (const L of s.opt.carType.lines) { const cap = (L.cap || SZ.verse) * S, f = capFont('serif', cap), lead = cap * 1.45; const ta = s.t0 + L.at[0], tb = s.t0 + L.at[1]; if (t < ta - HF || t > tb) continue;
     const a = Math.min(clamp01((t - ta + HF) / 0.3), clamp01((tb - t) / 0.3)); if (a <= 0) continue;
-    const rows = wrap(L.text, f, (L.box[1] - L.box[0]) * W); setFont(f); const y0 = L.y * H - ((rows.length - 1) * lead) / 2 + SZ.verse * S / 2;
+    const rows = wrap(L.text, f, (L.box[1] - L.box[0]) * W); setFont(f); const y0 = L.y * H - ((rows.length - 1) * lead) / 2 + cap / 2;
     g.save(); g.globalAlpha = a; textShadow(0.85, 14); g.fillStyle = CREAM;
     rows.forEach((r, i) => { const w = g.measureText(r).width, x = L.align === 'center' ? (L.box[0] + L.box[1]) / 2 * W - w / 2 : L.align === 'right' ? L.box[1] * W - w : L.box[0] * W; g.fillText(r, x, y0 + i * lead); });
     noShadow(); g.restore(); } }
@@ -1095,6 +1141,9 @@ async function boot() {
   for (const s of SH) if (s.opt && s.opt.next && Array.isArray(s.opt.next)) { for (const nx of s.opt.next) if (await firstPlate(nx.id)) { s.opt = { ...s.opt, next: nx }; break; } if (Array.isArray(s.opt.next)) s.opt = { ...s.opt, next: null }; }
   for (const s of SH) if (s.opt && s.opt.next && !(s.opt.next.flag === 'orch' && ORCH_V7)) { const id = await firstPlate(s.opt.next.id); if (!id) continue; s.src = id; if (s.opt.next.kind) s.kind = s.opt.next.kind; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
   for (const s of SH) if (s.opt && s.opt.tail && !ORCH_V7) await findPlate(s.opt.tail.id);
+  // film v6: per-shot data files named in shots.js (pencil tip tracks, the page quads), loaded once the shot's source is decided
+  for (const s of SH) { if (s.opt && s.opt.pencil && s.opt.pencil.trackUrl && !s.opt.pencil.track) { const j = await json(s.opt.pencil.trackUrl); if (j) s.opt = { ...s.opt, pencil: { ...s.opt.pencil, track: j.tip } }; }
+    if (s.opt && s.opt.page && s.opt.page.quadUrl && !s.opt.page.quad) { const j = await json(s.opt.page.quadUrl); if (j) s.opt = { ...s.opt, page: { ...s.opt.page, quad: pageOrder(j.quad, s.opt.page.first || [3, 0, 1, 2]) } }; } }
   // film v2: plates replaced by id everywhere the film uses them (shots.js PLATE_ALIAS), when the new plate exists
   for (const [k, a] of Object.entries(PLATE_ALIAS || {})) { const p = await findPlate(await firstPlate(a.id)); if (p) PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; }
   const vm = await json(`${V7DIR}/meta.json`);
