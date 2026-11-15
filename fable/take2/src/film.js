@@ -416,6 +416,16 @@ function vlane(t, V) { if (t < V.grow[0]) return; const A = V.anchor; let i = 0;
   else { const k = ((t - V.grow[1]) * 0.45) % 1, h = P(k); glowAt(h.x, h.y, 14 * S, '#9B6BFF', 0.6 * Math.sin(k * Math.PI)); }
   g.restore(); }
 
+// film v6 A5: the strokes under her pencil (pencil_lead, pencil_draw). opt.pencil.track = [[clip s, x, y], ...] the pencil tip in plate
+// fractions (measured on the plate's frames); the gold line it leaves is drawn in code from the track's start to now, with fine hatch
+// ticks across it every few samples (her shading), a glow at the tip. No track: nothing is drawn (the plate's own strokes, if any, stay).
+function pencilStrokes(t, sc) { const o = sc.s.opt.pencil, K = o.track, cm = clipMap(sc.s), c = cm.c0 + (t - sc.s.t0) * cm.sp, im = sc.imgs[0]; if (!im || c < K[0][0]) return;
+  const pts = []; for (let cc = K[0][0]; cc <= c + 1e-6; cc += 1 / 48) { const q = trackAt(K, cc); pts.push(plateToScreen(im, q[0], q[1])); }
+  g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineJoin = 'round';
+  for (const [w, col] of [[7, 'rgba(255,176,32,0.25)'], [2.6, 'rgba(255,194,58,0.95)']]) { g.strokeStyle = col; g.lineWidth = w * S; g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y))); g.stroke(); }
+  g.strokeStyle = 'rgba(255,194,58,0.7)'; g.lineWidth = 1.4 * S;
+  for (let i = 3; i < pts.length; i += 3) { const a = pts[i - 1], b = pts[i], dx = b.x - a.x, dy = b.y - a.y, l = Math.hypot(dx, dy) || 1, nx = -dy / l * 9 * S, ny = dx / l * 9 * S; g.beginPath(); g.moveTo(b.x - nx + dx * 0.4, b.y - ny + dy * 0.4); g.lineTo(b.x + nx - dx * 0.4, b.y + ny - dy * 0.4); g.stroke(); }
+  const h = pts[pts.length - 1]; glowAt(h.x, h.y, 22 * S, '#FFC23A', 0.9); glowAt(h.x, h.y, 5 * S, '#FFFFFF', 0.9); g.restore(); }
 // film v6 A7: a page-light flying from `from` to `to` (frame fractions) over the shot (or arriving at fraction `arrive`), a slight arc, a
 // faint trail; then held, opening over `open` [u0, u1] (fractions of the shot)
 function pageFly(t, s) { const o = s.opt.pageFly, u = seg(t, s.t0, s.t1), ar = o.arrive || 1, k = clamp01(u / ar), e = o.ease === 'out' ? ease.out(k) : ease.io(k);
@@ -978,6 +988,7 @@ function draw(t, sc) {
     if (s.opt.vioMote) vioMote(t, s);
     if (s.opt.pageFly) pageFly(t, s);
     if (s.opt.arrive) arrive(t, s);
+    if (s.opt.pencil && s.opt.pencil.track) pencilStrokes(t, sc);
     if (s.opt.atom && ATOM[s.opt.atom.dir]) atomize(t, sc);
     else if (s.opt.settle && sc.settle) settle(t, sc);
   }

@@ -227,8 +227,13 @@ P(57, 59, 'float_top', 'missing', 'From above: she floats on her back on dark wa
 P(59, 60, 'float_face', 'missing', 'Close on her face, eyes closed, water lapping.', { row: 'b59-60', opt: { lyr: { x0: 0.03, x1: 0.36, align: 'left' } } });   // her face is top centre: type bottom left
 P(60, 61, 'float_top', 'missing', 'Back above: the strands branch outward, doubling.', { code: 'C+P', row: 'b59-60', opt: { clip0: 2.0, strands: { mode: 'double' } } });
 P(61, 63, 'float_top', 'missing', 'Slow rotation and pull-out; along one strand a life window glides past.', { code: 'C+P', row: 'b61-62', opt: { clip0: 0.5, speed: 0.75, push: 0, strands: { mode: 'rotate', window: 'piano', on: 3 } } });
-P(63, 64, 'float_top', 'missing', 'Pulses of light come home along every strand.', { code: 'C+P', row: 'b63-64', opt: { clip0: 3.0, strands: { mode: 'pulses' } } });
-P(64, 65, 'float_hand', 'missing', 'Her hand opens on the water as one arrives.', { row: 'b63-64', opt: { clip0: 1.0, clip1: 3.5, lyr: { x0: 0.03, x1: 0.5, align: 'left' },
+// film v6 A4: the real Jade once, early: like_sing0 (local only, song-locked like like_sing1) sings "Merge... and return..." (109.31-111.72)
+// from b63 beat 4 to b65. Wired ONLY when the director says her likeness passed on stills: set LIKE0_ON = true. Off: b63-64 as before
+// (the float_top pulses and float_hand). On: b63 ends on beat 4 and one shot code 'L' plays like_sing0 (likeness=0: the card).
+const LIKE0_ON = false;
+P(63, LIKE0_ON ? [63, 4] : 64, 'float_top', 'missing', 'Pulses of light come home along every strand.', { code: 'C+P', row: 'b63-64', opt: { clip0: 3.0, strands: { mode: 'pulses' } } });
+if (LIKE0_ON) shot([63, 4], 65, 'L', 'plate', 'like_sing0', 'missing', 'The real Jade, once, early: she sings "Merge... and return...", daylight (the Orbital relight trace; song-locked).', { row: 'b63-64', opt: { songLock: true, push: 0, lyr: { x0: 0.03, x1: 0.4, align: 'left' } } });
+else P(64, 65, 'float_hand', 'missing', 'Her hand opens on the water as one arrives.', { row: 'b63-64', opt: { clip0: 1.0, clip1: 3.5, lyr: { x0: 0.03, x1: 0.5, align: 'left' },
   next: { id: 'float_hand_v2', opt: { clip0: 0.5, clip1: 2.6 } } } });   // film v3: the light settles in the palm at clip 1.5 s = on beat 3 of b64 (0.5 + 2 beats x 1.21); fingers closing 2.0-2.6 at the cut   // clip: the light reaches her palm at about 2.5 s, a loose fist by 3.5
 
 // ------------------------------------------------------------------ Breakdown B: bars 65-72 ("Ahh"; snare crescendo from b68, roll in b72)
