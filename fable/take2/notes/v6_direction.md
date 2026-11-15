@@ -119,7 +119,7 @@ the car type; the shortened credits; the loop. Code first against the present pl
 `render_film.sh` for `film_v6` (local with likeness, public `likeness=0`), `check.py`, sheets. Say plainly what was checked on
 stills only.
 
-## C. Open with Jade
-1. The caption for the controller (the parenthood message everywhere else is unchanged).
-2. Who is driving in the car.
-3. The b56 patch on the right arm, still open from the master.
+## C. Answered by Jade (2026-11-15; these override the text above)
+1. The controller insert keeps the parenthood message ("taught the Copernican model at 10:30pm") as its caption.
+2. The camera is in the driver's seat; Jade is the passenger.
+3. Fix the bar 56 patch: new plate `main_back_wide_v2` (patch on her LEFT arm only), wired in every use.

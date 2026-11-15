@@ -27,3 +27,11 @@ line and she replies "I have a confession to make" with a mysterious almost-smil
 any of the poems). And yes, the terminal credits scrolls thru a lot of lines, which humans can't read that fast anyway, so it's
 fine to cut some of it. And one other edit: the hand holding the ball alongside instrument playing and such, maybe that should be a
 hand holding a nintendo controller."
+
+## 4. Answers to the three open questions (2026-11-15)
+
+Asked: (1) the caption for the controller, (2) who is driving in the car, (3) the patch on the wrong arm at bar 56.
+
+"1. taught the copernican model is still true in real life, in the poems, and in the scene with the kids. it's just that a hand
+holding a ball doesn't convey very much about parenting as an image. 2. the camera is in the driver's seat. 3. go ahead and fix
+it? i'm not sure which patch."
