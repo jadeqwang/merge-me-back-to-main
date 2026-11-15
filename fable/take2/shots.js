@@ -114,7 +114,7 @@ section('verse1');
 // frame, or REAL); until then it is a card. Lyric places (lyr) and doorways (door) were measured on the first-frame stills
 // (work_fable/take2/stills/) and on the clips that had landed; see notes/compositor.md "Step 2".
 P(17, 18, 'main_face', 'missing', 'Close three-quarter on her face, eyes open, calm.', { row: 'b17', opt: { lyr: { x0: 0.05, x1: 0.47, align: 'left' },
-  next: { id: 'main_face_v2', opt: { songLock: true, push: 0 } } } });   // film v3: main_face_v2 sings "I split myself a thousand ways", song-locked (meta t0_song)
+  next: { id: 'main_face_v2', opt: { songLock: true, push: 0, lag: 0.34, lagQ: 'lagface' } } } });   // film v4: lag +340 ms measured (plates_v4 wiring; ?lagface=<ms> overrides)   // film v3: main_face_v2 sings "I split myself a thousand ways", song-locked (meta t0_song)
 P(18, 19, 'main_split', 'missing', 'She steps apart into two, then four (Banach-Tarski: each keeps a whole body). The copies\' bands take lane colours.',
   { row: 'b18', opt: { clip0: 0.5, clip1: 3.2, push: 0.02 } });   // film v3: main_split_v2 was rejected (plates_v3): no hook, bar 18 stays main_split   // director: one figure to 0.7 s, two by 1.0, four apart by 2.8
 V(19, 20, 'seq 01', 'From above and behind: eight, sixteen, more run out along their lanes.',
@@ -137,7 +137,7 @@ CROSS.forEach(([id, m, life, c], i) =>
       ...(CROSS_V4[id] ? { next: { id: CROSS_V4[id], opt: {} } } : {}) } }));
 P(24, 25, 'cross_violet', 'missing', 'The fifth road has no doorway: the violet one runs out into engraved dark, and she keeps going.', { row: 'b24' });
 P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { row: 'b25', opt: { clip0: 2.0, clip1: 4.5, lyr: { y: 'top' },
-  next: { id: 'main_light_v2', opt: { clip0: 0.0, clip1: 1.75, push: 0 } } } });   // film v3: main_light_v2 take 2 (the hands move in waves; locked camera): 0.0-1.75 (plates_v3)   // the light appears from about 2.2 s (director: use 2.0-4.5)
+  next: [{ id: 'main_light_v3', opt: { clip0: 1.6, clip1: 3.35, push: 0 } }, { id: 'main_light_v2', opt: { clip0: 0.0, clip1: 1.75, push: 0 } }] } });   // film v4: main_light_v3 (one slow opening, never closes): 1.6-3.35 (plates_v4)   // film v3: main_light_v2 take 2 (the hands move in waves; locked camera): 0.0-1.75 (plates_v3)   // the light appears from about 2.2 s (director: use 2.0-4.5)
 P(26, 27, 'main_release', 'missing', 'She opens her hands; the light leaves along the lane.',
   { code: 'P+C', row: 'b26', opt: { lyr: { x0: 0.04, x1: 0.55, align: 'left' },
     lane: { pts: [[0, 0.425], [0.04, 0.417], [0.111, 0.399], [0.181, 0.379], [0.331, 0.338], [0.548, 0.275], [0.595, 0.265]], color: '#FF3D7F', lyric: 3, cap: 46, endX: 0.55,   // film v3: the lane carries the lyric (line 3), not the piano message
@@ -392,7 +392,7 @@ P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bar
 // at the lens out of a breaking wave of the twelve lane colours. A card until work_fable/take2/plates/wave_run lands. Slab low.
 P(145, 147, 'wave_run', 'missing', 'Drawn Jade sprints at the lens on the orange road of main, hair streaming, out of a breaking wave made of the twelve lane colours (ribbons of written lanes curling over). Slab BACK TO MAIN low.', { row: 'b145-146', opt: { clip0: 1.4, clip1: 4.8, push: 0,
     lyr: { y: 'bottom', x0: 0.03, x1: 0.97, align: 'center', cloud: 0.62 },
-    next: { id: 'wave_run_v3', opt: { clip0: 1.4, clip1: 4.8 } } } });   // film v3: take 3 (glance back 1.75-2.5, smile from 3.25), same window and slab   // take 2 (plates_v2: 1.4-4.8): BACK TO MAIN low across the trousers band (y 0.75-0.97), cream on a darker cloud
+    next: [{ id: 'wave_run_v4', opt: { clip0: 1.38, clip1: 4.93 } }, { id: 'wave_run_v3', opt: { clip0: 1.4, clip1: 4.8 } }] } });   // film v4: wave_run_v4 (no look-back; a small closed smile from clip 3.0-3.5, held 3.25-5.0). Director: end on the held smile. Steps measured every 8 frames (0.333 s; motion-energy peaks on twos at 1.71, 2.04, 2.38 ...): at 1.041x a step is exactly 3/4 beat (0.319 s) and clip 1.38 puts the step grid on the b145 downbeat; ends at 4.93, on the smile   // film v3: take 3 (glance back 1.75-2.5, smile from 3.25), same window and slab   // take 2 (plates_v2: 1.4-4.8): BACK TO MAIN low across the trousers band (y 0.75-0.97), cream on a darker cloud
 shot(147, 149, 'S+C', 'code', 'aerial', 'missing', 'Aerial pull-back: the road, the town, the new forks.', { row: 'b147-148', opt: { code: 'aerial', lives: LIFE } });
 
 // ------------------------------------------------------------------ Outro B and C: bars 149-164
@@ -412,15 +412,16 @@ export const FLOAT = { at: 2.0, track: [[0, [0.555, 0.18], [0.297, 0.894]], [2.0
 // film v2: plates replaced wherever they are used by id (crossing doorways, flashes, windows, the fold sheet), when the new one exists.
 // focus = where she is in the new plate (cover crops). The proof range: only the b30 life shot (PROOF_A), not the b33-37 grid (the grid's
 // bar-37 look-back needs the old clip's turn; wushu_v2 has none)
-export const PLATE_ALIAS = { wushu: { id: WUSHU_IDS, focus: [0.3, 0.3] } };
+export const PLATE_ALIAS = { wushu: { id: WUSHU_IDS, focus: [0.3, 0.3] }, det_home: { id: ['det_home_v2'] } };   // film v4: det_home_v2 (her hand warm, not blue; the orange now orange)
 export const PROOF_A = { wushu: [{ id: 'wushu_v3', land: 1.4, landBeat: 1, side: 'left' }, { id: 'wushu_v2', land: 1.0, landBeat: 1, side: 'left' }] };   // v3 (plates_v3 wiring): the punch lands at 1.40 s   // she stands left in wushu_v2 (face x 0.27)   // the punch lands at clip 1.0 s: put it on beat 2 of the 2-beat shot
 // film v3: a life plate retaken and swapped EVERYWHERE it is used (bars 28-32, the b33-37 grid and its bar-37 turn, the fold sheet, the
 // b54-55 window, flashes): the band at Hacker Dojo, not in a bar. side/tone (lives.js) from the plates wiring row when they change;
 // focus = her place in the new plate (cover crops). Picked up when work_fable/take2/plates/band_v2 is complete.
-export const LIFE_SWAP = { band: { id: 'band_v2', side: 'left', tone: null, focus: [0.32, 0.35], turn: 2.8 } };   // band_v2: she is on the LEFT (x 0.08-0.45); her head turns ~0.2 s later than the old plate's, so clip 2.8 (not turn_t 2.6) is put on the bar-37 downbeat: she turns with the other eleven
+export const LIFE_SWAP = { band: { id: 'band_v2', side: 'left', tone: null, focus: [0.32, 0.35], turn: 2.8 },
+  home: { id: 'home_v2', side: null, tone: null, focus: [0.66, 0.3], turn: null } };   // film v4 (Jade: "the face in parenthood is blue"): home_v2, her face and hands warm; turn_t 2.85 as home (motion peak 2.83), so no turn override   // band_v2: she is on the LEFT (x 0.08-0.45); her head turns ~0.2 s later than the old plate's, so clip 2.8 (not turn_t 2.6) is put on the bar-37 downbeat: she turns with the other eleven
 // film v3: the chorus 1 sprint (b41-42) from hero_paper_v2 when it lands: she sings "Merge me back to main" as she runs, so it is
 // song-locked (clip time = song time - meta t0_song). opt overrides the hero crop/slab/gap (zoom, fx, fy, rows, gap) from the wiring row.
-export const HERO_NEXT = { id: 'hero_paper_v2', opt: {} };
+export const HERO_NEXT = { id: 'hero_paper_v2', opt: {}, lag: -0.04 };   // film v4: lag -40 ms measured (plates_v4 wiring; ?laghero=<ms> overrides; + = sound later than picture)
 export const SHOTS = S;
 
 // ------------------------------------------------------------------ resolve bar/beat to song time

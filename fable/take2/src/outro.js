@@ -21,7 +21,8 @@ export function makeOutro(E) {
     for (const s of shots) { const o = s.opt || {};
       if ((o.code === 'town' || o.code === 'aerial') && !st.facades) { st.facades = {};
         // film v3: the new facade cut-outs (kit/facade_<id>_v2: real places, parenthood a cut-away living room) when they exist
-        for (const id of o.lives) for (const v of ['_v2', '']) { const u = `/work_fable/take2/kit/facade_${id}${v}/rgba/f_0001.png`, b = await bmp(u); if (b) { st.facades[id] = { url: u, img: b, bb: bboxOf(b), v2: v === '_v2' }; break; } } }
+        // film v4: _v3 first (facade_wetlab_v3: Bio-X, the Clark Center, very wide: laid out as a v2, up to 0.42 W wide)
+        for (const id of o.lives) for (const v of ['_v3', '_v2', '']) { const u = `/work_fable/take2/kit/facade_${id}${v}/rgba/f_0001.png`, b = await bmp(u); if (b) { st.facades[id] = { url: u, img: b, bb: bboxOf(b), v2: v !== '' }; break; } } }
       if (o.code === 'fold' && !st.fold) { st.fold = {}; for (const k of ['night_jade', 'patchwork2']) { const b = await bmp(`${o.mattes[k]}/rgba/f_0001.png`); if (b) st.fold[k] = { img: b, bb: bboxOf(b) }; } }
       if (o.code === 'terminal' && !st.log) { const j = await json('/fable/take2/data/gitlog.json'); st.log = j ? j.lines : null; }
       if (o.runner && !st.run) { const m = await json(`${o.runner.dir}/meta.json`); st.run = m && m.n ? m : null; } }

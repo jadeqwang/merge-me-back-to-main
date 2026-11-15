@@ -639,8 +639,8 @@ b103-104, b105-106, b114-120, b139-148 (work_fable/take2/dev/v3/strips/). Nobody
 
 ## Film v4 (2026-11-14, compositor; brief: notes/v4_direction.md section A, Jade's notes: notes/jade_v3_notes.md)
 
-State: items 1-4 done in code and checked on stills and frame strips (none at speed with sound). Items 5-7 (plate hooks) next; item 8
-(the film v4 render) waits for the director's word. Check renders: `work_fable/take2/dev/v4/`.
+State: items 1-7 done and checked on stills/strips (none at speed with sound). Director's word received (all v4 plates accepted; wire
+and render): item 8, the film v4 render, in progress (commands below). Check renders: `work_fable/take2/dev/v4/`.
 
 2. ca08 b51-52 fan (film.js `fan`): the fan is fully open on the shot's first frame (the b51 downbeat), held through beat 1, then the folds
    as before (first starts at beat 1, twelfth gone at beat 7); no outward motion. `opt.fan.open` (beats to open) brings v3's opening back.
@@ -688,3 +688,21 @@ State: items 1-4 done in code and checked on stills and frame strips (none at sp
    stance). Looked at: va05_after_sheet.jpg (every 2nd frame), va05_after_close.jpg (full-size crops where she overlaps the door).
    Still weak: a short step in the green lane line where the fill meets it in 2-3 frames (1065-1066); her size is not changed for the
    extra depth at the start (she starts ~0.13 W further back along the lane at the same size); checked on stills and strips only.
+5-7. Wiring (plates_v4.md Wiring table, with the director's choices; all plates had landed, so every hook is live):
+   - b17 `main_face_v2` and b41-42 `hero_paper_v2`: lag L (s; + = the sound later than the picture, as plates_v4: clip = song - t0_song
+     + L). film.js `lagOf(o)`: opt.lag, or the query `opt.lagQ` in ms (wins). main_face next.opt `lag: 0.34, lagQ: 'lagface'`; hero via
+     shots.js `HERO_NEXT.lag -0.04` and `?laghero=` into makeProof's hero.c0. Tested: default renders equal `lagface=340&laghero=-40`
+     exactly (diff 0) and differ from 0 (diff 215/220). Jade's pick: re-render with `--q "lagface=X&laghero=Y"` or change the two numbers.
+   - b25 `main_light_v3` 1.6-3.35 (next is a list: v3, then v2). Strip of 12 stills (dev/v4/wire/light.jpg): the hands open steadily from
+     nearly closed to open palms with the star; nothing closes.
+   - b145-146 `wave_run_v4`: the director chose 1.6-5.0 (end on the held smile). Steps measured every 8 frames (0.333 s: motion-energy
+     peaks on twos at 1.71, 2.04, 2.38, ... 4.71; the plates note's 10 frames came from gait.py's minimum lag 9, which excludes 8). At
+     1.041x a step is exactly 3/4 beat (0.319 s at b145) and clip 1.38 puts the step grid on the b145 downbeat: wired 1.38-4.93 (ends on
+     the smile, held 3.25-5.0). Slab as v3.
+   - `home_v2` everywhere: shots.js LIFE_SWAP.home (focus [0.66, 0.3], no side/tone/turn override: turn_t 2.85 as home). `det_home_v2`
+     via PLATE_ALIAS.det_home (b68.2, b71.2 and the tiles). Checked: the grid cell (warm face; profile at 62.7, turned at 63.0 with the
+     others; chyron clear of her face, dev/v4/wire/home_turn.jpg), det_home_v2 at 117.1 and 122.2 (warm hand), the b88 flash at 152.38.
+   - `facade_wetlab_v3` (Bio-X, the Clark Center): outro.js tries kit/facade_<id>_v3, _v2, then v1; a v3 is laid out like a v2 (up to
+     0.42 W wide: it is drawn 0.42 W x ~0.22 H, a wide low building). Chip under it (dev/v4/wire/facade.jpg). The town's road speed is
+     unchanged (only the facade travel scales with the layout), so the runner's rate is unchanged.
+   Proof range: tools/proof_identity.py, proofbug=1 max diff 0 on all 13 frames.

@@ -229,9 +229,12 @@ function vignette() {
 // ---------------------------------------------------------------- sources
 // plate: clip time from the shot start; nearest frame unless the clip is slowed (then a frame blend), twos = 12 fps, still = still.jpg
 // clip map of a shot: { c0, sp } with clip time = c0 + (t - t0) * sp (see shots.js opt: clip0/clip1/speed, cross)
+// film v4: opt.lag (s), or the query value opt.lagQ (ms, e.g. ?lagface=340) which wins, so Jade's pick can be tried without an edit
+function lagOf(o) { const q = o.lagQ && Q.get(o.lagQ); return q !== null && q !== undefined && q !== '' && isFinite(+q) ? +q / 1000 : o.lag || 0; }
 function clipMap(s) {
   const o = s.opt || {}, D = s.t1 - s.t0;
-  if (o.songLock && PLATE[s.src] && PLATE[s.src].meta.t0_song !== undefined) return { c0: s.t0 - PLATE[s.src].meta.t0_song, sp: 1 };   // likeness: locked to song time
+  if (o.songLock && PLATE[s.src] && PLATE[s.src].meta.t0_song !== undefined) return { c0: s.t0 - PLATE[s.src].meta.t0_song + lagOf(o), sp: 1 };   // likeness: locked to song time
+  // film v4: a sung shot's lip-sync lag L (s; + = the sound plays later than the picture, notes/plates_v4.md): clip = song - t0_song + L
   if (o.cross) { const x = o.cross, ta = x.at * D, sp = Math.max(1, Math.min(x.maxSpeed || 1.5, x.reach / ta)); return { c0: Math.max(0, x.reach - sp * ta), sp }; }
   if (o.clip1 !== undefined) return { c0: o.clip0 || 0, sp: (o.clip1 - (o.clip0 || 0)) / D };
   return { c0: o.clip0 || 0, sp: o.speed || 1 };
@@ -973,7 +976,7 @@ async function boot() {
     dirs, aPlates, heroBlend: !heroNew, turn: turnOv,
     // hero_paper has her in the centre: crop so she sits right of centre, the slab stacks one word per row on the left (rule 5: clear of
     // her face and hands), and the written lane passes behind her legs
-    hero: heroNew ? { zoom: 1.25, fx: 0, fy: 0.05, rows: [[0], [1], [2], [3], [4]], gap: [0.5, 0.77], ...(heroV2 ? { ...(HERO_NEXT.opt || {}), c0: heroV2.meta.t0_song !== undefined ? T.bar(41) - heroV2.meta.t0_song : 0 } : {}) } : null, writtenLanes: !PROOFBUG && Q.get('prooflanes') !== '0' ? { drawWrittenLane, laneString } : null,
+    hero: heroNew ? { zoom: 1.25, fx: 0, fy: 0.05, rows: [[0], [1], [2], [3], [4]], gap: [0.5, 0.77], ...(heroV2 ? { ...(HERO_NEXT.opt || {}), c0: heroV2.meta.t0_song !== undefined ? T.bar(41) - heroV2.meta.t0_song + lagOf({ lag: HERO_NEXT.lag, lagQ: 'laghero' }) : 0 } : {}) } : null, writtenLanes: !PROOFBUG && Q.get('prooflanes') !== '0' ? { drawWrittenLane, laneString } : null,
     trail: !PROOFBUG && Q.get('trail') !== '0' });
   // the proof range must be exactly the proof shots of the list
   const pr = SH.filter((s) => s.kind === 'proof'); if (Math.abs(pr[0].t0 - PROOF.t0) > 0.002 || Math.abs(pr[pr.length - 1].t1 - PROOF.tEnd) > 0.002) throw new Error('proof range does not match the shot list');
