@@ -128,6 +128,7 @@ function preMap(t, ta, tP, c0, P) {
 function turnOf(id) { if (o.turn && o.turn[id] != null) return o.turn[id]; const m = META[id], last = (m.n - 1) / m.fps; return m.turn_t != null ? m.turn_t : Math.min(2.5, last * 0.5); }
 function gridClip(i, t) {
   const id = LIVES[i].id, m = META[id], last = (m.n - 1) / m.fps; const turn = turnOf(id);
+  if (o.stay && o.stay[id]) { const lim = m.turn_t != null ? Math.max(0.5, m.turn_t - 0.45) : last - 0.05, c0 = Math.min(0.3, lim * 0.1), span = TL.t39 + 0.6 - TL.start[id]; return c0 + Math.max(0, t - TL.start[id]) * Math.min(1, (lim - c0) / span); }   // take two v6: she does not turn
   const hit = TL.hit - HF;          // half a frame early, so the turn is on screen from the frame nearest the downbeat
   const P = turn - 0.35, tP = hit - 0.35; let c;
   if (t >= tP) { const x = t - hit, nat = Math.min(1.2, 0.5 * (last - turn)); if (x <= nat) c = turn + x;
@@ -165,7 +166,7 @@ function gridState(t) {
     let ly = r.y + r.h * lineRel - 2 * S * (from === null ? 1 : from);
     let node = { x: r.x + nodeU * r.w, y: ly }, sigma = 1; const m = mergeOf(i);
     if (on(t, TL.t38)) {     // bar 38: the cell (in world coords) shrinks into its node in the first half of its column's beat
-      sigma = 1 - ease.io(seg(t, TL.col[m.col], TL.shrunk[m.col]));
+      sigma = o.stay && o.stay[L.id] ? 1 : 1 - ease.io(seg(t, TL.col[m.col], TL.shrunk[m.col]));   // take two v6: hers does not fall home
       const wr = { x: m.n.x + (c0.x - m.n.x) * sigma, y: m.n.y + (c0.y + 2 * S - m.n.y) * sigma - 2 * S * sigma, w: c0.w * sigma, h: c0.h * sigma };
       const a = toScr(C, { x: wr.x, y: wr.y }), b = toScr(C, { x: wr.x + wr.w, y: wr.y + wr.h }); r = { x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y };
       node = toScr(C, m.n); ly = node.y;
@@ -192,8 +193,10 @@ function scene(t) {
       const wr = { x: m.n.x + (c0.x - m.n.x) * sg, y: m.n.y + (c0.y - m.n.y) * sg, w: c0.w * sg, h: c0.h * sg };
       const a = toScr(GS.cam, { x: wr.x, y: wr.y }), b = toScr(GS.cam, { x: wr.x + wr.w, y: wr.y + wr.h });
       P.push({ id: C.L.id, c: cLast, rect: { x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y }, alpha: fade * (0.55 - 0.08 * k), ghost: C.L.color, fx: fo[0], fy: fo[1] }); } }
+  const late = [];
   for (const C of GS.cells) if (C.sigma > 0.004 && C.rect.w > 1) { const fo = META[C.L.id].focus || [0.5, 0.5];
-    P.push({ id: C.L.id, c: C.c, rect: C.rect, alpha: C.alpha, cell: C, fx: fo[0], fy: fo[1], blend: (gridClip(C.i, t + 0.02) - C.c) / 0.02 < 0.85 }); }
+    const stay = o.stay && o.stay[C.L.id] && on(t, TL.t39); if (stay) { C.stayA = 1 - clamp01((t - TL.t39 - 0.25) / 0.3); if (C.stayA <= 0) { C.sigma = 0; continue; } }
+    (stay ? late : P).push({ id: C.L.id, c: C.c, rect: C.rect, alpha: C.alpha * (stay ? C.stayA : 1), cell: C, fx: fo[0], fy: fo[1], blend: (gridClip(C.i, t + 0.02) - C.c) / 0.02 < 0.85 }); }
   if (on(t, TL.t39)) {
     const node = toScr(GS.cam, { x: XROOT, y: YM }); const u = ease.io(seg(t, TL.t39, TL.irisEnd));
     const R = Math.hypot(Math.max(node.x, W - node.x), Math.max(node.y, H - node.y)) * 1.02;
@@ -201,6 +204,7 @@ function scene(t) {
     const rootLast = (META.root.n - 1) / META.root.fps;
     P.push({ id: 'root', c: softcap(Math.max(0, t - TL.t39), rootLast), rect: full, zoom: 1 + 0.12 * Math.pow(seg(t, TL.t39, TL.t41), 2.4), iris: sc.iris, blend: true });
   }
+  P.push(...late);   // take two v6: the tile that stayed, over the iris
   return sc;
 }
 
@@ -278,7 +282,7 @@ function linesCells(t, sc) {
   for (const C of sc.grid.cells) {
     if (C.sigma < 0.02) continue; const col = C.L.color, r = C.rect, y = C.ly, x0 = r.x, x1 = r.x + r.w, nx = C.node.x;
     const span = C.pop < 1 ? ease.out(C.pop) : 1;
-    g.save(); g.globalAlpha = clamp01((C.sigma - 0.05) / 0.3);
+    g.save(); g.globalAlpha = clamp01((C.sigma - 0.05) / 0.3) * (C.stayA === undefined ? 1 : C.stayA);
     line(lerp(nx, x0, span), y, lerp(nx, x1, span), y, col, C.lineW);
     if (on(t, TL.pulse) && t < TL.gather - HF) { const u = ease.io(seg(t, TL.pulse, TL.gather)), hx = lerp(x0, x1, u);
       line(Math.max(x0, hx - 140 * S), y, hx, y, '#FFFFFF', C.lineW * 0.9, false); glow(hx, y, 26 * S, col, 1); }
@@ -298,6 +302,7 @@ function linesMerge(t, sc) {
   g.save(); if (iris) { g.beginPath(); g.rect(0, 0, W, H); g.arc(iris.node.x, iris.node.y, iris.r, 0, 6.2832, true); g.clip('evenodd'); }
   const ga = iris ? 1 - clamp01(iris.u * 1.4) : 1; g.globalAlpha = ga;
   for (const c of sc.grid.cells) {
+    if (o.stay && o.stay[c.L.id]) continue;   // take two v6: no lane into main
     if (!on(t, TL.col[c.m.col] + 0.25 * (TL.shrunk[c.m.col] - TL.col[c.m.col]))) continue;
     const col = c.L.color, pts = sCurve(C, c.m), Lp = plen(pts), u = ease.io(seg(t, TL.col[c.m.col] + 0.25 * (TL.shrunk[c.m.col] - TL.col[c.m.col]), TL.arr[c.m.col]));
     const head = stroke(pts, col, 12 * S, u * Lp);
@@ -373,7 +378,7 @@ function chyron(t, s, alpha = 1) {
 function cellLabels(t, sc) {
   const f = FACE.mono(SZ.cellLabelPx * S, 600);
   for (const C of sc.grid.cells) {
-    const r = C.rect; const a = clamp01(C.from === null ? C.pop : (C.from - 0.6) / 0.4) * (on(t, TL.t38) ? 1 - clamp01((fr(t, TL.t38) + 1) / 4) : 1); if (a <= 0.01) continue;   // no labels in bar 38
+    const r = C.rect; const a = clamp01(C.from === null ? C.pop : (C.from - 0.6) / 0.4) * (on(t, TL.t38) && !(o.stay && o.stay[C.L.id]) ? 1 - clamp01((fr(t, TL.t38) + 1) / 4) : 1) * (C.stayA === undefined ? 1 : C.stayA); if (a <= 0.01) continue;   // no labels in bar 38
     setFont(f); const w = g.measureText(C.L.branch).width, cap = SZ.cellLabelPx * 0.73 * S, dotR = 6 * S, pad = 9 * S;
     const h = cap + 2 * pad + 4 * S, bx = r.x + 10 * S, by = C.ly - 12 * S - h;
     g.save(); g.globalAlpha = a; chipRect(bx, by, pad + 2 * dotR + 9 * S + w + pad, h);

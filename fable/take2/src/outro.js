@@ -24,11 +24,12 @@ export function makeOutro(E) {
         // film v4: _v3 first (facade_wetlab_v3: Bio-X, the Clark Center, very wide: laid out as a v2, up to 0.42 W wide)
         for (const id of o.lives) for (const v of ['_v3', '_v2', '']) { const u = `/work_fable/take2/kit/facade_${id}${v}/rgba/f_0001.png`, b = await bmp(u); if (b) { st.facades[id] = { url: u, img: b, bb: bboxOf(b), v2: v !== '' }; break; } } }
       if (o.code === 'fold' && !st.fold) { st.fold = {}; for (const k of ['night_jade', 'patchwork2']) { const b = await bmp(`${o.mattes[k]}/rgba/f_0001.png`); if (b) st.fold[k] = { img: b, bb: bboxOf(b) }; } }
-      if (o.code === 'terminal' && !st.log) { const j = await json('/fable/take2/data/gitlog.json'); st.log = j ? j.lines : null; }
+      if (o.code === 'road' && !st.sky) st.sky = await bmp('/work_fable/take2/plates/vio_wide/frames/f_0001.jpg');   // film v6: the verse 2 Milky Way
+      if ((o.code === 'terminal' || o.code === 'endcredits') && !st.log) { const j = await json('/fable/take2/data/gitlog.json'); st.log = j ? j.lines : null; }
       if (o.runner && !st.run) { const m = await json(`${o.runner.dir}/meta.json`); st.run = m && m.n ? m : null; } }
   }
   const ok = (s) => { const o = s.opt; if (o.code === 'town' || o.code === 'aerial') return st.facades && Object.keys(st.facades).length >= 6 && (!o.runner || !!st.run);
-    if (o.code === 'fold') return st.fold && st.fold.night_jade && st.fold.patchwork2 && E.PLATE.night_jade && E.PLATE.patchwork2; if (o.code === 'terminal') return !!st.log; return true; };
+    if (o.code === 'fold') return st.fold && st.fold.night_jade && st.fold.patchwork2 && E.PLATE.night_jade && E.PLATE.patchwork2; if (o.code === 'terminal' || o.code === 'endcredits') return !!st.log; return true; };
   // film v4 item 4: the runner's frame. R.t0: seconds of the run already gone at the shot start (b141 continues b139's run: same stride
   // phase across the cut). R.foot: her standing foot's travel in plate px per clip frame (tools/feet.py on the cut-out); the clip rate is
   // set so that foot moves exactly with the road under it (rate = road px/s / (foot px/s at her drawn scale)): no sliding. R.loop
@@ -147,7 +148,8 @@ export function makeOutro(E) {
   // ---------------------------------------------------------------- graph (b149-152)
   function graph(t, s) {
     g.fillStyle = PAPERW; g.fillRect(0, 0, W, H);
-    const ub = bposT(t) - Math.round(bposT(s.t0)), rev = clamp01(ub / 8), my = 0.82 * H, X = (f) => (0.05 + 0.9 * f) * W, lw = 5 * S;
+    // film v6 A8: the graph is 12 beats (b149-151), not 16: every beat mark below is scaled by q = beats / 16 (o.beats, default 16)
+    const q = (s.opt.beats || 16) / 16, ub = (bposT(t) - Math.round(bposT(s.t0))) / q, rev = clamp01(ub / 8), my = 0.82 * H, X = (f) => (0.05 + 0.9 * f) * W, lw = 5 * S;
     const lives = LIVES.filter((l) => l.id !== 'violet'), sw = X(rev);
     g.save(); g.beginPath(); g.rect(0, 0, sw, H); g.clip();
     // main
@@ -166,7 +168,7 @@ export function makeOutro(E) {
       if (k1 >= 1) { g.fillStyle = V.color; g.beginPath(); g.arc(xd, vy, 12 * S, 0, 6.2832); g.fill(); } }
     if (k2 > 0) { g.save(); g.setLineDash([10 * S, 12 * S]); g.strokeStyle = V.color; g.lineWidth = 3.5 * S; g.beginPath(); const N = 40;
       for (let i = 0; i <= N * ease.io(k2); i++) { const q = i / N, x = lerp(xd, xc, q), y = lerp(vy, my, q) - Math.sin(q * Math.PI) * 120 * S; if (i) g.lineTo(x, y); else g.moveTo(x, y); } g.stroke(); g.restore();
-      g.save(); g.globalAlpha = clamp01(k2 * 2); g.font = mono(28 * S, 600); g.fillStyle = INKP; const lab = 'cherry-pick HANDOFF.md', tw = g.measureText(lab).width; g.fillText(lab, Math.min(W - 40 * S - tw, (xd + xc) / 2 - tw / 2), vy - 70 * S); g.restore();
+      g.save(); g.globalAlpha = clamp01(k2 * 2); g.font = mono((s.opt.labelPx || 28) * S, 700); g.fillStyle = INKP; const lab = 'cherry-pick HANDOFF.md', tw = g.measureText(lab).width; g.fillText(lab, Math.min(W - 40 * S - tw, (xd + xc) / 2 - tw / 2), vy - 70 * S - ((s.opt.labelPx || 28) - 28) * S); g.restore();
       if (k2 >= 1) { g.fillStyle = PAPERW; g.strokeStyle = V.color; g.lineWidth = 4 * S; g.beginPath(); g.arc(xc, my, 11 * S, 0, 6.2832); g.fill(); g.stroke(); } }
   }
   // ---------------------------------------------------------------- terminal (b153-156)
@@ -202,6 +204,75 @@ export function makeOutro(E) {
       R.parts.forEach((p, k) => { if (k) { g.fillStyle = '#FF7A1A'; g.fillText('|', X0, y + k * lh); g.fillStyle = '#F3EFE6'; } g.fillText(p, R.xm, y + k * lh); }); g.restore(); }
       y += R.parts.length * lh; });
   }
-  function draw(s, t, sc) { const c = s.opt.code; if (c === 'fold') fold(t, s); else if (c === 'town') town(t, s); else if (c === 'aerial') aerial(t, s); else if (c === 'graph') graph(t, s); else if (c === 'terminal') term(t, s); else if (c === 'credits') credits(t, s); }
-  return { load, ok, need, draw, forks };
+  // ---------------------------------------------------------------- film v6 A8: the end credits (b152-155, about 7 s)
+  // A 2 s burst of the real git log (o.burst s; nobody reads it at speed), then the credit card (o.lines as commits, one per half beat),
+  // then a prompt typed character by character: `$ git cherry-pick <hash of the violet commit>` (hashOf('violet'), the hash her branch
+  // carries in the proof's chips), the block cursor blinking at its end. endLayout() is shared with the road, whose dashed line starts at
+  // the cursor.
+  const PICK = () => '$ git cherry-pick ' + hashOf('violet');
+  function endLayout(o) { const fpx = 34 * S, lh = 60 * S, X0 = 150 * S; g.font = mono(fpx, 600);
+    const n = o.lines.length, y0 = (H - (n + 1.6) * lh) / 2 + lh * 0.7, py = y0 + (n + 0.6) * lh, cw = g.measureText('M').width;
+    return { fpx, lh, X0, y0, py, cx: X0 + g.measureText(PICK()).width + cw * 0.25, cw }; }
+  function endCard(o, ub, tt, alpha = 1) { const L = endLayout(o), n = o.lines.length, lt = o.lineBeat || 0.5, t0b = o.cardBeat || 4.6, pb = o.pickBeat || 12, cps = o.cps || 16;
+    g.save(); g.globalAlpha = alpha; g.font = mono(L.fpx, 600);
+    o.lines.forEach(([br, msg], i) => { const a = clamp01((ub - t0b - i * lt) / 0.25); if (a <= 0) return; const y = L.y0 + i * L.lh; let x = L.X0;
+      g.globalAlpha = a * alpha; g.fillStyle = '#FF7A1A'; g.fillText('*', x, y); x += L.fpx * 1.1; const h = hashOf('credits/' + i); g.fillStyle = '#FFD23F'; g.fillText(h, x, y); x += g.measureText(h + ' ').width;
+      const b = `(${br})`; g.fillStyle = br === 'main' ? MAIN : '#9B6BFF'; g.fillText(b, x, y); x += g.measureText(b + ' ').width; g.fillStyle = '#F3EFE6'; g.fillText(msg, x, y); });
+    g.globalAlpha = alpha;
+    if (ub >= pb) { const txt = PICK(), nch = Math.min(txt.length, 2 + Math.floor((tt - o.pickT) * cps)); g.fillStyle = '#9EF0B0'; g.fillText(txt.slice(0, 5), L.X0, L.py);
+      if (nch > 5) { g.fillStyle = '#E8E2D4'; g.fillText(txt.slice(5, Math.min(nch, 18)), L.X0 + g.measureText(txt.slice(0, 5)).width, L.py); }
+      if (nch > 18) { g.fillStyle = '#B79BFF'; g.fillText(txt.slice(18, nch), L.X0 + g.measureText(txt.slice(0, 18)).width, L.py); }
+      const cx = L.X0 + g.measureText(txt.slice(0, nch)).width + L.cw * 0.25; if (nch < txt.length || Math.floor(tt * 2.5) % 2 === 0) { g.fillStyle = 'rgba(232,226,212,0.9)'; g.fillRect(cx, L.py - L.fpx * 0.75, L.cw * 0.6, L.fpx * 0.9); } }
+    g.restore(); return L; }
+  function endcredits(t, s) {
+    g.fillStyle = '#0B0C10'; g.fillRect(0, 0, W, H);
+    const o = s.opt, ub = bposT(t) - Math.round(bposT(s.t0)), tt = t - s.t0, burst = o.burst || 2.0;
+    o.pickT = (T.beatT(Math.round(bposT(s.t0)) + (o.pickBeat || 12)) - s.t0);
+    if (tt < burst && st.log) {   // the burst: the real log racing up
+      const fpx = 30 * S, lh = 42 * S, rows = Math.ceil(H / lh), k = Math.floor(tt / burst * Math.max(0, st.log.length - rows)), fade = 1 - clamp01((tt - burst + 0.25) / 0.25);
+      g.save(); g.globalAlpha = fade; g.font = mono(fpx, 500);
+      for (let r = 0; r < rows; r++) { const L = st.log[k + r]; if (!L) break; const y = 50 * S + r * lh, m = L.match(/^([*|\\/ ]*)([0-9a-f]{7})? ?(.*)$/); let x = 60 * S;
+        if (m) { g.fillStyle = '#FF7A1A'; g.fillText(m[1], x, y); x += g.measureText(m[1]).width; if (m[2]) { g.fillStyle = '#FFD23F'; g.fillText(m[2] + ' ', x, y); x += g.measureText(m[2] + ' ').width; } g.fillStyle = '#E8E2D4'; g.fillText(m[3], x, y); } }
+      g.restore(); return; }
+    endCard(o, ub, tt);
+  }
+  // ---------------------------------------------------------------- film v6 A8: the night road (b156-161)
+  // phase 'tip' (b156.1-157.3): the credit card's last state fades; from the cursor a dashed line of pale yellow dashes draws out to the
+  // right edge, then tips into perspective and becomes the centre line of a night road seen from the driver's seat (the line on the
+  // driver's left), the dashes racing past like a starfield, the verse 2 Milky Way (vio_wide's sky) rising above the horizon, one violet
+  // page-light riding among the dashes. phase 'drive': the road at speed (the fallback for the car shot until car_confess lands).
+  // Road model: eye height EH m, focal F px, horizon HY; centre line at X = LX m; dashes DL m long every DP m; speed V m/s.
+  const RD = { EH: 1.25, F: 0.95, HY: 0.5, LX: -1.9, DL: 2, DP: 6, V: 26, ZN: 2.5, ZF: 220, BLUR: 0.05 };   // BLUR: s of travel smeared into each dash (speed streaks)
+  const proj = (X, Y, Z) => ({ x: W / 2 + (RD.F * W) * X / Z, y: RD.HY * H + (RD.F * W) * (RD.EH - Y) / Z });
+  const roadPage = (tt) => { const Z = 22 + 2.5 * Math.sin(tt * 0.9), p = proj(RD.LX + 0.25 * Math.sin(tt * 1.3), 0.45 + 0.08 * Math.sin(tt * 2.1), Z); return { ...p, h: (RD.F * W) * 0.55 / Z }; };
+  function sky(alpha, tt) { if (!st.sky || alpha <= 0) return; const b = st.sky, sw = b.width * 0.62, sh = b.height * 0.44, hy = RD.HY * H, dh = W * sh / sw, y0 = hy - dh * 0.97 + 6 * S * Math.sin(tt * 0.2);
+    g.save(); g.beginPath(); g.rect(0, 0, W, hy); g.clip(); g.globalAlpha = alpha; g.drawImage(b, 0, 0, sw, sh, -10 * S - tt * 3 * S, y0, W + 30 * S, dh);
+    const gr = g.createLinearGradient(0, hy - 0.22 * H, 0, hy + 2 * S); gr.addColorStop(0, 'rgba(4,4,8,0)'); gr.addColorStop(0.7, 'rgba(4,4,8,0.85)'); gr.addColorStop(1, 'rgba(4,4,8,1)'); g.fillStyle = gr; g.fillRect(0, hy - 0.22 * H, W, 0.22 * H + 2 * S);
+    g.restore(); }
+  function road(t, s) {
+    const o = s.opt, tt = t - (o.from ? T.beat(o.from[0], o.from[1]) : s.t0), tip = o.phase === 'tip';   // o.from: the road's first moment (b156.1), so the drive continues the tip
+    g.fillStyle = '#040408'; g.fillRect(0, 0, W, H);
+    const C = o.card ? endLayout(o.card) : { cx: W * 0.5, py: H * 0.5 };
+    const draw0 = clamp01((tt - 0.15) / 0.55), m = ease.io(clamp01((tt - 0.75) / 1.2)), run = Math.max(0, tt - 0.75);
+    if (o.card) { const a = 1 - clamp01((tt - 0.2) / 0.6); if (a > 0) { const cb = { ...o.card, pickT: -10 }; endCard(cb, 99, 0, a); } }
+    sky(m, tt);
+    // the dashes: index k from the cursor outward (flat) = from near to far (road); travel = speed ramping in with m
+    const flatP = 64 * S, flatL = 34 * S, dist = RD.V * (run < 1.2 ? run * run / 2.4 : run - 0.6);   // speed ramps from rest to V over 1.2 s
+    const off = ((dist % RD.DP) + RD.DP) % RD.DP, N = Math.ceil(RD.ZF / RD.DP) + 1;
+    g.save(); g.lineCap = 'butt';
+    for (let k = -1; k < N; k++) { const z0 = RD.ZN + k * RD.DP - off, z1 = z0 + RD.DL + RD.V * RD.BLUR * m; if (z1 < RD.ZN * 0.6) continue;
+      const fx0 = C.cx + 18 * S + (k + 1) * flatP - (m > 0 ? 0 : 0), F0 = { x: fx0, y: C.py - 12 * S }, F1 = { x: fx0 + flatL, y: C.py - 12 * S };
+      const zz0 = Math.max(RD.ZN * 0.6, z0), P0 = proj(RD.LX, 0, zz0), P1 = proj(RD.LX, 0, z1), wq = Math.min(9 * S, (RD.F * W) * 0.12 / ((zz0 + z1) / 2));
+      const A = { x: lerp(F0.x, P0.x, m), y: lerp(F0.y, P0.y, m) }, B = { x: lerp(F1.x, P1.x, m), y: lerp(F1.y, P1.y, m) };
+      if (m <= 0 && (F0.x > C.cx + 18 * S + draw0 * (W - C.cx))) continue;
+      const fog = m > 0 ? clamp01(1 - (z0 - 40) / (RD.ZF - 40)) : 1; if (fog <= 0) continue;
+      g.strokeStyle = `rgba(255,236,160,${(0.92 * fog).toFixed(3)})`; g.lineWidth = lerp(5 * S, Math.max(1, wq), m); g.shadowColor = 'rgba(255,226,140,0.8)'; g.shadowBlur = lerp(6, 14, m) * S * fog;
+      g.beginPath(); g.moveTo(A.x, A.y); g.lineTo(B.x, B.y); g.stroke(); }
+    g.restore();
+    // the road's faint edges (perspective only), and the page-light riding among the dashes
+    if (m > 0.05) { g.save(); g.globalAlpha = 0.22 * m; g.strokeStyle = '#8C8FA8'; g.lineWidth = 2 * S; for (const X of [RD.LX - 3.6, RD.LX + 3.6]) { const a = proj(X, 0, RD.ZN), b = proj(X, 0, RD.ZF); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); } g.restore();
+      const P = roadPage(tt); E.pageLight(lerp(C.cx + 40 * S, P.x, m), lerp(C.py - 40 * S, P.y, m), lerp(24 * S, P.h, m), clamp01((tt - 0.9) / 0.4), 0.12 * Math.sin(tt * 1.4)); }
+  }
+  function draw(s, t, sc) { const c = s.opt.code; if (c === 'fold') fold(t, s); else if (c === 'town') town(t, s); else if (c === 'aerial') aerial(t, s); else if (c === 'graph') graph(t, s); else if (c === 'terminal') term(t, s); else if (c === 'credits') credits(t, s); else if (c === 'endcredits') endcredits(t, s); else if (c === 'road') road(t, s); }
+  return { load, ok, need, draw, forks, roadPage: (tt) => roadPage(tt) };
 }

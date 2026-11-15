@@ -92,19 +92,26 @@ P(5, 7, 'root_face', 'missing', "The child's face in profile, lit by the frost, 
 // clip's frame 84) light up in the lives' lane colours one per half beat from beat 2 of b7
 P(7, 9, 'root', 'exists', 'Pull back: the frost tree fills the pane; its tips take lane colours one by one. Counter 32, 64.',
   { code: 'P+C', ov: ['counter'], opt: { clip0: 2.0, speed: 0.85, zoom0: 1.18, push: -0.18,
-    tips: [[0.43, 0.10], [0.672, 0.093], [0.312, 0.40], [0.53, 0.07], [0.35, 0.55], [0.77, 0.27], [0.36, 0.25], [0.46, 0.62], [0.60, 0.11], [0.40, 0.58], [0.56, 0.58], [0.335, 0.33]] }, row: 'b7-8' });
+    tips: [[0.43, 0.10], [0.672, 0.093], [0.312, 0.40], [0.53, 0.07], [0.35, 0.55], [0.77, 0.27], [0.36, 0.25], [0.46, 0.62], [0.60, 0.11], [0.40, 0.58], [0.56, 0.58], [0.335, 0.33]],
+    // film v6 A1: the violet light (life 11) is the 4th to light (slot 3, beat 2.5 of b7) and the only one that does not stay: after `hold`
+    // beats it drifts to the pane's left edge and out (`to`, frame fractions) over `drift` beats; the others keep glowing
+    vioTip: { i: 11, slot: 3, hold: 1.0, drift: 2.6, to: [-0.08, 0.22] } }, row: 'b7-8' });
 
 // ------------------------------------------------------------------ Intro B: bars 9-16 (kick hit, rolling bass)
 section('intro_b');
 // Step 3: no counter from b9 (the v7 tree's light count cannot be matched to a doubling number; Jade's rule: drop it after 64)
-V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Title MERGE. Counter doubles each bar to 1,024 by b15.', { code: 'V7+C', ov: ['title:MERGE'], row: 'b9' });
+// film v6 A1: one violet lane leaves the canopy's right end and runs out of frame alone, further than any other (src/film.js vlane):
+// anchor = the canopy's rightmost tip per song time (frame fractions, measured on the raw v7 frames 14.5-24.4 s); the lane grows from
+// `grow[0]` to `grow[1]` s with a light at its head that leaves the frame; afterwards a quiet line out of frame. No label.
+const VLANE = { anchor: [[14.2, 0.81, 0.44], [17.0, 0.91, 0.57], [19.2, 0.91, 0.60], [22.3, 0.90, 0.62], [24.7, 0.89, 0.62]], grow: [14.6, 17.6], out: [1.08, 0.18] };
+V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Title MERGE. Counter doubles each bar to 1,024 by b15.', { code: 'V7+C', ov: ['title:MERGE'], row: 'b9', opt: { vlane: VLANE } });
 const FL = [['piano', 11], ['wushu', 12], ['ames', 13], ['violet', 14]];
-V(10, [11, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
+V(10, [11, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE } });
 FL.forEach(([id, b], i) => {
   P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02, ...(id === 'wushu' ? { next: [{ id: 'wushu_v3', opt: { clip0: 1.35, clip1: 1.65 } }, { id: 'wushu_v2', opt: { clip0: 1.0, clip1: 1.3 } }] } : {}) }, row: 'b10-14' });   // wushu_v2: the landed punch
-  if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14' });
+  if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE } });
 });
-V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14' });
+V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE } });
 V(15, [16, 3], 'seq 02', 'Swoop down the trunk to ground level.', { row: 'b15-16' });
 P([16, 3], 17, 'main_palm', 'missing', "Adult Jade from behind at the root, palm raised exactly like the child's.", { row: 'b15-16', opt: { clip0: 1.0, clip1: 3.0 } });   // clip: the tree grows fastest at about 1-3 s
 
@@ -141,7 +148,10 @@ P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { 
 P(26, 27, 'main_release', 'missing', 'She opens her hands; the light leaves along the lane.',
   { code: 'P+C', row: 'b26', opt: { lyr: { x0: 0.04, x1: 0.55, align: 'left' },
     lane: { pts: [[0, 0.425], [0.04, 0.417], [0.111, 0.399], [0.181, 0.379], [0.331, 0.338], [0.548, 0.275], [0.595, 0.265]], color: '#FF3D7F', lyric: 3, cap: 46, endX: 0.55,   // film v3: the lane carries the lyric (line 3), not the piano message
-      track: [[0, 0.595], [0.375, 0.548], [0.5, 0.331], [0.625, 0.181], [0.75, 0.111], [1.0, 0.064], [1.5, 0.044]] } } });   // the light's path, measured on the clip (warmest point per frame): the lane is written behind it
+      track: [[0, 0.595], [0.375, 0.548], [0.5, 0.331], [0.625, 0.181], [0.75, 0.111], [1.0, 0.064], [1.5, 0.044]] },
+    // film v6 A2: a second, violet light leaves her hands just after the rose one and goes furthest: over the rose light, up and out of the
+    // top-left of the frame (src/film.js vioMote; from/to/ctrl frame fractions, at = [start, out] s from the shot start)
+    vioMote: { from: [0.6, 0.255], ctrl: [[0.42, 0.06], [0.12, -0.02]], to: [-0.06, 0.03], at: [0.3, 1.55] } } });   // the light's path, measured on the clip (warmest point per frame): the lane is written behind it
 V(27, 28, 'lane shot', 'The light races down the rose lane and becomes the lamp in the piano room (match cut).', { row: 'b27' });
 // b28-32: the proof edit, ten lives, 4,4,2,2,2,2,1,1,1,1 beats
 { const D = [4, 4, 2, 2, 2, 2, 1, 1, 1, 1]; let b = 0; const at = (k) => [28 + Math.floor(k / 4), 1 + (k % 4)];
@@ -160,7 +170,8 @@ PR(41, 43, 'E:hero', 'Main Jade sprints at us on the orange line as the coloured
 // b43, b46-47, b48: the runner kit (kind 'kit', drawn by src/kit.js from the cut-outs in work_fable/take2/kit/ and fable/take2/kit.json).
 // lanes far -> near with each runner's head x (frame fraction); every head top on one line (y `head`), the slab above it.
 // far -> near; the front four (poet, phd, wushu, main) are large on the right, main in front and largest; the slab keeps to the upper left
-const KIT_ROW = [['violet', 0.30], ['sandstorm', 0.16], ['chezjj', 0.44], ['wetlab', 0.08], ['home', 0.36], ['piano', 0.22], ['violin', 0.47],
+// film v6 A3: no violet runner in either chorus (she is the one who does not merge): violet's lane is gone from the row
+const KIT_ROW = [['sandstorm', 0.16], ['chezjj', 0.44], ['wetlab', 0.08], ['home', 0.36], ['piano', 0.22], ['violin', 0.47],
   ['band', 0.12], ['ames', 0.33], ['poet', 0.93], ['phd', 0.80], ['wushu', 0.50], ['main', 0.68]].map(([id, x]) => ({ id, x }));
 shot(43, 44, 'K+C', 'kit', 'runner_kit', 'missing', 'Side-on: the twelve run in parallel on their lanes, each drawn in her own medium, main in front.',
   { row: 'b43', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.48, align: 'left' }, kit: { mode: 'row', lanes: KIT_ROW } } });
@@ -176,9 +187,10 @@ shot(46, 48, 'K+C', 'kit', 'runner_fuse', 'missing', 'Runners fuse in pairs, eig
   { row: 'b46-47', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.46, align: 'left' }, kit: { mode: 'fuse', slots: [0.64, 0.86],
     lanes: [['violin', 0.30], ['piano', 0.52], ['wushu', 0.20], ['wetlab', 0.66], ['phd', 0.36], ['poet', 0.80], ['ames', 0.48], ['band', 0.10]].map(([id, x]) => ({ id, x })),
     events: [[0.5, 0, 1], [1.5, 2, 3], [2.5, 4, 5], [3.5, 6, 7], [4.5, 0, 2], [6.5, 4, 6]] } } });
-shot(48, 49, 'K+C', 'kit', 'runner_one', 'missing', "One runner: main Jade, the others' mediums flickering across her jacket.",
-  { row: 'b48', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.58, align: 'left' }, kit: { mode: 'one', x: 0.74, head: 0.1, near: 1.04, lane: 0.95,
-    flick: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'home', 'violet', 'piano'] } } });
+// film v6 A3: bar 48 (between "becomes the one" and "Fold", ~1:22.5) is a cut-away to her at the dish, writing, not running: the plates
+// agent's vio_cutaway when it lands, else vio_write2 (she writes in the notebook on the dish rim) from clip 0.4. runner_one is not shown.
+P(48, 49, 'vio_write2', 'exists', 'Cut-away: the violet branch at the dish, writing, not running.', { row: 'b48', opt: { clip0: 0.4, push: 0.02, lyr: { y: 'top', top: 0.04, x0: 0.03, x1: 0.62, align: 'left', tail: 3 },   // the line's held end only ("becomes the one"), fading over the sky
+  next: { id: 'vio_cutaway', opt: { clip0: 0.5, clip1: 2.5, push: 0.02 } } } });   // plates_v6: one bar of writing, clip 0.5-2.5
 // b49-50 (film v2, src/mapfold.js): the fold made literal. The twelve life plates as the pre-chorus's 4x3 grid on one paper sheet; it folds
 // like a map, every fold a valley fold toward the lens, landing on its beat: b49.2 column 4 onto 3, b49.3 column 1 onto 2, b49.4 the
 // column-2 stack onto 3, b50.1 row 3 onto 2, b50.2 row 1 onto 2. The undersides are the backs of the pictures (captioned with branch and
@@ -191,7 +203,7 @@ const MAPFOLD = { code: 'mapfold', lives: LIFE, her: 'fold_chest', grid: { cw: 4
 shot(49, 51, 'P+C', 'code', 'mapfold', 'missing', 'The sheet of twelve lives folds like a map, one crease per beat, down to one panel: her, hands crossed at her chest.',
   { row: 'b49-50', opt: { ...MAPFOLD, lyr: { x0: 0.03, x1: 0.97, align: 'left' } } });
 P(51, 53, 'fold_chest', 'missing', 'Hands crossed at her chest; a fan of twelve afterimages, each in a medium, folds into her one per beat.', { code: 'P+K', row: 'b51-52', opt: { lyr: { x0: 0.03, x1: 0.97, align: 'left' },   // one row along the bottom (her trousers): clear of the fan, face and hands
-    fan: { matte: '/work_fable/take2/kit/fold_chest', pivot: [0.5, 0.98], lives: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'sandstorm', 'home', 'violet'] } } });
+    fan: { matte: '/work_fable/take2/kit/fold_chest', pivot: [0.5, 0.98], lives: ['piano', 'violin', 'wushu', 'wetlab', 'phd', 'poet', 'ames', 'band', 'chezjj', 'sandstorm', 'home'] } } });   // film v6: eleven, violet does not fold in
 P(53, 54, 'look_back', 'missing', "She stops and looks back over her shoulder: the same look as the lives'.", { row: 'b53', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.5, align: 'left' } } });
 // b54-55 (film v2): the twelve worlds as small lit windows on the horizon (src/film.js windows()): a fixed horizon band, measured on the raw
 // v7 frames (the roads do not survive the paper pass well enough to track); xs = window centres in life order (frame fractions), clear of
@@ -202,7 +214,8 @@ const NIGHT_WIN = { lives: LIFE, h: 0.042, zoom: 1.7, horizon: [[92.2, 0.4602], 
   locks: [0, 1, 2, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5] };
 V(54, 56, 'night world', 'Wide: every road still glows to the horizon; along them the twelve worlds as small lit windows; commit nodes lock on, one per beat.',
   { code: 'V7+P+C', row: 'b54-55', opt: { lyr: { x0: 0.03, x1: 0.6, align: 'left', tail: 4 }, windows: NIGHT_WIN } });   // lyric: only "lived can come undone" (the line's first words were set on the two shots before), so the slab stays under the horizon
-P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { clip0: 0, clip1: 3.0, push: 0, lyr: { y: 'top', top: 0.025, tail: 1 } } });   // the whole pull-out (close on the jacket back to the wide by 3 s); only the held UNDONE, one row at the very top, above her head
+P(56, 57, 'main_back_wide', 'missing', 'Her from behind before the whole lit continent. Slow pull-out.', { row: 'b56', opt: { clip0: 0, clip1: 3.0, push: 0, lyr: { y: 'top', top: 0.025, tail: 1 },
+  next: { id: 'main_back_wide_v2', opt: {} } } });   // film v6 (Jade): main_back_wide_v2, the patch on her LEFT arm; timing from the plates_v6 wiring row   // the whole pull-out (close on the jacket back to the wide by 3 s); only the held UNDONE, one row at the very top, above her head
 
 // ------------------------------------------------------------------ Breakdown A: bars 57-64 (crash on b57, strings)
 section('break_a');
@@ -238,8 +251,14 @@ for (let k = 0; k < 4; k++) {
     next: { id: STANCE_V2[k][0], opt: { clip0: STANCE_V2[k][1] - 0.11, push: 0.02 } } } });
   shot([73 + k, 2], 74 + k, 'C', 'code', 'gitlog', 'missing', `git log --graph racing on the beat, her real commit messages: ${2 ** (k + 1)} rows per beat.`, { row: 'b73-76', opt: { code: 'gitlog', rate: 2 ** (k + 1), bar: k } });
 }
+// film v6 A5: 2:12 (b77), the first pencil figure: a pencil tip leads the first hatch strokes. Until pencil_lead lands, the v7 formation is
+// revealed over its first beat by the hatch wipe with a gold pencil point at the head of the newest stroke; when it lands, b77 beat 1 is
+// the plate (her hand and pencil, gold on black; the strokes are code, src/film.js pencilStrokes) and the formation follows on beat 2.
+const PENCIL_LEAD = { id: 'pencil_lead', kind: 'plate', opt: { clip0: 0, push: 0.02, hatch: null, pencil: { strokes: true } } };
 for (let k = 0; k < 4; k++) {
-  V(77 + k, [77 + k, 3], 'seq 08', `Frontal formation: she forks on every kick (bar ${k + 1} of 4, toward 256).`, { row: 'b77-80' });
+  if (k === 0) { V(77, [77, 2], 'seq 08', 'The first pencil figure: a pencil tip leads the first hatch strokes, gold on black.', { row: 'b77-80', opt: { hatch: { frames: 13, seed: 77, pen: true }, next: PENCIL_LEAD } });
+    V([77, 2], [77, 3], 'seq 08', 'Frontal formation: she forks on every kick (bar 1 of 4, toward 256).', { row: 'b77-80' }); }
+  else V(77 + k, [77 + k, 3], 'seq 08', `Frontal formation: she forks on every kick (bar ${k + 1} of 4, toward 256).`, { row: 'b77-80' });
   shot([77 + k, 3], [77 + k, 4], 'S', 'plate', INSERT[k][0], 'missing', `Insert on beat 3: ${INSERT[k][1]}.`, { row: 'b77-80', opt: { push: 0.02, ...INSERT[k][2] } });
   V([77 + k, 4], 78 + k, 'seq 08', 'Frontal formation, after the stance frame.', { row: 'b77-80' });
 }
@@ -276,17 +295,44 @@ for (let k = 0; k < 3; k++) {
   V(90 + k, [90 + k, 3], 'seq 10', 'The unison phrase, low and wide, the thousand in silhouette.', { row: 'b90-92' });
   const D = DROP[k]; shot([90 + k, 3], 91 + k, 'S', 'plate', D[0], 'missing', `Two-beat close insert ${k + 1} of 3: ${D[2]}, lit gold.`, { row: 'b90-92', opt: { push: 0.035, white: true, next: { id: D[1], opt: { push: 0, white: false, ...D[3] } } } });
 }
-for (let k = 0; k < 4; k++) V(93 + k, 94 + k, '2:52', ['Travelling phrases.', 'The close line of copies.', 'Orbit.', 'Travelling phrase, orbit.'][k] + ' (one cut per bar)', { row: 'b93-96' });
-V(97, 98, '2:44', 'The group fall, from her real set.', { row: 'b97-99' });
+// film v6 A5 (Jade: "maybe the reason the orchestra and wushu agent swarms are drawn in pencil is because she's drawing them?"): the MAIN
+// spelling (b94-b99) is cut to about half: b94-96 become mostly the lives in motion in their own mediums, 1 beat each (2 for the first),
+// a face or hands in every one, each entering through a pencil-hatch wipe (src/film.js hatchIn: gold hatch strokes on black paper reveal
+// the picture, so they belong to the drawing). The v7 crowd keeps a beat or two in each bar; MAIN holds whole in b97-99.
+// DROP_LIFE: [from, to, plate id, clip0, why]. Proof plates are each life's clip (her face); clip0 well before any look-back (turn_t 2.6+).
+const HATCH = { frames: 6, seed: 0 };
+const DROP_LIFE = [
+  [[93, 3], 94, 'piano', 1.0, 'piano: her at the keys'], [[94, 3], [94, 4], 'violin', 1.0, 'violin: her playing'], [[94, 4], 95, 'wushu', 1.2, 'wushu: the punch'],
+  [95, [95, 2], 'wetlab', 1.0, 'biology: her at the bench'], [[95, 3], [95, 4], 'ins_piano', 0.82, 'piano: both hands land a chord'], [[95, 4], 96, 'phd', 1.0, 'phd: her at the screen'],
+  [96, [96, 2], 'poet', 1.0, 'poet: her writing'], [[96, 2], [96, 3], 'ames', 1.0, 'ames: her in the wind tunnel'], [[96, 4], 97, 'band', 1.0, 'rna-band: her playing'],
+];
+// the v7 beats between them: [from, to, label]
+const DROP_V7 = [[93, [93, 3], 'Travelling phrases.'], [94, [94, 3], 'The close line of copies: MAIN forms.'], [[95, 2], [95, 3], 'Orbit: MAIN.'], [[96, 3], [96, 4], 'MAIN.']];
+{ const all = [...DROP_LIFE.map((r) => ({ k: 'L', r })), ...DROP_V7.map((r) => ({ k: 'V', r }))].sort((a, b) => (a.r[0][0] || a.r[0]) - (b.r[0][0] || b.r[0]) || ((a.r[0][1] || 1) - (b.r[0][1] || 1)));
+  for (const { k, r } of all) {
+    if (k === 'V') V(r[0], r[1], '2:52', r[2] + ' (film v6: cut to its v7 beats)', { row: 'b93-96' });
+    else shot(r[0], r[1], 'S', 'plate', r[2], 'exists', `Life insert in its own medium (${r[4]}), entering through a pencil-hatch wipe.`, { row: 'b93-96', opt: { clip0: r[3], push: 0.03, hatch: { ...HATCH, seed: r[2].length * 7 + (r[0][0] || r[0]) } } }); } }
+// film v6 A5: one more hand-and-pencil insert inside the drop: pencil_draw (her hand and pencil, gold strokes on black paper; the strokes are
+// code) on the first beat of b97 when it lands; until then the v7 group fall plays whole
+V(97, [97, 2], '2:44', 'The group fall, from her real set.', { row: 'b97-99', opt: { next: { id: 'pencil_draw', kind: 'plate', opt: { clip0: 0, push: 0.02, pencil: { strokes: true } } } } });
+V([97, 2], 98, '2:44', 'The group fall, from her real set.', { row: 'b97-99' });
 V(98, 100, '2:44', 'From above the bodies spell MAIN; hold; they rise as one.', { row: 'b97-99' });
 // the wordless "ooh" (vocal stems 172.54-180.28) is sung, not shown: film v2 draws no type for it (Jade: lyrics on screen are for words)
 // film v2: drop_face_v2 holds the whole bar, song-locked (meta t0_song 171.8: the mouth opens on the "ooh" at 172.54); no lyric
 P(100, 101, 'drop_face', 'missing', 'Close: her face in the sun, wind in her hair, singing the wordless "ooh" (172.5).', { row: 'b100', opt: { next: { id: 'drop_face_v2', opt: { songLock: true, push: 0 } } } });
-V(101, 102, '2:57', 'Last phrase.', { row: 'b101-103' });
+V(101, [101, 3], '2:57', 'Last phrase.', { row: 'b101-103' });
+// film v6 A5: the cut rate rises into the end of the drop: two 1-beat lives in b101, two half-beat ones in b103, four in the last two beats of b104
+shot([101, 3], [101, 4], 'S', 'plate', 'chezjj', 'exists', 'Life insert (hacker houses: her at the laptop), pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { ...HATCH, seed: 31 } } });
+shot([101, 4], 102, 'S', 'plate', 'sandstorm', 'exists', 'Life insert (open source: her at the lectern), pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { ...HATCH, seed: 37 } } });
 shot(102, [102, 3], 'S', 'plate', 'drop_hero_4', 'missing', 'Insert: her hair and jacket whip through the turn, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: { id: 'drop_hero_4_v2', opt: { push: 0, white: false, clip0: 1.2, speed: 1.5 } } } });
-V([102, 3], [103, 3], '2:58', 'Tornado kick.', { row: 'b101-103' });
+V([102, 3], 103, '2:58', 'Tornado kick.', { row: 'b101-103' });
+shot(103, [103, 1.5], 'S', 'plate', 'home', 'exists', 'Life insert (parenthood: her with the kids, from behind them), half a beat, pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { frames: 4, seed: 41 } } });
+shot([103, 1.5], [103, 2], 'S', 'plate', 'ins_guitar', 'exists', 'Life insert (rna-band: the strum), half a beat, pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 0.95, push: 0.03, hatch: { frames: 4, seed: 43 } } });
+V([103, 2], [103, 3], '2:58', 'Tornado kick, landing.', { row: 'b101-103' });
 shot([103, 3], 104, 'S', 'plate', 'drop_hero_5', 'missing', 'Insert: the landing, dust rising gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: [{ id: 'drop_hero_5_v3', opt: { push: 0, clip0: 0.62 } }, { id: 'drop_hero_5_v2', opt: { push: 0, clip0: 0.05 } }] } });   // v3 (plates_v3): feet strike at 0.67 s, so it lands on the cut with the flash   // v2: feet touch down at about 0.1 s: on the cut, with the white flash
-V(104, 105, '2:59', '1,024 salute the sun. Cut to night on b105.', { row: 'b104' });
+V(104, [104, 3], '2:59', '1,024 salute the sun.', { row: 'b104' });
+[['ins_violin_v3', 0.0, 'violin: the down-bow'], ['violin', 1.3, 'violin: her face'], ['wushu', 1.4, 'wushu: the punch lands'], ['ins_poem', 3.4, 'poet: the pen lifts']].forEach(([id, c0, why], k) =>
+  shot([104, 3 + k / 2], k === 3 ? 105 : [104, 3.5 + k / 2], 'S', 'plate', id, 'exists', `Life insert (${why}), half a beat, pencil-hatch wipe. Cut to night on b105.`, { row: 'b104', opt: { clip0: c0, push: 0.03, hatch: { frames: 4, seed: 50 + k } } }));
 
 // ------------------------------------------------------------------ Verse 2: bars 105-120 (scratchboard, white on black, violet the only colour)
 section('verse2');
@@ -346,21 +392,22 @@ P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap, then atomizes: 
 
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');
-V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121' });
+// film v6 A7: the page-light crosses (b121-123) and lands in main's hands, opening (b128); src/film.js pageLight, pageFly
+V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
 P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, comet: { from: [1.05, 0.02], to: [0.6, 0.3] }, lyr: { x0: 0.56, x1: 0.97, align: 'right' } } });   // left 84 % (a stray arm at the right edge); the violet light drawn in code, arriving on the b123 downbeat
 V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123' });
 // b124-126: the twelve converge on her (src/kit.js 'row' with conv): runners from the right run in toward main (large, centre), from the
 // left they are mirrored; each reaches her and fades into her as the bar ends. Lanes as section 2.
 const KC = (ids, xs) => ids.map((id, i) => ({ id, x: xs[i] }));
 const CONV = [
-  KC(['violet', 'home', 'chezjj', 'band', 'ames', 'poet', 'main'], [0.95, 0.85, 0.92, 0.8, 0.9, 0.88, 0.42]),
+  KC(['home', 'chezjj', 'band', 'ames', 'poet', 'main'], [0.85, 0.92, 0.8, 0.9, 0.88, 0.42]),   // film v6: no violet runner
   KC(['sandstorm', 'wetlab', 'piano', 'violin', 'phd', 'wushu', 'main'], [0.06, 0.15, 0.1, 0.2, 0.12, 0.08, 0.6]),
-  KC(['violet', 'piano', 'chezjj', 'violin', 'ames', 'phd', 'poet', 'wushu', 'main'], [0.05, 0.95, 0.1, 0.9, 0.15, 0.85, 0.02, 0.98, 0.5]),
+  KC(['piano', 'chezjj', 'violin', 'ames', 'phd', 'poet', 'wushu', 'main'], [0.95, 0.1, 0.9, 0.15, 0.85, 0.02, 0.98, 0.5]),
 ];
 for (let k = 0; k < 3; k++) shot(124 + k, 125 + k, 'K', 'kit', `runner_converge_${k + 1}`, 'missing', `The twelve runners converge on her from every side, each in her medium (shot ${k + 1} of 3).`,
   { row: 'b124-127', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'row', lanes: CONV[k], conv: true, hNear: 0.6 } } });
 V(127, 128, 'seq 12', 'From above, the roads converge.', { row: 'b124-127' });
-P(128, 129, 'c2_hands', 'missing', 'Close on her hands opening.', { row: 'b128' });
+P(128, 129, 'c2_hands', 'missing', 'Close on her hands opening.', { row: 'b128', opt: { pageFly: { from: [0.62, -0.08], to: [0.5, 0.55], h: 46, arc: -0.02, arrive: 0.45, open: [0.5, 0.95], ease: 'out' } } });   // the page-light comes down between her open palms and opens like a book
 P(129, 130, 'catch', 'missing', 'She catches the violet light at her chest, eyes closed.', { row: 'b129', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.33, align: 'left' } } });   // she is centred, hands at her chest: the slab left of her
 // b130-131: the folds, in code (opt.code 'fold'): night_jade on black paper; patchwork2's figure (aligned on the two cut-outs' bounding
 // boxes) shows through twelve patch masks, one more per beat for eight beats, then on the off-beats of beats 5-8; each new patch flashes
@@ -397,22 +444,38 @@ shot(147, 149, 'S+C', 'code', 'aerial', 'missing', 'Aerial pull-back: the road, 
 
 // ------------------------------------------------------------------ Outro B and C: bars 149-164
 section('outro_bc');
-shot(149, 153, 'C', 'code', 'graph', 'missing', 'The whole film as one git graph, labels 26 px or more. The violet branch leaves; its dot; a dotted arc forward to main: cherry-pick HANDOFF.md. Riser at 261.0.',
-  { row: 'b149-152', opt: { code: 'graph', lives: LIFE } });
-shot(153, 157, 'C', 'code', 'terminal', 'missing', 'Terminal: the real git log --graph of this branch, type 30 px or more, 7 s at most; $ git checkout main, $ git merge typed on beats.', { row: 'b153-156', opt: { code: 'terminal' } });
+// film v6 A8: the ending in this order: graph, credits, the car, the window; the last frame still equals frame 0.
+// graph b149-151 (12 beats, its marks scaled; the cherry-pick label 40 px); credits b152-155 (6.8 s: a 2 s burst of the real git log, the
+// credit card, then `$ git cherry-pick <hash of the violet commit>` typed); the road b156-157.3 (from the cursor a dashed line draws out
+// and tips into the night road); the car b157.3-161.3 (car_confess when it lands, else the road at speed) with the two lines of type from
+// the post-credits scene of Inference; the window from b161.3 as before, the road's page-light arriving in the frost at the child's palm.
+shot(149, 152, 'C', 'code', 'graph', 'missing', 'The whole film as one git graph, labels 26 px or more. The violet branch leaves; its dot; a dotted arc forward to main: cherry-pick HANDOFF.md (40 px). Riser at 261.0.',
+  { row: 'b149-152', opt: { code: 'graph', lives: LIFE, beats: 12, labelPx: 40 } });
 // credits: approved by Jade (film v1 notes, decision 11: "use as is", plus Opus 5.5). Plates: the spend log has both image models
 // (google/nano-banana-pro and openai/gpt-image-2.5)
-shot(157, [161, 3], 'C', 'code', 'credits', 'missing', 'Credits as commits, held.', { row: 'b157-160', opt: { code: 'credits', lines: [
-  ['main', 'Merge'], ['main', 'animated by Fable 5.2 and Opus 5.5, with a supporting cast of models'], ['jade/plates', 'Nano Banana Pro, GPT Image 2.5'], ['jade/clips', 'Seedance 2.5'],
-  ['jade/motion', 'motion capture: CMU, ACCAD'], ['jade/arrangement', 'Suno'], ['jade/type', 'Archivo, Instrument Serif, JetBrains Mono']] } });
-P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. A violet-gold light appears in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3', opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5 } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended
+const CREDITS = [['main', 'Merge'], ['main', 'animated by Fable 5.2 and Opus 5.5, with a supporting cast of models'], ['jade/plates', 'Nano Banana Pro, GPT Image 2.5'], ['jade/clips', 'Seedance 2.5'],
+  ['jade/motion', 'motion capture: CMU, ACCAD'], ['jade/arrangement', 'Suno'], ['jade/type', 'Archivo, Instrument Serif, JetBrains Mono']];
+const ENDCARD = { lines: CREDITS, burst: 2.0, cardBeat: 4.6, lineBeat: 0.5, pickBeat: 11.5, cps: 16 };
+shot(152, 156, 'C', 'code', 'endcredits', 'missing', 'A 2 s burst of the real git log, the credit card, then $ git cherry-pick <hash of the violet commit> typed.', { row: 'b152-155', opt: { code: 'endcredits', ...ENDCARD } });
+shot(156, [157, 3], 'C', 'code', 'road', 'missing', 'From the cursor a dashed line draws out, tips into perspective and becomes the centre line of a night road: pale yellow dashes racing past, the verse 2 Milky Way above, one violet page-light among them.',
+  { row: 'b156-157', opt: { code: 'road', phase: 'tip', from: [156, 1], card: ENDCARD } });
+// the car (Jade: the camera is in the driver's seat; she is in the passenger seat, it looks across at her). Never seen, never named: the
+// person she is talking to is the camera. Type (src/film.js carType): Instrument Serif, verse size, whole lines, no punctuation added:
+// the camera's line in the lower third, then hers beside her. Positions for the fallback (the road, no figure); set on the clip's frames
+// when car_confess lands (next.opt.carType)
+const CAR_TYPE = { lines: [{ text: 'You could tell me anything and I would find it strangely plausible', at: [0.35, 3.35], box: [0.08, 0.92], y: 0.8, align: 'center' },
+  { text: 'I have a confession to make', at: [3.6, 6.45], box: [0.42, 0.98], y: 0.36, align: 'left' }] };
+shot([157, 3], [161, 3], 'P', 'code', 'road', 'missing', 'Inside the car at night: the camera in the driver\'s seat, drawn main Jade in the passenger seat, lit by the dash and the passing dashes; she turns to the camera with a mysterious almost-smile. The secret is not told.',
+  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carType: CAR_TYPE, next: { id: 'car_confess', kind: 'plate', opt: { clip0: 0, push: 0.02, carType: CAR_TYPE } } } });
+P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. The violet page-light from the road arrives in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3',
+  opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5, arrive: { to: [0.56, 0.35], dur: 1.4 } } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended; arrive: the road's page-light glides into the frost light (film v6)
 
 // float_top geometry (plate fractions): her head (strand centre) and twelve hair ends in the lives' order; measured on the clip when it lands
 export const FLOAT = { at: 2.0, track: [[0, [0.555, 0.18], [0.297, 0.894]], [2.0, [0.588, 0.204], [0.266, 0.769]], [5.0, [0.623, 0.333], [0.259, 0.597]]], center: [0.59, 0.20], ends: [[0.31, 0.22], [0.344, 0.111], [0.4375, 0.037], [0.542, 0.019], [0.667, 0.015], [0.771, 0.056], [0.854, 0.148], [0.896, 0.278], [0.896, 0.426], [0.865, 0.556], [0.823, 0.667], [0.75, 0.74]] };   // measured on float_top frame 49
 // film v2: plates replaced wherever they are used by id (crossing doorways, flashes, windows, the fold sheet), when the new one exists.
 // focus = where she is in the new plate (cover crops). The proof range: only the b30 life shot (PROOF_A), not the b33-37 grid (the grid's
 // bar-37 look-back needs the old clip's turn; wushu_v2 has none)
-export const PLATE_ALIAS = { wushu: { id: WUSHU_IDS, focus: [0.3, 0.3] }, det_home: { id: ['det_home_v2'] } };   // film v4: det_home_v2 (her hand warm, not blue; the orange now orange)
+export const PLATE_ALIAS = { wushu: { id: WUSHU_IDS, focus: [0.3, 0.3] }, det_home: { id: ['det_pad', 'det_home_v2'] } };   // film v6 A4: det_pad (her hand and a game controller) replaces the orange everywhere det_home is used (b68.2, b71.2, the b72 tiles); the caption keeps the parenthood message (Jade)   // film v4: det_home_v2 (her hand warm, not blue; the orange now orange)
 export const PROOF_A = { wushu: [{ id: 'wushu_v3', land: 1.4, landBeat: 1, side: 'left' }, { id: 'wushu_v2', land: 1.0, landBeat: 1, side: 'left' }] };   // v3 (plates_v3 wiring): the punch lands at 1.40 s   // she stands left in wushu_v2 (face x 0.27)   // the punch lands at clip 1.0 s: put it on beat 2 of the 2-beat shot
 // film v3: a life plate retaken and swapped EVERYWHERE it is used (bars 28-32, the b33-37 grid and its bar-37 turn, the fold sheet, the
 // b54-55 window, flashes): the band at Hacker Dojo, not in a bar. side/tone (lives.js) from the plates wiring row when they change;
@@ -422,6 +485,10 @@ export const LIFE_SWAP = { band: { id: 'band_v2', side: 'left', tone: null, focu
 // film v3: the chorus 1 sprint (b41-42) from hero_paper_v2 when it lands: she sings "Merge me back to main" as she runs, so it is
 // song-locked (clip time = song time - meta t0_song). opt overrides the hero crop/slab/gap (zoom, fx, fy, rows, gap) from the wiring row.
 export const HERO_NEXT = { id: 'hero_paper_v2', opt: {}, lag: -0.04 };   // film v4: lag -40 ms measured (plates_v4 wiring; ?laghero=<ms> overrides; + = sound later than picture)
+// film v6 A2: the rare-earth grid tile does not turn at bar 37 and does not fall home at bar 38 (port_proof.py o.stay). When the plates
+// agent's vio_grid_stay (writing, head down, no turn, the tile's framing) lands it replaces the tile's plate in the proof only (o.dirs),
+// with its focus from the wiring row; until then the present tile plays slowly and never reaches its turn
+export const PROOF_STAY = { violet: { id: ['vio_grid_stay'], focus: null } };
 export const SHOTS = S;
 
 // ------------------------------------------------------------------ resolve bar/beat to song time

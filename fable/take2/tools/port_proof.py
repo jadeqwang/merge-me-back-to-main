@@ -78,6 +78,30 @@ patch("""  line(0, YM, W, YM, prev, 6 * S);
   else {
   line(0, YM, W, YM, prev, 6 * S);
   line(Math.max(0, nx - r), YM, Math.min(W, nx + r), YM, L.color, 6 * S, false); }""")
+# film v6 A2 (o.stay = { id: true }): the rare-earth tile does not turn at bar 37 (she keeps writing, head down) and does not fall home at
+# bar 38: its clip plays slowly through the grid, never reaching the plate's turn (turn_t - 0.45; a plate with no turn_t plays to its
+# end); in bar 38 it keeps its size (sigma 1), throws no lane into main and keeps its label; it is the last tile lit, alone, and stays
+# over the opening iris for about one beat of bar 39, fading out (vio_grid_stay replaces the plate through o.dirs when it lands)
+patch("function gridClip(i, t) {\n  const id = LIVES[i].id, m = META[id], last = (m.n - 1) / m.fps; const turn = turnOf(id);",
+      "function gridClip(i, t) {\n  const id = LIVES[i].id, m = META[id], last = (m.n - 1) / m.fps; const turn = turnOf(id);\n  if (o.stay && o.stay[id]) { const lim = m.turn_t != null ? Math.max(0.5, m.turn_t - 0.45) : last - 0.05, c0 = Math.min(0.3, lim * 0.1), span = TL.t39 + 0.6 - TL.start[id]; return c0 + Math.max(0, t - TL.start[id]) * Math.min(1, (lim - c0) / span); }   // take two v6: she does not turn")
+patch("      sigma = 1 - ease.io(seg(t, TL.col[m.col], TL.shrunk[m.col]));",
+      "      sigma = o.stay && o.stay[L.id] ? 1 : 1 - ease.io(seg(t, TL.col[m.col], TL.shrunk[m.col]));   // take two v6: hers does not fall home")
+patch("  for (const c of sc.grid.cells) {\n    if (!on(t, TL.col[c.m.col] + 0.25 * (TL.shrunk[c.m.col] - TL.col[c.m.col]))) continue;",
+      "  for (const c of sc.grid.cells) {\n    if (o.stay && o.stay[c.L.id]) continue;   // take two v6: no lane into main\n    if (!on(t, TL.col[c.m.col] + 0.25 * (TL.shrunk[c.m.col] - TL.col[c.m.col]))) continue;")
+patch("    const r = C.rect; const a = clamp01(C.from === null ? C.pop : (C.from - 0.6) / 0.4) * (on(t, TL.t38) ? 1 - clamp01((fr(t, TL.t38) + 1) / 4) : 1); if (a <= 0.01) continue;",
+      "    const r = C.rect; const a = clamp01(C.from === null ? C.pop : (C.from - 0.6) / 0.4) * (on(t, TL.t38) && !(o.stay && o.stay[C.L.id]) ? 1 - clamp01((fr(t, TL.t38) + 1) / 4) : 1) * (C.stayA === undefined ? 1 : C.stayA); if (a <= 0.01) continue;")
+patch("""  for (const C of GS.cells) if (C.sigma > 0.004 && C.rect.w > 1) { const fo = META[C.L.id].focus || [0.5, 0.5];
+    P.push({ id: C.L.id, c: C.c, rect: C.rect, alpha: C.alpha, cell: C, fx: fo[0], fy: fo[1], blend: (gridClip(C.i, t + 0.02) - C.c) / 0.02 < 0.85 }); }""",
+"""  const late = [];
+  for (const C of GS.cells) if (C.sigma > 0.004 && C.rect.w > 1) { const fo = META[C.L.id].focus || [0.5, 0.5];
+    const stay = o.stay && o.stay[C.L.id] && on(t, TL.t39); if (stay) { C.stayA = 1 - clamp01((t - TL.t39 - 0.25) / 0.3); if (C.stayA <= 0) { C.sigma = 0; continue; } }
+    (stay ? late : P).push({ id: C.L.id, c: C.c, rect: C.rect, alpha: C.alpha * (stay ? C.stayA : 1), cell: C, fx: fo[0], fy: fo[1], blend: (gridClip(C.i, t + 0.02) - C.c) / 0.02 < 0.85 }); }""")
+patch("""    P.push({ id: 'root', c: softcap(Math.max(0, t - TL.t39), rootLast), rect: full, zoom: 1 + 0.12 * Math.pow(seg(t, TL.t39, TL.t41), 2.4), iris: sc.iris, blend: true });
+  }""", """    P.push({ id: 'root', c: softcap(Math.max(0, t - TL.t39), rootLast), rect: full, zoom: 1 + 0.12 * Math.pow(seg(t, TL.t39, TL.t41), 2.4), iris: sc.iris, blend: true });
+  }
+  P.push(...late);   // take two v6: the tile that stayed, over the iris""")
+patch("    g.save(); g.globalAlpha = clamp01((C.sigma - 0.05) / 0.3);\n    line(lerp(nx, x0, span)",
+      "    g.save(); g.globalAlpha = clamp01((C.sigma - 0.05) / 0.3) * (C.stayA === undefined ? 1 : C.stayA);\n    line(lerp(nx, x0, span)")
 txt += '''
 
 // ---------------------------------------------------------------- init (from the proof's boot(), minus fonts, page and harness)

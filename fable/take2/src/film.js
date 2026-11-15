@@ -10,7 +10,7 @@
 // Layers: source (proof | plate | v7 [paper pass] | card) -> grain + vignette -> overlays (chip, counter, title) -> lyrics -> HUD.
 // Source kinds: see shots.js. A missing plate, or a v7 time outside the delivered sequence, draws as a labelled card.
 import { loadTiming, clamp01, lerp, seg, ease } from './timing.js';
-import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT } from '../shots.js';
+import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT, PROOF_STAY } from '../shots.js';
 import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
@@ -401,6 +401,34 @@ function egg(t, sc) { const o = sc.s.opt.egg, u = seg(t, sc.s.t0, sc.s.t1), [a, 
   drawWrittenLane(g, pts, { text: laneString([o.text], false), color: o.color, cap: (o.cap || 26) * S, merge: lerp(o.merge[0], o.merge[1], ease.io(u)), under: 0.18, scroll: (o.scroll || 0) * (t - sc.s.t0), upto: len * gr });
   g.restore(); }
 
+// film v6 A1: the violet lane that leaves the MERGE tree alone (shots.js VLANE). A pure function of song time across the v7 shots:
+// from the canopy's right tip (anchor, interpolated per song time) a curve out past the frame edge; written out with a light at its
+// head over grow[0..1], then a quiet violet line with a slow pulse running outward. No label.
+function vlane(t, V) { if (t < V.grow[0]) return; const A = V.anchor; let i = 0; while (i < A.length - 2 && t > A[i + 1][0]) i++;
+  const u0 = clamp01((t - A[i][0]) / (A[i + 1][0] - A[i][0])), a = { x: lerp(A[i][1], A[i + 1][1], u0) * W, y: lerp(A[i][2], A[i + 1][2], u0) * H }, b = { x: V.out[0] * W, y: V.out[1] * H };
+  const c1 = { x: a.x + 0.06 * W, y: a.y - 0.01 * H }, c2 = { x: b.x - 0.08 * W, y: b.y + 0.1 * H };
+  const P = (k) => { const A0 = (1 - k) ** 3, B = 3 * k * (1 - k) ** 2, C = 3 * k * k * (1 - k), D = k ** 3; return { x: A0 * a.x + B * c1.x + C * c2.x + D * b.x, y: A0 * a.y + B * c1.y + C * c2.y + D * b.y }; };
+  const p = ease.io(clamp01((t - V.grow[0]) / (V.grow[1] - V.grow[0])));
+  g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+  for (const [w, al] of [[9, 0.18], [4, 0.45], [1.6, 0.95]]) { g.strokeStyle = al > 0.9 ? '#D9CBFF' : hexA('#9B6BFF', al); g.lineWidth = w * S; g.beginPath(); for (let k = 0; k <= 60; k++) { const q = P(p * k / 60); if (k) g.lineTo(q.x, q.y); else g.moveTo(q.x, q.y); } g.stroke(); }
+  if (p < 1) { const h = P(p); glowAt(h.x, h.y, 26 * S, '#9B6BFF', 0.95); glowAt(h.x, h.y, 6 * S, '#FFFFFF', 0.9); }
+  else { const k = ((t - V.grow[1]) * 0.45) % 1, h = P(k); glowAt(h.x, h.y, 14 * S, '#9B6BFF', 0.6 * Math.sin(k * Math.PI)); }
+  g.restore(); }
+
+// film v6 A7: a page-light flying from `from` to `to` (frame fractions) over the shot (or arriving at fraction `arrive`), a slight arc, a
+// faint trail; then held, opening over `open` [u0, u1] (fractions of the shot)
+function pageFly(t, s) { const o = s.opt.pageFly, u = seg(t, s.t0, s.t1), ar = o.arrive || 1, k = clamp01(u / ar), e = o.ease === 'out' ? ease.out(k) : ease.io(k);
+  const P = (q) => ({ x: lerp(o.from[0], o.to[0], q) * W, y: lerp(o.from[1], o.to[1], q) * H - Math.sin(q * Math.PI) * (o.arc || 0) * H });
+  g.save(); g.globalCompositeOperation = 'lighter'; if (k < 1) for (let j = 7; j >= 1; j--) { const q = P(Math.max(0, e - 0.03 * j)); glowAt(q.x, q.y, (8 + 3 * (7 - j)) * S, VIO_GLOW, 0.2 * (1 - j / 8)); } g.restore();
+  const p = P(e), op = o.open ? seg(u, o.open[0], o.open[1]) : 0; pageLight(p.x, p.y + Math.sin(t * 3) * 3 * S * (k >= 1 ? 1 : 0), (o.h || 30) * S, 0.95, k < 1 ? 0.2 * Math.sin(k * 7) : 0, op); }
+// film v6 A2, b26: the violet light leaves her hands after the rose one and goes furthest (out of frame); cubic path, eased, a trail
+function vioMote(t, s) { const o = s.opt.vioMote, ta = s.t0 + o.at[0], tb = s.t0 + o.at[1]; if (t < ta) return;
+  const P0 = { x: o.from[0] * W, y: o.from[1] * H }, [K1, K2] = o.ctrl.map(([x, y]) => ({ x: x * W, y: y * H })), P3 = { x: o.to[0] * W, y: o.to[1] * H };
+  const P = (k) => { const a = (1 - k) ** 3, b = 3 * k * (1 - k) ** 2, c = 3 * k * k * (1 - k), d = k ** 3; return { x: a * P0.x + b * K1.x + c * K2.x + d * P3.x, y: a * P0.y + b * K1.y + c * K2.y + d * P3.y }; };
+  const u = clamp01((t - ta) / (tb - ta)); if (u >= 1) return; const e = u * u * (2.2 - 1.2 * u), grow = clamp01((t - ta) / 0.2);
+  g.save(); g.globalCompositeOperation = 'lighter'; for (let j = 8; j >= 1; j--) { const q = P(Math.max(0, e - 0.025 * j)); glowAt(q.x, q.y, (8 + 3 * (8 - j)) * S, '#9B6BFF', 0.22 * (1 - j / 9) * grow); }
+  const q = P(e); glowAt(q.x, q.y, 34 * S * grow, '#9B6BFF', 0.95); glowAt(q.x, q.y, 8 * S * grow, '#FFFFFF', 0.95); g.restore(); }
+
 // film v3, b26 (Jade: "maybe the words she sends out is the lyric"): the lane written behind the light carries the lyric line L.lyric
 // itself, once, in the lyric's serif (cream, cap L.cap px at 1080p), laid on the lane so it ends L.endX (frame fraction) short of her
 // hands. Words sung before the shot are sent out along the lane from her hands over the shot's first 8 frames (ahead of the light: "each
@@ -483,8 +511,15 @@ function fan(t, sc) {
 const bposT = (t) => { const B = T.beats; let lo = 0, hi = B.length - 1; if (t <= B[0]) return 0; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (B[m] <= t) lo = m; else hi = m - 1; } return lo + (lo + 1 < B.length ? (t - B[lo]) / (B[lo + 1] - B[lo]) : 0); };
 function glowAt(x, y, r, col, a) { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(255,255,255,${a})`); gr.addColorStop(0.22, hexA(col, 0.85 * a)); gr.addColorStop(1, hexA(col, 0)); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill(); }
 // b7-8: the frost tips take the lane colours, one per half beat from beat 2 (a pop, then a steady glow that breathes)
-function tips(t, sc) { const s = sc.s, b0 = Math.round(bposT(s.t0)), u = bposT(t) - b0;
-  s.opt.tips.forEach(([x, y], i) => { const k = 1 + 0.5 * i, f = u - k; if (f < 0) return; const p = plateToScreen(sc.imgs[0], x, y), col = LIVES[i].color, pop = Math.max(0, 1 - f / 0.5);
+// film v6 A1 (opt.vioTip {i, slot, hold, drift, to}): the violet light takes slot `slot` in the order (the others keep theirs, shifted),
+// glows `hold` beats, then drifts (eased, a slight rise and sway, a short trail) to the pane's edge and out of frame over `drift` beats
+function tips(t, sc) { const s = sc.s, b0 = Math.round(bposT(s.t0)), u = bposT(t) - b0, V = s.opt.vioTip;
+  const order = s.opt.tips.map((_, i) => i); if (V) { order.splice(order.indexOf(V.i), 1); order.splice(V.slot, 0, V.i); }
+  s.opt.tips.forEach(([x, y], i) => { const k = 1 + 0.5 * order.indexOf(i), f = u - k; if (f < 0) return; const p = plateToScreen(sc.imgs[0], x, y), col = LIVES[i].color, pop = Math.max(0, 1 - f / 0.5);
+    if (V && i === V.i && f > V.hold) { const d = clamp01((f - V.hold) / V.drift), e = ease.in(d) * 0.55 + ease.io(d) * 0.45, to = { x: V.to[0] * W, y: V.to[1] * H };
+      const P = (q) => ({ x: lerp(p.x, to.x, q), y: lerp(p.y, to.y, q) - Math.sin(q * Math.PI) * 0.05 * H + Math.sin(q * 9) * 4 * S });
+      g.save(); g.globalCompositeOperation = 'lighter'; for (let j = 6; j >= 1; j--) { const q = P(Math.max(0, e - 0.03 * j)); glowAt(q.x, q.y, (10 + 3 * (6 - j)) * S, col, 0.18 * (1 - j / 7)); }
+      const q = P(e); glowAt(q.x, q.y, 30 * S, col, 0.85); glowAt(q.x, q.y, 7 * S, '#FFFFFF', 0.8); g.restore(); return; }
     g.save(); g.globalCompositeOperation = 'lighter'; glowAt(p.x, p.y, (26 + 40 * pop) * S, col, 0.55 + 0.45 * pop + 0.08 * Math.sin(t * 5 + i)); g.restore(); }); }
 // a life's commit message as a short written line under its detail (b65-68, b70-71)
 function caption(t, sc) { const L = byId[sc.s.opt.caption]; if (!L) return; const cap = 28 * S, px = cap / 0.73; g.save(); g.font = `600 ${px}px "JetBrains Mono"`; const w = g.measureText(L.msg).width; g.restore();
@@ -686,7 +721,7 @@ function palmRelease(t, sc, B, cloud) {
     const x = pa.x, y = pa.y - h, br = 0.9 + 0.1 * Math.sin(t * 11);
     g.save(); g.globalCompositeOperation = 'lighter';
     glowAt(pa.x, pa.y, 34 * S * a, VIO_GLOW, 0.35 * a);                    // the light on her palm
-    glowAt(x, y, (14 + 46 * a) * S, VIO_GLOW, 0.9 * a * br); glowAt(x, y, (4 + 8 * a) * S, '#FFFFFF', 0.95 * a); g.restore(); return; }
+    glowAt(x, y, (14 + 46 * a) * S, VIO_GLOW, 0.75 * a * br); g.restore(); pageLight(x, y, 34 * a * S, 0.95 * a, 0); return; }   // film v6 A6: it grows in her palm as a page
   if (R.float) { floatUp(t, sc, R, PT, c, tl, ta, up); return; }
   const p0 = PT(R.palm, lift), c0 = { x: p0.x, y: p0.y - up }, c2 = { x: R.to[0] * W, y: R.to[1] * H }, K = R.ctrl.map(([x, y]) => ({ x: x * W, y: y * H }));
   const q = (k) => { const a = (1 - k) ** 3, b = 3 * k * (1 - k) ** 2, cc = 3 * k * k * (1 - k), d = k ** 3; return { x: a * c0.x + b * K[0].x + cc * K[1].x + d * c2.x, y: a * c0.y + b * K[0].y + cc * K[1].y + d * c2.y }; };
@@ -713,7 +748,8 @@ function floatUp(t, sc, R, PT, c, tl, ta, up) {
   g.save(); g.globalCompositeOperation = 'lighter';
   if (tau < 0.6) { const pa = PT(R.palm, c); glowAt(pa.x, pa.y, 34 * S, VIO_GLOW, 0.35 * (1 - tau / 0.6)); }   // the palm's after-glow
   for (let j = 5; j >= 1; j--) { const q = pos(tau - 0.06 * j); glowAt(q.x, q.y, 22 * k * S, VIO_GLOW, 0.07 * (1 - j / 6)); }   // a faint wake
-  const p = pos(tau); glowAt(p.x, p.y, 60 * k * sw * S, VIO_GLOW, Math.min(1, 0.9 * br * (0.85 + 0.15 * sw))); glowAt(p.x, p.y, 12 * k * (0.9 + 0.1 * sw) * S, '#FFFFFF', 0.95);
+  const p = pos(tau); glowAt(p.x, p.y, 60 * k * sw * S, VIO_GLOW, Math.min(1, 0.7 * br * (0.85 + 0.15 * sw)));
+  g.restore(); pageLight(p.x, p.y, 34 * k * (0.9 + 0.1 * sw) * S, 0.95, 0.12 * Math.sin(tau * 1.7)); g.save();   // film v6 A6: the light that rises is the page
   g.restore();
 }
 
@@ -832,7 +868,22 @@ function atomize(t, sc) {
 // end (the b123 downbeat), a point with a short trail
 function comet(t, sc) { const o = sc.s.opt.comet, u = seg(t, sc.s.t0, sc.s.t1), e = ease.in(u);
   const P = (k) => ({ x: lerp(o.from[0], o.to[0], k) * W, y: lerp(o.from[1], o.to[1], k) * H - Math.sin(k * Math.PI) * 0.04 * H });
-  g.save(); g.globalCompositeOperation = 'lighter'; for (let j = 8; j >= 0; j--) { const p = P(Math.max(0, e - 0.025 * j)); glowAt(p.x, p.y, (6 + 14 * (1 - j / 8) + 18 * e) * S, '#9B6BFF', (1 - j / 9) * 0.8); } g.restore(); }
+  g.save(); g.globalCompositeOperation = 'lighter'; for (let j = 8; j >= 1; j--) { const p = P(Math.max(0, e - 0.025 * j)); glowAt(p.x, p.y, (6 + 14 * (1 - j / 8) + 18 * e) * S, '#9B6BFF', (1 - j / 9) * 0.6); } g.restore();
+  const p = P(e); pageLight(p.x, p.y, (20 + 22 * e) * S, 0.95, -0.3 + 0.3 * e); }   // film v6 A7: the page-light arriving
+// film v6 A6-A8: the page-light. One small notebook page made of violet light: a soft violet halo, a pale page (portrait, w = 0.74 h) with
+// four ruled lines and a margin rule, at (x, y), height h px, rotation rot; open 0..1 parts it into two facing pages (a book opening), the
+// light between them brightening. Used for the light that leaves her palm (b116-117), the crossing (b121-123), the landing in main's hands
+// (b128), the night road and the window (the end).
+function pageLight(x, y, h, a, rot = 0, open = 0) { if (h <= 0.5 || a <= 0) return; const w = 0.74 * h;
+  g.save(); g.globalCompositeOperation = 'lighter'; glowAt(x, y, h * (1.9 + 1.2 * open), VIO_GLOW, 0.55 * a); g.restore();
+  g.save(); g.translate(x, y); g.rotate(rot); g.globalAlpha = a; g.shadowColor = VIO_GLOW; g.shadowBlur = h * 0.6;
+  const page = (cx, sx) => { g.save(); g.translate(cx, 0); g.scale(sx, 1); g.fillStyle = 'rgba(240,234,255,0.92)'; g.fillRect(-w / 2, -h / 2, w, h); g.shadowBlur = 0;
+    g.strokeStyle = 'rgba(155,107,255,0.85)'; g.lineWidth = Math.max(1, h * 0.035); g.beginPath();
+    for (let k = 1; k <= 4; k++) { const yy = -h / 2 + h * (0.2 + 0.17 * k); g.moveTo(-w / 2 + w * 0.12, yy); g.lineTo(w / 2 - w * 0.1, yy); }
+    g.moveTo(-w / 2 + w * 0.22, -h / 2 + h * 0.08); g.lineTo(-w / 2 + w * 0.22, h / 2 - h * 0.06); g.stroke(); g.restore(); };
+  if (open <= 0) page(0, 1); else { const e = ease.io(clamp01(open)); page(-w / 2 * e, 1 - 0.15 * e); page(w / 2 * e, -(1 - 0.15 * e));
+    g.globalCompositeOperation = 'lighter'; g.shadowBlur = 0; g.globalAlpha = 1; glowAt(0, 0, h * (0.4 + 0.9 * e), '#FFFFFF', 0.7 * a * e); }
+  g.restore(); }
 
 // b54-55 (film v2): the twelve worlds as small lit windows on the night world's horizon, and a commit node locking on under each one.
 // The v7 roads cannot be tracked through the paper pass, so the windows sit on a FIXED HORIZON BAND: the horizon row measured on the
@@ -867,6 +918,40 @@ function windows(t, sc) {
   });
 }
 
+// ---------------------------------------------------------------- film v6 A5: the pencil-hatch wipe
+// opt.hatch = { frames, seed, pen, angle }: over the shot's first `frames` frames the picture (whatever the source drew) is revealed through
+// broad diagonal hatch strokes laid one after another across the frame (a sweep with jitter, each stroke growing from one end), on black
+// paper; each growing stroke has a fine gold edge, and with `pen` a gold-white pencil point glows at the head of the newest stroke. After
+// the wipe the picture is untouched. Deterministic per seed (a pure function of song time).
+let HC = null, HM = null;
+const HATCHS = new Map();
+function hatchStrokes(seed, ang) { const k = seed + ':' + ang; if (HATCHS.has(k)) return HATCHS.get(k);
+  const r = mulberry32(7000 + seed * 131), d = [Math.cos(ang), Math.sin(ang)], nrm = [-d[1], d[0]], span = Math.abs(W * nrm[0]) + Math.abs(H * nrm[1]), sp = 17 * S, n = Math.ceil(span / sp) + 2, L = Math.hypot(W, H) * 1.05;
+  const out = []; for (let i = 0; i < n; i++) { const o = (i - n / 2) * sp + (r() - 0.5) * 8 * S, c = { x: W / 2 + nrm[0] * o, y: H / 2 + nrm[1] * o };
+    const j = (r() - 0.5) * 0.08, dj = [Math.cos(ang + j), Math.sin(ang + j)], fl = r() < 0.5 ? -1 : 1;   // a hand's hatching: each stroke a little off the angle
+    const a = { x: c.x - dj[0] * L / 2 * fl, y: c.y - dj[1] * L / 2 * fl }, b = { x: c.x + dj[0] * L / 2 * fl, y: c.y + dj[1] * L / 2 * fl };
+    const sweep = clamp01(i / (n - 1)), start = 0.62 * sweep + 0.12 * r(); out.push({ a, b, start, w: (24 + 14 * r()) * S }); }
+  HATCHS.set(k, out); return out; }
+function hatchIn(t, s) {
+  const o = s.opt.hatch, n = o.frames || 6, f = fr(t, s.t0); if (f >= n || f < 0) return;
+  const p = (f + 1) / (n + 0.6), st = hatchStrokes(o.seed || 0, o.angle !== undefined ? o.angle : -1.05);
+  if (!HC) { HC = document.createElement('canvas'); HC.width = W; HC.height = H; HM = document.createElement('canvas'); HM.width = W; HM.height = H; }
+  const hc = HC.getContext('2d'); hc.globalCompositeOperation = 'source-over'; hc.clearRect(0, 0, W, H); hc.drawImage(canvas, 0, 0);
+  const hm = HM.getContext('2d'); hm.clearRect(0, 0, W, H); hm.lineCap = 'round'; hm.strokeStyle = '#fff';
+  const grow = (q) => clamp01((p - q.start) / 0.26), at = (q, u) => ({ x: lerp(q.a.x, q.b.x, u), y: lerp(q.a.y, q.b.y, u) });
+  for (const q of st) { const u = ease.out(grow(q)); if (u <= 0) continue; const e = at(q, u); hm.lineWidth = q.w; hm.beginPath(); hm.moveTo(q.a.x, q.a.y); hm.lineTo(e.x, e.y); hm.stroke(); }
+  hc.globalCompositeOperation = 'destination-in'; hc.drawImage(HM, 0, 0);
+  g.fillStyle = '#0B0A0C'; g.fillRect(0, 0, W, H); g.drawImage(HC, 0, 0);
+  // gold edges on the strokes still growing, and the pen point
+  g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; let head = null, hs = -1;
+  for (const q of st) { const gq = grow(q); if (gq <= 0 || gq >= 1) continue; const u = ease.out(gq), e = at(q, u), nx = -(q.b.y - q.a.y), ny = q.b.x - q.a.x, nl = Math.hypot(nx, ny) || 1, ox = nx / nl * q.w / 2, oy = ny / nl * q.w / 2;
+    g.strokeStyle = `rgba(255,194,58,${0.75 * (1 - gq)})`; g.lineWidth = 2.2 * S;
+    for (const sg of [-1, 1]) { g.beginPath(); g.moveTo(q.a.x + sg * ox, q.a.y + sg * oy); g.lineTo(e.x + sg * ox, e.y + sg * oy); g.stroke(); }
+    if (q.start > hs && e.x > -50 && e.x < W + 50 && e.y > -50 && e.y < H + 50) { hs = q.start; head = e; } }
+  if (o.pen && head) { glowAt(head.x, head.y, 30 * S, '#FFC23A', 0.95); glowAt(head.x, head.y, 7 * S, '#FFFFFF', 0.95); }
+  g.restore();
+}
+
 // ---------------------------------------------------------------- the frame
 function drawImgs(list) {
   for (const im of list) { const b = READY.get(im.url); const cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
@@ -889,6 +974,9 @@ function draw(t, sc) {
     if (s.opt.type) typed(t, sc);
     if (s.opt.forks && OUTRO) OUTRO.forks(t, s, sc.imgs[0]);
     if (s.opt.comet) comet(t, sc);
+    if (s.opt.vioMote) vioMote(t, s);
+    if (s.opt.pageFly) pageFly(t, s);
+    if (s.opt.arrive) arrive(t, s);
     if (s.opt.atom && ATOM[s.opt.atom.dir]) atomize(t, sc);
     else if (s.opt.settle && sc.settle) settle(t, sc);
   }
@@ -908,16 +996,37 @@ function draw(t, sc) {
     else g.drawImage(b, 0, 0, W, H);
     if (sc.wins) windows(t, sc);
     if (s.opt && s.opt.egg && LANES) egg(t, sc);
+    if (s.opt && s.opt.vlane) vlane(t, s.opt.vlane);
+    if (s.opt && s.opt.pageFly) pageFly(t, s);
     if (sc.tail) drawImgs(sc.tail);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
+  if (s.opt && s.opt.hatch && (sc.eff === 'plate' || sc.eff === 'v7')) hatchIn(t, s);
   if (s.opt && s.opt.white && sc.eff === 'plate') { const f = fr(t, s.t0); if (f <= 1) { g.fillStyle = `rgba(255,250,240,${f === 0 ? 0.85 : 0.4})`; g.fillRect(0, 0, W, H); } }   // 2-frame white flash (impact, snare)
   grain(t); vignette();
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.lane && !(sc.cross && sc.cross.u >= 1)) lane(t, sc);
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.road) roadLane(t, sc);
   overlays(t, sc);
   lyrics(t, sc.eff, s);
+  if (s.opt && s.opt.carType && sc.eff !== 'card') carType(t, s);
 }
+// film v6 A8: the car's two lines (shots.js CAR_TYPE): lyric serif at verse size, cream with a soft shadow, each line WHOLE (no word by
+// word), wrapped inside its box [x0, x1] (frame fractions) around y (the block's centre), on screen over at [a, b] s from the shot start
+// with 0.3 s fades. No punctuation is added.
+function carType(t, s) { const f = capFont('serif', SZ.verse * S), lead = SZ.verse * S * 1.5;
+  for (const L of s.opt.carType.lines) { const ta = s.t0 + L.at[0], tb = s.t0 + L.at[1]; if (t < ta - HF || t > tb) continue;
+    const a = Math.min(clamp01((t - ta + HF) / 0.3), clamp01((tb - t) / 0.3)); if (a <= 0) continue;
+    const rows = wrap(L.text, f, (L.box[1] - L.box[0]) * W); setFont(f); const y0 = L.y * H - ((rows.length - 1) * lead) / 2 + SZ.verse * S / 2;
+    g.save(); g.globalAlpha = a; textShadow(0.85, 14); g.fillStyle = CREAM;
+    rows.forEach((r, i) => { const w = g.measureText(r).width, x = L.align === 'center' ? (L.box[0] + L.box[1]) / 2 * W - w / 2 : L.align === 'right' ? L.box[1] * W - w : L.box[0] * W; g.fillText(r, x, y0 + i * lead); });
+    noShadow(); g.restore(); } }
+// film v6 A8: the window: the road's page-light (OUTRO.roadPage at the moment the road ended) glides into the frost light at the child's
+// palm (opt.arrive.to, frame fractions, measured on root_light) over dur s, shrinking from a page to a point of light, and is gone into
+// the plate's own light
+function arrive(t, s) { const o = s.opt.arrive, u = clamp01((t - s.t0) / o.dur); if (u >= 1 || !OUTRO || !OUTRO.roadPage) return;
+  const P0 = OUTRO.roadPage(s.t0 - T.beat(156, 1)), e = ease.io(u), x = lerp(P0.x, o.to[0] * W, e), y = lerp(P0.y, o.to[1] * H, e) - Math.sin(u * Math.PI) * 0.05 * H;
+  pageLight(x, y, lerp(P0.h, 8 * S, e), 1 - ease.in(u), 0.15 * (1 - u));
+  g.save(); g.globalCompositeOperation = 'lighter'; glowAt(x, y, lerp(20, 40, e) * S, VIO_GLOW, 0.6 * Math.sin(u * Math.PI)); g.restore(); }
 let LOCK = Promise.resolve();
 function render(t) { const p = LOCK.then(() => render1(t)); LOCK = p.catch(() => {}); return p; }
 async function render1(t) {
@@ -973,7 +1082,9 @@ async function boot() {
   if (!PROOFBUG) for (const [k, a0] of Object.entries(PROOF_A || {})) { let a = a0; if (Array.isArray(a0)) { a = null; for (const x of a0) if (await findPlate(x.id)) { a = x; break; } if (!a) continue; }
     const p = await findPlate(await firstPlate(a.id)), s = SH.find((q) => q.kind === 'proof' && q.src === 'A:' + k); if (!p || !s) continue;
     const tb = T.beatT(Math.round(bposT(s.t0)) + a.landBeat); aPlates[k] = { key: k + '_A', clip0: a.land - (tb - s.t0), side: a.side }; dirs[k + '_A'] = p.dir; }
-  PROOF = await makeProof(g, { W, H, FPS, T, plates: PROOF_PLATES, twos: false, fixStrip: !PROOFBUG,
+  // film v6: the tile that stays (shots.js PROOF_STAY): its own plate in the proof when it lands (dirs; focus via the meta copy below)
+  const stay = {}; if (!PROOFBUG) for (const [k, a] of Object.entries(PROOF_STAY || {})) { stay[k] = true; const p = await findPlate(await firstPlate(a.id)); if (p) { dirs[k] = p.dir; if (a.focus) p.meta.focus = a.focus; } }
+  PROOF = await makeProof(g, { W, H, FPS, T, plates: PROOF_PLATES, twos: false, fixStrip: !PROOFBUG, stay,
     dirs, aPlates, heroBlend: !heroNew, turn: turnOv,
     // hero_paper has her in the centre: crop so she sits right of centre, the slab stacks one word per row on the left (rule 5: clear of
     // her face and hands), and the written lane passes behind her legs
@@ -982,7 +1093,7 @@ async function boot() {
   // the proof range must be exactly the proof shots of the list
   const pr = SH.filter((s) => s.kind === 'proof'); if (Math.abs(pr[0].t0 - PROOF.t0) > 0.002 || Math.abs(pr[pr.length - 1].t1 - PROOF.tEnd) > 0.002) throw new Error('proof range does not match the shot list');
   LYR = buildLyrics(); buildGrain(); STRANDS = FLOAT || null;
-  OUTRO = makeOutro({ g, W, H, S, T, READY, LIVES, byId, MAIN, hashOf, drawWrittenLane, laneString, clamp01, lerp, ease, plateToScreen, cover, bposT, glowAt, hexA, json, PLATE });
+  OUTRO = makeOutro({ g, W, H, S, T, READY, LIVES, byId, MAIN, hashOf, drawWrittenLane, laneString, clamp01, lerp, ease, plateToScreen, cover, bposT, glowAt, hexA, json, PLATE, pageLight });
   await OUTRO.load(SH.filter((s) => s.kind === 'code'));
   MAPF = makeMapfold({ g, W, H, S, READY, PLATE, byId, clamp01, lerp, ease, cover, bposT, hexA, hashOf });
   for (const s of SH) if (s.opt && s.opt.atom) await loadAtom(s.opt.atom);
