@@ -230,7 +230,7 @@ P(61, 63, 'float_top', 'missing', 'Slow rotation and pull-out; along one strand 
 // film v6 A4: the real Jade once, early: like_sing0 (local only, song-locked like like_sing1) sings "Merge... and return..." (109.31-111.72)
 // from b63 beat 4 to b65. Wired ONLY when the director says her likeness passed on stills: set LIKE0_ON = true. Off: b63-64 as before
 // (the float_top pulses and float_hand). On: b63 ends on beat 4 and one shot code 'L' plays like_sing0 (likeness=0: the card).
-const LIKE0_ON = false;
+const LIKE0_ON = typeof location !== 'undefined' && new URLSearchParams(location.search).get('like0') === '1';   // off unless ?like0=1 (Jade decides)
 P(63, LIKE0_ON ? [63, 4] : 64, 'float_top', 'missing', 'Pulses of light come home along every strand.', { code: 'C+P', row: 'b63-64', opt: { clip0: 3.0, strands: { mode: 'pulses' } } });
 if (LIKE0_ON) shot([63, 4], 65, 'L', 'plate', 'like_sing0', 'missing', 'The real Jade, once, early: she sings "Merge... and return...", daylight (the Orbital relight trace; song-locked).', { row: 'b63-64', opt: { songLock: true, push: 0, lyr: { x0: 0.03, x1: 0.4, align: 'left' } } });
 else P(64, 65, 'float_hand', 'missing', 'Her hand opens on the water as one arrives.', { row: 'b63-64', opt: { clip0: 1.0, clip1: 3.5, lyr: { x0: 0.03, x1: 0.5, align: 'left' },

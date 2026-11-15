@@ -2,13 +2,20 @@
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
-## Film v6 (2026-11-15, in progress)
+## Film v6 (2026-11-15: rendered, waiting for Jade's notes)
 
-Jade asked for a review of the master against the shipped films ("a solid B-side"). Her answers are in `notes/jade_v5_notes.md`;
-the brief is **`notes/v6_direction.md`**: the violet branch as narrator, the drop as her pencil drawing, the page as the object,
-intuition instead of memory in the day, a hand and controller for the orange, the real Jade once early, shorter credits, and a
-post-credits shot in a car with the camera as the listener. Two agents (compositor, plates) work from that brief; their state is
-in `notes/compositor.md` "Film v6" and `notes/plates_v6.md`. The master below is untouched. Open with Jade: section C of the brief.
+Jade asked for a review of the master against the shipped films ("a solid B-side"). Her words: `notes/jade_v5_notes.md`; brief:
+`notes/v6_direction.md` (section C holds her answers: caption stays, camera drives, b56 patch fixed). What was built:
+`notes/compositor.md` "Film v6" and `notes/plates_v6.md` (Wiring table, the plates' weak points).
+
+- Public (likeness=0, HUD on): `review/fable_take2/film_v6.mp4`, sheets `film_v6_sheet_01..05.jpg`. Local: `work_fable/take2/out/film_v6_local.mp4`.
+- Her page: `review/fable_take2/review_v6.html` (seven decisions). The early likeness shot `like_sing0` is off by default and
+  switched by `--q like0=1`; compare clips (local) `work_fable/take2/out/like0_cmp_0.mp4` / `_1.mp4` (bars 104-118).
+- Not wired: `pad_handover` (no gap in verse 2); offered to her for 2:01 instead. `check.py` passes (outliers listed in compositor.md).
+- Spend **$568.06** (round: $18.04). The tools' cap constant is 600; Jade lifted the cap, raise the constant if needed.
+- Nobody has watched v6 at speed with sound. Weak points told to her: violin fingering subtle, stance high, car seat belt on the
+  inboard shoulder, the road is minimal, the camera's line in the car is 50 px (door panel).
+- Next: her v6 notes, then either v7 or a new master and encodes (settings under "The master" below).
 
 ## The master (2026-11-14, late night)
 
