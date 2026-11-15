@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Merge, film v4: lip-sync picker</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #141414; color: #eee; font: 15px/1.45 system-ui, sans-serif; }
+  main { max-width: 1000px; margin: 0 auto; padding: 24px 20px 60px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  p.lead { color: #bbb; margin: 0 0 18px; }
+  .send { position: sticky; top: 0; z-index: 2; background: #1f2a1f; border: 1px solid #3c5a3c; border-radius: 8px;
+          padding: 10px 14px; margin-bottom: 22px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .send code { font: 600 15px ui-monospace, monospace; color: #b8f5b8; }
+  .shot { background: #1d1d1d; border: 1px solid #333; border-radius: 10px; padding: 16px; margin-bottom: 26px; }
+  .shot h2 { font-size: 17px; margin: 0 0 4px; }
+  .shot .lyric { color: #f0b070; font-style: italic; margin-bottom: 10px; }
+  canvas { width: 100%; aspect-ratio: 16 / 9; border-radius: 6px; background: #000; display: block; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  input[type=range] { flex: 1; min-width: 260px; }
+  .val { font: 600 20px ui-monospace, monospace; min-width: 110px; text-align: right; }
+  button { background: #2c2c2c; color: #eee; border: 1px solid #555; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 14px; }
+  button:hover { background: #3a3a3a; }
+  button.on { background: #44552c; border-color: #7a9a4a; }
+  .note { color: #999; font-size: 13px; margin-top: 8px; }
+  .ticks { display: flex; justify-content: space-between; color: #777; font: 12px ui-monospace, monospace; margin: 0 120px 0 0; }
+  .err { color: #f88; }
+</style>
+<!-- media (not committed): song windows as base64 WAV, and the plate frames -->
+<script src="../../work_fable/take2/lipsync_v4/audio.js"></script>
+</head>
+<body>
+<main>
+  <h1>Lip-sync picker: the two drawn sung shots</h1>
+  <p class="lead">Press play on a shot. It loops. Drag the slider (or use -20 / +20) until the mouth lands on the words, the way you
+    picked +80 ms on take D. A positive number means the voice comes later than the picture. Each slider starts on the value I
+    measured. Then send back the line in the green box. Wired speakers or headphones are best: Bluetooth adds its own delay.</p>
+
+  <div class="send">Send back: <code id="sendline"></code> <button id="copy">copy</button></div>
+
+  <div id="shots"></div>
+  <p class="note">The picture is the plate's own frames (24 fps), exactly what the film uses; the sound is the song, played through
+    Web Audio. The picture follows the sound's clock (the moment you hear, corrected for the sound card's delay), so the number on
+    the slider is the true offset. "As cut" loops the part of the clip the film shows, with a short lead-in; "whole clip" loops all
+    five seconds. Media is read from <code>../../work_fable/take2/lipsync_v4/</code> (not in the repo).</p>
+</main>
+<script>
+// lag convention (same as take D and notes/intake.md): lag +N ms = the audio plays N ms later against the picture.
+// audio buffer = song from (t0_song - PAD); the sound for picture time p is at buffer time PAD + p - lag.
+const PAD = 0.6, FPS = 24, NF = 121;
+const MEDIA = '../../work_fable/take2/lipsync_v4/';
+const SHOTS = [
+  { id: 'face', plate: 'main_face_v2', title: 'Bar 17, the close-up (0:28)', lyric: 'I split myself a thousand ways',
+    t0: 27.6, shot: [28.09, 29.82], measured: 340, min: -240, max: 580, v3: 0,
+    note: 'Measured +300 to +370 ms over the shot (the lips close for the p of "split" and the m of "myself"; the teeth show for the s of "split" and "self"). Film v3 used 0. The slider goes past +240 because the measured value is +340.' },
+  { id: 'hero', plate: 'hero_paper_v2', title: 'Bars 41-42, running at the lens (1:09)', lyric: 'Merge me back to main',
+    t0: 69.2, shot: [69.7, 73.2], measured: -40, min: -240, max: 240, v3: 0,
+    note: 'Measured -120 to +80 ms by word (the m of "me", the b and ck of "back", the m of "main"); best overall fit -40. Film v3 used 0.' },
+];
+let ctx = null;
+const state = {};
+function fmt(ms) { return (ms > 0 ? '+' : '') + ms + ' ms'; }
+function updateSend() {
+  if (!state.face || !state.hero) return;
+  document.getElementById('sendline').textContent = 'lipsync v4: face ' + fmt(state.face.lag) + ', hero ' + fmt(state.hero.lag);
+}
+function audioCtx() {
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+  return ctx;
+}
+// the context time of the sample being heard right now
+function heardNow() {
+  const ts = ctx.getOutputTimestamp ? ctx.getOutputTimestamp() : null;
+  if (ts && ts.contextTime > 0 && ts.performanceTime > 0) return ts.contextTime + (performance.now() - ts.performanceTime) / 1000;
+  return ctx.currentTime - (ctx.outputLatency || 0) - (ctx.baseLatency || 0);
+}
+function b64buf(s) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u.buffer; }
+
+function build(s) {
+  const el = document.createElement('section'); el.className = 'shot'; el.id = 'shot-' + s.id;
+  el.innerHTML = `<h2>${s.title}</h2><div class="lyric">"${s.lyric}"</div>
+    <canvas width="960" height="540"></canvas>
+    <div class="row"><button class="play">play</button>
+      <button class="cut on">as cut</button><button class="whole">whole clip</button>
+      <button class="m20">-20</button><button class="p20">+20</button>
+      <button class="meas">measured (${fmt(s.measured)})</button><button class="zero">film v3 (0)</button></div>
+    <div class="row"><input type="range" min="${s.min}" max="${s.max}" step="20" value="${s.measured}"><span class="val"></span></div>
+    <div class="ticks"><span>${s.min}</span><span>0</span><span>+${s.max}</span></div>
+    <div class="note">${s.note}</div><div class="note err"></div>`;
+  document.getElementById('shots').appendChild(el);
+  const cv = el.querySelector('canvas'), g = cv.getContext('2d'), r = el.querySelector('input'), val = el.querySelector('.val'), err = el.querySelector('.err');
+  const st = state[s.id] = { s, cv, g, r, err, lag: s.measured, mode: 'cut', playing: false, src: null, buf: null, frames: [], loaded: 0, p: 0, drawn: -1 };
+  // the part of the clip the film shows (at the measured lag), with a lead-in
+  const c0 = Math.max(0, s.shot[0] - s.t0 + s.measured / 1000 - 0.4), c1 = Math.min((NF - 1) / FPS, s.shot[1] - s.t0 + s.measured / 1000 + 0.2);
+  st.loop = () => st.mode === 'cut' ? [c0, c1] : [0, (NF - 1) / FPS];
+  st.p = c0;
+  for (let i = 1; i <= NF; i++) {
+    const im = new Image(); im.src = `${MEDIA}${s.plate}/f_${String(i).padStart(4, '0')}.jpg`;
+    im.onload = () => { st.loaded++; if (st.loaded === NF) draw(st, true); };
+    im.onerror = () => { err.textContent = 'Could not load the frames in ' + MEDIA + s.plate + '/ (they live in work_fable/take2/lipsync_v4/ in the repo checkout).'; };
+    st.frames.push(im);
+  }
+  const setLag = (ms) => {
+    st.lag = Math.max(s.min, Math.min(s.max, ms)); r.value = st.lag; val.textContent = fmt(st.lag); updateSend();
+    if (st.playing) restart(st, currentP(st));
+  };
+  st.setLag = setLag;
+  r.addEventListener('input', () => setLag(+r.value));
+  el.querySelector('.m20').onclick = () => setLag(st.lag - 20);
+  el.querySelector('.p20').onclick = () => setLag(st.lag + 20);
+  el.querySelector('.meas').onclick = () => setLag(s.measured);
+  el.querySelector('.zero').onclick = () => setLag(s.v3);
+  const cut = el.querySelector('.cut'), whole = el.querySelector('.whole');
+  const setMode = (m) => { st.mode = m; cut.classList.toggle('on', m === 'cut'); whole.classList.toggle('on', m === 'whole');
+    st.p = st.loop()[0]; if (st.playing) restart(st, st.p); else draw(st, true); };
+  cut.onclick = () => setMode('cut'); whole.onclick = () => setMode('whole');
+  st.btn = el.querySelector('.play');
+  st.btn.onclick = () => st.playing ? stop(st) : start(st);
+  val.textContent = fmt(st.lag);
+}
+async function ensureBuf(st) {
+  if (st.buf) return st.buf;
+  if (!window.LIPSYNC_AUDIO) throw new Error('audio.js did not load from ' + MEDIA);
+  st.buf = await audioCtx().decodeAudioData(b64buf(window.LIPSYNC_AUDIO[st.s.plate]));
+  return st.buf;
+}
+function currentP(st) { return st.playing ? st.pStart + (heardNow() - st.tStart) : st.p; }
+// play the sound so that picture time p is heard at context time tStart; the picture is drawn from the heard clock
+function restart(st, p) {
+  if (st.src) { try { st.src.stop(); } catch (e) {} st.src.disconnect(); st.src = null; }
+  const [l0, l1] = st.loop(); if (p < l0 || p >= l1) p = l0;
+  const src = ctx.createBufferSource(); src.buffer = st.buf; src.connect(ctx.destination);
+  const when = ctx.currentTime + 0.03, off = PAD + p - st.lag / 1000;
+  // the context time of "when" is heard (when - currentTime) later than now's heard sample, i.e. at when in heard-clock terms
+  src.start(when, Math.max(0, off));
+  // a sample scheduled at context time "when" is heard when heardNow() reaches "when" (heardNow() runs behind
+  // ctx.currentTime by the output delay), so in heard-clock terms picture time p starts at "when".
+  st.src = src; st.pStart = p; st.tStart = when; st.off = Math.max(0, off);
+}
+async function start(st) {
+  try {
+    audioCtx(); if (ctx.state !== 'running') await ctx.resume();
+    await ensureBuf(st);
+  } catch (e) { st.err.textContent = 'Sound could not start: ' + e.message; return; }
+  Object.values(state).forEach(o => { if (o !== st && o.playing) stop(o); });
+  st.playing = true; st.btn.textContent = 'pause';
+  restart(st, st.p);
+}
+function stop(st) {
+  st.p = currentP(st); st.playing = false; st.btn.textContent = 'play';
+  if (st.src) { try { st.src.stop(); } catch (e) {} st.src.disconnect(); st.src = null; }
+}
+function draw(st, force) {
+  if (st.loaded < NF) return;
+  const p = currentP(st), k = Math.max(0, Math.min(NF - 1, Math.round(p * FPS)));
+  if (force || k !== st.drawn) { st.g.drawImage(st.frames[k], 0, 0, 960, 540); st.drawn = k; }
+}
+function tick() {
+  for (const st of Object.values(state)) {
+    if (st.playing) {
+      const [l0, l1] = st.loop();
+      if (currentP(st) >= l1) restart(st, l0);
+      draw(st, false);
+    }
+  }
+  requestAnimationFrame(tick);
+}
+SHOTS.forEach(build); updateSend(); requestAnimationFrame(tick);
+document.getElementById('copy').onclick = () => {
+  const t = document.getElementById('sendline').textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).catch(() => prompt('Copy this:', t));
+};
+window.__lipsync = { state, currentP, heardNow, PAD, get ctx() { return ctx; } };   // for the headless test
+</script>
+</body>
+</html>
