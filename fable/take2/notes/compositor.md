@@ -721,3 +721,22 @@ bb16, bb22, bb31, bu09, dr01, cb04, oa04 (as v3). Type all pass; 22 lines, 119 w
 identical; last frame equals frame 0 with hud=0 (max diff 0).
 Looked at: the five sheets and one-frame-per-beat strips (2 frames after each beat) of b17-18, b21-22, b25, b33-38, b41-42, b51-52,
 b116-117, b139-142, b145-146 (work_fable/take2/dev/v4/strips/).
+
+## Master (2026-11-14, night; brief: notes/master_direction.md section B, Jade's words: notes/jade_v4_notes.md)
+
+State: B1 done (messages, layout fix), B2 hook in (home_v3 not landed yet), B3 audit stills rendering, B4 not started (waits for
+home_v3; if it has not landed within 40 minutes of polling: report and stop without the master).
+
+B1. Commit messages (fable/proof/lives.js): ames `landed a 747 in a class 4 sim`, phd `language and music cognition, auditory
+   neuroscience` (Jade's words). Checked with hud=0 stills (dev/master/msg/msg_sheet.jpg, msg_sheet2.jpg, gitlog.jpg): b31 phd and b32
+   ames chyrons (the box grows with the text: fits), proof written lanes, kit lanes b43-48 and b124-126, fold backs b49-50 (phd wraps
+   to three lines inside its cell), strands b57-64 (branch names run off the frame edge as every strand did in v3: the brief's design),
+   detail captions b66.2/b67.1/b70.3/b70.4 (one line, fits), the town road. Fixed: the git log b73-76 rows were 97 mono characters for
+   phd (about 2050 px at 34 px): rows now 31 px (film.js gitlog), the longest ends at x ~1893 of 1920. The v7 frames (old code film,
+   b9-16, b19, b45, b54-55, b77-104, b121-127) have messages baked in where its roads are written: not re-rendered (not mine).
+B2. Lip-sync unchanged (+340 / -40 ms). shots.js LIFE_SWAP.home id is now a list ['home_v3', 'home_v2'] (film.js LIFE_SWAP reads lists,
+   newest first): home_v3 is used everywhere home is when work_fable/take2/plates/home_v3 exists.
+Lyric word times (for the subtitle agent): analysis_v3/timing.json, key `lyrics.lines`: 23 lines, each {id, section, text, kind,
+   start, end, start_pos, words: [{w, start, end}, ...]}, seconds from the first sample of "inputs/Merge (keychange down).wav" = film
+   time (frame k = t x 30). The film shows 22 of them: it drops lines that are only vocables (film.js buildLyrics, VOCABLE regex), strips
+   punctuation per word, and holds a line until min(last end + 0.5, next line start - 0.1), at least last start + 0.8 s.

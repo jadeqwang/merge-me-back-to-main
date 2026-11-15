@@ -537,10 +537,11 @@ function strands(t, sc) {
 const GL = (() => { const out = []; const ids = [...LIVES.map((l) => l.id), 'main'];
   for (let n = 0; n < 400; n++) { const id = ids[(n * 7) % ids.length], L = id === 'main' ? { branch: 'main', msg: 'merge me back to main', color: MAIN } : byId[id];
     out.push({ col: (n * 5) % 6, id, L, hash: hashOf(id + '#' + n) }); } return out; })();
+// master: rows at 31 px (was 34) so the longest row, jade/phd-neuroscience's new message (97 mono chars), ends inside the frame
 function gitlog(t, s) {
   g.fillStyle = '#07070C'; g.fillRect(0, 0, W, H);
   const o = s.opt, prev = [0, 1, 2, 3].slice(0, o.bar).reduce((a, k) => a + 3 * 2 ** (k + 1), 0), b0 = bposT(s.t0), u = Math.max(0, bposT(t) - b0);
-  const n = 18 + prev + Math.floor(u * o.rate), fpx = 34 * S, lh = 50 * S, rows = Math.ceil(H / lh) + 1, cw = fpx * 0.6;
+  const n = 18 + prev + Math.floor(u * o.rate), fpx = 31 * S, lh = 50 * S, rows = Math.ceil(H / lh) + 1, cw = fpx * 0.6;
   g.save(); g.font = `600 ${fpx}px "JetBrains Mono"`; g.textBaseline = 'alphabetic';
   const beatPop = 1 - clamp01((u % 1) / 0.25);
   for (let r = 0; r < rows; r++) { const k = n - 1 - r; if (k < 0) break; const R = GL[k % GL.length], y = H - 40 * S - r * lh, a = r === 0 ? 1 : Math.max(0.28, 0.85 - r * 0.035);
@@ -967,7 +968,7 @@ async function boot() {
   const dirs = heroNew ? { hero: heroNew.dir } : {}, aPlates = {}; const turnOv = {};
   // film v3: a life plate swapped everywhere, the proof's grid and bar-37 turn included (shots.js LIFE_SWAP; band_v2): the proof reads it
   // through dirs[id], the film through PLATE[id]; side/tone in lives.js are overridden from the wiring row when given
-  if (!PROOFBUG) for (const [k, a] of Object.entries(LIFE_SWAP || {})) { const p = await findPlate(a.id); if (!p) continue;
+  if (!PROOFBUG) for (const [k, a] of Object.entries(LIFE_SWAP || {})) { const p = await findPlate(await firstPlate(a.id)); if (!p) continue;   // a.id may be a list, newest first (master: home_v3, home_v2)
     dirs[k] = p.dir; PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; if (a.side) byId[k].side = a.side; if (a.tone) byId[k].tone = a.tone; if (a.turn != null) turnOv[k] = a.turn; }
   if (!PROOFBUG) for (const [k, a0] of Object.entries(PROOF_A || {})) { let a = a0; if (Array.isArray(a0)) { a = null; for (const x of a0) if (await findPlate(x.id)) { a = x; break; } if (!a) continue; }
     const p = await findPlate(await firstPlate(a.id)), s = SH.find((q) => q.kind === 'proof' && q.src === 'A:' + k); if (!p || !s) continue;
