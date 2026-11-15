@@ -1,8 +1,14 @@
 {
 "cmd": "git log --graph --format=\"%h %s\" fable/merge",
 "note": "real lines of this repo branch, captured for the terminal shot (b153-156) by tools/gitlog.py at render time; messages cut at 86 characters",
-"head": "5c51f03",
+"head": "d2f13b7",
 "lines": [
+"* d2f13b7 master B2-B3: home_v3 checked; Step 6 audit notes (one canon fault in a pla\u2026",
+"* 812b99b take two master plates: home_v3 (children's skin warm), notes plates_v5.md \u2026",
+"* 7686bf0 master B1-B2: Jade's two new commit messages (ames, phd), git log rows 31 p\u2026",
+"* ca72390 take two: Jade's answers on film v4 (verbatim) and the master direction",
+"* 22b47e6 take two: film v4 review page, handoff updated, spend ledger",
+"* bb573bd film v4: public review encode (likeness=0) and sheets, git log captured at \u2026",
 "* 5c51f03 film v4 wiring: lag overrides (lagface/laghero, +340/-40 ms), main_light_v3\u2026",
 "* 757d9dd take two v4 plates: home_v2 (warm face and hands), det_home_v2, main_light_\u2026",
 "* 5694672 film v4 item 1: b21 wetlab runner rebuilt (tools/recross.py, derived plate \u2026",

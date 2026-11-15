@@ -724,7 +724,7 @@ b116-117, b139-142, b145-146 (work_fable/take2/dev/v4/strips/).
 
 ## Master (2026-11-14, night; brief: notes/master_direction.md section B, Jade's words: notes/jade_v4_notes.md)
 
-State: B1-B3 done; home_v3 landed and checked; B4 (the master renders) in progress (commands below).
+State: B1-B4 done (2026-11-14, night). Masters rendered and checked; next owner makes the X/YouTube encodes and subtitles from the local master.
 
 B1. Commit messages (fable/proof/lives.js): ames `landed a 747 in a class 4 sim`, phd `language and music cognition, auditory
    neuroscience` (Jade's words). Checked with hud=0 stills (dev/master/msg/msg_sheet.jpg, msg_sheet2.jpg, gitlog.jpg): b31 phd and b32
@@ -757,3 +757,17 @@ B3. Step 6 audit, hud=0, likeness on (local), one still 2 frames after every bea
    - Text, NOT mine: v7 frames (old code film) with old branch names baked into their roads: legible nowhere at 1080p that I saw
      (b19 is cropped to cut its road lyric).
    - Nothing else clipped at a frame edge; every lyric line fully inside the frame on the strips.
+B4. The masters (1080p30, hud=0). Commands (notes committed first; gitlog.py ran once, inside render_film.sh, before both renders):
+    fable/take2/tools/render_film.sh master_public "" "likeness=0&hud=0"   # 495 s: out/film_master_public_master.mp4 (CRF 16, AAC 256k, 1.11 GB),
+                                                                            # out/film_master_public.mp4 (capped 2.4 Mb/s, 80.0 MB), sheets, keep_master_public/
+    node fable/take2/tools/render.mjs --mp4 work_fable/take2/out/merge_master_1080p.mp4 --q "hud=0" --audio "inputs/Merge (keychange down).wav" --abr 320k --workers 6 --crf 16
+    .venv/bin/python fable/take2/tools/check.py work_fable/take2/out/film_master_public_master.mp4                        # out/check_master.txt
+   - The release master (local only, with the likeness): work_fable/take2/out/merge_master_1080p.mp4, 1.13 GB, H.264 1920x1080 30/1,
+     8484 frames, CRF 16 (31.5 Mb/s), AAC 48 kHz 320k, 282.80 s. b137-138 is the likeness shot (checked at 236.5 s).
+   - Public (repo): review/fable_take2/merge_master_public.mp4 (the capped encode of the hud=0 likeness=0 master, 80.0 MB) and
+     merge_master_public_sheet_01..05.jpg. The full CRF 16 public master (1.11 GB) stays at work_fable/take2/out/film_master_public_master.mp4
+     (too large for the repo).
+   - check.py (public master): 161 hard cuts, mean |error| 0.28 fr, 152 of 154 within 0.5 fr (outliers pc03 +1.89, bu40 +2.80, as v3/v4;
+     no clear change by design: oa03; also bb16, bb22, bb31, dr01, cb04, oa04 as before); type all pass; 22 lines, 119 words, none under
+     0.6 s; single frame vs full render 11 of 11 identical. Last frame equals frame 0 with hud=0 (rendered, likeness on: max diff 0).
+     Decoded from the mp4s, the first and last frames differ by mean 1.6 levels (max 43): frame 0 is an I-frame, the last a P-frame.
