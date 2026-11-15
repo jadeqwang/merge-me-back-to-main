@@ -1,6 +1,14 @@
-# Take two: handoff (updated 2026-11-14, late night: the MASTER exists)
+# Take two: handoff (updated 2026-11-15: film v6 round in progress)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
+
+## Film v6 (2026-11-15, in progress)
+
+Jade asked for a review of the master against the shipped films ("a solid B-side"). Her answers are in `notes/jade_v5_notes.md`;
+the brief is **`notes/v6_direction.md`**: the violet branch as narrator, the drop as her pencil drawing, the page as the object,
+intuition instead of memory in the day, a hand and controller for the orange, the real Jade once early, shorter credits, and a
+post-credits shot in a car with the camera as the listener. Two agents (compositor, plates) work from that brief; their state is
+in `notes/compositor.md` "Film v6" and `notes/plates_v6.md`. The master below is untouched. Open with Jade: section C of the brief.
 
 ## The master (2026-11-14, late night)
 
