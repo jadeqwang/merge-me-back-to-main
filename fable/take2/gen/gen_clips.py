@@ -234,6 +234,11 @@ C.update({
 })
 VIEWS.update({"page_reveal": "back", "pencil_lead": "none", "pencil_draw": "none", "car_confess": "front", "det_pad": "none", "pad_handover": "none", "intuit_piano": "none", "intuit_violin": "none", "intuit_stance": "none"})
 
+# take b of the two intuition inserts (t1 moved too little to read at speed: mean frame difference in the hand box 3.0 / 1.1)
+C["intuit_piano_b"] = ("intuit_piano_b_a1", DAY_, "Without looking, her fingers play a fast, clearly visible piano figure on the ribbed hem of her jacket, as a pianist practises a passage on a table top: each finger lifts HIGH off the hem and strikes down again in turn, thumb, second, third, fourth, little finger and back, two quick rippling runs each second, the knuckles arched, the movement large and lively and easy to see; the wrist stays level and the hand stays in place. Her jacket stirs slightly." + LOCK + HANDS, {"fixed": True})
+C["intuit_violin_b"] = ("intuit_violin_c_a2", DAY_, "Without thinking, her left hand plays a quick violin passage on her own right forearm, clearly visible: the thumb stays still underneath, and the rounded fingertips of the left hand lift HIGH and drop down onto the forearm one after another, first, second, third, fourth, and back again, about four finger drops a second, the knuckles high and arched, never flat; at the end the third finger holds down and rocks in a quick vibrato. Her right hand stays relaxed and open, palm up. Exactly two hands in every frame." + LOCK + HANDS, {"fixed": True})
+VIEWS.update({"intuit_piano_b": "none", "intuit_violin_b": "none"})
+
 def ref(src, out):
     os.makedirs(os.path.dirname(out), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-vf", "scale=2048:1152:flags=lanczos", "-q:v", "2", out], check=True)
