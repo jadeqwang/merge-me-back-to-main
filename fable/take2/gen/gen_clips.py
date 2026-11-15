@@ -176,6 +176,40 @@ C["vio_wide_v2"] = ("vio_wide_a1", SB, "The small figure is RUNNING when the sho
 C["wave_run_v3"] = ("wave_run3_knees", "a cel-shaded anime drawing on white paper coloured with saturated coloured pencil", "Low camera close in front of her. She sprints straight at the viewer at full speed the whole time, leaning into the run, knees driving, arms pumping hard, her long hair streaming back. Her face changes over the shot: for the first second and a half it is set and determined, brows low, lips pressed closed; at about two seconds she glances up and back over her shoulder at the wave behind her for half a second, then her eyes come forward again, and from about three seconds she breaks into an open, glad smile that stays to the end. One face, the same face throughout. The camera retreats in front of her at exactly her speed: the framing stays from the knees up for the whole shot, her head near the top third; it never pulls back to show her feet. Behind and above her the towering wave of thick coloured-pencil ribbons surges forward, its crest curls over above her head and breaks into white paper spray around her; the ribbons ripple as in hand-drawn animation. White paper fills every gap." + HANDS, {})
 VIEWS.update({"vio_wide_v2": "back", "wave_run_v3": "front"})
 
+# ---- Film v4 plates (plates agent, 2026-11-14; notes fable/take2/notes/plates_v4.md) ----
+# home_v2: the parenthood life plate with her face and hands in her own warm skin tone (v3 had them painted blue).
+# Same structure as the proof's pf_home clip (fable/proof/gen/gen_clips.py): plays 3 s, then turns only her head; last frame = the
+# proof's approved turn frame (copied to stills/home_turn_pf.jpg).
+CRAYON = "a wax-crayon and chalk-pastel drawing on dark blue paper"
+C["home_v2"] = ("home_v2_a1", CRAYON, None, {"last": "home_turn_pf"})
+OVR["home_v2"] = (KEEP.format(m=CRAYON) + "The camera is locked off: no zoom, no pan, no cut. The video begins on the first frame and ends exactly on the last frame. "
+  "For the first three seconds she moves the small blue ball slowly around the orange along the chalk-drawn orbit while the two children watch with their backs to the viewer; the children never turn around and their faces are never seen. "
+  "Then she pauses and turns ONLY her head, over her left shoulder, to look back toward the viewer, arriving at the pose and the face of the last frame, and holds it, nearly still, for the final half second. Her shoulders, back and body do not turn. "
+  "Her face is exactly the face drawn in the last frame, in the same medium. Her face, neck and hands keep their natural warm light skin tone, lit by the lamp, in every frame; they are never blue or grey. "
+  "Meanwhile the chalk orbit lines shimmer slightly as in hand-drawn animation. "
+  "Her mouth stays closed; she does not speak or sing. The lettering on her jacket (RARE EARTH and 1420 MHz) stays exactly as drawn in the first frame. One continuous shot. No captions, no subtitles, no added text.")
+VIEWS["home_v2"] = "back"
+
+
+# main_light_v3 (b25): ONE motion, a slow steady opening of the cupped hands; first frame nearly closed, last frame open.
+C["main_light_v3"] = ("main_light_v3_closed_a1", NIGHT_, None, {"last": "main_light_v3_open_a2", "fixed": True})
+OVR["main_light_v3"] = (KEEP.format(m=NIGHT_) + "The camera is locked off: no zoom, no pan, no cut. The video begins on the first frame and ends exactly on the last frame. "
+  "There is only ONE movement in the whole shot: her two cupped hands open slowly, smoothly and steadily, from the nearly closed shell of the first frame to the open palms of the last frame, at an even pace that lasts the whole five seconds, like a flower opening. "
+  "The hands never close again, never curl back, never pause and never move back and forth; the fingers uncurl together, gently and naturally, and the hands stay in the same place in the picture. "
+  "As they open, the warm golden light inside grows: at first only a thin glow escapes between her fingers, then the small light is seen in her palms and grows steadily into the bright small star of the last frame, its fine drawn rays lengthening, its flat warm light spreading over her palms and fingers. "
+  "Her hands are slender young woman's hands with smooth skin and exactly five fingers each in every frame. The jacket sleeves stay still. The drawn stars twinkle a little. "
+  "The only lettering is 1420 MHz on the one round patch on the arm on the right of the picture, which stays exactly as drawn. One continuous shot. No captions, no subtitles, no added text.")
+VIEWS["main_light_v3"] = "none"
+
+# wave_run_v4 (b145-146): back to the plain sprint at the lens; no glance, no grin. Start set (wave_run4_set_a2), end on a small
+# closed-mouth smile (wave_run4_smile_a2); both are one-ref edits of the take 2 still wave_run3_knees.
+C["wave_run_v4"] = ("wave_run4_set_a2", "a cel-shaded anime drawing on white paper coloured with saturated coloured pencil", "Low camera close in front of her. She sprints straight at the viewer at full speed the whole time, leaning into the run, knees driving, arms pumping hard, her long hair streaming back. "
+  "Her head and eyes face the viewer the whole time: she looks straight ahead, never turns her head, never glances back or up or to the side. "
+  "Her face changes only very slowly and very little: at first it is set and determined, lips closed in a level line; over the whole shot the corners of her closed mouth lift a little and her eyes soften, so that by the end she has a small, quiet, closed-mouth smile, no teeth, as in the last frame. It is a subtle change, never a grin, never laughing, the mouth never opens. She may blink once or twice. "
+  "One face, the same face throughout. The camera retreats in front of her at exactly her speed: the framing stays from the knees up for the whole shot, her head near the top third; it never pulls back to show her feet. "
+  "Behind and above her the towering wave of thick coloured-pencil ribbons surges forward and its crest curls over above her head; the ribbons ripple as in hand-drawn animation. White paper fills every gap. Her hands are the slender hands of a young woman with smooth skin, each with exactly five fingers.", {"last": "wave_run4_smile_a2"})
+VIEWS["wave_run_v4"] = "front"
+
 def ref(src, out):
     os.makedirs(os.path.dirname(out), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-vf", "scale=2048:1152:flags=lanczos", "-q:v", "2", out], check=True)

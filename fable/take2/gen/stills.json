@@ -940,6 +940,62 @@
     "work_fable/take2/stills/band_v2_a2.jpg"
    ],
    "prompt": "Edit this picture; keep everything exactly as it is in the same two-colour risograph print: the same room, the same people watching, the same two bandmates, her same body, jacket, guitar, microphone, framing. Change only her head: she has stopped singing and turned ONLY her head over her left shoulder to look back at the viewer, her shoulders and back still facing away, so the back of her jacket with the pale-blue circle and RARE EARTH stays in view. Her face is now seen in three-quarter view looking straight at the viewer: an oval face with a tall clear forehead, her long straight black hair parted in the centre with no fringe, large very dark brown eyes with a clear double eyelid, soft straight brows, a small straight nose, natural closed lips with the faintest smile; a calm, quiet look of recognition; no makeup. Drawn in the same halftone and ink as the rest. No other change. No text."
+  },
+  {
+   "id": "home_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/refs/home.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same wax-crayon and chalk-pastel drawing on dark blue paper: the same framing and composition, the same night room, the desk lamp and its beam of light, the planet drawings taped to the wall, the clock, the two children seen from behind on the bean bags, the orbit lines, the orange and the small blue ball, her pose kneeling on the rug, her jacket, trousers, headphones and lettering, all in the same places. Change only the colour of her skin: her face, neck and both hands are now her natural warm light skin tone, peach and ivory, drawn in warm crayon and pastel and lit softly by the lamp, like a real person's skin, not blue and not grey; the blue paper may show through the crayon a little in the shadows, as on the rest of the drawing. Her face stays in profile looking at the orange, with the same features: a large very dark brown eye, a soft round cheek, a small straight nose, natural closed lips, black hair with a centre parting. Her two hands are slender young woman's hands with smooth skin and five fingers each, in the same positions holding the orange and the small blue ball. The children stay exactly as they are, with their backs to the viewer; their faces are never seen. No other change. No text added."
+  },
+  {
+   "id": "det_home_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/det_home_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same chalk and pastel drawing on dark blue paper: the same framing, the glowing light bulb and its rays, the wooden table, the orange, the white sleeve with its pink cuff band, the pink headphones and cable, every line in the same place. Change only the colour of the hand: the hand resting on the orange is now a natural warm light skin tone, peach and ivory, drawn in warm pastel and lit by the bulb, like a real person's skin, not blue and not grey; a slender young woman's hand with smooth skin, a bare hand, not a glove, the same pose and five fingers. No other change. No text added."
+  },
+  {
+   "id": "main_light_v3_closed",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/main_light_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same flat cel-shaded drawing with a clean inked line on black paper: the same framing and camera, the same white jacket sleeves with their orange bands, the round 1420 MHz patch on the arm on the right of the picture, the orange cuffs, the black top, the stars, the same size and place of the hands in the picture. Change only her hands and the light: her two hands are nearly closed round the light, cupped together like a closed shell, the fingers of both hands curled over and touching at the tips, the thumbs resting along the top; the light is hidden inside, and only a thin warm golden glow escapes through the narrow gaps between her fingers and along the edges where the hands meet, drawn in golden pencil and white gel pen, lighting her fingertips softly. Her hands are slender young woman's hands with smooth skin and exactly five fingers each, simply and correctly drawn. No other change. No text added."
+  },
+  {
+   "id": "main_light_v3_open",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/main_light_a1.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same flat cel-shaded drawing with a clean inked line on black paper: the same framing and camera, the same white jacket sleeves with their orange bands, the round 1420 MHz patch on the arm on the right of the picture, the orange cuffs, the black top, the stars, the same size and place of the hands in the picture. Change only her hands and the light: her two hands have opened slowly and are now open, palms up and flat, side by side with the edges of the little fingers touching, fingers relaxed and gently spread, like offering something; in the middle of her open palms the light is now a bright small star, larger than before, with longer fine golden rays drawn in golden pencil and white gel pen, its warm flat light spread over both palms and fingers and the orange cuffs. Her hands are slender young woman's hands with smooth skin and exactly five fingers each, simply and correctly drawn. No other change. No text added."
+  },
+  {
+   "id": "wave_run4_set",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/wave_run3_knees.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same cel-shaded anime drawing on white paper coloured with saturated coloured pencil: the same framing, the same running pose, the same wave of coloured bands behind her, the same hair, jacket, patch, headphones and trousers, her head facing the viewer exactly as now, her eyes looking straight ahead at the viewer. Her face keeps exactly the same features: large very dark brown eyes, soft round cheeks, a small nose, black hair with a centre parting. Change only her expression: she is neutral and determined, focused on where she is running; her lips are closed and relaxed in a straight, level line with NO smile at all, the corners of the mouth neither up nor down; her brows level and slightly lowered in concentration; her eyes open and steady. Not angry, not sad: calm, set, determined. No other change. No text added."
+  },
+  {
+   "id": "wave_run4_smile",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/wave_run3_knees.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same cel-shaded anime drawing on white paper coloured with saturated coloured pencil: the same framing, the same running pose, the same wave of coloured bands behind her, the same hair, jacket, patch, headphones and trousers, her head facing the viewer exactly as now, her eyes looking straight ahead at the viewer. Her face keeps exactly the same features: large very dark brown eyes, soft round cheeks, a small nose, black hair with a centre parting. Change only her expression, very slightly: a small, quiet, closed-mouth smile, the lips closed with no teeth showing, the corners of the mouth lifted only a little; her eyes softened a little, the lower lids lifted slightly, warm and glad. A subtle look, a person quietly happy while running, not a grin, not laughing, not a wide smile. No other change. No text added."
+  },
+  {
+   "id": "facade_wetlab_v3",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/v4refs/wetlab/ref.jpg"
+   ],
+   "prompt": "A scientific ink drawing in the manner of an early-1900s histology plate: very fine black and sepia pen lines and stippling on aged ivory paper, exquisite patient linework. A drawing of the real building in the reference photograph, faithful to its architecture so that anyone who knows it recognises it at once: the James H. Clark Center at Stanford, a modern research building of three storeys of curved glass walls wrapped in long open balconies and walkways with slender railings, carried on thin steel posts, the balcony edges, posts and the deep overhanging curved roof edge in red-orange steel, the wings curving round a courtyard with an outdoor stair between the levels. Use the photograph ONLY for the building's shape and details: leave out everything else in it (no trees, no grass, no people, no sky, no plaza, no benches, no signs). Draw it as one single subject, seen straight on from the front like a flat piece of stage scenery, standing alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; wider than it is tall, about two thirds of the picture's height; nothing else around it. There is no lettering of any kind: no signs, no names, no numbers, no logos. The subject is in this one medium, nearly monochrome sepia and black ink, and its only strong colour is mint green, used once or twice (a door, a window, a light); the red-orange steel is drawn in sepia ink, not in colour. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
   }
  ]
 }
