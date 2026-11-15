@@ -996,6 +996,14 @@
     "work_fable/take2/v4refs/wetlab/ref.jpg"
    ],
    "prompt": "A scientific ink drawing in the manner of an early-1900s histology plate: very fine black and sepia pen lines and stippling on aged ivory paper, exquisite patient linework. A drawing of the real building in the reference photograph, faithful to its architecture so that anyone who knows it recognises it at once: the James H. Clark Center at Stanford, a modern research building of three storeys of curved glass walls wrapped in long open balconies and walkways with slender railings, carried on thin steel posts, the balcony edges, posts and the deep overhanging curved roof edge in red-orange steel, the wings curving round a courtyard with an outdoor stair between the levels. Use the photograph ONLY for the building's shape and details: leave out everything else in it (no trees, no grass, no people, no sky, no plaza, no benches, no signs). Draw it as one single subject, seen straight on from the front like a flat piece of stage scenery, standing alone in the middle of the picture on a plain, empty, flat WHITE background, its base on one straight level line; wider than it is tall, about two thirds of the picture's height; nothing else around it. There is no lettering of any kind: no signs, no names, no numbers, no logos. The subject is in this one medium, nearly monochrome sepia and black ink, and its only strong colour is mint green, used once or twice (a door, a window, a light); the red-orange steel is drawn in sepia ink, not in colour. Wide 16:9 picture that fills the whole frame with no border. No caption, no signature, no text."
+  },
+  {
+   "id": "home_turn_v2",
+   "raw": true,
+   "refs": [
+    "work_fable/proof/turns/home.jpg"
+   ],
+   "prompt": "Edit this picture; keep everything exactly as it is in the same wax-crayon and chalk-pastel drawing on dark blue paper: the same framing and composition, the same night room, the lamp and its beam, the planet drawings, the clock, the two children seen from behind on the bean bags, the orbit lines, the orange and the small blue ball, her pose, her face looking back over her shoulder at the viewer, her hair, jacket, trousers, headphones and lettering, all in the same places. Change only the colour of her two hands: both hands, the one holding the orange and the one holding the small blue ball, are now her natural warm light skin tone, peach and ivory, the same warm tone as her face, drawn in warm crayon and pastel and lit softly by the lamp, not blue and not grey. They stay slender young woman's hands with smooth skin and five fingers each, in exactly the same positions. The children stay exactly as they are, with their backs to the viewer; their faces are never seen. No other change. No text added."
   }
  ]
 }

@@ -181,7 +181,7 @@ VIEWS.update({"vio_wide_v2": "back", "wave_run_v3": "front"})
 # Same structure as the proof's pf_home clip (fable/proof/gen/gen_clips.py): plays 3 s, then turns only her head; last frame = the
 # proof's approved turn frame (copied to stills/home_turn_pf.jpg).
 CRAYON = "a wax-crayon and chalk-pastel drawing on dark blue paper"
-C["home_v2"] = ("home_v2_a1", CRAYON, None, {"last": "home_turn_pf"})
+C["home_v2"] = ("home_v2_a1", CRAYON, None, {"last": "home_turn_v2_a1"})   # t1 used home_turn_pf (blue hands came back after the turn)
 OVR["home_v2"] = (KEEP.format(m=CRAYON) + "The camera is locked off: no zoom, no pan, no cut. The video begins on the first frame and ends exactly on the last frame. "
   "For the first three seconds she moves the small blue ball slowly around the orange along the chalk-drawn orbit while the two children watch with their backs to the viewer; the children never turn around and their faces are never seen. "
   "Then she pauses and turns ONLY her head, over her left shoulder, to look back toward the viewer, arriving at the pose and the face of the last frame, and holds it, nearly still, for the final half second. Her shoulders, back and body do not turn. "
