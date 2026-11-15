@@ -847,3 +847,21 @@ Wiring of the plates_v6 table (checked on stills, dev/v6/c6..c8):
   it elsewhere (2 beats from b116.1 would cost the type flowing into the notebook).
 - like_sing0: hook ready (LIKE0_ON in shots.js: b63 ends on beat 4, one 'L' shot b63.4-65 song-locked, t0_song 109.0, lyric region
   left); off until the director says her likeness passed.
+
+### Film v6 renders (2026-11-15)
+Commands (wiring committed first, so the terminal burst shows it; gitlog.py ran once, inside render_film.sh, before the public master):
+    fable/take2/tools/render_film.sh film_v6 "" "likeness=0"        # 492 s; master work_fable/take2/out/film_film_v6_master.mp4 (CRF 16)
+    cp work_fable/take2/out/film_film_v6.mp4 review/fable_take2/film_v6.mp4; cp work_fable/take2/out/film_v6_sheet_0*.jpg review/fable_take2/
+    ln -sfn keep_film_v6 work_fable/take2/out/keep_v6; .venv/bin/python fable/take2/tools/check.py work_fable/take2/out/film_film_v6_master.mp4  # out/check_v6.txt
+    node fable/take2/tools/render.mjs --mp4 work_fable/take2/out/film_v6_local_master.mp4 --audio "inputs/Merge (keychange down).wav" --workers 6 --crf 16
+      then v4's encode (CRF 20, capped 2.3 Mb/s) -> work_fable/take2/out/film_v6_local.mp4 (likeness: b137-138 like_sing1; like_sing0 not wired)
+Outputs: review/fable_take2/film_v6.mp4 80.1 MB (282.8 s, likeness=0, HUD on), film_v6_sheet_01..05.jpg (1 fps).
+check.py: 190 hard cuts, mean |error| 0.33 fr, 174 of 183 clear cuts within 0.5 fr. Outliers: pc03 +1.89 (the proof's bar 38), bu39/bu41
++2.8 (the 3-frame flashes, as before), and the new hatch-wipe inserts dr09 +2.31, dr11 +1.54, dr26 +2.50, dr30 +2.00, dr35 +0.55,
+dr36 +1.10: the insert's first frame is on its beat but is mostly black paper with the first strokes, so the largest frame change comes
+1-2.5 frames later as the picture fills (by design). No clear change: bb16, bb22, bb31, dr01, cb04 (as before), cb06 (converge kit into
+kit, both dark), oa07 (the run into day_fork, both white paper: this was oa04 before the town was split).
+Type all pass; 22 lines, 119 words, none under 0.6 s; single frame vs full render 11 of 11 identical. Last frame equals frame 0 with
+hud=0 likeness=0 (rendered alone: max diff 0).
+Looked at: the five sheets; check stills dev/v6/c1..c8; check clips dev/v6/{intro,drop,end}_check.mp4 as frame strips. Nobody has
+watched film_v6 at speed with sound.
