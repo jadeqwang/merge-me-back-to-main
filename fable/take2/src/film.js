@@ -236,6 +236,7 @@ function clipMap(s) {
   if (o.songLock && PLATE[s.src] && PLATE[s.src].meta.t0_song !== undefined) return { c0: s.t0 - PLATE[s.src].meta.t0_song + lagOf(o), sp: 1 };   // likeness: locked to song time
   // film v4: a sung shot's lip-sync lag L (s; + = the sound plays later than the picture, notes/plates_v4.md): clip = song - t0_song + L
   if (o.cross) { const x = o.cross, ta = x.at * D, sp = Math.max(1, Math.min(x.maxSpeed || 1.5, x.reach / ta)); return { c0: Math.max(0, x.reach - sp * ta), sp }; }
+  if (o.clipFrom) { const tf = T.beat(o.clipFrom[0], o.clipFrom[1]); return { c0: (o.clip0 || 0) + (s.t0 - tf) * (o.speed || 1), sp: o.speed || 1 }; }   // film v6: a split shot continues its clip from clipFrom
   if (o.clip1 !== undefined) return { c0: o.clip0 || 0, sp: (o.clip1 - (o.clip0 || 0)) / D };
   return { c0: o.clip0 || 0, sp: o.speed || 1 };
 }

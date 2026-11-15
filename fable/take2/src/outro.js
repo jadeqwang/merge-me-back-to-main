@@ -35,7 +35,8 @@ export function makeOutro(E) {
   // set so that foot moves exactly with the road under it (rate = road px/s / (foot px/s at her drawn scale)): no sliding. R.loop
   // [a, b] (1-based frames, frame b looks like frame a): the run is played from a and cycles a..b-1.
   function runFrame(s, t) { const R = s.opt.runner, m = st.run, v = s.opt.speed * S, q = (R.h * H) / (m.h || 720);
-    const rate = R.foot ? v / (R.foot * m.fps * q) : 1, c = Math.max(0, t - s.t0 + (R.t0 || 0)) * rate;
+    const base = s.opt.townFrom ? T.beat(s.opt.townFrom[0], s.opt.townFrom[1]) : s.t0 - (R.t0 || 0);   // film v6: townFrom = the run's first moment
+    const rate = R.foot ? v / (R.foot * m.fps * q) : 1, c = Math.max(0, t - base) * rate;
     if (!R.loop) return Math.min(m.n - 1, Math.round(c * m.fps));
     const [a, b] = R.loop, P = b - a; return a - 1 + (Math.round(c * m.fps) % P); }
   // urls a shot needs at t (the harness preloads them into READY)
@@ -98,7 +99,7 @@ export function makeOutro(E) {
   // moving"). o.dir = +1 world to the right (default), -1 the v1 travel. The lives still pass in life order (piano first, entering from
   // the left), the road text still reads left to right (it scrolls right with the ground), hills follow with parallax.
   function town(t, s) {
-    const o = s.opt, dir = o.dir === undefined ? 1 : o.dir, v = o.speed * S, tt = (t - s.t0) + (o.x0 || 0), scroll = v * tt, roadY = 0.86 * H, baseY = 0.74 * H, sp = o.spacing * W;
+    const o = s.opt, dir = o.dir === undefined ? 1 : o.dir, v = o.speed * S, tt = o.townFrom ? t - T.beat(o.townFrom[0], o.townFrom[1]) : (t - s.t0) + (o.x0 || 0), scroll = v * tt, roadY = 0.86 * H, baseY = 0.74 * H, sp = o.spacing * W;
     g.fillStyle = PAPERW; g.fillRect(0, 0, W, H);
     hills(-dir * scroll * 0.18, 0.42 * H, 40 * S, 1.3, 0.35); hills(-dir * scroll * 0.32, 0.5 * H, 26 * S, 4.1, 0.45);
     // the facades along the road. film v3: a v2 facade may be wider (up to 0.42 W: Hangar One, the cut-away living room), and every facade
@@ -139,7 +140,7 @@ export function makeOutro(E) {
   }
   // ---------------------------------------------------------------- day_fork: pencil branches continuing the plate's tree
   function forks(t, s, im) {
-    const u = ease.out(seg(t, s.t0, s.t1)), r = rnd(91), tips = [[0.12, 0.22], [0.2, 0.12], [0.3, 0.07], [0.4, 0.06], [0.6, 0.06], [0.7, 0.07], [0.8, 0.12], [0.88, 0.22]];
+    const sp = s.opt.forksSpan, u = ease.out(sp ? seg(t, T.beat(sp[0][0], sp[0][1]), T.beat(sp[1][0], sp[1][1])) : seg(t, s.t0, s.t1)), r = rnd(91), tips = [[0.12, 0.22], [0.2, 0.12], [0.3, 0.07], [0.4, 0.06], [0.6, 0.06], [0.7, 0.07], [0.8, 0.12], [0.88, 0.22]];
     tips.forEach(([x, y], k) => { const p0 = plateToScreen(im, x, y), ang = Math.atan2(y - 0.55, x - 0.5);
       const br = (p, a, len, d, del) => { const gr = clamp01((u - del) / 0.35); if (gr <= 0 || d > 4) return; const q = { x: p.x + Math.cos(a) * len * gr, y: p.y + Math.sin(a) * len * gr };
         pencilLine([p, q], 1.3, 0.55); if (gr >= 1) { br(q, a - 0.3 - 0.25 * r(), len * 0.7, d + 1, del + 0.12); br(q, a + 0.3 + 0.25 * r(), len * 0.7, d + 1, del + 0.12); } };

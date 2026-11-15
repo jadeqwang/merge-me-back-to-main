@@ -431,10 +431,20 @@ const TOWN = { code: 'town', lives: LIFE, speed: 1050, spacing: 0.3, dir: 1 };  
 // in plate px per clip frame (tools/feet.py on kit/day_run: 20.84, step every 15 frames); outro.js sets the clip rate from it so her
 // planted foot moves with the road (about 2.26x at h 0.62 and speed 1050). loop: frames 35..94 (frame 95 matches 35, two strides).
 const RUNNER = { dir: '/work_fable/take2/kit/day_run', x: 0.58, h: 0.62, y: 0.9, edge: 0.02, foot: 20.84, loop: [35, 95] };
-shot(139, 141, 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax. She runs down the road from the first frame.', { row: 'b139-140', opt: { ...TOWN, runner: { ...RUNNER, t0: 0 } } });
-shot(141, 143, 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142',
-  opt: { ...TOWN, x0: 3.41, runner: { ...RUNNER, t0: 3.41 } } });
-P(143, 145, 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true } });
+// film v6 A7 (intuition, not memory): three inserts of main Jade doing what nobody taught her on screen, no chip, no label, cel on white
+// paper, daylight: (a) b140.3-141.1 her fingers play a piano figure on the hem of her jacket; (b) b142.1-142.3 her left hand curls into
+// violin fingering on her own forearm; (c) b144.2-145.1 her feet land in a true bow stance at a kerb, a quiet look down. Each is a town
+// (or day_fork) shot that becomes the plate when it lands (next); until then the run simply continues. townFrom: the town's first moment,
+// so every piece of the run is one continuous travel and stride (outro.js town/runFrame).
+const TOWN_RUN = { ...TOWN, townFrom: [139, 1], runner: { ...RUNNER } };
+const INTUIT = (id) => ({ id, kind: 'plate', opt: { clip0: 0, push: 0.02, clipFrom: null, forks: false, lyr: { x0: 0.03, x1: 0.4, align: 'left' } } });
+shot(139, [140, 3], 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax. She runs down the road from the first frame.', { row: 'b139-140', opt: { ...TOWN_RUN } });
+shot([140, 3], 141, 'S+C', 'code', 'facades', 'missing', 'Intuition (a): her fingers play a piano figure on the hem of her jacket. Close, cel on white paper, daylight, no chip. (Until intuit_piano lands: the run.)', { row: 'b139-140', opt: { ...TOWN_RUN, next: INTUIT('intuit_piano') } });
+shot(141, [142, 1], 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142', opt: { ...TOWN_RUN } });
+shot([142, 1], [142, 3], 'P+K', 'code', 'day_run', 'missing', 'Intuition (b): her left hand curls into violin fingering on her own forearm. Close, no chip. (Until intuit_violin lands: the run.)', { row: 'b141-142', opt: { ...TOWN_RUN, next: INTUIT('intuit_violin') } });
+shot([142, 3], 143, 'P+K', 'code', 'day_run', 'missing', 'The run, on past the last facades.', { row: 'b141-142', opt: { ...TOWN_RUN } });
+P(143, [144, 2], 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]] } });
+P([144, 2], 145, 'day_fork', 'missing', 'Intuition (c): her feet land in a true bow stance at a kerb; she notices, a quiet look down. (Until intuit_stance lands: day_fork continues.)', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]], clipFrom: [143, 1], next: INTUIT('intuit_stance') } });
 // film v2: the second likeness shot is dropped (Jade: "it doesn't look like me"); plate wave_run (plates agent) instead: drawn Jade sprints
 // at the lens out of a breaking wave of the twelve lane colours. A card until work_fable/take2/plates/wave_run lands. Slab low.
 P(145, 147, 'wave_run', 'missing', 'Drawn Jade sprints at the lens on the orange road of main, hair streaming, out of a breaking wave made of the twelve lane colours (ribbons of written lanes curling over). Slab BACK TO MAIN low.', { row: 'b145-146', opt: { clip0: 1.4, clip1: 4.8, push: 0,

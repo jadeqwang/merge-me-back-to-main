@@ -771,3 +771,53 @@ B4. The masters (1080p30, hud=0). Commands (notes committed first; gitlog.py ran
      no clear change by design: oa03; also bb16, bb22, bb31, dr01, cb04, oa04 as before); type all pass; 22 lines, 119 words, none under
      0.6 s; single frame vs full render 11 of 11 identical. Last frame equals frame 0 with hud=0 (rendered, likeness on: max diff 0).
      Decoded from the mp4s, the first and last frames differ by mean 1.6 levels (max 43): frame 0 is an I-frame, the last a P-frame.
+
+## Film v6 (2026-11-15, compositor; brief: notes/v6_direction.md section A, Jade's words: notes/jade_v5_notes.md)
+
+**Resume here.** Code for A1-A8 that needs no new plate is in (commit "film v6 code 1" and later). Plates wired so far: vio_grid_stay,
+vio_cutaway, main_back_wide_v2 (plates_v6 Wiring). Waiting on the plates agent (poll `notes/plates_v6.md`): page_reveal, pencil_lead,
+pencil_draw, det_pad, pad_handover, intuit_piano/violin/stance, car_confess, like_sing0 (only on the director's word). Each has a hook
+that falls back to the present source (below). Then: render `film_v6` (local likeness + public likeness=0), check.py, sheets.
+Check stills: `work_fable/take2/dev/v6/` (c1..c5 sheets; `sheet.sh out.jpg cols files...` tiles 640 px).
+Mid-round answers from Jade (via the director): det_pad KEEPS the parenthood message as its caption; the camera is in the DRIVER's seat
+(she is the passenger, the camera looks across at her; the road is seen ahead from the driver's side); wire main_back_wide_v2 (b56).
+
+What changed, by section of the brief (song times):
+- A1 intro. ia04 (b7-8, 10.70-14.19): the violet frost light takes slot 4 (lights at 11.79 s), glows a beat and drifts to the pane's left
+  edge and out (gone by ~13.3 s); the other eleven stay (`opt.vioTip`, film.js tips). ib01-ib10 (14.19-24.61): one violet lane leaves the
+  canopy's right tip and runs out of frame top right, a light at its head (14.6-17.6 s), then a quiet line with a slow pulse; anchor
+  measured on the raw v7 frames per song time (shots.js VLANE, film.js vlane). No label.
+- A2 verse 1. va10 (b26, 43.73-45.47): a violet light leaves her hands 0.3 s in, after the rose one, and goes furthest: up over the frame
+  and out top left by 1.55 s (`opt.vioMote`). Grid: port_proof.py `o.stay` (film passes `stay: {violet}` unless proofbug=1): the
+  rare-earth tile plays slowly and never reaches a turn; with vio_grid_stay (landed) she writes head down through bar 37; in bar 38 her
+  tile keeps its size, throws no lane into main, keeps its label; it stays over the opening iris for ~0.55 s of bar 39 and fades (the
+  last tile lit, alone, about a beat after the col-3 tiles fold at 65.8 s). "Start mid-sentence": not done (no existing verse 1 clip
+  opens on reading; the brief allows skipping).
+- A3 chorus 1. No violet runner: removed from the b43 row (12 lanes), the b124/b126 converge rows; the b51-52 fan is eleven (violet does
+  not fold in); the b48 flicker list went with runner_one. b48 (81.86-83.59) is now the cut-away: vio_cutaway clip 0.5-2.5 (fallback
+  vio_write2 from 0.4); runner_one is not shown. Its lyric: only the fading tail "becomes the one" at the top (it overlaps the dish top
+  a little while fading). NOT changed: the b49-50 map-fold sheet still folds all twelve cells (violet's included).
+- A4 breakdown. det_pad: PLATE_ALIAS det_home -> [det_pad, det_home_v2] (b68.2, b71.2, the b72 tiles), caption unchanged (Jade).
+  like_sing0: not wired (waits for the director's word).
+- A5 build and drop. b77.1 (132.05): the v7 formation is revealed over one beat by the pencil-hatch wipe with a gold pencil point at the
+  newest stroke's head; pencil_lead replaces that beat when it lands (next). Hatch wipe (film.js hatchIn, `opt.hatch {frames, seed,
+  pen}`): broad diagonal strokes (17 px apart, 24-38 px wide, each a little off the angle) laid in a sweep, revealing whatever the source
+  drew, on black paper, gold edges on the growing strokes. MAIN spelling: b94-96 cut to its v7 beats (94.1-94.3, 95.2, 96.3); b97-99
+  MAIN whole. 17 life inserts, each through the wipe, 2/1/1/1/1/1/1/1/1 beats in b93-96, two 1-beat in b101, two half-beat in b103, four
+  half-beat in b104 beats 3-4 (rate rises into b105): piano, violin, wushu(v3), wetlab, ins_piano, phd, poet, ames, band(v2), chezjj,
+  sandstorm, home(v3), ins_guitar, ins_violin_v3, violin, wushu, ins_poem (DROP_LIFE and the shots after it). pencil_draw: b97.1 one beat
+  when it lands, else the v7 fall continues.
+- A6/A7 the page-light (film.js pageLight: violet halo, a pale ruled page, `open` parts it into two pages): rises from her palm at
+  b116-117 (grows in the palm as a page, then floats up); crosses b121 (v7, pageFly left to right) and arrives in c2_lookup (comet head
+  is a page); b128 c2_hands: comes down between her palms and opens (220.2-221.3).
+- A7 day: town split for the three intuition inserts (b140.3-141.1 piano, b142.1-142.3 violin, b144.2-145.1 stance); every piece of the
+  town is one continuous travel and stride (`townFrom`), day_fork continues its clip across its split (`clipFrom`, forks over the whole
+  span). Until each plate lands nothing changes on screen.
+- A8 ending: graph b149-151 (255.49-260.60, 12 beats, marks scaled, label `cherry-pick HANDOFF.md` mono 40 px bold); endcredits
+  b152-155 (260.60-267.42): real git log burst 2.0 s, card lines one per half beat from beat 4.6, `$ git cherry-pick b1e72d6`
+  (hashOf('violet')) typed from beat 11.5 at 16 chars/s, cursor blinking; road b156.1-157.3 (267.42-269.98): the card fades, pale
+  yellow dashes draw out from the cursor, tip into a perspective road (driver's view, centre line on the left, eye 1.25 m), speed ramps
+  to 26 m/s, vio_wide's Milky Way above the horizon, one page-light riding among the dashes; car b157.3-161.3 (269.98-276.82): car_confess
+  when it lands, else the road at speed; type (film.js carType) whole lines, Instrument Serif at verse size: camera's line 0.35-3.35 s
+  lower third (two rows), hers 3.6-6.45 s; window b161.3-end: the road's page-light glides into the frost light at the palm (0.56, 0.35)
+  over 1.4 s; the last 1.5 s cross to frame 0 as before.
