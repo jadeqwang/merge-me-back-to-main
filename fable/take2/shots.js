@@ -409,8 +409,9 @@ section('chorus2');
 // film v6 A7: the page-light crosses (b121-123) and lands in main's hands, opening (b128); src/film.js pageLight, pageFly
 V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
 P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, lyr: { x0: 0.56, x1: 0.97, align: 'right' },
-  next: { id: 'c2_lookup_v2', opt: { clip0: 2.3, clip1: 4.0, zoom0: 1.12, fx: 0, fy: 0.5, push: 0.02 } } } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one;
-// c2_lookup_v2 (breathing, hair in wind, no arm, its own meteor in frame throughout, drifting down-left): clip 2.3-4.0 at 1x, its one blink (clip 3.0-3.2) lands mid-shot; zoom 1.12 from the left edge keeps the meteor head above-right of MERGE
+  next: { id: 'c2_lookup_v2', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 } } } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one;
+// c2_lookup_v2 (plates_v7 wiring: breathing, hair in wind, no arm, its own meteor (0.716, 0.195) -> (0.596, 0.286) over clip 0.3-3.5): v1's
+// window and crop kept; the one blink (clip 3.0-3.2) lands ~1.45 s in; the meteor stays above the lyric block (MERGE starts y ~0.3)
 V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123' });
 // b124-126: the twelve converge on her (src/kit.js 'row' with conv): runners from the right run in toward main (large, centre), from the
 // left they are mirrored; each reaches her and fades into her as the bar ends. Lanes as section 2.

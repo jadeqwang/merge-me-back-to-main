@@ -868,9 +868,8 @@ watched film_v6 at speed with sound.
 
 ## Film v7 (2026-11-21, compositor; brief: notes/v7_direction.md, Jade's words: notes/jade_v6_notes.md)
 
-**Resume here.** Code done and committed (car box, comet removed, pencil _v2 ids pre-wired with fallbacks). Waiting on plates:
-`c2_lookup_v2` (needs its window from plates_v7.md, then `opt.next` on the b122 row), `vio_write2_v2`, `vio_cutaway_v2`,
-`vio_grid_stay_v2` (picked up automatically when their folders land). Then: render film_v7, check.py, stills, review_v7.html.
+**Resume here.** All plates of plates_v7 wired and committed. Next: render film_v7 (public then local), check.py, stills, review_v7.html
+(drafted in review/fable_take2/, needs the v7/ thumbs).
 Check stills: `work_fable/take2/dev/v7/` (`../v6/sheet.sh out.jpg cols files...`).
 
 - Car (b157.3-161.3): `CAR_TYPE`/`CAR_TYPE_P` gone; her line "I have a confession to make" deleted. New `CAR_BOX` (shots.js) drawn by
@@ -882,3 +881,10 @@ Check stills: `work_fable/take2/dev/v7/` (`../v6/sheet.sh out.jpg cols files...`
   by 211.0. The page-light no longer "arrives" in this shot (it did in v6 as the comet head).
 - Pencils: `vio_cutaway` -> id list ['vio_cutaway_v2', 'vio_cutaway'] (b48), b114 next ['vio_write2_v2', 'vio_write2'],
   PROOF_STAY ['vio_grid_stay_v2', 'vio_grid_stay']; same windows (same framing per the plates brief).
+- Plates landed (plates_v7.md, all accepted by main): vio_write2_v2, vio_cutaway_v2, vio_grid_stay_v2 picked up by the id lists above;
+  violet_v2 (the life plate, turn_t 2.85) through LIFE_SWAP.violet (every film use reads PLATE[id], the proof reads dirs[id]; PROOF_STAY
+  still wins for the grid tile). Checked on stills 23.9, 60.0, 64.5, 82.2, 193.2, 195.0, 196.8: one pencil in the bun wherever one is
+  in her hand (vio_pencil at 195.0 still draws one out of two, which is right).
+- c2_lookup_v2 (b122): main's window clip 0.3-3.5 (1.88x), zoom 1.19, fx 0, fy 0.5 as v1. Meteor runs from (0.86, 0.13) to (0.73, 0.24)
+  in frame, above MERGE (y 0.3); the one blink lands at ~211.0 (0.2 s before the b123 cut). I first tried clip 2.3-4.0 at 1x (blink
+  mid-shot) but the meteor barely moved there; main's window is better.
