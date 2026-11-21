@@ -865,3 +865,20 @@ Type all pass; 22 lines, 119 words, none under 0.6 s; single frame vs full rende
 hud=0 likeness=0 (rendered alone: max diff 0).
 Looked at: the five sheets; check stills dev/v6/c1..c8; check clips dev/v6/{intro,drop,end}_check.mp4 as frame strips. Nobody has
 watched film_v6 at speed with sound.
+
+## Film v7 (2026-11-21, compositor; brief: notes/v7_direction.md, Jade's words: notes/jade_v6_notes.md)
+
+**Resume here.** Code done and committed (car box, comet removed, pencil _v2 ids pre-wired with fallbacks). Waiting on plates:
+`c2_lookup_v2` (needs its window from plates_v7.md, then `opt.next` on the b122 row), `vio_write2_v2`, `vio_cutaway_v2`,
+`vio_grid_stay_v2` (picked up automatically when their folders land). Then: render film_v7, check.py, stills, review_v7.html.
+Check stills: `work_fable/take2/dev/v7/` (`../v6/sheet.sh out.jpg cols files...`).
+
+- Car (b157.3-161.3): `CAR_TYPE`/`CAR_TYPE_P` gone; her line "I have a confession to make" deleted. New `CAR_BOX` (shots.js) drawn by
+  film.js `carBox`: box x 0.07-0.93, y 0.75-0.93, fill rgba(8,10,34,0.80), cream 3 px rounded border + 1.5 px inner rule, name tab
+  `YOU` (mono 700) on the top-left edge, text JetBrains Mono 46 px typed at 26 chars/s from 0.65 s (wrapped on the whole line first,
+  two rows; done at ~3.2 s, as she starts turning at 3.4 s), blinking ▼ bottom right once typed, box on 0.35-6.55 s (opens in 0.22 s,
+  fades 0.35 s). Same box on the road fallback. Checked on stills 270.4-276.9: legible, face clear above the box, box covers hands/lap.
+- c2_lookup (b122): `opt.comet` removed; the plate's own meteor enters top right inside the 84 % crop at ~210.4 s and is fully in frame
+  by 211.0. The page-light no longer "arrives" in this shot (it did in v6 as the comet head).
+- Pencils: `vio_cutaway` -> id list ['vio_cutaway_v2', 'vio_cutaway'] (b48), b114 next ['vio_write2_v2', 'vio_write2'],
+  PROOF_STAY ['vio_grid_stay_v2', 'vio_grid_stay']; same windows (same framing per the plates brief).

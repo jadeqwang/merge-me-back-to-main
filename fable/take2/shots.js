@@ -190,7 +190,7 @@ shot(46, 48, 'K+C', 'kit', 'runner_fuse', 'missing', 'Runners fuse in pairs, eig
 // film v6 A3: bar 48 (between "becomes the one" and "Fold", ~1:22.5) is a cut-away to her at the dish, writing, not running: the plates
 // agent's vio_cutaway when it lands, else vio_write2 (she writes in the notebook on the dish rim) from clip 0.4. runner_one is not shown.
 P(48, 49, 'vio_write2', 'exists', 'Cut-away: the violet branch at the dish, writing, not running.', { row: 'b48', opt: { clip0: 0.4, push: 0.02, lyr: { y: 'top', top: 0.04, x0: 0.03, x1: 0.62, align: 'left', tail: 3 },   // the line's held end only ("becomes the one"), fading over the sky
-  next: { id: 'vio_cutaway', opt: { clip0: 0.5, clip1: 2.5, push: 0.02 } } } });   // plates_v6: one bar of writing, clip 0.5-2.5
+  next: { id: ['vio_cutaway_v2', 'vio_cutaway'], opt: { clip0: 0.5, clip1: 2.5, push: 0.02 } } } });   // film v7: _v2 = one pencil in the bun   // plates_v6: one bar of writing, clip 0.5-2.5
 // b49-50 (film v2, src/mapfold.js): the fold made literal. The twelve life plates as the pre-chorus's 4x3 grid on one paper sheet; it folds
 // like a map, every fold a valley fold toward the lens, landing on its beat: b49.2 column 4 onto 3, b49.3 column 1 onto 2, b49.4 the
 // column-2 stack onto 3, b50.1 row 3 onto 2, b50.2 row 1 onto 2. The undersides are the backs of the pictures (captioned with branch and
@@ -393,7 +393,7 @@ const LYR_NEW = { x0: 0.03, x1: 0.37, align: 'left' };   // on vio_write2 / vio_
 // (the release path: up over the top of the frame and down to the sunrise right of her back, never across her)
 P(114, 116, 'vio_write', 'missing', 'She writes; in the sky, typed line by line on the beat in violet light: HANDOFF.md / Read this first. / Where things stand. / What it cost to learn. / What comes next. ctx 99%.',
   { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 99%'], row: 'b113-115', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, type: TYPE_OLD,
-    next: { id: 'vio_write2', opt: { clip0: 0, type: TYPE_NEW, lyr: LYR_NEW } } } });
+    next: { id: ['vio_write2_v2', 'vio_write2'], opt: { clip0: 0, type: TYPE_NEW, lyr: LYR_NEW } } } });   // film v7: _v2 = one pencil in the bun
 P(116, 118, 'vio_release', 'missing', 'She lets it go: the block closes to one line of light and leaves east. Hit on b117, then the drums cut. ctx 100%.',
   { code: 'P+C', ov: ['chip:● jade/rare-earth  ctx 100%'], row: 'b116-117', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, type: { ...TYPE_OLD, release: REL },
     next: { id: 'vio_release2', opt: { clip0: 1.0, clip1: 4.4, lyr: LYR_NEW, type: { ...TYPE_NEW, release: { ...REL, to: [0.97, 0.55], ctrl: [[0.62, -0.14], [1.08, -0.12]], ...PALM_REL } } } } } });
@@ -518,7 +518,7 @@ export const HERO_NEXT = { id: 'hero_paper_v2', opt: {}, lag: -0.04 };   // film
 // film v6 A2: the rare-earth grid tile does not turn at bar 37 and does not fall home at bar 38 (port_proof.py o.stay). When the plates
 // agent's vio_grid_stay (writing, head down, no turn, the tile's framing) lands it replaces the tile's plate in the proof only (o.dirs),
 // with its focus from the wiring row; until then the present tile plays slowly and never reaches its turn
-export const PROOF_STAY = { violet: { id: ['vio_grid_stay'], focus: null } };
+export const PROOF_STAY = { violet: { id: ['vio_grid_stay_v2', 'vio_grid_stay'], focus: null } };   // film v7: _v2 = one pencil in the bun
 export const SHOTS = S;
 
 // ------------------------------------------------------------------ resolve bar/beat to song time
