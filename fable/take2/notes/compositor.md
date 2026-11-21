@@ -888,3 +888,13 @@ Check stills: `work_fable/take2/dev/v7/` (`../v6/sheet.sh out.jpg cols files...`
 - c2_lookup_v2 (b122): main's window clip 0.3-3.5 (1.88x), zoom 1.19, fx 0, fy 0.5 as v1. Meteor runs from (0.86, 0.13) to (0.73, 0.24)
   in frame, above MERGE (y 0.3); the one blink lands at ~211.0 (0.2 s before the b123 cut). I first tried clip 2.3-4.0 at 1x (blink
   mid-shot) but the meteor barely moved there; main's window is better.
+
+### Film v7 renders (2026-11-21)
+Same commands as v6 with tag film_v7 (render_film.sh film_v7 "" "likeness=0": 428 s; then the local render without the likeness flag and
+v4's encode -> work_fable/take2/out/film_v7_local.mp4). Public: review/fable_take2/film_v7.mp4 (80.4 MB, HUD on), film_v7_sheet_01..05.jpg,
+thumbs review/fable_take2/v7/, page review/fable_take2/review_v7.html (4 decisions: car box, 3:30, pencils, what next).
+check.py (out/check_v7.txt): 190 hard cuts, mean |error| 0.33 fr, 174 of 183 within 0.5 fr; outliers and "no clear change" list the
+same as v6 (nothing new); type all pass; 22 lines, 119 words, none under 0.6 s; single frame vs full render 11 of 11 identical.
+Looked at (stills from the public master, dev/v7/m/ and dev/v7/msheet.jpg): 209.6-211.0 (one meteor, blink at 211.0), car 270.4-276.7
+(box opens, types, done by 273.5 with the marker, gone by 276.7 with her smile held), 23.9, 64.5, 82.2, 193.2, 196.8 (one bun pencil).
+Nobody has watched film_v7 at speed with sound.
