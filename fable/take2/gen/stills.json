@@ -1147,6 +1147,46 @@
     "work_fable/take2/stills/day_jade_a1.jpg"
    ],
    "prompt": "A new picture in the same flat cel-shaded anime drawing on white paper in full colour, with a clean inked line and flat colours, no gradients, no 3D, as the reference picture, in daylight. A close view seen from the side at chest height, her face out of the picture. Exactly two hands are in the picture. Her right arm is held out level toward the left of the picture, the forearm in the white jacket sleeve, the right hand relaxed and open at the far left, palm up. Her left hand curls round the right forearm near the wrist, exactly as a violinist's left hand curls round the neck of a violin: the left thumb rests lightly against the near side of the forearm, the palm does not touch, and the four fingers of the left hand arch high over the top of the forearm and come down onto it with their fingertips, each finger rounded with the knuckles lifted, the first finger pressing down, the second finger pressing down just beside it, the third and fourth fingers curved and held just above. The fingers are rounded, never flat; no fingerboard, no strings, no violin are drawn: it is her own sleeve. Both are slender hands of a young woman with smooth skin, bare hands, each with exactly five fingers of normal size. White paper behind with a few light blue pencil strokes. No text, no letters, no numbers, no logo, no brand marks on the shoes, no signature, no watermark anywhere. Wide 16:9 picture that fills the whole frame from edge to edge with no border."
+  },
+  {
+   "id": "v7_nopencil_write2",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v7_plates/ref_vio_write2_f1.jpg"
+   ],
+   "prompt": "Edit this picture and change only one thing. Two yellow pencils are stuck crosswise through the black hair bun on top of her head. Remove exactly ONE of them: the pencil that runs from the lower left to the upper right of the bun, whose purple eraser end sticks out at the upper right of the bun and whose sharpened end points down to the lower left over the back of her head. Where that pencil was, continue her black inked hair strands and the black starry night sky naturally, with no gap, smear or trace of it. Keep the other pencil in the bun exactly as it is: its sharpened tip sticks out at the upper left of the bun and its purple eraser at the lower right. Keep everything else exactly identical: the same drawing style and line work, the same framing and size, the same pose and face, the pencil in her writing hand and the notebook, the dish, the sky and the stars. After the edit there is exactly one pencil in her hair. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v7_nopencil_violet1",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v7_plates/ref_violet_f1.jpg"
+   ],
+   "prompt": "Edit this picture and change only one thing. Two yellow pencils are stuck crosswise through the black hair bun on top of her head. Remove exactly ONE of them: the pencil that runs from the lower left to the upper right of the bun, whose purple eraser end sticks out at the upper right of the bun and whose sharpened end points down to the lower left over the back of her head. Where that pencil was, continue her black inked hair strands and the black starry night sky naturally, with no gap, smear or trace of it. Keep the other pencil in the bun exactly as it is: its sharpened tip sticks out at the upper left of the bun and its purple eraser at the lower right. Keep everything else exactly identical: the same drawing style and line work, the same framing and size, the same pose and face, the pencil in her writing hand and the notebook, the dish, the sky and the stars. After the edit there is exactly one pencil in her hair. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v7_nopencil_violet121",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v7_plates/ref_violet_f121.jpg"
+   ],
+   "prompt": "Edit this picture and change only one thing. Two yellow pencils are stuck crosswise through the black hair bun on top of her head. Remove exactly ONE of them: the pencil that runs from the lower left to the upper right of the bun, whose purple eraser end sticks out at the upper right of the bun and whose sharpened end points down to the lower left over the back of her head. Where that pencil was, continue her black inked hair strands and the black starry night sky naturally, with no gap, smear or trace of it. Keep the other pencil in the bun exactly as it is: its sharpened tip sticks out at the upper left of the bun and its purple eraser at the lower right. Keep everything else exactly identical: the same drawing style and line work, the same framing and size, the same pose and face, the pencil in her hand and the notebook, the dish, the sky and the stars. After the edit there is exactly one pencil in her hair. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "c2_lookup_far",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/c2_lookup_a1.jpg"
+   ],
+   "prompt": "Edit this picture and change only the violet shooting star. Move it far away: it is now a tiny, thin violet meteor near the top right corner of the picture, a small round bright violet-white head with a short, thin, tapered violet trail drawn in violet pencil, pointing down and to the left toward her face. The black sky where the old meteor was is now plain empty black paper. Keep everything else exactly identical: the same flat cel-shaded anime drawing on black paper, the same framing and size, the same woman with the same face, the same pose looking up to the upper right, lips closed, the same hair, the same white jacket with orange bands and orange headphones, and the thin level band of gold on the horizon. No other figure, arm or hand anywhere. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "c2_lookup_empty",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/c2_lookup_a1.jpg"
+   ],
+   "prompt": "Edit this picture and change only one thing: remove the violet shooting star and its trail completely; the sky where it was is plain empty black paper. Keep everything else exactly identical: the same flat cel-shaded anime drawing on black paper, the same framing and size, the same woman with the same face, the same pose looking up to the upper right, lips closed, the same hair, the same white jacket with orange bands and orange headphones, and the thin level band of gold on the horizon. No other figure, arm or hand anywhere. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
   }
  ]
 }

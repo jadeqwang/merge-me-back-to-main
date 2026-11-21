@@ -239,6 +239,23 @@ C["intuit_piano_b"] = ("intuit_piano_b_a1", DAY_, "Without looking, her fingers 
 C["intuit_violin_b"] = ("intuit_violin_c_a2", DAY_, "Without thinking, her left hand plays a quick violin passage on her own right forearm, clearly visible: the thumb stays still underneath, and the rounded fingertips of the left hand lift HIGH and drop down onto the forearm one after another, first, second, third, fourth, and back again, about four finger drops a second, the knuckles high and arched, never flat; at the end the third finger holds down and rocks in a quick vibrato. Her right hand stays relaxed and open, palm up. Exactly two hands in every frame." + LOCK + HANDS, {"fixed": True})
 VIEWS.update({"intuit_piano_b": "none", "intuit_violin_b": "none"})
 
+# ---- Film v7 plates (plates agent, 2026-11-21; notes fable/take2/notes/plates_v7.md) ----
+# c2_lookup_v2 (b122, Jade: "she seems frozen instead of alive here, should breathe and hair should respond to wind"): the same still,
+# its meteor moved far to the upper right by an image edit (c2_lookup_far_a2) so the plate's own meteor travels toward her gaze. Take
+# "v2" ends on the original still (meteor mid-sky), take "v2b" has no last frame. Both camera_fixed (the t1 clip zoomed out and grew a
+# stray patched arm at the right edge); view "none" so the prompt never mentions a sleeve patch.
+ALIVE = ("She is alive and breathing the whole time: her shoulders and chest rise and fall visibly with slow, deep breaths, one breath about every two seconds. "
+         "A steady cool wind blows from the right of the picture the whole time, so her long black hair streams and ripples behind her and to the left, "
+         "loose strands lifting, flicking and falling continuously in every second of the shot, never still. She blinks once, naturally, at about one and a half seconds. "
+         "Her face lifts gently and slowly a little higher as her eyes follow the meteor, in quiet recognition; her lips stay closed and relaxed in a calm, neutral line the whole time: "
+         "she does not smile more, does not open her mouth, does not speak. "
+         "The tiny thin violet meteor, a small round bright violet-white head with a short thin tapered violet trail, glides steadily across the black sky from the upper right toward the place she is looking, "
+         "down and to the left, at an even speed, never growing large and never flashing. The thin gold band on the horizon stays level and flat. "
+         "She is the only person: no other figure, arm or hand ever enters the picture. The camera is locked off: no zoom, no pan, no cut; the framing stays exactly as in the first frame.")
+C["c2_lookup_v2"] = ("c2_lookup_far_a2", DAWN_, ALIVE, {"last": "c2_lookup_a1", "fixed": True})
+C["c2_lookup_v2b"] = ("c2_lookup_far_a2", DAWN_, ALIVE, {"fixed": True})
+VIEWS.update({"c2_lookup_v2": "none", "c2_lookup_v2b": "none"})
+
 def ref(src, out):
     os.makedirs(os.path.dirname(out), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-vf", "scale=2048:1152:flags=lanczos", "-q:v", "2", out], check=True)
