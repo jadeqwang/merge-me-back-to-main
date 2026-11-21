@@ -1,4 +1,15 @@
-# Take two: handoff (updated 2026-11-15: film v6 round in progress)
+# Take two: handoff (updated 2026-11-21: film v7 rendered, waiting for Jade's notes)
+
+## Film v7 (2026-11-21)
+Jade's v6 notes: `notes/jade_v6_notes.md`; brief `notes/v7_direction.md`; built: `notes/compositor.md` "Film v7", `notes/plates_v7.md`.
+- Car: her line deleted, almost-smile holds ~2.4 s; his line is a JRPG dialogue box with a `YOU` tab (`carBox` / `CAR_BOX`).
+- 3:30 (b122): `c2_lookup_v2` (breathes, blink at ~211.0, hair in wind); code comet removed, the plate's meteor is the only one.
+- Pencils: `vio_write2_v2`, `vio_cutaway_v2`, `vio_grid_stay_v2`, `violet_v2` (via LIFE_SWAP) have one bun pencil when one is in hand.
+- Decided: the violet branch stays special (decision 1 of v6). like_sing0 stays off.
+- Public `review/fable_take2/film_v7.mp4`, sheets, `review_v7.html` (four decisions). Local `work_fable/take2/out/film_v7_local.mp4`.
+- Spend **$571.45**. Weak: meteor already in the sky at the cut-in and drifts (no arrival on the downbeat); box covers her hands;
+  hair wind may read gusty; fold sheet b49-50 not checked for pencils. Nobody has watched v7 at speed with sound.
+
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
