@@ -1091,6 +1091,7 @@ function draw(t, sc) {
   overlays(t, sc);
   lyrics(t, sc.eff, s);
   if (s.opt && s.opt.carType && sc.eff !== 'card') carType(t, s);
+  if (s.opt && s.opt.carBox && sc.eff !== 'card') carBox(t, s);
 }
 // film v6 A8: the car's two lines (shots.js CAR_TYPE): lyric serif at verse size, cream with a soft shadow, each line WHOLE (no word by
 // word), wrapped inside its box [x0, x1] (frame fractions) around y (the block's centre), on screen over at [a, b] s from the shot start
@@ -1102,6 +1103,30 @@ function carType(t, s) {
     g.save(); g.globalAlpha = a; textShadow(0.85, 14); g.fillStyle = CREAM;
     rows.forEach((r, i) => { const w = g.measureText(r).width, x = L.align === 'center' ? (L.box[0] + L.box[1]) / 2 * W - w / 2 : L.align === 'right' ? L.box[1] * W - w : L.box[0] * W; g.fillText(r, x, y0 + i * lead); });
     noShadow(); g.restore(); } }
+// film v7 (Jade: "styled like a dialogue box in an RPG", attributed to 'you'): the camera's line in a classic JRPG box across the lower part
+// of the frame (shots.js CAR_BOX): dark translucent fill, rounded corners, a light double border, a name tab on the top-left edge, the
+// text typed letter by letter (mono, wrapped on the whole line first so nothing reflows), a blinking down-triangle at the bottom right once
+// typed. No speech tail. o: { text, name, at: [open, close] s from the shot start, cps, box: [x0, y0, x1, y1] frame fractions, px }
+function carBox(t, s) { const o = s.opt.carBox, ta = s.t0 + o.at[0], tb = s.t0 + o.at[1]; if (t < ta - HF || t > tb) return;
+  const open = ease.out(clamp01((t - ta + HF) / 0.22)), a = Math.min(1, clamp01((tb - t) / 0.35)); if (open <= 0 || a <= 0) return;
+  const [bx0, by0, bx1, by1] = o.box, x = bx0 * W, w = (bx1 - bx0) * W, hFull = (by1 - by0) * H, cy = (by0 + by1) / 2 * H, h = hFull * (0.35 + 0.65 * open), y = cy - h / 2;
+  const r = 14 * S, lw = 3 * S, inset = 7 * S, px = (o.px || 42) * S, f = FACE.mono(px, 500), pad = 46 * S, lead = px * 1.5;
+  g.save(); g.globalAlpha = a * open;
+  g.fillStyle = 'rgba(8,10,34,0.80)'; g.beginPath(); g.roundRect(x, y, w, h, r); g.fill();
+  g.strokeStyle = 'rgba(255,241,214,0.95)'; g.lineWidth = lw; g.beginPath(); g.roundRect(x, y, w, h, r); g.stroke();
+  g.lineWidth = 1.5 * S; g.strokeStyle = 'rgba(255,241,214,0.55)'; g.beginPath(); g.roundRect(x + inset, y + inset, w - 2 * inset, h - 2 * inset, r - inset * 0.6); g.stroke();
+  if (open >= 1) {
+    const nf = FACE.mono(34 * S, 700); setFont(nf); const nw = g.measureText(o.name).width + 40 * S, nh = 54 * S, nx = x + 34 * S, ny = y - nh * 0.62;
+    g.fillStyle = 'rgba(8,10,34,0.94)'; g.beginPath(); g.roundRect(nx, ny, nw, nh, 9 * S); g.fill();
+    g.strokeStyle = 'rgba(255,241,214,0.95)'; g.lineWidth = lw; g.beginPath(); g.roundRect(nx, ny, nw, nh, 9 * S); g.stroke();
+    g.fillStyle = CREAM; g.fillText(o.name, nx + 20 * S, ny + nh / 2 + 12 * S);
+    const rows = wrap(o.text, f, w - 2 * pad), n = Math.floor(Math.max(0, t - ta - 0.3) * o.cps); setFont(f); g.fillStyle = CREAM;
+    const ty = y + pad + px * 0.72; let k = n;
+    rows.forEach((row, i) => { if (k <= 0) return; const part = row.slice(0, k); k -= row.length + 1; g.fillText(part, x + pad, ty + i * lead); });
+    const done = n >= o.text.length, tDone = ta + 0.3 + o.text.length / o.cps;
+    if (done && Math.floor((t - tDone) * 2.4) % 2 === 0) { const ax = x + w - pad, ay = y + h - pad * 0.62, sz = 13 * S, bob = Math.sin((t - tDone) * 7) * 2 * S;
+      g.beginPath(); g.moveTo(ax - sz, ay - sz * 0.8 + bob); g.lineTo(ax + sz, ay - sz * 0.8 + bob); g.lineTo(ax, ay + sz * 0.8 + bob); g.closePath(); g.fill(); } }
+  g.restore(); }
 // film v6 A8: the window: the road's page-light (OUTRO.roadPage at the moment the road ended) glides into the frost light at the child's
 // palm (opt.arrive.to, frame fractions, measured on root_light) over dur s, shrinking from a page to a point of light, and is gone into
 // the plate's own light

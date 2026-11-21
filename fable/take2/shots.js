@@ -408,7 +408,7 @@ P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap, then atomizes: 
 section('chorus2');
 // film v6 A7: the page-light crosses (b121-123) and lands in main's hands, opening (b128); src/film.js pageLight, pageFly
 V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
-P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, comet: { from: [1.05, 0.02], to: [0.6, 0.3] }, lyr: { x0: 0.56, x1: 0.97, align: 'right' } } });   // left 84 % (a stray arm at the right edge); the violet light drawn in code, arriving on the b123 downbeat
+P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, lyr: { x0: 0.56, x1: 0.97, align: 'right' } } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one
 V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123' });
 // b124-126: the twelve converge on her (src/kit.js 'row' with conv): runners from the right run in toward main (large, centre), from the
 // left they are mirrored; each reaches her and fades into her as the bar ends. Lanes as section 2.
@@ -490,16 +490,13 @@ shot(156, [157, 3], 'C', 'code', 'road', 'missing', 'From the cursor a dashed li
 // person she is talking to is the camera. Type (src/film.js carType): Instrument Serif, verse size, whole lines, no punctuation added:
 // the camera's line in the lower third, then hers beside her. Positions for the fallback (the road, no figure); set on the clip's frames
 // when car_confess lands (next.opt.carType)
-const CAR_TYPE = { lines: [{ text: 'You could tell me anything and I would find it strangely plausible', at: [0.35, 3.35], box: [0.08, 0.92], y: 0.8, align: 'center' },
-  { text: 'I have a confession to make', at: [3.6, 6.45], box: [0.42, 0.98], y: 0.36, align: 'left' }] };
-// on car_confess (plates_v6 wiring: clip 1.5-5.0, turn 3.25-3.75, hold to 5.0; windows x 0.02-0.55 y 0.05-0.47 and x 0.65-0.93 y 0.05-0.33;
-// the dark door panel lower left): the clip slowed to fit the shot (0.51x, blended); the camera's line on the lower left over the door
-// and dashboard, clear of her hand; hers in the windscreen's dark beside her once she has turned (clip 3.75 = shot 4.4 s)
-const CAR_TYPE_P = { lines: [{ text: 'You could tell me anything and I would find it strangely plausible', at: [0.35, 3.6], box: [0.025, 0.245], y: 0.8, align: 'left', cap: 50 },   // the dark door panel only (x 0.02-0.26): her arm starts at x ~0.27; 50 px cap so it fits in four rows
-  { text: 'I have a confession to make', at: [4.3, 6.5], box: [0.04, 0.55], y: 0.22, align: 'left' }] };
+// film v7 (Jade's v6 notes): her line "I have a confession to make" is gone; she only turns and almost smiles. The camera's line is an
+// RPG dialogue box with the name tab YOU (src/film.js carBox), typed letter by letter, done by ~3.1 s, the advance marker blinking after;
+// same box on the road fallback and on car_confess (the box covers the lower part: her hands and lap; her face stays clear above it)
+const CAR_BOX = { text: 'You could tell me anything and I would find it strangely plausible', name: 'YOU', at: [0.35, 6.55], cps: 26, box: [0.07, 0.75, 0.93, 0.93], px: 46 };
 const CAR_ROAD = { from: [156, 1], wins: [[[0.0, 0.0, 0.57, 0.5], [0.0, 0.18, 0.78, 0.86]], [[0.62, 0.0, 0.95, 0.36], [0.5, 0.0, 1.0, 0.42]]], dark: 22, alpha: 0.95 };
 shot([157, 3], [161, 3], 'P', 'code', 'road', 'missing', 'Inside the car at night: the camera in the driver\'s seat, drawn main Jade in the passenger seat, lit by the dash and the passing dashes; she turns to the camera with a mysterious almost-smile. The secret is not told.',
-  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carType: CAR_TYPE, next: { id: 'car_confess', kind: 'plate', opt: { clip0: 1.5, clip1: 5.0, blend: true, push: 0.015, carType: CAR_TYPE_P, carRoad: CAR_ROAD } } } });
+  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carBox: CAR_BOX, next: { id: 'car_confess', kind: 'plate', opt: { clip0: 1.5, clip1: 5.0, blend: true, push: 0.015, carRoad: CAR_ROAD } } } });
 P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. The violet page-light from the road arrives in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3',
   opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5, arrive: { to: [0.56, 0.35], dur: 1.4 } } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended; arrive: the road's page-light glides into the frost light (film v6)
 
