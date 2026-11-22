@@ -956,3 +956,6 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
 - Checked on stills dev/v8/outro/steps2.jpg (243.56-245.2): patches land under the front foot, one per 2/3 beat.
 - Range render 235-280 (likeness=0, audio, 4 workers, 74 s): dev/v8/outro/outro_v8.mp4, beat strip dev/v8/outro/outro_beats_v8.jpg
   (b137.1-b161.4). day_eyes had not landed: b140.3-141.3 shows the run. Next: wire day_eyes from plates_v8.md when its row appears.
+- Coordinator's notes on steps2: each patch now lives in its own cell (half a step either side of its landing, clipped): neighbours butt
+  edge to edge, no overprint; solid band in the life's colour, message in dark ink (#2A1206, 3 rows); main's saturated orange (#FF7A1A)
+  wipes across it from behind (age 0.12-0.5 s; a colour mix went through mud). 3:2 rhythm kept. Stills dev/v8/outro/steps3.jpg, band3.png.

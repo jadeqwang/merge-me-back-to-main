@@ -140,12 +140,14 @@ export function makeOutro(E) {
     drawWrittenLane(g, [{ x: x0r, y: roadY }, { x: W, y: roadY }], { text: laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true), color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: dir * -(scroll / adv), from: Math.max(0, xEnd - x0r) });
     if (tEnd !== null && t >= tEnd - 0.01 && o.runner && st.run) { const step = o.runner.plant.stepPx * S, tps = plants(s, tEnd - 0.02, t);
       tps.forEach((tp, k) => { const age = t - tp, x = footX + dir * v * age, L = LIVES[(o.stepLife0 || 0) + k] || LIVES[k % LIVES.length];
-        // the patch grows out from the foot (its text fixed on the paper: a fixed path, revealed from/upto), then widens to meet its
-        // neighbours and turns orange: joined by ~0.5 s, i.e. two steps behind her
-        const grow = ease.out(clamp01(age / 0.09)), join = ease.io(clamp01((age - 0.12) / 0.38)), M = step * 0.56, half = (step * (0.44 + 0.12 * join)) * grow, pts = [{ x: x - M, y: roadY }, { x: x + M, y: roadY }];
-        const lo = { text: laneString([L.msg], true), cap: 26 * S, under: 0, scroll: 0, from: M - half, upto: M + half };
-        if (join < 1) { g.save(); g.globalAlpha = 1 - join; drawWrittenLane(g, pts, { ...lo, color: L.color, merge: 0.82 }); g.restore(); }
-        if (join > 0) { g.save(); g.globalAlpha = join; drawWrittenLane(g, pts, { ...lo, color: MAIN, merge: 0.82 }); g.restore(); }
+        // the patch: its own cell on the paper (half a step either side of the landing: neighbours butt edge to edge, nothing
+        // overprints), revealed from the foot outward over 0.09 s; a solid band in the life's colour with its message in dark ink, main's
+        // saturated orange wiping across it from behind by ~0.5 s age (two steps behind her)
+        const grow = ease.out(clamp01(age / 0.09)), join = ease.io(clamp01((age - 0.12) / 0.38)), hs = step / 2, half = hs * grow, bh = 54 * S;
+        const xa = x - half, xb = x + half; g.save(); g.beginPath(); g.rect(xa, roadY - bh, xb - xa, 2 * bh); g.clip();
+        g.fillStyle = L.color; g.fillRect(xa, roadY - bh, xb - xa, 2 * bh); if (join > 0) { const wj = (xb - xa) * join; g.fillStyle = MAIN; g.fillRect(xb - wj, roadY - bh, wj, 2 * bh); }   // orange wipes in from behind her (a mix of the two would go through mud)
+        drawWrittenLane(g, [{ x: x - hs, y: roadY }, { x: x + hs, y: roadY }], { text: laneString([L.msg], true), cap: 26 * S, under: 0, scroll: 0, color: '#2A1206', merge: 0.69 });
+        g.restore();
         if (age < 0.22) glowAt(x, roadY, 70 * S, L.color, 0.7 * (1 - age / 0.22)); }); }
     if (o.runner && st.run) { const R = o.runner, f = runFrame(s, t), img = READY.get(`${R.dir}/rgba/f_${String(f + 1).padStart(4, '0')}.png`);
       if (img) { const h = R.h * H, q = h / img.height, w = img.width * q, e = R.edge || 0;   // edge: the outer margin of the cut-out is dropped (stray specks)
