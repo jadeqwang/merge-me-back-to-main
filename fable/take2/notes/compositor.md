@@ -1143,3 +1143,13 @@ Cut shots keep their id slot (`skip()` in shots.js): ids after a cut are as in v
   4987 (+2.1 fr), v10 100.1 on 4985 (the cut frame), 19.6 on 4986. Strip dev/v10/dr20/strip_pre.jpg: legible on the cut, wipe still seen.
   (Tried first and dropped: a 2-frame wipe on dr20 only.)
 - Graph: the violet branch now starts exactly on b149.1 (255.485, drums out) in v10 (`ub >= 8`; v9 7.5).
+
+### 4. A1/A3/A4 wiring (glyph_v10.md Wiring table) -- done, lists ready for the `b` revision
+- shots.js `G10(ids, opt, kind)`: v10 glyph plates as a `next` list, only with v10 and glyphs on (`?glyph=0` and `?v10=0` keep the old
+  sources). vb10: `vio_still_letters10b` > `vio_still_letters10` (opt atom null, settle null, 1:1). cb02: `c2_lookup_v2_glyph10f` >
+  c2_lookup_v2 (+ its v9 `_glyph`). cb08 `c2_hands_letters10` (pageFly kept). cb09 `catch_letters10`. cb10 (was code 'fold'):
+  `fold_merge10b` > `fold_merge10` as kind plate; cb11 `patch_hold_merge10b` > `_merge10`; cb12 `patch_settle_merge10b` > `_merge10`
+  (clip1 removed: 1:1 with song time). All push 0.
+- cb01 streak now enters at y 0.28 to pick up vb10's last (circle) letters leaving east at the cut (stills dev/v10/a2/sheet2.jpg).
+- Stills (likeness=0) dev/v10/catch/sheet.jpg, 203-235.3 with the first (non-b) merge plates: slabs readable on the dark ground; on cb11-cb12
+  white paper the cream slab reads by its cloud only (as v9). Re-check when the `b` plates (daylight from 231.21) land.

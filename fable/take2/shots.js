@@ -82,6 +82,10 @@ const V = (from, to, src, pic, x) => shot(from, to, x && x.code || 'V7', 'v7', s
 const skip = () => { n++; };
 // film v10 (notes/v10_direction.md): ?v10=0 renders the v9 cut for every passage v10 changes (outro re-division C1-C6, the catch A1-A4)
 export const V10 = !(typeof location !== 'undefined' && new URLSearchParams(location.search).get('v10') === '0');
+// the v10 glyph plates (notes/glyph_v10.md Wiring table) only with glyphs on: ?glyph=0 keeps the v8 look; each list newest first (the
+// glyph agent's revision `...b` ids, then the first delivery), the v9 source when none has landed
+const V10G = V10 && !(typeof location !== 'undefined' && new URLSearchParams(location.search).get('glyph') === '0');
+const G10 = (ids, opt = {}, kind) => (V10G ? ids.map((id) => ({ id, opt, ...(kind ? { kind } : {}) })) : []);
 const C = (from, to, src, pic, x) => shot(from, to, x && x.code || 'C', 'card', src, 'missing', pic, x);
 const PR = (from, to, src, pic, x) => shot(from, to, x && x.code || 'P', 'proof', src, 'exists', pic, { lyric: 'proof', ...x });
 
@@ -425,7 +429,9 @@ P(116, 118, 'vio_release', 'missing', 'She lets it go: the block closes to one l
 // settle (the v2 stars along her outline) is the fallback when the atom data is missing.
 P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap, then atomizes: her figure breaks into points of light from the edges inward that drift out and up to take their places among the stars; the last to go is the pale-blue circle; the rim is empty. Chip: detached, not merged.',
   { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' },
-    atom: { dir: '/work_fable/take2/kit/vio_still/atom', empty: 'vio_empty', standin: '/work_fable/take2/kit/vio_still/atom/standin.jpg', lead: 0.1, tail: 0.45, soft: 0.06 }, settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
+    atom: { dir: '/work_fable/take2/kit/vio_still/atom', empty: 'vio_empty', standin: '/work_fable/take2/kit/vio_still/atom/standin.jpg', lead: 0.1, tail: 0.45, soft: 0.06 },
+    // film v10 A1: she comes apart into the handoff's letters (glyph agent's frame sequence, 1:1 with song time): no atomize, no settle on top
+    next: G10(['vio_still_letters10b', 'vio_still_letters10'], { atom: null, settle: null, clip0: 0, speed: 1 }), settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
 
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');
@@ -433,13 +439,14 @@ section('chorus2');
 // film v10 A2 (listen_v10.md: the only hit is b121.1 = 207.819, the cut-in; b122.1 has none): what crosses the sky is a streak of the
 // handoff's own characters (film.js streak), violet, upright, read left to right. It ENTERS on the hit (head at the frame's left edge on
 // 207.819), decelerates, and its head reaches its mark (the galaxy's core) on b122.1, the cut to cb02, where it is slowest and the letters
-// read. cb03: a second streak enters on that cut from her side and settles into the city at the top of the plate's beam on b123.4.
+// read. It enters at y 0.28, where vb10's last letters (the circle's) leave east at the cut (glyph_v10.md). cb03: a second streak enters on that cut from her side and settles into the city at the top of the plate's beam on b123.4.
 const HANDOFF_TXT = 'HANDOFF.md  Read this first.  Where things stand.  What it cost to learn.  What comes next.';
 V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: V10
-  ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.47], [0.36, 0.31], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52 } }
+  ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52 } }
   : { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
 P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, lyr: { x0: 0.56, x1: 0.97, align: 'right' },
-  next: { id: 'c2_lookup_v2', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 } } } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one;
+  next: [...G10(['c2_lookup_v2_glyph10f'], { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 }),   // film v10: de-shimmered (boil 0, background frozen)
+    { id: 'c2_lookup_v2', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 } }] } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one;
 // c2_lookup_v2 (plates_v7 wiring: breathing, hair in wind, no arm, its own meteor (0.716, 0.195) -> (0.596, 0.286) over clip 0.3-3.5): v1's
 // window and crop kept; the one blink (clip 3.0-3.2) lands ~1.45 s in; the meteor stays above the lyric block (MERGE starts y ~0.3)
 V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123', opt: V10 ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.71], [0.16, 0.6], [0.36, 0.56]], at: [[123, 1], [123, 4]], px: 44, n: 40, fade: 0.5 } } : {} });
@@ -454,15 +461,21 @@ const CONV = [
 for (let k = 0; k < 3; k++) shot(124 + k, 125 + k, 'K', 'kit', `runner_converge_${k + 1}`, 'missing', `The twelve runners converge on her from every side, each in her medium (shot ${k + 1} of 3).`,
   { row: 'b124-127', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'row', lanes: CONV[k], conv: true, hNear: 0.6 } } });
 V(127, 128, 'seq 12', 'From above, the roads converge.', { row: 'b124-127' });
-P(128, 129, 'c2_hands', 'missing', 'Close on her hands opening.', { row: 'b128', opt: { pageFly: { from: [0.62, -0.08], to: [0.5, 0.55], h: 46, arc: -0.02, arrive: 0.45, open: [0.5, 0.95], ease: 'out' } } });   // the page-light comes down between her open palms and opens like a book
-P(129, 130, 'catch', 'missing', 'She catches the violet light at her chest, eyes closed.', { row: 'b129', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.33, align: 'left' } } });   // she is centred, hands at her chest: the slab left of her
+P(128, 129, 'c2_hands', 'missing', 'Close on her hands opening.', { row: 'b128', opt: { pageFly: { from: [0.62, -0.08], to: [0.5, 0.55], h: 46, arc: -0.02, arrive: 0.45, open: [0.5, 0.95], ease: 'out' },
+  next: G10(['c2_hands_letters10']) } });   // film v10 A3: coarse letters pour from her palms from 220.45, after the page opens (same clip map)   // the page-light comes down between her open palms and opens like a book
+P(129, 130, 'catch', 'missing', 'She catches the violet light at her chest, eyes closed.', { row: 'b129', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.33, align: 'left' },
+  next: G10(['catch_letters10']) } });   // film v10 A3: written in coarse letters (on the de-shimmered style 1), face clean   // she is centred, hands at her chest: the slab left of her
 // b130-131: the folds, in code (opt.code 'fold'): night_jade on black paper; patchwork2's figure (aligned on the two cut-outs' bounding
 // boxes) shows through twelve patch masks, one more per beat for eight beats, then on the off-beats of beats 5-8; each new patch flashes
 // its life's lane colour on its edge
 shot(130, 132, 'K+S', 'code', 'fold', 'missing', 'The twelve fold into her, one per beat; each fold adds its medium to her (twelve patches on night_jade).', { row: 'b130-131',
-  opt: { lyr: { x0: 0.03, x1: 0.33, align: 'left' }, code: 'fold', base: 'night_jade', top: 'patchwork2', mattes: { night_jade: '/work_fable/take2/kit/night_jade', patchwork2: '/work_fable/take2/kit/patchwork2' }, beats: [0, 1, 2, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5] } });
-P(132, 134, 'patch_hold', 'missing', "The poster frame: one Jade drawn in all twelve mediums at once, on white paper: full colour and daylight arrive.", { row: 'b132-133', opt: { lyr: { x0: 0.03, x1: 0.32, align: 'left' } } });
-P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136', opt: { clip0: 0, clip1: 4.95, lyr: { x0: 0.03, x1: 0.32, align: 'left' } } });
+  opt: { lyr: { x0: 0.03, x1: 0.33, align: 'left' }, code: 'fold', base: 'night_jade', top: 'patchwork2', mattes: { night_jade: '/work_fable/take2/kit/night_jade', patchwork2: '/work_fable/take2/kit/patchwork2' }, beats: [0, 1, 2, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5],
+  // film v10 A4: the letters merging (glyph agent's merge.py frames, 1:1 with song time); daylight from "become" (231.21) to the b137 impact
+  next: G10(['fold_merge10b', 'fold_merge10'], { clip0: 0, speed: 1, push: 0 }, 'plate') } });
+P(132, 134, 'patch_hold', 'missing', "The poster frame: one Jade drawn in all twelve mediums at once, on white paper: full colour and daylight arrive.", { row: 'b132-133', opt: { lyr: { x0: 0.03, x1: 0.32, align: 'left' },
+  next: G10(['patch_hold_merge10b', 'patch_hold_merge10'], { clip0: 0, speed: 1, push: 0 }) } });
+P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136', opt: { clip0: 0, clip1: 4.95, lyr: { x0: 0.03, x1: 0.32, align: 'left' },
+  next: G10(['patch_settle_merge10b', 'patch_settle_merge10'], { clip0: 0, clip1: undefined, speed: 1, push: 0 }) } });   // the last letter sinks in on "become" (231.210)
 
 // ------------------------------------------------------------------ Outro A: bars 137-148 (full drums; has to top the drop)
 section('outro_a');
