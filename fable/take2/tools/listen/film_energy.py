@@ -118,7 +118,7 @@ def check_audio(path, f, od):
 def main():
     path, tag = sys.argv[1], sys.argv[2]
     table_file = sys.argv[3] if len(sys.argv) > 3 else None
-    od = os.path.join(C.OUT, f'film_{tag}')
+    od = os.path.join(C.RES, f'film_{tag}')
     os.makedirs(od, exist_ok=True)
     fps = fps_of(path)
     cache = os.path.join(od, 'frames.npz')

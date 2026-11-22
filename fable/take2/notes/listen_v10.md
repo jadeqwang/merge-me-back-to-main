@@ -7,7 +7,7 @@
   `analysis_v3/timing.json` (beats, bars, events, aligned lyric words), cues `review/fable_take2/merge.en.srt`.
 - 2026-11-22: deliverables 1-4 done (below). Phrase maps sent to main; the compositor's working shots.js already uses the
   recommended outro cuts (b145.1 / b147.1 / b152.1 / b155.1 / b157.1 / b161.3).
-- 2026-11-22: v10 measured (section "v10 measured"). Done; next only on request (e.g. after fixes, re-run the same commands).
+- 2026-11-22: v10 measured (section "v10 measured"). Re-measured on the FINAL local v10 (section "v10 final re-measured"); to re-run on v11 use the commands at the end of that section.
 
 ## How this was measured (deliverable 1)
 
@@ -289,3 +289,75 @@ local master as in v9.
 Measured: all offsets above, sync, cut table, energy. Waiting on Jade's ear: whether the streak should still be moving on
 the bar (E1); whether fusions on the "and" feel like the pulse (E2); whether "become" + flash + eyes land as one moment (E3);
 whether the impact holds with a settle that starts 0.3 s later (E4); E5/E6 pacing.
+
+## v10 final re-measured (2026-11-22)
+
+Film: final local `work_fable/take2/out/film_v10_local.mp4` (mtime 10:16, after the fix pass d6c9bc7 / glyph rev c2). Outputs in
+`work_fable/take2/dev/v11_listen/` (git-ignored, v10 strips untouched): `film_v10f/` (cuts.md, cuts.json, energy.png, table.txt),
+`strips/v10f_catch_p00..05` (196-238), `strips/v10f_outro_p00..05` (235-282.8), `ev/` (event sheets, local, likeness).
+Tooling change: `common.py` has `RES` = `$LISTEN_OUT` (default the v10 dir); strip.py and film_energy.py write there, so a new film
+never overwrites an old one. Table = `node fable/take2/tools/shots.mjs --table` (identical to v10's table, byte for byte).
+
+**Sync and cuts.** Audio = song at +0.0 ms. 193 detected cuts (v10 first 191), 178 table cuts (176): 175 within 17 ms of table
+time, 160 within 17 ms of a beat. Only two table cuts are off by more than 2 frames (66.7 ms) from their table time, both as
+before: pc01 +91 ms (soft transition) and dr01 -120 ms (flash exit 152.667, the drop 152.787 has no hard cut). Off the beat by
+more than 2 frames: the deliberate 8th-note cut runs only (bb19-bb33 at b70-71, bu37-bu43, dr31, dr36, dr38; same list as v10
+first; dr31 is half a beat on purpose) plus pc01 and dr01. Changed vs v10 first: dr26 cut f5231 174.367 (+17 ms, was an "internal"
++117 ms detection: the pre-roll fix works, her at the laptop is legible on the cut frame); dr30 now a hard cut f5308 176.933 (+0
+ms, legible on that frame; was a soft start); oa01 is a hard cut again at f7051 235.033 (-5 ms from b137.1) with the likeness
+whole on that frame. Other outro cuts unchanged (oa05 -1, oa07 -7, ob01 -12, ob02 +4, ob04 +7, ob05 +13 ms). Mean-luma frame
+compare of this film against the first v10: frames identical (render noise only) everywhere except 174.37-174.93 (dr26), 176.93-177.23
+(dr30), 231.17-235.87 (cb12 / settle / oa01), and a small change in the streak 207.8-209.5; so every event not listed below
+is unchanged from "v10 measured".
+
+**Energy** (`film_v10f/energy.png`): as v10 first outside b134-b137; settle adds motion there (mean luma jump 235.37 is the
+likeness cross-over, now gone from the impact frame). b130-b137 still the stillest picture of the back half until b134.
+
+**Per-event offsets, final film**
+
+| event | target | measured (frame) | offset |
+|---|---|---|---|
+| streak enters cb01 | 207.819 | cut frame f6235 207.833, head at left edge | +14 ms (0 fr) |
+| streak reaches its mark | 209.526 | text head ("next.") still moving ~600 px/s on every frame to the last streak frame 209.500 (x 1050 at 208.97, 1185 at 209.17, 1305 at 209.37, 1388 at 209.50 = 0.72 of width, the designed mark); cut to cb02 at f6286 209.533 | **0 (-26 ms to the last frame; was -7 fr)**: arrives on the bar, still moving, cut +7 ms |
+| first letters in her hands (cb08) | 220.45 | glow 220.4; first small letters f6615-16 220.500-220.533; pour by 220.60 (unchanged) | +50 to +83 ms (1.5-2.5 fr) |
+| fusion steps (to 16, 8, 4, 2, 1) | 228.69, 229.12, 229.54, 229.97, 230.39 | unchanged from v10 first: glow peaks 228.867, 229.27-229.30, 229.70-229.77, 230.10-230.13, 230.57 | **+190 to +230 ms (6-7 fr), on the off-beat 8th; not changed** |
+| last mark (R) gone | 231.210 | R shrinks 231.13-231.20, last seen f6936 231.200, gone f6937 231.233 | +23 ms (0 fr, was -10) |
+| daylight front / flash starts | 231.210 | first edge of daylight on the shoulder f6937 231.233; "BECOME" slab f6936 231.200 | +23 ms (0 fr) |
+| eyes open | 231.210 | closed through f6936 231.200, open f6937 231.233, hard change (no double frame) | +23 ms (0 fr; was +57) |
+| daylight full | 235.038 | ragged front covers the right half from 231.2; the last black clears 234.47-234.63 (top-right crop luma 36 -> 184 -> 205 at 235.00; 95 % at 234.667) | **-0.40 s (-12 fr)** to 95 % (was -1.2 s) |
+| settle grows onto her eyes | 235.038 | grow starts 234.40 by design (ease in-out), clearly visible by 234.60, face fills 234.80-234.93 | leads the bar by 0.45-0.2 s, as designed |
+| likeness cross-over | 235.038 | 2-frame mix f7049 234.967 and f7050 235.000 (drawn + traced, eyes scale-matched), likeness alone f7051 235.033 | **-5 ms (0 fr): whole on the impact frame** (was +530-900 ms) |
+| violet branch leaves graph | 255.485 | unchanged: present whole f7665 255.500 | +15 ms (0 fr) |
+| commit line lands | 262.301 | unchanged: fade-in f7869 262.300 | -1 ms |
+| car box fully typed | 271.689 | unchanged | about +40 ms |
+| car box gone | 272.543 | unchanged: gone f8177 272.567 | +24 ms (fade starts -310 ms) |
+| her turn | 272.543 | unchanged: start +90 ms, eyes on camera 272.80 | +257 ms (8 fr) |
+| dr26 wipe legible | 174.350 | cut f5231 174.367, image legible on it | +17 ms (0 fr; was +117) |
+| dr30 wipe legible | 176.933 | cut f5308 176.933, image legible on it | +0 (was +117) |
+
+**Over 2 frames (66.7 ms) now:**
+1. Fusion glows +190-230 ms (6-7 fr) after the beat: on the off-beat 8th, unchanged and not part of the fix pass.
+2. Daylight "full" at -0.40 s (-12 fr): the front finishes before the bar, then the face grows into the impact; intended as a lead-in, flag only if Jade wants it on the bar.
+3. First letters in her hands +50-83 ms (up to 2.5 fr), unchanged.
+4. Her eyes to camera +8 fr after the G chord (the turn itself starts +3 fr), unchanged.
+5. Cut table: pc01 +91 ms and dr01 -120 ms (soft transition and the flash before the drop), unchanged.
+Fixed to within 1 frame: streak arrival, last mark/flash/eyes, likeness on the impact (-5 ms), dr26, dr30.
+
+Still looks off in the frames (judge for yourself): merge plates are 24 fps in a 30 fps film (repeat frame 1 in 5); dev HUD burned in;
+oa05 nearly static through the loudest groove. The double face during settle is down to two scale-matched frames 234.967-235.000.
+
+### Re-run on a later film (commands used, from the repo root)
+```
+export LISTEN_OUT=$PWD/work_fable/take2/dev/v11_listen            # outputs; features cache stays in v10_listen
+M=work_fable/take2/out/film_vNN_local.mp4; TAG=vNNf
+mkdir -p $LISTEN_OUT/film_$TAG
+node fable/take2/tools/shots.mjs --table > $LISTEN_OUT/film_$TAG/table.txt
+.venv/bin/python fable/take2/tools/listen/film_energy.py $M $TAG $LISTEN_OUT/film_$TAG/table.txt
+.venv/bin/python fable/take2/tools/listen/strip.py $M 196 238 ${TAG}_catch --step 2 \
+    --marks "207.819:b121 hit,209.526:b122,221.436:b129 hit,227.403:Every,231.210:become,235.038:b137 IMPACT"
+.venv/bin/python fable/take2/tools/listen/strip.py $M 235 282.8 ${TAG}_outro --step 2 \
+    --marks "235.038:b137 IMPACT,247.762:Back#2,255.485:drums out,262.301:b153 hit,265.712:F chord,269.126:C chord,272.543:G chord,276.820:FINAL HIT"
+fable/take2/tools/listen/sheet.sh $M T0 1 6x4 320 $LISTEN_OUT/ev/NAME.jpg          # frame-exact sheet of one event
+# which frames changed between two films (mean luma): compare $LISTEN_OUT/film_A/frames.npz['luma'] and film_B's
+# daylight: ffmpeg -ss 231 -t 5 -i $M -vf "crop=200:220:1700:0,signalstats,metadata=print:key=lavfi.signalstats.YAVG:file=-" -f null -
+```

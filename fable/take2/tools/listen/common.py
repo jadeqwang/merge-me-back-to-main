@@ -14,7 +14,8 @@ SONG = os.path.join(ROOT, 'inputs', 'Merge (keychange down).wav')
 STEMS = os.path.join(ROOT, 'analysis_v3', 'stems')
 TIMING = os.path.join(ROOT, 'analysis_v3', 'timing.json')
 SRT = os.path.join(ROOT, 'review', 'fable_take2', 'merge.en.srt')
-OUT = os.path.join(ROOT, 'work_fable', 'take2', 'dev', 'v10_listen')
+OUT = os.path.join(ROOT, 'work_fable', 'take2', 'dev', 'v10_listen')  # features cache lives here
+RES = os.environ.get('LISTEN_OUT', OUT)  # strips / film_energy outputs (set LISTEN_OUT=.../v11_listen for a new film)
 
 SR = 22050
 HOP = 256  # 11.6 ms

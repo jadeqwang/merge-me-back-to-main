@@ -62,7 +62,7 @@ def main():
     for s in filter(None, a.marks.split(',')):
         tm, lab = s.split(':', 1)
         marks.append((float(tm), lab))
-    od = os.path.join(C.OUT, 'strips')
+    od = os.path.join(C.RES, 'strips')
     os.makedirs(od, exist_ok=True)
     rows = []
     r0 = a.t0
