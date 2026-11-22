@@ -1244,3 +1244,11 @@ Dev files `work_fable/take2/dev/v11/` (a2/, car/, v11off/).
     .venv/bin/python fable/take2/tools/check.py out/film_film_v11_master.mp4 > out/check_v11.txt
 - review/fable_take2/review_v11.html built from review_v10.html (10 decisions, 7a-7m notation per life + where; thumbs v11/*.jpg from
   the public master).
+
+### Film v11 rendered (2026-11-22)
+- Public out/film_film_v11.mp4 (80.8 MB, likeness=0) -> review/fable_take2/film_v11.mp4, sheets film_v11_sheet_01..05.jpg; local
+  out/film_v11_local.mp4 (77.1 MB, 282.82 s). check.py out/check_v11.txt: 186 hard cuts, mean |error| 0.30 fr, max 2.80 (bu39/41 as
+  before); flags as v10 plus cb12 "no clear change" (the merge runs across the cut by design, as cb11); type and lyrics pass (22 lines,
+  none under 0.6 s); 11 of 11 single frames identical. `?v11=0` stills vs the v10 master at 52, 208.5, 224, 271.6: same pictures
+  (differences are seek/encode only). review_v11.html + thumbs review/fable_take2/v11/<shot>_<t>.jpg (from the public master).
+- Next: Jade's v11 notes.
