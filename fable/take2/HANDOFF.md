@@ -31,7 +31,9 @@ Spend $579.85 (`tools/gen/spend.py`; cap constant still 600, Jade lifted the cap
    `notes/v10_direction.md`, then agents. This round used three opus agents (glyph, compositor, plates) plus the main thread
    looking at every sheet; that split worked. Order dependencies: plates before glyph for any new plate that gets glyphs;
    compositor's full render only after all sources land.
-2. **The essay** (`notes/art_direction_fable.md`, 4,300 words, she has only my summary so far). If she picks moves from it, the
+2. **The v10 plan** drawn from the essay: `notes/v10_plan.md` (proposal: eight gates for Jade, items A-F with shot ids, order of
+   work, risks). It becomes `notes/v10_direction.md` once she answers the gates and sends v9 notes.
+   **The essay** (`notes/art_direction_fable.md`, 4,300 words, she has only my summary so far). If she picks moves from it, the
    feasible-in-pipeline ones are ranked there with timestamps: catch at 3:42 as climax (violet's handoff text crosses and writes main
    through), glyph grammar (a notation per life; glyph size as the merge variable), clearing the outro (cut 4:07 stance, 4:12
    aerial, log burst), lives ending once at 2:00 (needs captions written by Jade), drop as violet's drawing. Its opinions against
