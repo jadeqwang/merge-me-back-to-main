@@ -430,12 +430,19 @@ P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap, then atomizes: 
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');
 // film v6 A7: the page-light crosses (b121-123) and lands in main's hands, opening (b128); src/film.js pageLight, pageFly
-V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
+// film v10 A2 (listen_v10.md: the only hit is b121.1 = 207.819, the cut-in; b122.1 has none): what crosses the sky is a streak of the
+// handoff's own characters (film.js streak), violet, upright, read left to right. It ENTERS on the hit (head at the frame's left edge on
+// 207.819), decelerates, and its head reaches its mark (the galaxy's core) on b122.1, the cut to cb02, where it is slowest and the letters
+// read. cb03: a second streak enters on that cut from her side and settles into the city at the top of the plate's beam on b123.4.
+const HANDOFF_TXT = 'HANDOFF.md  Read this first.  Where things stand.  What it cost to learn.  What comes next.';
+V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: V10
+  ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.47], [0.36, 0.31], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52 } }
+  : { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
 P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, lyr: { x0: 0.56, x1: 0.97, align: 'right' },
   next: { id: 'c2_lookup_v2', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 } } } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one;
 // c2_lookup_v2 (plates_v7 wiring: breathing, hair in wind, no arm, its own meteor (0.716, 0.195) -> (0.596, 0.286) over clip 0.3-3.5): v1's
 // window and crop kept; the one blink (clip 3.0-3.2) lands ~1.45 s in; the meteor stays above the lyric block (MERGE starts y ~0.3)
-V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123' });
+V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123', opt: V10 ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.71], [0.16, 0.6], [0.36, 0.56]], at: [[123, 1], [123, 4]], px: 44, n: 40, fade: 0.5 } } : {} });
 // b124-126: the twelve converge on her (src/kit.js 'row' with conv): runners from the right run in toward main (large, centre), from the
 // left they are mirrored; each reaches her and fades into her as the bar ends. Lanes as section 2.
 const KC = (ids, xs) => ids.map((id, i) => ({ id, x: xs[i] }));

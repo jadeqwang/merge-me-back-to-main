@@ -736,6 +736,22 @@ function hand(t, sc) {
 // and over to `to` (the sunrise), shrinking, with a trail, arriving on the downbeat of bar `arrive` with a flash.
 // Mono, violet light: a violet glow under a pale violet core; integer pixel positions (steady, nothing wobbles).
 const VIO_CORE = '#EEE6FF', VIO_GLOW = '#9B6BFF';
+// film v10 A2: a streak of characters along a quadratic path (frame fractions p0 -> ctrl -> mark). The head (the text's LAST character, so
+// the trail reads left to right behind it) is at p0 on at[0] and at the mark on at[1], ease-out (fastest on entry, slowest on arrival);
+// characters sit at fixed arc-length steps behind the head (behind p0 the path continues straight back off frame), upright, the head
+// largest and brightest, size and alpha tapering to the tail. After at[1]: held at the mark, fading over o.fade s (default: to the cut).
+function streak(t, s) { const o = s.opt.streak, ta = T.beat(o.at[0][0], o.at[0][1]), tb = T.beat(o.at[1][0], o.at[1][1]); if (t < ta - HF) return;
+  const P = o.path.map(([x, y]) => [x * W, y * H]), N = 64, pts = [], L = [0];
+  for (let i = 0; i <= N; i++) { const u = i / N, a = (1 - u) * (1 - u), b = 2 * u * (1 - u), c = u * u; pts.push([a * P[0][0] + b * P[1][0] + c * P[2][0], a * P[0][1] + b * P[1][1] + c * P[2][1]]); if (i) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); }
+  const len = L[N], back = [P[0][0] - P[1][0], P[0][1] - P[1][1]], bl = Math.hypot(back[0], back[1]), bd = [back[0] / bl, back[1] / bl];
+  const at = (d) => { if (d <= 0) return [P[0][0] + bd[0] * -d, P[0][1] + bd[1] * -d]; if (d >= len) return pts[N]; let i = 1; while (L[i] < d) i++; const f = (d - L[i - 1]) / (L[i] - L[i - 1]); return [lerp(pts[i - 1][0], pts[i][0], f), lerp(pts[i - 1][1], pts[i][1], f)]; };
+  const u = clamp01((t - ta + HF) / (tb - ta)), head = len * ease.out(u), fa = o.fade ? 1 - clamp01((t - tb) / o.fade) : 1; if (fa <= 0) return;
+  const txt = o.text, n = Math.min(o.n || 40, txt.length), px0 = (o.px || 44) * S, adv = px0 * 0.62;
+  g.save(); g.textBaseline = 'middle'; g.textAlign = 'center';
+  let d = head; for (let i = 0; i < n; i++) { const ch = txt[txt.length - 1 - ((i + (o.skip || 0)) % txt.length)], k = i / n, px = px0 * (1 - 0.5 * k); d -= i ? adv * (1 - 0.5 * k) : 0;
+    const [x, y] = at(d); if (x < -px || x > W + px || y < -px || y > H + px || ch === ' ') continue;
+    g.font = `700 ${px}px "JetBrains Mono"`; g.globalAlpha = fa * (1 - k * k) * (i === 0 ? 1 : 0.92); g.shadowColor = 'transparent'; g.lineJoin = 'round'; g.lineWidth = px * 0.22; g.strokeStyle = 'rgba(5,6,26,0.75)'; g.strokeText(ch, x, y); g.shadowColor = VIO_GLOW; g.shadowBlur = (i < 3 ? 22 : 12) * S; g.fillStyle = i < 2 ? VIO_CORE : '#B79BFF'; g.fillText(ch, x, y); g.fillText(ch, x, y); }
+  g.restore(); const [hx, hy] = at(head); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(hx + adv * 0.9, hy, 34 * S, VIO_GLOW, 0.55 * fa); g.restore(); }
 function typeBox(o) { const f = `600 ${o.px * S}px "JetBrains Mono"`; g.save(); g.font = f; const w = Math.max(...o.lines.map((l) => g.measureText(l).width)); g.restore();
   const lead = (o.lead || o.px * 1.45) * S, x = Math.round(o.at[0] * W), y = Math.round(o.at[1] * H); return { f, x, y, w, lead, cap: o.px * 0.73 * S, h: (o.lines.length - 1) * lead + o.px * 0.73 * S }; }
 function vioText(txt, x, y, a, glow = 1) { g.save(); g.globalAlpha = a; g.shadowColor = VIO_GLOW; g.shadowBlur = 16 * S * glow; g.fillStyle = '#B79BFF'; g.fillText(txt, x, y); g.fillText(txt, x, y);
@@ -1127,6 +1143,7 @@ function draw(t, sc) {
     if (s.opt && s.opt.egg && LANES) egg(t, sc);
     if (s.opt && s.opt.vlane && !codeTree) vlane(t, s.opt.vlane);
     if (s.opt && s.opt.pageFly) pageFly(t, s);
+    if (s.opt && s.opt.streak) streak(t, s);
     if (sc.tail) drawImgs(sc.tail);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
   else card(t, s);
