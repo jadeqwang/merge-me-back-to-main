@@ -16,7 +16,7 @@ Code: `fable/take2/tools/glyphart/v10/`. Outputs (git-ignored): plates `work_fab
 - [x] tests: `dev/v10_glyph/tests_A.jpg` (A3 + three A4 frames, 1920 crop and 640 full, + a merge close-up strip at 1920 and 640);
       `dev/v10_glyph/strip1/` (strips every 4th frame 219.7-231.7, clip.mp4 with the song, 960 px, renderer output only: no lyrics,
       no page-light); A1 stills `dev/v10_glyph/a1/`.
-- [ ] full renders running/landed: see logs `dev/v10_glyph/logs/` (a1, a3, a4).
+- [x] full renders landed 2026-11-22 (logs `dev/v10_glyph/logs/`): all eight folders in the Wiring table. A1 strip `dev/v10_glyph/a1/strip_A1.jpg`.
 
 ## How the merge works (A4)
 - Base: night_jade aligned onto patch_settle's clean figure (matte bounding boxes: same height, top-centre) so all three shots share
@@ -72,4 +72,7 @@ All under `work_fable/take2/plates/` (git-ignored), 1920x1080, 24 fps, `meta.jso
   arriving, the individual pair readable only for the larger letters (cb10). Later generations are small fine letters.
 - Daylight: night_jade has closed eyes, patch_settle open: under the bloom (227.6-228.8) the face cross-fades (a brief double).
 - cb10 at the cut from catch: framing jumps from medium to full figure (as in v9); letters smaller in frame there.
+- A1 at 640 px: the lifting letters (34 px at 1920 = 11 px) read as violet specks more than letters; at 1920 they are letters
+  and the moment she stands as white text along the front is visible. Bigger letters would make her coarse before she breaks.
+- freeze.py: mid-way between key frames the static background is a dissolve of two glyph frames (slightly softer, no ghost edges seen).
 - No paid generation used or needed.
