@@ -84,3 +84,24 @@ Frames are written with the v7 numbering (f_%05d.jpg, number = round(t*30)), so 
    frame_path() from the plate dir, plate fps 24 -> resample to 30), write a new plate dir `plates/catch_glyph/` with
    meta.json + REAL, and point the shot at it (`next`/id change). With the B/F looks it also needs the matte per frame.
 4. Lyrics/overlays draw on top as for any other source.
+
+## Iteration 2 (2026-11-21 ~20:10): glyph MARKS (coordinator's notes: v1 figure/face read as a filtered copy with letter texture)
+New renderer `fable/take2/tools/glyphart/marks.py` (paint.py untouched; it still makes the v1 looks). Every glyph is a separate
+flat single-value mark; paper shows between them; no underpainting, no source texture in the figure.
+1. FILL: quadtree cells 40/20/10/5 px from a size field (detail -> small; face/hands focus: 10-12 px on smooth skin, 5 px only
+   where there is detail; background 24-40). One glyph per cell at ~cell size (thin paper gaps), along the tangent field;
+   glyph + ink value picked together by least squares against the tone patch (argmax 2v T.m - v^2 m.m, Gumbel variety); low tone
+   = empty cell (paper); a second glyph on the residual in darks.
+2. STRANDS: hair = dark figure region; evenly spaced streamlines of the coarse tangent field (scale 30), long stroke glyphs
+   (丿 ノ ∫ ﹏ ~ ل ― ...) laid end to end along each (length 26 px, separation 3 px). No fill marks inside hair.
+3. LINES: ridge map of the drawn lines (eyes, brows, mouth, contours; on the 3D night frame also bright edges); stroke glyphs
+   placed greedily along it, spaced by their length (9 px in the face, 12-14 elsewhere), shape-fitted among stroke glyphs.
+   Dark ink on cream; on black paper the lines are cut in the paper colour.
+Presets: `ink_paper` (F2, dark ink on cream, 3 values), `mono_cream` (E2, cream ink on black), `colour` (C2, each mark one flat
+colour from its cell, brightened). 1-6 s per still, 8-15k fill marks + 1.3k strands + 3k line strokes on the 3:42 frame.
+Command: `bash fable/take2/tools/glyphart/stills_v2.sh` -> `work_fable/take2/dev/v8_glyph/v2/`; sheets
+`dev/v8_glyph/sheet_3m42_catch_v2.jpg`, `sheet_1m34_night_v2.jpg`. Committed: `review/fable_take2/v8_glyph/*_v2.jpg`.
+Judgement: 3:42 F2 is the best image so far (a pen drawing whose every mark is a glyph; likeness holds: eyes, parting, mouth).
+E2/C2 3:42: skin is now dense legible glyph marks with gaps; hair reads as strands. 1:34 night: the background reads as
+composed glyphs, but her figure is small and murky (few marks, dark trousers = paper on black); weaker than 3:42.
+Next if wanted: night figure contrast (lift fg tone, finer cells), a mark-based animate (carry marks by flow, as animate.py does).
