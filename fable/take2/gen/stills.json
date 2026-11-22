@@ -1187,6 +1187,30 @@
     "work_fable/take2/stills/c2_lookup_a1.jpg"
    ],
    "prompt": "Edit this picture and change only one thing: remove the violet shooting star and its trail completely; the sky where it was is plain empty black paper. Keep everything else exactly identical: the same flat cel-shaded anime drawing on black paper, the same framing and size, the same woman with the same face, the same pose looking up to the upper right, lips closed, the same hair, the same white jacket with orange bands and orange headphones, and the thin level band of gold on the horizon. No other figure, arm or hand anywhere. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v8_nopencil_page_reveal90",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v8_plates/ref_page_reveal_f90.jpg"
+   ],
+   "prompt": "Edit this picture and change only one thing. Two yellow pencils are stuck crosswise through the black hair bun on top of her head. Remove exactly ONE of them: the pencil that runs from the lower left to the upper right of the bun, whose purple eraser end sticks out at the upper right of the bun and whose sharpened end points down to the lower left over the back of her head. Where that pencil was, continue her black inked hair strands and the black starry night sky naturally, with no gap, smear or trace of it. Keep the other pencil in the bun exactly as it is: its sharpened tip sticks out at the upper left of the bun and its purple eraser at the lower right. Keep everything else exactly identical: the same drawing style and line work, the same framing and size, the same pose and face, the pencil in her hand and the notebook, the dish, the sky and the stars. After the edit there is exactly one pencil in her hair. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v8_nopencil_page_reveal102",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v8_plates/ref_page_reveal_f102.jpg"
+   ],
+   "prompt": "Edit this picture and change only one thing. Two yellow pencils are stuck crosswise through the black hair bun on top of her head. Remove exactly ONE of them: the pencil that runs from the lower left to the upper right of the bun, whose purple eraser end sticks out at the upper right of the bun and whose sharpened end points down to the lower left over the back of her head. Where that pencil was, continue her black inked hair strands and the black starry night sky naturally, with no gap, smear or trace of it. Keep the other pencil in the bun exactly as it is: its sharpened tip sticks out at the upper left of the bun and its purple eraser at the lower right. Keep everything else exactly identical: the same drawing style and line work, the same framing and size, the same pose and face, the pencil in her hand and the notebook, the dish, the sky and the stars. After the edit there is exactly one pencil in her hair. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v8_nopencil_page_reveal118",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v8_plates/ref_page_reveal_f118.jpg"
+   ],
+   "prompt": "Edit this picture and change only one thing. Two yellow pencils are stuck crosswise through the black hair bun on top of her head. Remove exactly ONE of them: the pencil that runs from the lower left to the upper right of the bun, whose purple eraser end sticks out at the upper right of the bun and whose sharpened end points down to the lower left over the back of her head. Where that pencil was, continue her black inked hair strands and the black starry night sky naturally, with no gap, smear or trace of it. Keep the other pencil in the bun exactly as it is: its sharpened tip sticks out at the upper left of the bun and its purple eraser at the lower right. Keep everything else exactly identical: the same drawing style and line work, the same framing and size, the same pose and face, the pencil in her hand and the notebook, the dish, the sky and the stars. After the edit there is exactly one pencil in her hair. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
   }
  ]
 }

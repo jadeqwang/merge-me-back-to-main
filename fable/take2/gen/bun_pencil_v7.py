@@ -24,9 +24,11 @@ SRC, OUT = args[0], args[1]
 KEYS = [(int(k.split(":", 1)[0]), k.split(":", 1)[1]) for k in args[2:]]
 ROI = (820, 0, 1060, 210)
 CCMIN = 0.90
+EXT = 11      # --ext=N: pixels the mask is extended along the pencil axis past each end (default 11)
 ONLY = None   # --frames=a-b: redo only those frames (the rest of bun_track.json is kept)
 for a in sys.argv[1:]:
     if a.startswith("--roi="): ROI = tuple(int(v) for v in a[6:].split(","))
+    if a.startswith("--ext="): EXT = int(a[6:])
     if a.startswith("--frames="): ONLY = tuple(int(v) for v in a[9:].split("-"))
 x0, y0, x1, y1 = ROI
 files = sorted(glob.glob(os.path.join(SRC, "f_*.jpg")))
@@ -40,8 +42,9 @@ def pencil_px(img):
     m = np.zeros(img.shape[:2], np.uint8); m[y0:y1, x0:x1] = ((wood | eras)[y0:y1, x0:x1]).astype(np.uint8)
     return m
 
-def b_mask(img, ext=11, grow=5):
+def b_mask(img, ext=None, grow=5):
     """mask of the up-right pencil; returns (mask uint8 0/255, n raw px)"""
+    ext = EXT if ext is None else ext
     m = pencil_px(img)
     m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
     n, lab, st, _ = cv2.connectedComponentsWithStats(m, 8)
