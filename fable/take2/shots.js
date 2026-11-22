@@ -562,6 +562,9 @@ const GLYPH_S2 = { va03: GL7('glyph_s2_va03'), ca10: GL7('glyph_s2_ca10') };   /
 for (const s of S) {
   if (GLYPH_S1.includes(s.id)) s.opt = { ...s.opt, glyphPlate: 1 };
   if (GLYPH_S2[s.id]) s.opt = { ...s.opt, glyph: GLYPH_S2[s.id], paper: 0 };
+  // the wushu run (bu10, 12, 13, 15, 16, 18, 19, 21) and every orchestra shot (bu22-bu30): one style-2 folder, v7/glyph_s2_bu (frames
+  // 3974-4389 = 132.5-146.3 s; the S plate inserts between them stay plates). Pre-wired: until its meta.json lands, v8.
+  if (s.sec === 'build' && s.kind === 'v7' && +s.id.slice(2) >= 10 && +s.id.slice(2) <= 30) s.opt = { ...s.opt, glyph: GL7('glyph_s2_bu'), paper: 0 };
   if (s.sec === 'drop' && s.kind === 'v7') s.opt = { ...s.opt, glyph: GL7('glyph_drop'), paper: 0 };   // every v7 dr shot: slash hatch, same gold on black
 }
 export const SHOTS = S;
