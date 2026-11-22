@@ -24,8 +24,8 @@ PL = os.path.join(ROOT, 'work_fable/take2/plates'); AT = os.path.join(ROOT, 'wor
 W, H, SC = 1920, 1080, 1.5
 T0, T1 = 202.691, 207.819
 LEAD, TAIL, SOFT = 0.1, 0.45, 0.06
-OUT_ID = 'vio_still_letters10'
-CFG = dict(size=34.0, hold=0.3, adv=0.58, row=0.86, swap=0.33, star=0.12)
+OUT_ID = os.environ.get('A1_ID', 'vio_still_letters10b')
+CFG = dict(size=34.0, hold=0.3, big=0.05, big_s=(60, 90), big_circ=0.4, adv=0.58, row=0.86, swap=0.33, star=0.12)
 
 
 def ease_out(u):
@@ -60,13 +60,23 @@ class Atom:
                     col = cell.reshape(-1, 3).mean(0)
                     gid = txt[ti % len(txt)][0]; ti += 1
                     s.Ls.append(dict(x=float(x), y=float(y), tau=float(s.tau[yi, xi]), col=col, gid=gid, sd=float(rng.random()),
-                                     r=rng.random(4)))
+                                     r=rng.random(4), big=0.0))
                     x += adv
                 else:
                     x += adv * 0.5
             y += rh
         s.cx, s.cy = xs.mean(), ys.mean()
+        # rev b: a visible share grow large as they lift (60-90 px at 1920): legible as characters at phone size; Latin letters
+        # of the note for most of them, and a share of the circle's last ones
+        latin = set(np.nonzero(s.G.script == 'latin')[0].tolist())
+        for m in s.Ls:
+            circ_ = m['tau'] >= 0.82
+            if (rng.random() < (CFG['big_circ'] if circ_ else CFG['big'])) and m['sd'] >= CFG['star']:
+                m['big'] = float(rng.uniform(*CFG['big_s']))
+                if rng.random() < 0.7:
+                    m['gid'] = s.G.em(s.G.of_char(rawtxt[int(rng.integers(len(rawtxt)))], rng) or 0)
         circ = [m for m in s.Ls if m['tau'] >= 0.82]
+        print('big letters', sum(1 for m in s.Ls if m['big']), 'of which circle', sum(1 for m in circ if m['big']))
         s.circ_c = (np.mean([m['x'] for m in circ]), np.mean([m['y'] for m in circ])) if circ else (s.cx, s.cy)
         print(f'letters {len(s.Ls)}, circle letters {len(circ)}')
 
@@ -116,8 +126,8 @@ class Atom:
                 X, Y = M @ np.array([wx, wy, 1.0])
                 mix = ease_out(age / 0.5); c = col * (1 - mix) + light * mix
                 a = born
-                sz = CFG['size'] * (1.0 + 0.15 * mix)
-                x0, y0, d = L.sdf_item(s.G, [(m['gid'], X, Y, sz, 0.0)], margin=22)
+                sz = CFG['size'] * (1.0 + 0.15 * mix) if not m['big'] else CFG['size'] + (m['big'] - CFG['size']) * mix
+                x0, y0, d = L.sdf_item(s.G, [(m['gid'], X, Y, sz, 0.0)], margin=22 + int(m['big'] * 0.3))
                 L.ink(can, x0, y0, d, c, a=a, glow=0.55 * mix, gcol=light, gr=6)
                 continue
             ag = max(0.0, age - CFG['hold'] * (0.6 + 0.8 * r2))   # she stands as the text for a moment
@@ -136,8 +146,13 @@ class Atom:
             if a <= 0.02:
                 continue
             sz = CFG['size'] * ((0.6 if star else 0.85) + (1 - (0.6 if star else 0.85)) * (1 - mix))
+            if m['big']:      # grows as it lifts, stays upright, fades slower
+                sz = CFG['size'] + (m['big'] - CFG['size']) * mix
+                a = born * (1 - np.clip((ag - 1.1) / (1.0 + 0.6 * r0), 0, 1))
+                if a <= 0.02:
+                    continue
             tw_ = 0.6 + 0.4 * math.sin(math.floor(t * 12) * (0.6 + r0) + m['sd'] * 90) if star and ag > 1.2 else 1.0
-            x0, y0, d = L.sdf_item(s.G, [(m['gid'], X, Y, sz, (r3 - 0.5) * 0.6 * mix)], margin=16 if mix > 0 else 4)
+            x0, y0, d = L.sdf_item(s.G, [(m['gid'], X, Y, sz, (r3 - 0.5) * (0.15 if m['big'] else 0.6) * mix)], margin=(16 + int(m['big'] * 0.3)) if mix > 0 else 4)
             L.ink(can, x0, y0, d, c, a=min(1.0, a * tw_), glow=0.4 * mix * tw_, gcol=light, gr=5)
         return np.clip(can, 0, 1)
 

@@ -18,7 +18,19 @@ Code: `fable/take2/tools/glyphart/v10/`. Outputs (git-ignored): plates `work_fab
       no page-light); A1 stills `dev/v10_glyph/a1/`.
 - [x] full renders landed 2026-11-22 (logs `dev/v10_glyph/logs/`): all eight folders in the Wiring table. A1 strip `dev/v10_glyph/a1/strip_A1.jpg`.
 
-## How the merge works (A4)
+## Revision b (main thread's notes, 2026-11-22): USE THESE for vb10 and cb10-cb12
+Code `v10/merge_b.py` (A4 b) and `v10/atom_letters.py` (A1 b, default id now `vio_still_letters10b`). Test `dev/v10_glyph/tests_B.jpg`
+(224, 226.5, 228.5, 230, 231.0, 231.3, 233, 234.9: 640 full + 1920 crop); endgame `dev/v10_glyph/b4/end.jpg`; A1 `dev/v10_glyph/a1b/sheet640.jpg`.
+- Many into one: the count falls, size holds (70-112 px; last levels to 150, the final mark 170). At 223.135 she is made of letters
+  (figure underneath dim, face clean); each fusion reveals a patch of the clean drawing where it happened; the rest fills from the
+  chest as the last mark goes in. At 228.30 the ~22 survivors glide onto a ring on her torso (below the chin); on the 8th-note pulse:
+  -> 16 (228.69), -> 8 (229.12), -> 4 (229.54), -> 2 (229.97), -> 1 at her chest (230.39), a violet R (170 px) that sinks
+  230.69 -> 231.210 ("become"), then a flash.
+- Dark ground until 231.21; daylight spreads from the chest outward, full at 235.038 (warm rim on the front); the face switches to
+  open eyes in 2 frames at 231.21 under the flash (no dissolve). The bloom at 227.4 is gone.
+- A1 b: as before plus 50 letters (7 of the circle's) that grow to 60-90 px as they lift: legible at 640.
+
+## How the merge works (A4, first version, superseded by b)
 - Base: night_jade aligned onto patch_settle's clean figure (matte bounding boxes: same height, top-centre) so all three shots share
   one frame; zoom 1.0 -> 1.035 baked over 223.135-235.038 (so `push: 0` on these shots).
 - 223.135: ~150 coarse letters on her (violet = the note, and her own colours), the figure under them an underpainting (blurred, dim);
@@ -33,7 +45,7 @@ Code: `fable/take2/tools/glyphart/v10/`. Outputs (git-ignored): plates `work_fab
   (patch_settle_merge10 frame 32). After that: clean line; saturation and warmth keep rising to 235.038 (grade), not a still.
 
 ## For the compositor
-1. cb10 (b130-131) is no longer `code: 'fold'`: make it a plate shot of `fold_merge10` (clip0 0, speed 1, `push: 0`); lyr as now.
+1. (rev b: use the `...10b` ids in the Wiring table.) cb10 (b130-131) is no longer `code: 'fold'`: make it a plate shot of `fold_merge10b` (clip0 0, speed 1, `push: 0`); lyr as now.
 2. cb11 `patch_hold` -> `patch_hold_merge10`; cb12 `patch_settle` -> `patch_settle_merge10` with clip0 0, NO clip1 (the frames are the
    shot, 1:1 in song time), `push: 0`. All three: frame i = song t0 + (i-1)/24.
 3. vb10 `vio_still`: plate `vio_still_letters10` replaces the plate AND `opt.atom` (remove atom, or atomize() draws dust on top;
@@ -49,13 +61,13 @@ All under `work_fable/take2/plates/` (git-ignored), 1920x1080, 24 fps, `meta.jso
 
 | shot | replaces | folder | frames | frame 1 = song | settings / notes |
 |---|---|---|---|---|---|
-| vb10 | vio_still + opt.atom | `vio_still_letters10/` | 125 | 202.691 | atom_letters.py: size 34 px letters, hold 0.3 s as text, 12 % stars, swap 33 %; release timing as atomize() (lead .1, tail .45, soft .06); drop opt.atom |
+| vb10 | vio_still + opt.atom | `vio_still_letters10b/` (b; first version `vio_still_letters10/`) | 125 | 202.691 | atom_letters.py: size 34 px letters, hold 0.3 s as text, 12 % stars, swap 33 %; release timing as atomize() (lead .1, tail .45, soft .06); drop opt.atom |
 | cb02 | c2_lookup_v2_glyph | `c2_lookup_v2_glyph10f/` | 121 (6-87) | 209.366 | style 1, boil 0, fill-k 4, then freeze.py key 24 |
 | cb08 | c2_hands | `c2_hands_letters10/` | 121 | 219.737 | coarse.py c2_hands: letters 96-132 px, front from the palms 220.45-221.44, first 55 % violet |
 | cb09 | catch_glyph | `catch_letters10/` | 121 | 221.436 | coarse.py catch on catch_glyph10f: 90-124 px, front 221.44-222.45 from r 170 at her hands, first 35 % violet, face clean |
-| cb10 | code 'fold' | `fold_merge10/` | 84 | 223.135 | merge.py; push 0 |
-| cb11 | patch_hold | `patch_hold_merge10/` | 84 | 226.532 | merge.py; push 0; daylight 227.40-229.10 |
-| cb12 | patch_settle | `patch_settle_merge10/` | 125 | 229.931 | merge.py; push 0; no clip1; last letter in at 231.210 (f_0032); patch_settle frames 82-121 slowed underneath |
+| cb10 | code 'fold' | `fold_merge10b/` | 84 | 223.135 | merge_b.py; push 0 |
+| cb11 | patch_hold | `patch_hold_merge10b/` | 84 | 226.532 | merge_b.py; push 0; dark ground; endgame ring from 228.30 |
+| cb12 | patch_settle | `patch_settle_merge10b/` | 125 | 229.931 | merge_b.py; push 0; no clip1; last mark in at 231.210 (f_0032), daylight from there to 235.038 |
 | (base) | - | `catch_glyph10/`, `catch_glyph10f/` | 121 | 221.436 | de-shimmered style 1 catch without letters (fallback) |
 
 ## Commands
