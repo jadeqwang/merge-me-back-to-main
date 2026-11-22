@@ -26,6 +26,7 @@ const TIMING = Q.get('timing') || '/analysis_v3/timing.json';
 const PLATE_DIRS = (Q.get('plates') || '/work_fable/take2/plates,/work_fable/proof/plates').split(',');
 const PROOF_PLATES = '/work_fable/proof/plates';
 const V7DIR = Q.get('v7dir') || '/work_fable/take2/v7/full';
+const GLYPH_ON = Q.get('glyph') !== '0';   // film v9: ?glyph=0 renders the v8 look (no glyph frames, no _glyph plates)
 const HUD = Q.get('hud') !== '0', USE_V7 = Q.get('v7') !== '0', USE_PAPER = Q.get('paper') !== '0', ALLCARDS = Q.get('cards') === '1', LANES = Q.get('lanes') !== '0';
 const PROOFBUG = Q.get('proofbug') === '1', LIKENESS = Q.get('likeness') !== '0';
 // film v3 (Jade on v2: "go back to the hatched 3D"): the orchestra bars are the revision-3 3D through the solid paper look by default;
@@ -110,7 +111,7 @@ const v7Of = (s) => (s && s.opt && s.opt.v7dir ? V7S[s.opt.v7dir] : V7);
 function v7Index(t, s) { const V = v7Of(s); if (!V) return -1; const k = Math.round(t * V.fps); return k >= V.first && k < V.first + V.n ? k : -1; }
 const v7Url = (k, s) => `${s && s.opt && s.opt.v7dir && V7S[s.opt.v7dir] ? s.opt.v7dir : V7DIR}/f_${String(k).padStart(5, '0')}.jpg`;
 async function loadV7(dir) { const vm = await json(`${dir}/meta.json`); if (!vm || !vm.n) return null;
-  const V = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
+  const V = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h, crop: vm.crop || null };
   return (await exists(`${dir}/f_${String(V.first).padStart(5, '0')}.jpg`)) ? V : null; }
 // paper looks per shot (opt.paperLook): 'orch' = the orchestra's look, chosen by ?orchpaper= (default 'solid'):
 //   solid: white jackets as solid light shapes, two hatch layers for mid tones, the pale-blue disc kept as an ink (low inkSat)
@@ -256,7 +257,11 @@ function plateDraw(s, t, id, out) {
 const CROPS = { b: { z: 1.55, f: [[0.3, 0.35], [0.7, 0.6], [0.55, 0.3], [0.35, 0.65]] }, c: { z: 2.1, f: [[0.6, 0.45], [0.4, 0.5], [0.5, 0.6], [0.45, 0.35]] } };
 function scene(t) {
   const s = shotAt(t); const sc = { t, s, eff: effKind(s), imgs: [] };
-  if (sc.eff === 'v7') { const k = v7Index(t, s); if (k < 0) sc.eff = 'card'; else { sc.imgs.push({ url: v7Url(k, s), v7: true }); if (s.opt.windows) sc.wins = windowUrls(s, t); } }
+  // film v9 B1: opt.glyph = a folder of finished glyph-art frames in v7 numbering (tools/glyphart): used wherever it has this frame (no
+  // paper pass with opt.paper 0; no v7crop when its meta.crop says it is pre-cropped); otherwise the shot's own (v8) source. ?glyph=0 = v8.
+  const GL = sc.eff === 'v7' && s.opt.glyph && GLYPH_ON ? V7S[s.opt.glyph] : null, gk = GL ? Math.round(t * GL.fps) : -1;
+  if (GL && gk >= GL.first && gk < GL.first + GL.n) { sc.glyph = GL; sc.imgs.push({ url: `${s.opt.glyph}/f_${String(gk).padStart(5, '0')}.jpg`, v7: true }); if (s.opt.windows) sc.wins = windowUrls(s, t); }
+  else if (sc.eff === 'v7') { const k = v7Index(t, s); if (k < 0) sc.eff = 'card'; else { sc.imgs.push({ url: v7Url(k, s), v7: true }); if (s.opt.windows) sc.wins = windowUrls(s, t); } }
   // film v2: a v7 shot that dissolves into a plate (opt.tail {id, at (song s), clip0, frames}): orchestra shot 1, the 3D arrival into orch_1
   const tl = s.opt && s.opt.tail; if (sc.eff === 'v7' && tl && !ORCH_V7 && PLATE[tl.id] && on(t, tl.at)) { sc.tail = []; plateDraw({ t0: tl.at, t1: s.t1, opt: { clip0: tl.clip0, push: 0 } }, t, tl.id, sc.tail);
     const a = clamp01((fr(t, tl.at) + 1) / tl.frames); sc.tail.forEach((im) => (im.alpha = (im.alpha === undefined ? 1 : im.alpha) * a)); }
@@ -1097,11 +1102,12 @@ function draw(t, sc) {
   else if (sc.eff === 'code') { try { if (s.opt.code === 'gitlog') gitlog(t, s); else if (s.opt.code === 'tiles') tiles(t, sc); else if (s.opt.code === 'mapfold') MAPF.draw(s, t); else OUTRO.draw(s, t, sc); } catch (e) { console.log('ERROR code ' + e.stack); } }
   else if (sc.eff === 'v7') {
     const codeTree = TREE && s.opt && s.opt.tree;   // film v8: the tree drawn in code this frame, no v7 frame under it
-    let b = codeTree ? TREE.frame(t, s.opt.tree.violet, s.opt.tree) : READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = !codeTree && s.opt && s.opt.v7crop;
+    let b = codeTree ? TREE.frame(t, s.opt.tree.violet, s.opt.tree) : READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = !codeTree && s.opt && s.opt.v7crop && !(sc.glyph && sc.glyph.crop);
     if (vc) { if (!CROPC) { CROPC = document.createElement('canvas'); CROPC.width = W; CROPC.height = H; } const x = CROPC.getContext('2d'); x.imageSmoothingQuality = 'high';
       x.drawImage(b, vc[0] * b.width, vc[1] * b.height, vc[2] * b.width, vc[3] * b.height, 0, 0, W, H); b = CROPC; }
     const look = s.opt && s.opt.paperLook && PAPER_LOOKS[s.opt.paperLook] ? PAPER_LOOKS[s.opt.paperLook][ORCHPAPER] : null;
-    if (paperPass && USE_PAPER && look && look.light) {   // raw frame, the paper pass's contour (no tone) added over it
+    if (sc.glyph && s.opt.paper === 0) g.drawImage(b, 0, 0, W, H);   // film v9: finished glyph frames
+    else if (paperPass && USE_PAPER && look && look.light) {   // raw frame, the paper pass's contour (no tone) added over it
       g.drawImage(b, 0, 0, W, H);
       if (!LIGHTC) { LIGHTC = document.createElement('canvas'); LIGHTC.width = W; LIGHTC.height = H; }
       const lc = LIGHTC.getContext('2d'); paperPass(lc, b, rect, { paper: 'black', ink: sec.ink || INKS, seed: 1000 + s.i, t, skip: 'h' });
@@ -1198,6 +1204,9 @@ async function boot() {
   // ... or next itself a list of { id, opt, kind } (per-take timings): the first whose plate exists wins
   for (const s of SH) if (s.opt && s.opt.next && Array.isArray(s.opt.next)) { for (const nx of s.opt.next) if (await firstPlate(nx.id)) { s.opt = { ...s.opt, next: nx }; break; } if (Array.isArray(s.opt.next)) s.opt = { ...s.opt, next: null }; }
   for (const s of SH) if (s.opt && s.opt.next && !(s.opt.next.flag === 'orch' && ORCH_V7)) { const id = await firstPlate(s.opt.next.id); if (!id) continue; s.src = id; if (s.opt.next.kind) s.kind = s.opt.next.kind; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
+  // film v9 B1: a plate shot with opt.glyphPlate draws the glyph-art copy `<id>_glyph` (tools/glyphart style 1, same frames painted, same
+  // framing) when it has landed; else its own plate. ?glyph=0 = v8.
+  for (const s of SH) if (GLYPH_ON && s.opt && s.opt.glyphPlate && s.kind === 'plate' && !/_glyph$/.test(s.src) && (await findPlate(s.src + '_glyph'))) s.src = s.src + '_glyph';
   for (const s of SH) if (s.opt && s.opt.tail && !ORCH_V7) await findPlate(s.opt.tail.id);
   // film v6: per-shot data files named in shots.js (pencil tip tracks, the page quads), loaded once the shot's source is decided
   for (const s of SH) { if (s.opt && s.opt.pencil && s.opt.pencil.trackUrl && !s.opt.pencil.track) { const j = await json(s.opt.pencil.trackUrl); if (j) s.opt = { ...s.opt, pencil: { ...s.opt.pencil, track: j.tip } }; }
@@ -1208,6 +1217,7 @@ async function boot() {
   if (vm && vm.n) { V7 = { fps: vm.fps || 30, n: vm.n, t0: vm.t0 || 0, first: vm.first !== undefined ? vm.first : Math.round((vm.t0 || 0) * (vm.fps || 30)), w: vm.w, h: vm.h };
     if (!(await exists(v7Url(V7.first)))) { console.log(`v7: ${v7Url(V7.first)} not found; v7 shots fall back to cards`); V7 = null; } }
   for (const s of SH) if (s.opt && s.opt.v7dir && !(s.opt.v7dir in V7S)) V7S[s.opt.v7dir] = await loadV7(s.opt.v7dir);
+  for (const s of SH) if (s.opt && s.opt.glyph && GLYPH_ON && !(s.opt.glyph in V7S)) V7S[s.opt.glyph] = await loadV7(s.opt.glyph);   // film v9: glyph frames (missing -> null -> the v8 source)
   try { ({ paperPass } = await import('./paper.js')); } catch (e) { console.log('paper.js not loaded (' + String(e).slice(0, 80) + '); v7 shots are raw'); }
   try { ({ glyphPass } = await import('./glyph.js')); } catch (e) { console.log('glyph.js not loaded'); }
   // film v8: the MERGE tree drawn in code (src/tree.js); ?tree=v7 brings back the v7 frames with the clean violet overlay
@@ -1216,7 +1226,7 @@ async function boot() {
   // take-two changes inside the proof range (all off with proofbug=1): the black-paper hero (hero_paper, nearest frame; hero=old for the
   // first one), written lanes on the ten lives (prooflanes=0 off), bar 38 panel afterimages (trail=0 off)
   // film v3: hero_paper_v2 (she sings "Merge me back to main" as she runs) replaces hero_paper when it lands, song-locked to its meta t0_song
-  const heroV2 = !PROOFBUG && Q.get('hero') !== 'old' && HERO_NEXT && (await findPlate(HERO_NEXT.id));
+  const heroV2 = !PROOFBUG && Q.get('hero') !== 'old' && HERO_NEXT && ((GLYPH_ON && HERO_NEXT.glyph && (await findPlate(HERO_NEXT.id + '_glyph'))) || (await findPlate(HERO_NEXT.id)));   // film v9: the glyph copy first
   const heroNew = heroV2 || (!PROOFBUG && Q.get('hero') !== 'old' && (await findPlate('hero_paper')));
   // film v2: a life's A shot in bars 28-32 from a new plate (shots.js PROOF_A): clip0 puts its `land` moment on beat `landBeat` of the shot
   const dirs = heroNew ? { hero: heroNew.dir } : {}, aPlates = {}; const turnOv = {};

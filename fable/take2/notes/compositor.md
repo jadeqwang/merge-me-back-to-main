@@ -1034,3 +1034,16 @@ Nobody has watched film_v8 at speed with sound.
   ~15-18 film px/frame) while the other leg swings; there is almost no flight, so a lock leaves her running in place. Options: a new
   plate (paid), or accept. Her 39.58 timestamp is clip ~2.8 s (frame ~68), at the doorway, where the matte takes the door: not measured.
 - va04 wushu: not measured (small, back view, inside the doorway; the matte takes the door).
+
+### 3. Glyph wiring (B1) -- mechanism done; wired what exists, rest falls back to v8
+- film.js: `opt.glyph` (folder in v7 numbering, meta.json): used wherever it has the frame; with `opt.paper: 0` no paper pass; if its
+  meta.crop is set, the shot's v7crop is skipped (pre-cropped). Missing folder/meta/frame -> the shot's v8 source (paper, crop).
+  `opt.glyphPlate`: a plate shot draws `<src>_glyph` when it has landed (after `next` resolution, so it follows c2_lookup_v2,
+  main_back_wide_v2, day_eyes_v2). `HERO_NEXT.glyph`: the proof hero (ca01) takes hero_paper_v2_glyph first. `?glyph=0` = v8 look.
+- shots.js (end): GLYPH_S1 = va02 va10 ca03 ca09 ca11 ba01-ba05 cb02 cb09 (+ oa03 through day_eyes_v2's opt; NOT the b65-68
+  float_face flashes); GLYPH_S2 va03 -> v7/glyph_s2_va03, ca10 -> v7/glyph_s2_ca10; every v7 dr shot -> v7/glyph_drop. Wushu run
+  (bu10-21) and orchestra (bu22+) not wired yet: no folder names in glyph_v9.md's table.
+- Landed at the time of wiring: glyph_s2_va03, glyph_s2_ca10, catch_glyph, hero_paper_v2_glyph. glyph_drop has frames but no meta
+  (still rendering) -> v8. day_eyes_v2_glyph frames only (no meta) -> v8.
+- Checked (dev/v9/glyph/all.jpg, v8 left / v9 right): 32.0 va03, 70.79 ca01 (MERGE slab + lanes on top), 93.18 ca10 (window row
+  identical to v8), 153.65 (fallback = v8), 222.36 cb09 (FOLD on top).

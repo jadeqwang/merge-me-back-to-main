@@ -1,6 +1,6 @@
 // MERGE take two: the whole shot table (fable/take2/PLAN.md section 6) as data, bar 1 to the end of the audio (0 to 282.8 s).
 // Pure data plus a resolver; loads in the browser (fable/take2/src/film.js) and in node (fable/take2/tools/shots.mjs).
-//
+
 // A shot:
 //   id        working id (section letter + running number), stable for notes
 //   sec       section key (SECTIONS below): card colour and the debug overlay's section name
@@ -483,7 +483,7 @@ shot(139, [140, 3], 'S+C', 'code', 'facades', 'missing', 'Day. The road runs pas
 // b141.3-143: wide, the run goes on; the written road ENDS ahead of her and its end reaches her landing foot on b142.1 (roadEnd); from
 // there each landing writes a patch of lane under that foot, one life per step in its colour, joining and turning main's orange behind her.
 shot([140, 3], [141, 3], 'P+K', 'code', 'day_run', 'missing', 'Close three-quarter on her running face; on the snare she closes her eyes and keeps running past her history. (Until day_eyes lands: the run.)', { row: 'b139-140', opt: { ...TOWN_RUN, next: [   // film v9: day_eyes_v2 (plates_v9: jacket as the runner's, 1420 MHz patch on her left arm; lids close ~4 frames later than v1: clip 0.62-2.33 keeps the close on b140.4)
-    { id: 'day_eyes_v2', kind: 'plate', opt: { clip0: 0.62, clip1: 2.33, push: 0.02, mirror: true, streaks: { matte: '/work_fable/take2/kit/day_eyes_v2', speed: 2600, alpha: 0.5, n: 9 }, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.6, x1: 0.97, align: 'right' } } },
+    { id: 'day_eyes_v2', kind: 'plate', opt: { glyphPlate: 1, clip0: 0.62, clip1: 2.33, push: 0.02, mirror: true, streaks: { matte: '/work_fable/take2/kit/day_eyes_v2', speed: 2600, alpha: 0.5, n: 9 }, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.6, x1: 0.97, align: 'right' } } },
     { id: 'day_eyes', kind: 'plate', opt: { clip0: 0.45, clip1: 2.16, push: 0.02, mirror: true, streaks: { matte: '/work_fable/take2/kit/day_eyes', speed: 2600, alpha: 0.5, n: 9 }, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.6, x1: 0.97, align: 'right' } } }] } });   // plates_v8 Wiring: day_eyes (lids fall at clip ~0.85-1.0) at 1x from 0.45, so they close on the b140.4 snare (measured: beat 4 carries the 1.5-6 kHz hit in b139-141); mirrored: the plate runs right, the town runner runs left
 shot([141, 3], 143, 'P+K', 'code', 'day_run', 'missing', 'Wide: the written road ends ahead of her; she runs off it onto blank paper without breaking stride, and each footfall writes a patch of lane, one branch colour per step, turning main orange behind her.', { row: 'b141-142', opt: { ...TOWN_RUN, roadEnd: [142, 1] } });
 P(143, [144, 2], 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]] } });
@@ -545,11 +545,24 @@ export const LIFE_SWAP = { band: { id: 'band_v2', side: 'left', tone: null, focu
   violet: { id: ['violet_v2'], side: null, tone: null, focus: [0.68, 0.35], turn: null } };   // film v7: one pencil in the bun (plates_v7); the proof's stay tile still comes from PROOF_STAY   // master: home_v3 (the kids' visible skin warm, plates agent) when it lands; turn/focus to confirm from plates_v5.md   // film v4 (Jade: "the face in parenthood is blue"): home_v2, her face and hands warm; turn_t 2.85 as home (motion peak 2.83), so no turn override   // band_v2: she is on the LEFT (x 0.08-0.45); her head turns ~0.2 s later than the old plate's, so clip 2.8 (not turn_t 2.6) is put on the bar-37 downbeat: she turns with the other eleven
 // film v3: the chorus 1 sprint (b41-42) from hero_paper_v2 when it lands: she sings "Merge me back to main" as she runs, so it is
 // song-locked (clip time = song time - meta t0_song). opt overrides the hero crop/slab/gap (zoom, fx, fy, rows, gap) from the wiring row.
-export const HERO_NEXT = { id: 'hero_paper_v2', opt: {}, lag: -0.04 };   // film v4: lag -40 ms measured (plates_v4 wiring; ?laghero=<ms> overrides; + = sound later than picture)
+export const HERO_NEXT = { id: 'hero_paper_v2', opt: {}, lag: -0.04, glyph: true };   // film v9: glyph: hero_paper_v2_glyph first when it has landed (ca01)
+//   // film v4: lag -40 ms measured (plates_v4 wiring; ?laghero=<ms> overrides; + = sound later than picture)
 // film v6 A2: the rare-earth grid tile does not turn at bar 37 and does not fall home at bar 38 (port_proof.py o.stay). When the plates
 // agent's vio_grid_stay (writing, head down, no turn, the tile's framing) lands it replaces the tile's plate in the proof only (o.dirs),
 // with its focus from the wiring row; until then the present tile plays slowly and never reaches its turn
 export const PROOF_STAY = { violet: { id: ['vio_grid_stay_v2', 'vio_grid_stay'], focus: null } };   // film v7: _v2 = one pencil in the bun
+// film v9 B1 (Jade's v8 notes; notes/v9_direction.md A, the glyph agent's Wiring table in notes/glyph_v9.md). Missing folders fall back to v8.
+// Style 1 (multi-size, colour, full frame): plate shots draw `<plate>_glyph` (film.js opt.glyphPlate). ba04's gliding life window, the
+// lanes, chips, lyrics and slab type are drawn by film.js on top and stay un-glyphed. ca01 (proof hero) via HERO_NEXT.glyph; oa03 via day_eyes_v2's opt.
+// Style 2 (single-size ASCII) and the drop's slash hatch: v7 shots read finished frames from opt.glyph (v7 numbering) with paper 0.
+const GLYPH_S1 = ['va02', 'va10', 'ca03', 'ca09', 'ca11', 'ba01', 'ba02', 'ba03', 'ba04', 'ba05', 'cb02', 'cb09'];
+const GL7 = (d) => `/work_fable/take2/v7/${d}`;
+const GLYPH_S2 = { va03: GL7('glyph_s2_va03'), ca10: GL7('glyph_s2_ca10') };   // va03: pre-cropped (meta.crop), v7crop kept for the fallback; ca10: the lit windows stay drawn on top
+for (const s of S) {
+  if (GLYPH_S1.includes(s.id)) s.opt = { ...s.opt, glyphPlate: 1 };
+  if (GLYPH_S2[s.id]) s.opt = { ...s.opt, glyph: GLYPH_S2[s.id], paper: 0 };
+  if (s.sec === 'drop' && s.kind === 'v7') s.opt = { ...s.opt, glyph: GL7('glyph_drop'), paper: 0 };   // every v7 dr shot: slash hatch, same gold on black
+}
 export const SHOTS = S;
 
 // ------------------------------------------------------------------ resolve bar/beat to song time
