@@ -10,8 +10,8 @@
 // Layers: source (proof | plate | v7 [paper pass] | card) -> grain + vignette -> overlays (chip, counter, title) -> lyrics -> HUD.
 // Source kinds: see shots.js. A missing plate, or a v7 time outside the delivered sequence, draws as a labelled card.
 import { loadTiming, clamp01, lerp, seg, ease } from './timing.js';
-import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT, PROOF_STAY, LYR_OFF, GLYPH_SFX } from '../shots.js';
-import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
+import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT, PROOF_STAY, LYR_OFF, GLYPH_SFX, NOTATION } from '../shots.js';
+import { LIVES, MAIN, byId, hashOf, PLATE_IDS } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
 import { scriptPaths, drawScript, penAt } from './script.js';
@@ -1334,8 +1334,12 @@ async function boot() {
     const tb = T.beatT(Math.round(bposT(s.t0)) + a.landBeat); aPlates[k] = { key: k + '_A', clip0: a.land - (tb - s.t0), side: a.side }; dirs[k + '_A'] = p.dir; }
   // film v6: the tile that stays (shots.js PROOF_STAY): its own plate in the proof when it lands (dirs; focus via the meta copy below)
   const stay = {}; if (!PROOFBUG) for (const [k, a] of Object.entries(PROOF_STAY || {})) { stay[k] = true; const p = await findPlate(await firstPlate(a.id)); if (p) { dirs[k] = p.dir; if (a.focus) p.meta.focus = a.focus; } }
+  // film v11 B2: notation plates for the life introductions and the grid panels (shots.js NOTATION): the life's own plate id (or its
+  // LIFE_SWAP / PROOF_A replacement) + `_notation11`
+  const notA = {}, notGrid = {}; if (!PROOFBUG && NOTATION) for (const k of PLATE_IDS) { const base = [k, ...[].concat(PROOF_A[k] || []).flatMap((x) => [].concat(x.id)), ...[].concat((LIFE_SWAP[k] || {}).id || [])];
+    for (const b of base) { const p = await findPlate(b + '_notation11'); if (!p) continue; dirs[k + '_N'] = p.dir; if (NOTATION.a) notA[k] = k + '_N'; if (NOTATION.grid) notGrid[k] = k + '_N'; break; } }
   PROOF = await makeProof(g, { W, H, FPS, T, plates: PROOF_PLATES, twos: false, fixStrip: !PROOFBUG, stay,
-    dirs, aPlates, heroBlend: !heroNew, turn: turnOv,
+    dirs, aPlates, notA, notGrid, heroBlend: !heroNew, turn: turnOv,
     // hero_paper has her in the centre: crop so she sits right of centre, the slab stacks one word per row on the left (rule 5: clear of
     // her face and hands), and the written lane passes behind her legs
     hero: heroNew ? { zoom: 1.25, fx: 0, fy: 0.05, rows: [[0], [1], [2], [3], [4]], gap: [0.5, 0.77], ...(heroV2 ? { ...(HERO_NEXT.opt || {}), c0: heroV2.meta.t0_song !== undefined ? T.bar(41) - heroV2.meta.t0_song + lagOf({ lag: HERO_NEXT.lag, lagQ: 'laghero' }) : 0 } : {}) } : null, writtenLanes: !PROOFBUG && Q.get('prooflanes') !== '0' ? { drawWrittenLane, laneString } : null,

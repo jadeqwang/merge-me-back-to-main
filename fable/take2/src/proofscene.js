@@ -183,7 +183,7 @@ function scene(t) {
   const full = { x: 0, y: 0, w: W, h: H };
   if (on(t, TL.t41)) { const f = fr(t, TL.t41), punch = f <= 8 ? 1 + 0.04 * Math.pow(1 - f / 8, 2) : 1;
     P.push({ id: 'hero', c: softcap(Math.max(0, t - TL.t41 + ((o.hero && o.hero.c0) || 0)), (META.hero.n - 1) / META.hero.fps), rect: full, zoom: (o.hero ? o.hero.zoom : 1) * (1 + 0.04 * seg(t, TL.t41, TL.tEnd)) * punch, fx: o.hero ? o.hero.fx : 0.5, fy: o.hero ? o.hero.fy : 0.5, blend: o.heroBlend !== false }); sc.phase = 'E'; return sc; }
-  if (!on(t, TL.grid)) { const s = shotAt(t) || TL.shots[0]; sc.shot = s; sc.phase = 'A'; const AP = o.aPlates && o.aPlates[s.id]; P.push({ id: AP ? AP.key : s.id, c: AP ? Math.max(0, AP.clip0 + (t - s.t0)) : clipA(s, t), rect: full, zoom: 1 + s.push * seg(t, s.t0, s.t1), fy: clamp01(0.45 + (byId[s.id].yshift || 0)), blend: true }); return sc; }
+  if (!on(t, TL.grid)) { const s = shotAt(t) || TL.shots[0]; sc.shot = s; sc.phase = 'A'; const AP = o.aPlates && o.aPlates[s.id], NA = o.notA && o.notA[s.id]; P.push({ id: NA || (AP ? AP.key : s.id), c: AP ? Math.max(0, AP.clip0 + (t - s.t0)) : clipA(s, t), rect: full, zoom: 1 + s.push * seg(t, s.t0, s.t1), fy: clamp01(0.45 + (byId[s.id].yshift || 0)), blend: true }); return sc; }
   sc.phase = t < TL.t38 - HF ? 'B' : 'D';
   const GS = gridState(t); sc.grid = GS;
   if (o.trail && on(t, TL.t38)) for (const C of GS.cells) {   // take two: afterimages of the panel's last frame, from its place toward its node
@@ -196,7 +196,7 @@ function scene(t) {
   const late = [];
   for (const C of GS.cells) if (C.sigma > 0.004 && C.rect.w > 1) { const fo = META[C.L.id].focus || [0.5, 0.5];
     const stay = o.stay && o.stay[C.L.id] && on(t, TL.t39); if (stay) { C.stayA = 1 - clamp01((t - TL.t39 - 0.25) / 0.3); if (C.stayA <= 0) { C.sigma = 0; continue; } }
-    (stay ? late : P).push({ id: C.L.id, c: C.c, rect: C.rect, alpha: C.alpha * (stay ? C.stayA : 1), cell: C, fx: fo[0], fy: fo[1], blend: (gridClip(C.i, t + 0.02) - C.c) / 0.02 < 0.85 }); }
+    (stay ? late : P).push({ id: (o.notGrid && o.notGrid[C.L.id]) || C.L.id, c: C.c, rect: C.rect, alpha: C.alpha * (stay ? C.stayA : 1), cell: C, fx: fo[0], fy: fo[1], blend: (gridClip(C.i, t + 0.02) - C.c) / 0.02 < 0.85 }); }
   if (on(t, TL.t39)) {
     const node = toScr(GS.cam, { x: XROOT, y: YM }); const u = ease.io(seg(t, TL.t39, TL.irisEnd));
     const R = Math.hypot(Math.max(node.x, W - node.x), Math.max(node.y, H - node.y)) * 1.02;
@@ -481,7 +481,8 @@ async function render1(t) {
 // ---------------------------------------------------------------- init (from the proof's boot(), minus fonts, page and harness)
 for (const [face, wt] of [['mono', 600], ['mono', 500], ['serif'], ['slab']]) { setFont(face === 'mono' ? FACE.mono(100, wt) : FACE[face](100)); CAP[face + (wt || '')] = g.measureText('H').actualBoundingBoxAscent / 100; }
 T = o.T;
-for (const id of [...PLATE_IDS, ...Object.values(o.aPlates || {}).map((a) => a.key)]) { const r = await fetch(`${pdir(id)}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${pdir(id)}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
+// film v11 B2: o.notA / o.notGrid map a life id to a notation plate key (its folder in o.dirs), for the bar 28-32 shots / the b33-37 grid
+for (const id of [...PLATE_IDS, ...Object.values(o.aPlates || {}).map((a) => a.key), ...new Set([...Object.values(o.notA || {}), ...Object.values(o.notGrid || {})])]) { const r = await fetch(`${pdir(id)}/meta.json`); if (!r.ok) throw new Error(`plate ${id}: no meta.json in ${pdir(id)}`); META[id] = await r.json(); const b = await bitmap(id, 0); DIM[id] = { w: b.width, h: b.height }; }
 buildTimeline(); TL.c0.sandstorm = clipA(TL.shots[9], TL.grid);
 { const c = cam(TL.t39); XROOT = ZAX + (NX - ZAX) / c.s; }
 buildGrain(); SLAB = slabLayout();

@@ -90,6 +90,10 @@ export const V11 = V10 && Q.get('v11') !== '0';
 // film v11 E (Jade, gate G6: "take it off for those bars"): no slab or verse lyric drawn from cb08 through oa01 (b128.1-b139.1,
 // 219.737-238.450); film.js lyrics() skips these beat ranges. ?slab2=1 restores. Subtitles (.srt/.vtt) are not touched.
 export const LYR_OFF = V11 && Q.get('slab2') !== '1' ? [[[128, 1], [139, 1]]] : [];
+// film v11 B2 (Jade, gate G3): the ten life introductions (va12-va21, proof A shots) and the b33-37 grid panels (pc01) draw each life
+// written in its own notation, `<life plate>_notation11` (glyph_v11.md), where it has landed; no other use of the life plates changes.
+// ?notation=0 off (and off under ?v11=0); ?notationgrid=0 keeps the grid panels plain.
+export const NOTATION = V11 && Q.get('notation') !== '0' ? { a: true, grid: Q.get('notationgrid') !== '0' } : null;
 const V10G = V10 && !(typeof location !== 'undefined' && new URLSearchParams(location.search).get('glyph') === '0');
 // film v11 (notes/glyph_v11.md Wiring table): the `11` plates first in each list, then the v10 ids; off with ?v11=0 or ?glyph=0
 const W11 = (...ids) => (V11 ? ids : []);

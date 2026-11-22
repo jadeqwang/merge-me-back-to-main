@@ -1224,3 +1224,11 @@ Dev files `work_fable/take2/dev/v11/` (a2/, car/, v11off/).
   shots and for the ca01 hero (HERO_NEXT + suffix = hero_paper_v2_glyph11). Checked with `render.mjs --info`: v11 picks every `11`
   id, `?v11=0` every v10 id.
 - Stills dev/v11/wire/w_<t>.png, sheet dev/v11/wire/wire_sheet.jpg (sheet maker: PIL, tiles 640x360, labels t_shot).
+
+### Step 2 part 2: notation plates (B2) -- code done, waiting for all ten plates
+- shots.js `NOTATION` (V11 and not `?notation=0`; `?notationgrid=0` keeps the grid plain); film.js finds `<life>_notation11` (or the
+  life's PROOF_A / LIFE_SWAP id + `_notation11`) per proof life, puts its folder in dirs[`<life>_N`] and hands proofscene.js `notA`
+  (bar 28-32 A shots: same clip as the life's own plate) and `notGrid` (pc01 panels, incl. the bar-38 shrink). Other uses of the life
+  plates (fold sheet, drop inserts, merge) unchanged. Stills dev/v11/nota/ (s1.jpg with 5 of 10 landed).
+- Check when they land: a notation plate made from a different source than the A shot uses (wushu: PROOF_A wushu_v3; band: band_v2)
+  would play on the wrong clip; read its meta.src.
