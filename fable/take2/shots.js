@@ -104,14 +104,20 @@ section('intro_b');
 // anchor = the canopy's rightmost tip per song time (frame fractions, measured on the raw v7 frames 14.5-24.4 s); the lane grows from
 // `grow[0]` to `grow[1]` s with a light at its head that leaves the frame; afterwards a quiet line out of frame. No label.
 const VLANE = { anchor: [[14.2, 0.81, 0.44], [17.0, 0.91, 0.57], [19.2, 0.91, 0.60], [22.3, 0.90, 0.62], [24.7, 0.89, 0.62]], grow: [14.6, 17.6], out: [1.08, 0.18] };
-V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Title MERGE. Counter doubles each bar to 1,024 by b15.', { code: 'V7+C', ov: ['title:MERGE'], row: 'b9', opt: { vlane: VLANE } });
+// film v8 (Jade on v7, 0:16.78: "the purple line feels disjointed ... draw, frame by frame, and we don't show the generated footage
+// underneath"): b9-15 are drawn in code every frame (src/tree.js: the world's own tree and seq 02's camera, no v7 frame under it), the
+// violet branch in the same canvas, all through the same paper pass. TREE_VIOLET: the branch leaves the right-most depth-`depth` fork
+// node, written over `grow` (s), out to `out` ([x beyond the right edge in half-widths, rise in half-heights] at the end camera).
+// ?tree=v7 brings back v7's frames with the VLANE overlay.
+const TREE = { violet: { depth: 4, grow: VLANE.grow, out: [1.1, 1.05] } };
+V(9, 10, 'seq 02', 'Match cut, frost tree to tree of light seen from above. Title MERGE. Counter doubles each bar to 1,024 by b15.', { code: 'V7+C', ov: ['title:MERGE'], row: 'b9', opt: { vlane: VLANE, tree: TREE } });
 const FL = [['piano', 11], ['wushu', 12], ['ames', 13], ['violet', 14]];
-V(10, [11, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE } });
+V(10, [11, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE, tree: TREE } });
 FL.forEach(([id, b], i) => {
   P([b, 3], [b, 4], id, 'exists', `One-beat flash of a life plate (${id === 'violet' ? 'the dish' : id === 'ames' ? 'wind tunnel' : id}): what the lights are.`, { opt: { clip0: 1.2, push: 0.02, ...(id === 'wushu' ? { next: [{ id: 'wushu_v3', opt: { clip0: 1.35, clip1: 1.65 } }, { id: 'wushu_v2', opt: { clip0: 1.0, clip1: 1.3 } }] } : {}) }, row: 'b10-14' });   // wushu_v2: the landed punch
-  if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE } });
+  if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE, tree: TREE } });
 });
-V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE } });
+V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE, tree: TREE } });
 V(15, [16, 3], 'seq 02', 'Swoop down the trunk to ground level.', { row: 'b15-16' });
 P([16, 3], 17, 'main_palm', 'missing', "Adult Jade from behind at the root, palm raised exactly like the child's.", { row: 'b15-16', opt: { clip0: 1.0, clip1: 3.0 } });   // clip: the tree grows fastest at about 1-3 s
 

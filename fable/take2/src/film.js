@@ -121,6 +121,7 @@ const PAPER_LOOKS = { orch: { solid: { levels: [0.2, 0.62], gamma: 1, solid: 0.6
 
 // effect modules written by another agent: guarded, the film renders without them
 let paperPass = null, glyphPass = null;
+let TREE = null;   // film v8: src/tree.js (the code-drawn MERGE tree), when a shot has opt.tree
 
 // ---------------------------------------------------------------- timeline
 let T, SH, PROOF, LYR;
@@ -1064,7 +1065,8 @@ function draw(t, sc) {
   }
   else if (sc.eff === 'code') { try { if (s.opt.code === 'gitlog') gitlog(t, s); else if (s.opt.code === 'tiles') tiles(t, sc); else if (s.opt.code === 'mapfold') MAPF.draw(s, t); else OUTRO.draw(s, t, sc); } catch (e) { console.log('ERROR code ' + e.stack); } }
   else if (sc.eff === 'v7') {
-    let b = READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = s.opt && s.opt.v7crop;
+    const codeTree = TREE && s.opt && s.opt.tree;   // film v8: the tree drawn in code this frame, no v7 frame under it
+    let b = codeTree ? TREE.frame(t, s.opt.tree.violet, s.opt.tree) : READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = !codeTree && s.opt && s.opt.v7crop;
     if (vc) { if (!CROPC) { CROPC = document.createElement('canvas'); CROPC.width = W; CROPC.height = H; } const x = CROPC.getContext('2d'); x.imageSmoothingQuality = 'high';
       x.drawImage(b, vc[0] * b.width, vc[1] * b.height, vc[2] * b.width, vc[3] * b.height, 0, 0, W, H); b = CROPC; }
     const look = s.opt && s.opt.paperLook && PAPER_LOOKS[s.opt.paperLook] ? PAPER_LOOKS[s.opt.paperLook][ORCHPAPER] : null;
@@ -1078,7 +1080,7 @@ function draw(t, sc) {
     else g.drawImage(b, 0, 0, W, H);
     if (sc.wins) windows(t, sc);
     if (s.opt && s.opt.egg && LANES) egg(t, sc);
-    if (s.opt && s.opt.vlane) vlane(t, s.opt.vlane);
+    if (s.opt && s.opt.vlane && !codeTree) vlane(t, s.opt.vlane);
     if (s.opt && s.opt.pageFly) pageFly(t, s);
     if (sc.tail) drawImgs(sc.tail);
   } else if (sc.eff === 'kit') KITX.draw(s, t);
@@ -1177,6 +1179,8 @@ async function boot() {
   for (const s of SH) if (s.opt && s.opt.v7dir && !(s.opt.v7dir in V7S)) V7S[s.opt.v7dir] = await loadV7(s.opt.v7dir);
   try { ({ paperPass } = await import('./paper.js')); } catch (e) { console.log('paper.js not loaded (' + String(e).slice(0, 80) + '); v7 shots are raw'); }
   try { ({ glyphPass } = await import('./glyph.js')); } catch (e) { console.log('glyph.js not loaded'); }
+  // film v8: the MERGE tree drawn in code (src/tree.js); ?tree=v7 brings back the v7 frames with the clean violet overlay
+  if (Q.get('tree') !== 'v7' && SH.some((s) => s.opt && s.opt.tree)) { try { const { makeTree } = await import('./tree.js'); TREE = await makeTree({ W, H, timingUrl: TIMING }); } catch (e) { console.log('ERROR tree.js ' + (e.stack || e)); } }
   { const KJ = await json('/fable/take2/kit.json'); if (KJ) KITX = makeKit({ g, W, H, S, T, KJ, READY, drawWrittenLane, laneString, glyphPass, byId, MAIN, clamp01, lerp, ease }); }
   // take-two changes inside the proof range (all off with proofbug=1): the black-paper hero (hero_paper, nearest frame; hero=old for the
   // first one), written lanes on the ten lives (prooflanes=0 off), bar 38 panel afterimages (trail=0 off)

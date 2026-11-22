@@ -898,3 +898,24 @@ same as v6 (nothing new); type all pass; 22 lines, 119 words, none under 0.6 s; 
 Looked at (stills from the public master, dev/v7/m/ and dev/v7/msheet.jpg): 209.6-211.0 (one meteor, blink at 211.0), car 270.4-276.7
 (box opens, types, done by 273.5 with the marker, gone by 276.7 with her smile held), 23.9, 64.5, 82.2, 193.2, 196.8 (one bun pencil).
 Nobody has watched film_v7 at speed with sound.
+
+## Film v8 (2026-11-21, compositor; brief: notes/v8_direction.md, Jade's words: notes/jade_v7_notes.md)
+
+**Resume here.** Order: (1) 0:16.78 tree drawn in code, (2) 3:01.65 page re-track + clip, (3) wire plates_v8.md / car_v8.md as they
+land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tree/`, `work_fable/take2/dev/v8/page/`.
+
+### 1. The MERGE tree in code (b9-15, ib01-ib10)
+- Found: ib01-ib10 are `v7 seq 02` frames (the old three.js world, `fable/show/seq/02_tree.js` + `fable/show/world.js`) through the
+  paper pass; the violet lane was a separate clean overlay (film.js `vlane`, VLANE in shots.js) drawn AFTER the pass: hence the
+  different medium. ib11 (swoop down the trunk) stays v7.
+- Plan: `src/tree.js` builds the same world geometry on the CPU (world.js with a stub engine: roads = CPU Road copies, no GL), projects
+  every fork road with seq 02's own top-down camera per song time, draws the written part (head = song time eased per beat) as thin
+  glowing lines on navy into an offscreen canvas, the violet branch as a world-space road off the canopy's right edge in the same
+  canvas, then the same paperPass as the v7 shots. Same geometry and camera = the cut into ib11's v7 swoop matches.
+- BUILT (item 1 done): `src/tree.js` (makeTree), film.js loads it when a shot has `opt.tree` (`?tree=v7` = old route), shots.js `TREE`
+  on ib01-ib10 (violet: depth-4 right-most node, grow = VLANE.grow 14.6-17.6, out [1.1, 1.05]); VLANE overlay skipped while the
+  code tree draws. Head time eased inside each beat (ease-out 2.2, amount 0.8): growth surges on every beat. Canopy pools at 0.10.
+- Checked: raw vs v7 geometry (dev/v8/tree/cmp_raw.jpg: same tree, same camera at b14-15), paper (cmp_paper.jpg), beat strip
+  `dev/v8/tree/tree_beats_v8.jpg` (b9.1-b15.4, +0.06 s), mp4 `dev/v8/tree/tree_v8.mp4` (12.5-26.0 s, audio), strips mp4_a/mp4_b.jpg.
+- Weak: at the b15.1 cut into v7's swoop the violet branch disappears and v7's left arterials and pinker tips pop in (geometry matches);
+  the code tree's framing at b9 is a little larger than v7's was (same camera formula; v7 ran on warped old timing).
