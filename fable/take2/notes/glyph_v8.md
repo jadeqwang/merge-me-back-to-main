@@ -147,3 +147,17 @@ Judgement: at 14 px it has the hatch's resolution and reads like the hatch shots
 this size. Weak: the night sea glow is a cloud of small glyphs; in the orchestra shots frame-to-frame change is ~1.5-2x the
 source's (dense sharp marks moving plus some churn), so there is some shimmer; wushu part is as stable as the source.
 Wiring: same as before (frames use v7 numbering -> per-shot v7dir with the paper pass skipped).
+
+## Jade on style 2 (relayed 2026-11-21), verbatim
+"big improvement. let's try a version of those 2m15_wushu_orch where the glyphs over the body only have orientation (but the background can stay the way it is)"
+Variants made for it (body only, background unchanged): V1 one character everywhere on the bodies, only rotation + colour
+vary; V2 stroke glyphs only on the bodies (| / \ - l I ( ) ...), turned; V3 body glyphs keep their characters, all upright.
+Jade then clarified: "v3, upright only". So only V3 is made (V1, V2 dropped, never rendered).
+V3 made (2026-11-21 ~20:40): body glyphs keep their characters (shape-fitted against UPRIGHT glyph descriptors) and are drawn
+upright; background glyphs unchanged (rotated along structure). Body = BiRefNet matte of the source range
+(`dev/v8_glyph/s2/body/matte/rgba/f_%04d.png`, 198 frames from 135.0; made from `body/src.mp4` with tools/matte.py; in the
+orchestra shots the matte also takes chairs/stands near the players). Mono 20 px (cgrid 10, spacings 11/12/13).
+Command: `animate_hash.py --t0 135.0 --t1 141.6 --font mono --em 20 --set cgrid=10 --set spacings=[11,12,13] --set upright_body=true --matte work_fable/take2/dev/v8_glyph/s2/body/matte/rgba --out DIR --workers 4`
+(1.2 s/frame/worker, 118 s wall). Also rendered for comparison: plain s2 mono 20 px (`s2/anim_mono20/`).
+Committed: `review/fable_take2/v8_glyph/2m15_wushu_orch_mono_s2b_V3_720p.mp4` + `_strip.jpg`, `sheet_2m15_s2b_V3.jpg`
+(same frames 4090 wushu / 4210 orchestra: s2 mono 14 | s2 mono 20 | V3, 1:1 crops).

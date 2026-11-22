@@ -72,6 +72,9 @@ class FixedAtlas:
             o = (self.D - em) // 2
             dsc.append(cv2.resize(r[o:o + em, o:o + em], (16, 16), interpolation=cv2.INTER_AREA).reshape(-1))
         self.desc = np.stack(dsc).astype(np.float32)
+        o = (self.D - em) // 2       # upright descriptors (no rotation): for glyphs that must stay upright (style 2 V3 bodies)
+        self.desc_up = np.stack([cv2.resize(a[o:o + em, o:o + em], (16, 16), interpolation=cv2.INTER_AREA).reshape(-1)
+                                 for a in self.spr]).astype(np.float32)
 
 
 def stamp(can, at, x, y, rot, gid, col, op=1.0):
@@ -114,6 +117,12 @@ class Analysis:
         self.inks = np.stack(inks); self.ink_h = np.array(ih, np.float32)
         self.chalk = P.hexrgb(cfg.get('chalk', CHALK))
         self.sat_min = cfg.get('sat_min', 0.28)
+        self.body = cfg.get('_body')          # optional bool mask (H,W): figure; with cfg upright_body its glyphs stay upright
+
+    def is_body(self, x, y):
+        if self.body is None:
+            return np.zeros(len(x), bool)
+        return self.body[np.clip(y.astype(int), 0, self.body.shape[0] - 1), np.clip(x.astype(int), 0, self.body.shape[1] - 1)]
 
     def colour(self, x, y):
         ix = np.clip(x.astype(int), 0, self.L.shape[1] - 1); iy = np.clip(y.astype(int), 0, self.L.shape[0] - 1)
@@ -124,9 +133,15 @@ class Analysis:
         return (self.chalk[None] * (1 - w) + self.inks[k] * w).astype(np.float32)
 
 
-def fit(at, patches, rng, tau, elong_bias=None):
-    """patches (M,256) in the target's own frame -> glyph ids, scores"""
-    D = at.desc; mm = (D * D).sum(1)
+def fit(at, patches, rng, tau, elong_bias=None, up=None):
+    """patches (M,256) in the target's own frame -> glyph ids, scores. up (M,) bool: fit those against upright glyphs"""
+    if up is not None and not isinstance(up, str) and up.any():
+        j = np.empty(len(patches), np.int64); sc = np.empty(len(patches), np.float32)
+        for msk, U in ((up, True), (~up, False)):
+            if msk.any():
+                j[msk], sc[msk] = fit(at, patches[msk], rng, tau, None if elong_bias is None else elong_bias[msk], up=None if not U else 'all')
+        return j, sc
+    D = at.desc_up if isinstance(up, str) else at.desc; mm = (D * D).sum(1)
     sc = 2 * patches @ D.T - mm[None, :]
     scale = np.abs(sc).max(1, keepdims=True) + 1e-6
     z = sc / scale + tau * (-np.log(-np.log(rng.random(sc.shape, dtype=np.float32) + 1e-12)))
@@ -156,8 +171,10 @@ def contour_marks(an, at, cfg, rng, occupied=None):
     px, py = px[keep], py[keep]
     px += rng.uniform(-0.8, 0.8, len(px)).astype(np.float32); py += rng.uniform(-0.8, 0.8, len(py)).astype(np.float32)
     ang = an.etan[py.astype(int), px.astype(int)] + rng.normal(0, 0.1, len(px)).astype(np.float32)
+    up = an.is_body(px, py) if cfg.get('upright_body') else np.zeros(len(px), bool)
+    ang = np.where(up, 0, ang).astype(np.float32)
     pat = patches_along(E, px, py, ang, at.em)
-    gid, sc = fit(at, pat, rng, cfg.get('tau', 0.12), np.full(len(px), cfg.get('line_bias', 0.5), np.float32))
+    gid, sc = fit(at, pat, rng, cfg.get('tau', 0.12), np.full(len(px), cfg.get('line_bias', 0.5), np.float32), up=up)
     strength = E[py.astype(int), px.astype(int)]
     return dict(x=px, y=py, ang=ang, gid=gid, kind=np.zeros(len(px), np.int8),
                 op=np.clip(0.55 + 0.6 * strength, 0, 1).astype(np.float32), layer=np.zeros(len(px), np.int8),
@@ -185,8 +202,10 @@ def tone_marks(an, at, cfg, rng, occ_layers=None):
             continue
         base = an.tan[py.astype(int), px.astype(int)]
         ang = base + [0, -1.2, 0.6][q] * cfg.get('cross', 0.0) + rng.normal(0, 0.12, len(px)).astype(np.float32)
+        up = an.is_body(px, py) if cfg.get('upright_body') else np.zeros(len(px), bool)
+        ang = np.where(up, 0, ang).astype(np.float32)
         pat = patches_along(np.clip(T - thr, 0, 1) / (1 - thr), px, py, ang, at.em)
-        gid, sc = fit(at, pat, rng, cfg.get('tau', 0.12))
+        gid, sc = fit(at, pat, rng, cfg.get('tau', 0.12), up=up)
         tv = T[py.astype(int), px.astype(int)]
         out.append(dict(x=px, y=py, ang=ang, gid=gid, kind=np.ones(len(px), np.int8),
                         op=np.clip(0.45 + 0.6 * (tv - thr), 0.4, 1).astype(np.float32), layer=np.full(len(px), q + 1, np.int8),
@@ -207,7 +226,12 @@ def draw(an, at, marks, cfg, rng, fade=None):
     can = np.empty((H, W, 3), np.float32); can[:] = P.hexrgb(cfg.get('paper', PAPER))
     col = an.colour(marks['x'], marks['y'])
     order = np.lexsort((np.arange(len(marks['x'])), -marks['layer']))        # tone layers first, contour on top
+    up = an.is_body(marks['x'], marks['y']) if cfg.get('upright_body') else np.zeros(len(marks['x']), bool)
     for i in order:
+        if up[i]:                                                             # V3: body glyphs upright, as typeset
+            stamp(can, at, float(marks['x'][i]), float(marks['y'][i]), 0.0, int(marks['gid'][i]), col[i],
+                  float(marks['op'][i]) * (1.0 if fade is None else float(fade[i])))
+            continue
         rot = float(marks['ang'][i] - at.axis[marks['gid'][i]])
         if marks['flip'][i]:
             rot += math.pi                                                    # either way round (fixed per mark: no flicker)

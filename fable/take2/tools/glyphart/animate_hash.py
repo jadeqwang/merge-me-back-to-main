@@ -80,6 +80,9 @@ def run_segment(args):
         t0 = time.time()
         src = P.load(frame_path(k))
         H, W = src.shape[:2]
+        if opt.get('matte'):        # body mask: BiRefNet matte of the source range, f_%04d.png numbered from t0
+            mm = cv2.imread(os.path.join(opt['matte'], f"f_{k - opt['k0'] + 1:04d}.png"), cv2.IMREAD_UNCHANGED)
+            cfg = dict(cfg, _body=cv2.resize(mm[..., 3], (W, H)) > 127)
         an = HG.Analysis(src, cfg)
         small = cv2.resize(cv2.cvtColor((src * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY), (W // 2, H // 2), interpolation=cv2.INTER_AREA)
         if m is None:
@@ -101,6 +104,8 @@ def run_segment(args):
             ok &= np.where(con, Emax[py, px] > cfg.get('line_min', 0.35) * 0.7, an.T[py, px] > thr[m['layer']] - 0.05)
             # re-aim along the current structure (nearest branch)
             m['ang'] = np.where(con, near_branch(an.etan[py, px], m['ang']), near_branch(an.tan[py, px], m['ang'])).astype(np.float32)
+            if cfg.get('upright_body'):
+                m['ang'] = np.where(an.is_body(m['x'], m['y']), 0, m['ang']).astype(np.float32)
             m = sub(m, ok); age = age[ok]
             keep, occ = cell_keep(m, cfg, H, W)
             m = sub(m, keep); age = age[keep]
@@ -114,7 +119,8 @@ def run_segment(args):
                     pe = HG.patches_along(an.E, m['x'][b], m['y'][b], m['ang'][b], at.em)
                     pt = HG.patches_along(an.T, m['x'][b], m['y'][b], m['ang'][b], at.em)
                     pat = np.where(con_b[:, None], pe, pt)
-                    g, _ = HG.fit(at, pat, rng, cfg.get('tau', 0.12) * 1.5)
+                    upb = an.is_body(m['x'][b], m['y'][b]) if cfg.get('upright_body') else None
+                    g, _ = HG.fit(at, pat, rng, cfg.get('tau', 0.12) * 1.5, up=upb)
                     m['gid'][b] = g
             # new glyphs in empty cells
             new = [HG.contour_marks(an, at, cfg, rng, occupied=occ[0][:H // cfg.get('cgrid', 7), :W // cfg.get('cgrid', 7)])]
@@ -143,6 +149,7 @@ def main():
     # extra forced cuts (song time). The film's cut points inside 135-139 (bu16-bu21) are cuts to plate inserts; the raw v7
     # frames themselves run continuously there, so only real camera cuts (found by histogram) re-seed.
     ap.add_argument('--cuts', default='')
+    ap.add_argument('--matte', default='', help='dir of f_%%04d.png RGBA mattes numbered from --t0 (body mask)')
     a = ap.parse_args()
     cfg = dict(line_min=0.35)
     for kv in a.set:
@@ -152,7 +159,7 @@ def main():
     forced = {round(float(c) * 30) for c in a.cuts.split(',') if c}
     segs = segments(ks, forced)
     print('segments', [(s[0], len(s)) for s in segs], flush=True)
-    opt = dict(font=a.font, em=a.em, boil=a.boil, beat=a.beat, beat0=a.beat0)
+    opt = dict(font=a.font, em=a.em, boil=a.boil, beat=a.beat, beat0=a.beat0, matte=a.matte, k0=round(a.t0 * 30))
     jobs = sorted([(s, cfg, a.out, 7 + i, opt) for i, s in enumerate(segs)], key=lambda j: -len(j[0]))
     t0 = time.time()
     with Pool(a.workers) as pool:
