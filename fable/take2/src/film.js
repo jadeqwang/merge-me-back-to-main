@@ -423,13 +423,15 @@ function vlane(t, V) { if (t < V.grow[0]) return; const A = V.anchor; let i = 0;
 // bottom-right, bottom-left)], ...] plate fractions, interpolated per clip time; drawn as two affine triangles; page.fade [c0, c1] (clip
 // s): the drawing fades into the page's own ink as the camera pulls back (optional).
 let PGC = null;
-function triMap(src, s0, s1, s2, d0, d1, d2) {   // draw the triangle s0 s1 s2 of src onto d0 d1 d2
+function triMap(src, s0, s1, s2, d0, d1, d2, cx = g) {   // draw the triangle s0 s1 s2 of src onto d0 d1 d2 (into cx, default the film canvas)
   const den = s0.x * (s1.y - s2.y) + s1.x * (s2.y - s0.y) + s2.x * (s0.y - s1.y); if (Math.abs(den) < 1e-6) return;
   const a = (d0.x * (s1.y - s2.y) + d1.x * (s2.y - s0.y) + d2.x * (s0.y - s1.y)) / den, b = (d0.x * (s2.x - s1.x) + d1.x * (s0.x - s2.x) + d2.x * (s1.x - s0.x)) / den,
     c = (d0.x * (s1.x * s2.y - s2.x * s1.y) + d1.x * (s2.x * s0.y - s0.x * s2.y) + d2.x * (s0.x * s1.y - s1.x * s0.y)) / den,
     d = (d0.y * (s1.y - s2.y) + d1.y * (s2.y - s0.y) + d2.y * (s0.y - s1.y)) / den, e = (d0.y * (s2.x - s1.x) + d1.y * (s0.x - s2.x) + d2.y * (s1.x - s0.x)) / den,
     f = (d0.y * (s1.x * s2.y - s2.x * s1.y) + d1.y * (s2.x * s0.y - s0.x * s2.y) + d2.y * (s0.x * s1.y - s1.x * s0.y)) / den;
-  g.save(); g.beginPath(); g.moveTo(d0.x, d0.y); g.lineTo(d1.x, d1.y); g.lineTo(d2.x, d2.y); g.closePath(); g.clip(); g.transform(a, d, b, e, c, f); g.drawImage(src, 0, 0); g.restore(); }
+  // the clip triangle pushed 1 px out from its centre, so two triangles sharing an edge leave no hairline seam
+  const mx = (d0.x + d1.x + d2.x) / 3, my = (d0.y + d1.y + d2.y) / 3, o = (p) => { const l = Math.hypot(p.x - mx, p.y - my) || 1; return { x: p.x + (p.x - mx) / l, y: p.y + (p.y - my) / l }; }, e0 = o(d0), e1 = o(d1), e2 = o(d2);
+  cx.save(); cx.beginPath(); cx.moveTo(e0.x, e0.y); cx.lineTo(e1.x, e1.y); cx.lineTo(e2.x, e2.y); cx.closePath(); cx.clip(); cx.transform(a, d, b, e, c, f); cx.drawImage(src, 0, 0); cx.restore(); }
 // page_track.json gives the dark page area per plate frame: the LEFT page alone to page.single (clip s), both pages after. The crowd
 // frame is laid along the notebook: its vertical along the spine (the quad's longer edges, pointing down), its horizontal across the
 // pages; while only the left page is tracked the spread is that page extended across the spine (the long edge further right) by its
@@ -457,9 +459,20 @@ function pageMap(t, sc) {
   const pc = PGC.getContext('2d'), b = READY.get(sc.pageImg.url), sec = SECTIONS.drop; pc.setTransform(1, 0, 0, 1, 0, 0); pc.globalAlpha = 1; pc.globalCompositeOperation = 'source-over';
   if (paperPass && USE_PAPER) paperPass(pc, b, { x: 0, y: 0, w: W, h: H }, { paper: 'black', stroke: sec.stroke, ink: sec.ink, seed: 1000 + s.i, t }); else pc.drawImage(b, 0, 0, W, H);
   pc.setTransform(1, 0, 0, 1, 0, 0); pc.globalAlpha = 1; pc.globalCompositeOperation = 'source-over';
-  const sw = 2 * Math.hypot(vx, vy), sh = Math.hypot(ux, uy), cr = cover(W, H, Math.max(1, sw), Math.max(1, sh));
-  const wc = PWC.getContext('2d'); wc.setTransform(1, 0, 0, 1, 0, 0); wc.globalCompositeOperation = 'source-over'; wc.clearRect(0, 0, W, H);
-  wc.setTransform(2 * vx / cr.sw, 2 * vy / cr.sw, ux / cr.sh, uy / cr.sh, TL.x, TL.y); wc.imageSmoothingQuality = 'high'; wc.drawImage(PGC, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, cr.sw, cr.sh); wc.setTransform(1, 0, 0, 1, 0, 0);
+  const wc = PWC.getContext('2d'); wc.setTransform(1, 0, 0, 1, 0, 0); wc.globalCompositeOperation = 'source-over'; wc.clearRect(0, 0, W, H); wc.imageSmoothingQuality = 'high';
+  if (P.spread) {   // film v8 (Jade: "drawing misaligned from book"): the whole spread tracked per frame (tools/page_track_v8.py): the crowd frame
+    // is mapped onto the spread's own four corners (two triangles) and clipped to the two pages' outline, so it never leaves the paper
+    const at = (L) => { let k = 0; while (k < L.length - 2 && c > L[k + 1][0]) k++; return [k, clamp01((c - L[k][0]) / ((L[k + 1][0] - L[k][0]) || 1))]; };
+    const [k1, v1] = at(P.spread), Z = [0, 1, 2, 3].map((j) => plateToScreen(sc.imgs[0], lerp(P.spread[k1][1][j][0], P.spread[k1 + 1][1][j][0], v1), lerp(P.spread[k1][1][j][1], P.spread[k1 + 1][1][j][1], v1)));
+    const sw2 = (Math.hypot(Z[1].x - Z[0].x, Z[1].y - Z[0].y) + Math.hypot(Z[2].x - Z[3].x, Z[2].y - Z[3].y)) / 2, sh2 = (Math.hypot(Z[3].x - Z[0].x, Z[3].y - Z[0].y) + Math.hypot(Z[2].x - Z[1].x, Z[2].y - Z[1].y)) / 2;
+    const c2 = cover(W, H, Math.max(1, sw2), Math.max(1, sh2)), S0 = { x: c2.sx, y: c2.sy }, S1 = { x: c2.sx + c2.sw, y: c2.sy }, S2 = { x: c2.sx + c2.sw, y: c2.sy + c2.sh }, S3 = { x: c2.sx, y: c2.sy + c2.sh };
+    triMap(PGC, S0, S1, S2, Z[0], Z[1], Z[2], wc); triMap(PGC, S0, S2, S3, Z[0], Z[2], Z[3], wc);
+    const [k2, v2] = at(P.clip), A0 = P.clip[k2][1], A1 = P.clip[k2 + 1][1];
+    wc.globalCompositeOperation = 'destination-in'; wc.fillStyle = '#fff'; wc.beginPath();
+    A0.forEach((p0, j) => { const q = plateToScreen(sc.imgs[0], lerp(p0[0], A1[j][0], v2), lerp(p0[1], A1[j][1], v2)); if (j) wc.lineTo(q.x, q.y); else wc.moveTo(q.x, q.y); }); wc.closePath(); wc.fill(); wc.globalCompositeOperation = 'source-over';
+  } else {
+    const sw = 2 * Math.hypot(vx, vy), sh = Math.hypot(ux, uy), cr = cover(W, H, Math.max(1, sw), Math.max(1, sh));
+    wc.setTransform(2 * vx / cr.sw, 2 * vy / cr.sw, ux / cr.sh, uy / cr.sh, TL.x, TL.y); wc.drawImage(PGC, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, cr.sw, cr.sh); wc.setTransform(1, 0, 0, 1, 0, 0); }
   const mk = PMK.getContext('2d', { willReadFrequently: true }); mk.drawImage(canvas, 0, 0, PMK.width, PMK.height); const id = mk.getImageData(0, 0, PMK.width, PMK.height), d = id.data, th = P.dark || 42;
   for (let k = 0; k < d.length; k += 4) { const l = 0.3 * d[k] + 0.59 * d[k + 1] + 0.11 * d[k + 2]; d[k + 3] = Math.round(255 * clamp01((th - l) / 18)); } mk.putImageData(id, 0, 0);
   wc.globalCompositeOperation = 'destination-in'; wc.imageSmoothingEnabled = true; wc.drawImage(PMK, 0, 0, W, H); wc.globalCompositeOperation = 'source-over';
@@ -1170,7 +1183,7 @@ async function boot() {
   for (const s of SH) if (s.opt && s.opt.tail && !ORCH_V7) await findPlate(s.opt.tail.id);
   // film v6: per-shot data files named in shots.js (pencil tip tracks, the page quads), loaded once the shot's source is decided
   for (const s of SH) { if (s.opt && s.opt.pencil && s.opt.pencil.trackUrl && !s.opt.pencil.track) { const j = await json(s.opt.pencil.trackUrl); if (j) s.opt = { ...s.opt, pencil: { ...s.opt.pencil, track: j.tip } }; }
-    if (s.opt && s.opt.page && s.opt.page.quadUrl && !s.opt.page.quad) { const j = await json(s.opt.page.quadUrl); if (j) s.opt = { ...s.opt, page: { ...s.opt.page, quad: pageOrder(j.quad, s.opt.page.first || [3, 0, 1, 2]) } }; } }
+    if (s.opt && s.opt.page && s.opt.page.quadUrl && !s.opt.page.quad) { const j = await json(s.opt.page.quadUrl); if (j) s.opt = { ...s.opt, page: { ...s.opt.page, quad: pageOrder(j.quad, s.opt.page.first || (j.spread ? [0, 1, 2, 3] : [3, 0, 1, 2])), ...(j.spread ? { spread: j.spread, clip: j.clip } : {}) } }; } }   // film v8: page_track_v8.json adds the spread and its outline
   // film v2: plates replaced by id everywhere the film uses them (shots.js PLATE_ALIAS), when the new plate exists
   for (const [k, a] of Object.entries(PLATE_ALIAS || {})) { const p = await findPlate(await firstPlate(a.id)); if (p) PLATE[k] = { ...p, id: k, meta: { ...p.meta, focus: a.focus || p.meta.focus } }; }
   const vm = await json(`${V7DIR}/meta.json`);

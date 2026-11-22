@@ -363,7 +363,9 @@ P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engr
       // film v6 A5, the reveal at 3:00 (b105): page_reveal pulls back from the black notebook page to her at the dish; the live gold crowd
       // frames (v7 at 179.4 s on, at 0.25x: the salute; it must stay before 180.37, where v7's night begins) are mapped onto the pages (film.js pageMap, page_track.json from the plates agent);
       // clip 0.3-4.6 (1.25x: the fast part 0.5-2.5, the wide from ~4.0). vio_wide's written road is not used (it replaces that shot).
-      { id: 'page_reveal', opt: { clip0: 0.3, clip1: 4.6, push: 0, road: null, page: { v7: [179.4, 0.25], quadUrl: '/work_fable/take2/plates/page_reveal/page_track.json', single: 99 },
+      // film v8 (Jade: "drawing misaligned from book slightly", 3:01.65): page_track_v8.json (tools/page_track_v8.py) tracks the whole spread per
+      // frame; film.js maps the crowd onto its four corners and clips it to the two pages' outline
+      { id: 'page_reveal', opt: { clip0: 0.3, clip1: 4.6, push: 0, road: null, page: { v7: [179.4, 0.25], quadUrl: '/work_fable/take2/plates/page_reveal/page_track_v8.json', single: 99 },
         lyr: { y: 'top', top: 0.14, x0: 0.03, x1: 0.42, align: 'left' } } },
       { id: 'vio_wide_v2', opt: { clip0: 0, clip1: 3.4, road: { track: ROAD_VW2, color: VIO, text: 'violet', cap: 20 } } }] } });   // film v3 item 4: the lane written only as far as she has got (src/film.js roadMask/roadLane). vio_wide_v2 (she runs, slowing): measure its track with tools/track_road.py and put it in place of null (a null track = no road drawn)
 P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, lane: { pts: [[0, 0.955], [1, 0.955]], color: VIO, text: 'violet', cap: 22, scroll: -10, under: 0.2 } } });

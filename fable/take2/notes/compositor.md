@@ -919,3 +919,19 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
   `dev/v8/tree/tree_beats_v8.jpg` (b9.1-b15.4, +0.06 s), mp4 `dev/v8/tree/tree_v8.mp4` (12.5-26.0 s, audio), strips mp4_a/mp4_b.jpg.
 - Weak: at the b15.1 cut into v7's swoop the violet branch disappears and v7's left arterials and pinker tips pop in (geometry matches);
   the code tree's framing at b9 is a little larger than v7's was (same camera formula; v7 ran on warped old timing).
+
+### 2. 3:01.65 page_reveal: drawing on the book (vb01, b105-106, 180.38-183.82, clip 0.3-4.6) -- done
+- Cause: v6's page_track.json follows the LEFT page only (and loses it near clip 1.9-2.2); the crowd was laid on that page extended
+  across the spine by its width, kept wherever the plate was dark (< 42) -- the dark sky and trousers are dark too, so it overhung the
+  left edge and ran past the right page into the sky.
+- New `tools/page_track_v8.py` -> `work_fable/take2/plates/page_reveal/page_track_v8.json` (`--sheet` overlay: dev/v8/page/track_v8.jpg):
+  both pages as near-black components (L < 30, open 7x7) tracked frame to frame (components > 60 % inside the previous page, dilated, and
+  centred inside its hull; frame 1 from SEED points), convex hulls; `spread` = 4-gon of the union hull (TL, TR, BR, BL by continuity,
+  5-frame median); `clip` = the union hull as 64 rays, smoothed. All 121 frames checked on the sheet (holds through the pull-back).
+- film.js pageMap: when the track has `spread`, the crowd is mapped onto the spread's four corners (triMap, two triangles, now with a
+  target ctx and a 1 px seam overlap) and clipped to `clip`, then the dark test as before (hands, pencil in front). Old path kept for
+  tracks without `spread`. shots.js quadUrl -> page_track_v8.json.
+- Checked: stills old vs new dev/v8/page/cmp_old_new.jpg, zoom.jpg (181.65, 182.4), mp4 dev/v8/page/page_v8.mp4 (180.0-184.2) and
+  page_strip_v8.jpg. If the plates agent's pencil fix lands as a new plate id (page_reveal_v2) with the same framing, the same track applies.
+- Weak: two-triangle affine, not a true homography (the crowd bends slightly along the diagonal); the crowd's band sits low on the pages
+  (its own composition), upper half of the pages mostly dark hatch.
