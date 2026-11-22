@@ -1128,3 +1128,14 @@ Cut shots keep their id slot (`skip()` in shots.js): ids after a cut are as in v
   `dev/v10/car/car3d_v10_clean.mp4` (also the clean source if an aleph take is wanted later). Her card holds at 0.38x after the settle.
 - Checked on stills (dev/v10/st/sheet_a.jpg, sheet_b.jpg, local likeness): settle 235.05-236.0, slab clear of her face, oa05 slab,
   graph 252.5-259.5, credits 260.8-265.5, road 266.5-268.5, car 269.3-276.7. Range render dev/v10/car/car_film_v10.mp4 (269-277.2).
+
+### 2. A2 streak -- done (A1/A4 wiring waits on notes/glyph_v10.md)
+- film.js `streak(t, s)`, shots.js `opt.streak` on cb01 and cb03 (v10 only; v9 cb01 keeps `pageFly`). Text = the vb08 handoff lines
+  (`HANDOFF_TXT`), JetBrains Mono 700, violet with a dark outline (reads over the hatch galaxy), upright, the text's last character is the
+  head. cb01: head at the left edge on the b121.1 hit (207.819), ease-out along (-0.03,0.47)->(0.36,0.31)->(0.72,0.37), on the galaxy
+  core on b122.1 (209.526, the cut). cb03: enters on 211.231 from the left above the slab, settles at the beam's top (0.36,0.56) on b123.4,
+  fades 0.5 s. Stills dev/v10/a2/sheet.jpg (207.82-212.6) and b_crop.jpg: "What it cost to learn.  What comes next." readable from ~208.1 on.
+
+### 3. dr20 -- done
+- The band insert's hatch wipe 6 -> 2 frames (v10 only). Frame difference (dev/v10/dr20/, fd on 320x180 grey): v9 peak at frame 4987
+  (+2.1 fr), 3-frame wipe 4986, 2-frame wipe 66/79 on 4985/4986 (centroid about +0.5 fr). Strip dev/v10/dr20/strip.jpg: the wipe still shows.
