@@ -1,14 +1,34 @@
-# Take two: handoff (updated 2026-11-22: film v9 rendered, waiting for Jade's notes)
+# Take two: handoff (updated 2026-11-22: film v10 rendered, waiting for Jade's notes)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
-## Film v10 (2026-11-22: IN PROGRESS)
-Jade: "start the v10 vision". Brief `notes/v10_direction.md`: scope = A (catch as letters merging, 3:16-3:53) + C (clear the
-outro) + L (picture measured against the song) + carried fixes (dr20, shimmer). Gates G2, G3, G5-G8 unanswered: B, D, E, F not built.
-Three opus agents started: glyph (`notes/glyph_v10.md`), compositor (`notes/compositor.md` "Film v10"), listen
-(`notes/listen_v10.md`, `tools/listen/`). If the session died: read those three notes for state, re-spawn whichever is unfinished
-with the same brief (prompts paraphrase the direction file's owner sections). Main thread still owes: looking at glyph tests
-(`work_fable/take2/dev/v10_glyph/tests_A.jpg`) and v10 sheets, listen pass on the v10 render, push, memory update.
+## Film v10 (2026-11-22: rendered, waiting for Jade's notes)
+Jade: "start the v10 vision" (no v9 notes sent). Brief `notes/v10_direction.md` (with "Timing corrections"); built:
+`notes/glyph_v10.md` (Wiring table), `notes/compositor.md` "Film v10", `notes/listen_v10.md` (phrase maps, v9 baseline, "v10 measured").
+Scope built = A (catch as letters merging) + C (cleared outro) + L (picture measured against the song). B, D, E, F NOT built
+(gates G2, G3, G5-G8 unanswered; they are questions on the review page).
+- Public `review/fable_take2/film_v10.mp4`, sheets `film_v10_sheet_01..05.jpg`, page `review_v10.html` (15 decisions incl. carried
+  v9 ones and the gates). Local `work_fable/take2/out/film_v10_local.mp4`, compare `catch_v9_v10.mp4`, ear clips `out/ear/E1..E6`.
+  `?v10=0` = the v9 cut. Spend unchanged $579.85 (no paid generation).
+- A: vb10 `vio_still_letters10b` (she comes apart into the handoff's letters); streak of those characters enters cb01 on the
+  207.819 hit, head at mark on 209.526; cb08/cb09 `c2_hands_letters10`, `catch_letters10` (coarse letters, largest of the film);
+  cb10-cb12 `fold_merge10b`, `patch_hold_merge10b`, `patch_settle_merge10c`: twelve branch words land, letters fuse 22-16-8-4-2-1 on
+  the 8th-note pulse, the last mark (a violet R, 170 px, at her chest) is gone on "become" 231.210, eyes open there, daylight
+  spreads from the chest and is full only at 235.038. Patchwork gone. Shimmer fixed (`*_glyph10f`, freeze.py).
+- C: stance oa06, aerial oa08 and log burst cut. oa05 245.268-248.673; graph 252.079-260.596 (violet leaves at 255.485);
+  credits to 265.712 with real commit line `0e96639 ... handoff: next-session start for v9 notes` on the 262.301 hit and
+  `git cherry-pick 0e96639`; road to 269.126; car 269.126-276.820 (`car_v9` shifted, last 0.77 s held), face clear 4.28 s.
+  oa01: the drawing grows onto her eyes 234.40-235.0 and the likeness is alone on the impact frame. dr09-dr31 wipe pre-roll.
+- Measured (listen agent, by frames against the song): audio +0 ms; cuts mean error 0.30 frames; first v10 render's event offsets
+  in `listen_v10.md`; after the fix pass the settle, streak, daylight and dr26/30 were re-checked by the compositor on strips and
+  check.py, NOT re-measured by the listen tool (re-run its "v10 measured" commands if anything else changes).
+- Waiting on her ear (clips E1-E6): streak on the quiet b122 bar; fusions falling on the off-beat 8th (+190-230 ms after beats);
+  "become" + flash + eyes as one moment; the settle into her likeness; graph length 8.5 s; 4.3 s on her face in the car.
+- Weak: daylight front at 233-234.6 is a blotchy cloud with dark patches at top of frame; the last mark being an "R" is arbitrary
+  (could be a chosen character); most of the drawing is already uncovered by 228.5; around 224 the letters are a bright haze;
+  A1 small letters are specks at 640 (50 large ones do read); car box is up only 0.8 s after it finishes typing; oa05 is a
+  near-static back view through the loudest groove; picture energy b133-137 still below the riser; dr35/dr36 +0.55/+1.10 frames.
+- Next: her v10 notes and gate answers (`notes/jade_v10_notes.md`, then a notes round as below).
 
 ## Film v9 (2026-11-22: rendered, waiting for Jade's notes)
 Notes `notes/jade_v8_notes.md`, brief `notes/v9_direction.md`; built: `notes/compositor.md` "Film v9", `notes/glyph_v9.md` (Wiring
