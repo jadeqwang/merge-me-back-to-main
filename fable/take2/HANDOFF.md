@@ -20,34 +20,42 @@ is about the violet branch that does not merge; top moves: catch at 3:42 as clim
 - Next: her v9 notes (run a notes round as below), and her answer on which essay moves to pursue.
 
 ## Start here (next session)
-State at handoff: working tree clean, everything pushed on `fable/merge`, no agents running, nothing paid queued. Spend about $573
-(`tools/gen/spend.py`; the tools' cap constant is still 600 and Jade lifted the cap; raise it when needed).
+State at handoff (2026-11-22): working tree clean, everything pushed on `fable/merge`, no agents running, nothing paid queued.
+Spend $579.85 (`tools/gen/spend.py`; cap constant still 600, Jade lifted the cap; raise it when needed). Disk about 200 GB free.
 
-1. **Her v8 notes.** She is reviewing `review/fable_take2/review_v8.html` (open it as a local file; the video menu has local v8 with
-   likeness, public v8, and v7). Five decisions: (1) 4:01-4:04 "she doesn't look" right / needs work; (2) car camera move right /
-   adjust; (3) 4:01 face plate's broad orange jacket bands vs the runner's thin trim: fine / match; (4) tree drawn in code right /
-   adjust; (5) next: v9 / master. Run the notes round as below ("How a notes round runs"): save her paste verbatim to
-   `notes/jade_v8_notes.md`, stills at her timestamps, `notes/v9_direction.md`, agents.
-2. **Glyph art (she asked to prioritise it).** Everything verbatim plus commands in `notes/glyph_v8.md`; review files in
-   `review/fable_take2/v8_glyph/`. Her decisions so far: TWO styles.
-   - Style 1, anime close-ups (e.g. 3:42 catch, b129): iteration-1 look B, colour, all scripts, FULL FRAME (`tools/glyphart/paint.py
-     --preset colour_all`). Her pick: `3m42_catch_B_colour_figure.jpg`. Not yet animated: `animate.py` needs a `--frames/--fps 24`
-     option to read plate frames (and per-frame cut-outs if the figure/background split is kept).
-   - Style 2 for 1:34 night (ca10) and 2:15 wushu/orchestra (b79): English/ASCII glyphs only, one font, one size at hatch resolution,
-     D film-ink palette on black (`hashglyph.py`, `animate_hash.py`, about 1 s/frame). She said "big improvement", then asked for
-     bodies upright only (V3): `2m15_wushu_orch_mono_s2b_V3_720p.mp4` + `sheet_2m15_s2b_V3.jpg` (bodies upright, background rotated).
-     **Open with her:** V3 upright vs rotated, and 14 px vs 20 px (we lean 20, mono and serif look alike). My read on V3: bodies read as
-     typeset text, busier and flatter than rotated; works best on the wushu, the orchestra close-ups turn into blocks of type, and the
-     BiRefNet body mask also catches chairs/stands there.
-   - Iteration-2 `marks.py` (flat marks, F2 ink on cream) exists but she chose the styles above; parked.
-   - Wiring into the film (after she picks): render frames in v7 numbering, per-shot `v7dir` pointing at the glyph folder, and a
-     `paper: 0` option so film.js skips the hatch pass for those shots; for the 3:42 plate, a new plate folder `plates/catch_glyph/`.
-     The compositor does this; the glyph renderer's owner paths are `tools/glyphart/**`.
-3. Fix-list carried from v8 (do with her v8 notes): purple branch drops at the 0:24.6 cut into the old swoop (ib11); 4:01 streaks faint
-   and old peach road behind the 4:04 patches; car: plain 3D stand-in in the over-shoulder opening (a drawn back-view still would cost
-   about $0.2 + $1-3 clip, ask her), steering wheel rim bottom-left, blurred mid-pan, smile hold 1.9 s vs 2.4 s in v7.
-4. If she picks "master": master from v8 settings under "The master" below (`--q hud=0`), then encodes and subtitles; release files are
-   local only (likeness).
+1. **Her v9 notes.** She is reviewing `review/fable_take2/review_v9.html` (local file; menu: local v9, public v9, v8). Eight
+   decisions: (1) the two glyph styles as placed: right / adjust; (2) orchestra 2:19 in upright letters: keep / rotated / back to
+   hatch; (3) drop in slashes: right / more visible characters; (4) car 4:30: right / adjust; (5) 0:39 runner glide: accept / another
+   plate; (6) 4:01 on glyph paper: keep / clean line; (7) which essay moves to pursue (multi-select); (8) v10 / master.
+   Run the round as in "How a notes round runs": paste verbatim to `notes/jade_v9_notes.md`, stills at her timestamps, write
+   `notes/v10_direction.md`, then agents. This round used three opus agents (glyph, compositor, plates) plus the main thread
+   looking at every sheet; that split worked. Order dependencies: plates before glyph for any new plate that gets glyphs;
+   compositor's full render only after all sources land.
+2. **The essay** (`notes/art_direction_fable.md`, 4,300 words, she has only my summary so far). If she picks moves from it, the
+   feasible-in-pipeline ones are ranked there with timestamps: catch at 3:42 as climax (violet's handoff text crosses and writes main
+   through), glyph grammar (a notation per life; glyph size as the merge variable), clearing the outro (cut 4:07 stance, 4:12
+   aerial, log burst), lives ending once at 2:00 (needs captions written by Jade), drop as violet's drawing. Its opinions against
+   her binding choices (slab lyrics over chorus 2, the 4:09 rainbow wave run) are hers to weigh; do not act on them unasked.
+   The essay also disagrees with parts of v9 as she specified it (style 1 on every close-up; glyphs at 4:01): told to her, her call.
+3. **Open items told to her** (fix with her notes): va07 0:39 glide (options: `cross_hackerhouses_v9_lock` with an earlier window
+   via maxSpeed 2 or a later wipe, entry commented out in `CROSS_V4` in shots.js; or a third paid take that starts further from the
+   door); va04 slip never measured (matte takes the door); orchestra pink lost in the D palette and bodies read as grey blocks at
+   640 px; style-1 shimmer on catch and c2_lookup (eighth-note boil + background refill; lower the boil or freeze background
+   glyphs on near-static plates); 4:01 paper turns light-grey type; va01 face un-glyphed (her 0:29.82 note sat on the cut, applied
+   to va02 only); car_v9 console scribble at 1.6-2.3 s and cyan diamond in the hold; bu09 (2:12) dark hatch shot sits right before
+   the glyph wushu run; dr20 cut registers +2.1 frames late.
+4. **Disk, awaiting her word:** other cuts' old renders untouched: `out/tmp/v_*.mp4` (~27 GB, temp renders, safest),
+   `out/final` + `out/review` (~14 GB), `work_fable/out/v1..v5.mp4` and r2/r3/r4/act parts (~12 GB; keep v6, v7, v7_uhd, whose
+   frames feed take two). She said keep the latest two versions of the full film; in take two that is now v8 and v9 (v7 finals
+   are still there and may go when v10 exists).
+5. If she picks "master": settings under "The master" below (`--q hud=0`), then encodes and subtitles; release files local only.
+
+Switches worth knowing: `?glyph=0` renders the v8 look everywhere; `?carv=8` the v8 car move; `?hands=1` driver's hands in the 3D
+car (off by default: she did not ask for them). The car 3D render needs `--workers 1` (GPU memory; 3 workers gave black frames).
+New tools: `tools/slip.py` (stance-foot slip vs ground homography; trust it over the v4 toe measure), `tools/relock.py`
+(`--keylane`, `--fill aNNN`), `tools/swoop_track.py`; glyph renderers and the slash paper pass in `tools/glyphart/` (see glyph_v9.md).
+Video-to-video that keeps camera motion: runwayml/aleph-2, $0.336/s (`gen/car_v9.py`); feed it a clean 3D clip plus image-edited
+first/last stills, and audit every frame for invented people.
 
 ## Film v8 (2026-11-22)
 Notes `notes/jade_v7_notes.md`, brief `notes/v8_direction.md`; built: `notes/compositor.md` "Film v8", `plates_v8.md`, `car_v8.md`,
