@@ -76,7 +76,22 @@ Indie Flower; downloads only, nothing sent).
   paint; I plan to re-render both with the corpus atlas (`*_glyph11f`). vb10's plate itself is not glyphed (fine).
 
 ## Wiring table
-(after the renders)
+All under `work_fable/take2/plates/` (git-ignored), 1920x1080, 24 fps, `meta.json`, `still.jpg`; frame i = frame-1 song time + (i-1)/24.
+Wire exactly as the v10 row each one replaces (glyph_v10.md "For the compositor"): same clip maps, push, opts.
+
+| shot | replaces (v10) | folder | frames | frame 1 = song | settings / notes |
+|---|---|---|---|---|---|
+| vb10 | vio_still_letters10b | `vio_still_letters11/` | 125 | 202.691 | atom_letters11.py: merge.txt words in song order (Latin only, no swap), small 46 px, ~45 big 62-92 px; plate coords at 1920, no push baked (shot keeps its push); circle letters still leave east at the cut |
+| cb02 | c2_lookup_v2_glyph10f | `c2_lookup_v2_glyph11f/` | 121 (6-87 painted) | 209.366 | style 1 on the CORPUS atlas (Latin + her hanzi only), B1 size x0.95, boil 0, fill-k 4, then v10 freeze.py; same opt as now |
+| cb08 | c2_hands_letters10 | `c2_hands_letters11/` | 121 | 219.737 | coarse11.py: Merge lines as word runs, front from the palms 220.45-221.44, first 55 % of runs violet; keep pageFly |
+| cb09 | catch_letters10 | `catch_letters11/` | 121 | 221.436 | coarse11.py on `catch_glyph11f` (corpus atlas, B1 x0.85, de-shimmered); Merge continues from word 53; face clean |
+| cb10 | fold_merge10b | `fold_merge11/` | 84 | 223.135 | merge11.py; push 0 |
+| cb11 | patch_hold_merge10b | `patch_hold_merge11/` | 84 | 226.532 | merge11.py; push 0; written layer held (~70 letters at 228.0); 228.30-228.71 survivors slide into MERGE ME / BACK TO / MAIN |
+| cb12 | patch_settle_merge10c | `patch_settle_merge11/` | 125 | 229.931 | merge11.py; push 0; no clip1; FOLD / ME IN 229.12, MAIN 229.54, ME 229.97, `I` 230.39 (alone 230.69), sinks in at 231.210 (f_0032), eyes open there; daylight torn-paper front 25 % 232.5, 50 % 233.8, 80 % 234.6, full 235.038 |
+| (base) | - | `catch_glyph11/`, `catch_glyph11f/` | 121 | 221.436 | corpus-atlas style 1 catch without letters (fallback) |
+| (base) | - | `c2_lookup_v2_glyph11/` | 121 | 209.366 | corpus-atlas cb02 before freeze (fallback) |
+
+B1 rows: below when the renders land.
 
 ## Weak / open
 - Notations at 640: they read in flat light areas (poet, phd, biology, code screen, ames) and vanish into texture in busy plates
