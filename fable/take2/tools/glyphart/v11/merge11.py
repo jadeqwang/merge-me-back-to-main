@@ -36,7 +36,7 @@ tick = MB.tick
 SINK0 = MB.SINK0
 TE = 228.30
 LAST = os.environ.get('A4_LAST', 'I')
-CFG = dict(s0=66, row=0.9, seg=12, look=5, fly_hold=1.0, rev_a=0.45, run_s=64, smin=70, smax=150, grow=1.07, D0=0.75, t_merge0=223.4, key=0.55, n_te=12, curve=1.5,
+CFG = dict(s0=66, row=0.9, seg=12, look=5, fly_hold=1.0, rev_a=0.45, run_s=64, smin=70, smax=150, grow=1.07, D0=0.75, t_merge0=223.4, key=0.55, n_te=70, curve=3.0, late=227.6, late_group=3, D_late=0.35, final_thick=1.0,
            rev_k=0.4, fly_glow=0.25, land_glow=0.3, flash_col=0.35, phrase_w=1.15)
 # the twelve lives (gl10.LIVES order): a line or phrase of one of her songs that fits the life (main thread approves)
 PHRASES = {
@@ -58,7 +58,7 @@ ENDGAME = [  # (start, duration, rows, letter size): each level flows into the n
     (tick(3), 0.30, 'FOLD|ME IN', 112),
     (tick(5), 0.30, 'MAIN', 132),
     (tick(7), 0.30, 'ME', 150),
-    (tick(9), 0.30, LAST, 170),
+    (tick(9), 0.30, LAST, 180),
 ]
 VIO = L.hexrgb('#B08CFF')
 
@@ -169,7 +169,7 @@ class Scene11(MB.SceneB):
                 font = T[int(rng.integers(len(T)))]
             return G.em_char(ch, font), ch, han
 
-        def fuse(group, t, D, to=None, ch=None, size=None, final=False, vio_k=None, font=None):
+        def fuse(group, t, D, to=None, ch=None, size=None, final=False, vio_k=None, font=None, th=None):
             w = sum(m['s'] for m in group)
             mx = sum(m['x'] * m['s'] for m in group) / w; my = sum(m['y'] * m['s'] for m in group) / w
             n_alive = sum(1 for m in marks if m['t_in'] <= t < m['t_out']) + sum(1 for m in marks if m['t_in'] > t)
@@ -182,11 +182,12 @@ class Scene11(MB.SceneB):
             if vio_k is not None:
                 col = col * (1 - vio_k) + L.hexrgb('#A57BFF') * vio_k; vio = vio or vio_k > 0.5
             cx, cy = (to if to is not None else (mx, my))
-            c = add(gid=gid, ch=ch_, han=han, x=float(cx), y=float(cy), s=float(sc), th=0.0 if (to is not None or n_alive <= 9) else
-                    float(np.mean([m['th'] for m in group]) / 2), col=np.clip(col, 0, 1), t_in=t + D, t_out=1e9, fly=None, vio=vio, gen=gen)
+            th_ = th if th is not None else (0.0 if n_alive <= 9 else float(np.mean([m['th'] for m in group]) / 2))
+            c = add(gid=gid, ch=ch_, han=han, x=float(cx), y=float(cy), s=float(sc), th=th_, col=np.clip(col, 0, 1), t_in=t + D,
+                    t_out=1e9, fly=None, vio=vio, gen=gen, thick=C['final_thick'] if final else 0.0)
             for m in group:
                 m['t_out'] = t
-            s.merges.append(dict(src=[m['id'] for m in group], c=c['id'], t0=t, D=D, mx=mx, my=my, single=len(group) == 1))
+            s.merges.append(dict(src=[m['id'] for m in group], c=c['id'], t0=t, D=D, mx=mx, my=my, single=len(group) == 1, to=to is not None))
             if len(group) > 1 and to is None:     # the patch of drawing a fusion leaves: about one letter
                 s.reveals.append((t + 0.5 * D, float(mx), float(my), C['rev_k'] * float(np.mean([m['s'] for m in group]))))
             return c
@@ -197,9 +198,9 @@ class Scene11(MB.SceneB):
             alive = [m for m in marks if m['t_in'] <= t < m['t_out']]
             pend = [m for m in marks if m['t_in'] > t and m['fly'] is None]
             n_alive = len(alive) + len(pend)
-            u = min(1.0, (t - C['t_merge0']) / (TE - 0.6 - C['t_merge0']))
+            u = min(1.0, (t - C['t_merge0']) / (TE - 0.35 - C['t_merge0']))
             target = s._target(marks, t, u)
-            D = C['D0'] if t < 226.0 else 0.45
+            D = C['D0'] if t < 226.0 else (0.45 if t < C['late'] else C['D_late'])
             if t + D > TE:
                 t += dt; continue
             elig = [m for m in alive if t - m['t_in'] >= (C['fly_hold'] if m['fly'] is not None else 0.12)]
@@ -209,9 +210,12 @@ class Scene11(MB.SceneB):
                 others = [m for m in elig if m is not a]
                 d = np.array([math.hypot(m['x'] - a['x'], m['y'] - a['y']) for m in others])
                 band = np.where(d < 0.7 * a['s'], d + 3 * a['s'], d)
-                b = others[int(np.argmin(band))]
-                elig.remove(a); elig.remove(b)
-                fuse([a, b], t, D); n_alive -= 1
+                k = 1 if t < C['late'] else min(C['late_group'] - 1, max(1, int(n_alive - target)), len(others))
+                grp = [others[i] for i in np.argsort(band)[:k]]      # late: three or four nearest letters fuse at once
+                for b in grp:
+                    elig.remove(b)
+                elig.remove(a)
+                fuse([a] + grp, t, D); n_alive -= len(grp)
             t += dt
         # 4. the endgame spells, level by level, in reading order
         cx, cy = s.chest
@@ -224,11 +228,11 @@ class Scene11(MB.SceneB):
                 print('WARNING: fewer marks than slots', len(cur), len(slots))
             groups = [list(g) for g in np.array_split(np.array(cur, dtype=object), len(slots)) if len(g)]
             vk = [0.3, 0.5, 0.7, 0.85, 1.0][li]
-            font = 'han_bold' if (len(slots) == 1 and M.is_han(LAST)) else 'serif_bold'
-            cur = [fuse(g, tf, D, to=(x, y), ch=ch, size=size, final=(len(slots) == 1), vio_k=vk, font=font)
-                   for g, (ch, x, y) in zip(groups, slots)]
+            cur = [fuse(g, tf, D, to=(x, y), ch=ch, size=sz_, final=(len(slots) == 1), vio_k=vk, font=fo, th=th_)
+                   for g, (ch, x, y, fo, sz_, th_) in zip(groups, slots)]
         s.final = cur[0]
         s.final['t_out'] = SINK0
+        s.final['thick'] = C['final_thick']
         for m in marks:
             if m['t_out'] > 1e8 and m is not s.final:
                 m['t_out'] = SINK0
@@ -245,19 +249,33 @@ class Scene11(MB.SceneB):
         return n0 - (n0 - CFG['n_te']) * u ** CFG['curve']
 
     def layout(s, text, size):
-        """slots (ch, x, y) of the endgame text in rows, centred on her chest, top row under her chin"""
+        """slots (ch, x, y, font, size, th) of the endgame text in rows, centred on her chest, top row under her chin. In the family of
+        the merging letters: each letter its own heavy face, size +-7 %, baseline +-5 %, a slight tilt. The last mark (one letter)
+        is a heavy slab serif, upright."""
         rows = text.split('|')
         cx, cy = s.chest
         pitch = 1.02 * size
         yc = cy + 70 + (0 if len(rows) > 1 else 10)
+        rng = np.random.default_rng(abs(hash(text)) % 1000)
+        lone = len(text.replace(' ', '').replace('|', '')) == 1
         out = []
         for ri, r in enumerate(rows):
-            font = 'han_bold' if M.is_han(r[0]) else 'serif_bold'
-            advs = [(0.36 * size if c == ' ' else s.G.adv_of(s.G.em_char(c, font)) * size) for c in r]
-            x = cx - sum(advs) / 2; y = yc + (ri - (len(rows) - 1) / 2) * pitch
-            for c, a in zip(r, advs):
+            spec = []
+            for c in r:
+                if c == ' ':
+                    spec.append((c, None, 0.36 * size, size, 0.0)); continue
+                if M.is_han(c):
+                    fo = 'han_bold'
+                elif lone:
+                    fo = 'slab'
+                else:
+                    fo = ['serif_bold', 'sans_bold', 'serif_bi', 'gothic', 'serif_bold'][int(rng.integers(5))]
+                sz = size if lone else size * rng.uniform(0.93, 1.07)
+                spec.append((c, fo, s.G.adv_of(s.G.em_char(c, fo)) * sz, sz, 0.0 if lone else float(rng.normal(0, 0.05))))
+            x = cx - sum(a for _, _, a, _, _ in spec) / 2; y = yc + (ri - (len(rows) - 1) / 2) * pitch
+            for (c, fo, a, sz, th) in spec:
                 if c != ' ':
-                    out.append((c, x + a / 2, y))
+                    out.append((c, x + a / 2, y + (0 if lone else rng.normal(0, 0.05 * size)), fo, sz, th))
                 x += a
         return out
 
@@ -275,15 +293,21 @@ class Scene11(MB.SceneB):
 
     # smoother daylight front (told weak point: blotchy cloud, dark patches at the top at 233-234.6)
     def front_R(s, t):
+        """daylight front (rev c2 look without the blotches): the lit region is star-shaped about the chest (its radius depends on
+        the ANGLE only: a torn-paper outline at several scales, so there are no islands or dark holes), plus a fine paper-fibre
+        jitter of a few px along the edge"""
         if not hasattr(s, '_dist'):
             yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
             s._dist = np.hypot(xx - s.chest[0], yy - s.chest[1])
             rng = np.random.default_rng(31)
+            ang = np.arctan2(yy - s.chest[1], xx - s.chest[0])
             n = np.zeros((H, W), np.float32)
-            for sig, amp in ((160, 1.0), (70, 0.35)):
-                z = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), sig); n += amp * z / (z.std() + 1e-6)
-            n /= n.std() + 1e-6
-            s._dfront = np.hypot((xx - s.chest[0]) * 0.82, yy - s.chest[1]) * (1 + 0.035 * n)
+            for k, amp in ((2, 0.07), (3, 0.06), (5, 0.05), (8, 0.04), (13, 0.03), (21, 0.022), (34, 0.015), (55, 0.01), (89, 0.007)):
+                for _ in range(2):
+                    n += amp * np.cos(k * ang + rng.uniform(0, 2 * np.pi)).astype(np.float32) * rng.uniform(0.6, 1.2)
+            fib = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), 2.0)
+            fib /= fib.std() + 1e-6
+            s._dfront = np.hypot((xx - s.chest[0]) * 0.86, yy - s.chest[1]) * (1 + n) + 5.0 * fib
             s._dsort = np.sort(s._dfront[::4, ::4].ravel())
         ts, fs = zip(*MB.SceneB.DAY_KEYS)
         f = float(np.interp(t, ts, fs))
@@ -297,7 +321,7 @@ class Scene11(MB.SceneB):
         R = s.front_R(t)
         if R is None:
             return np.ones((H, W), np.float32)
-        e = 0.3 * R + 20
+        e = 0.06 * R + 10          # a fairly crisp paper edge (soft, not a vignette)
         w = np.clip((R - s._dfront) / e + 0.5, 0, 1)
         return w * w * (3 - 2 * w)
 
@@ -326,7 +350,7 @@ class Scene11(MB.SceneB):
                 continue
             land = t - m['t_in']
             glow = C['land_glow'] * max(0, 1 - land / 0.3) if m['fly'] is not None else 0
-            x0, y0, d = L.sdf_item(G, [(m['gid'], m['x'], m['y'], m['s'], m['th'])], margin=24 if glow else 6)
+            x0, y0, d = L.sdf_item(G, [(m['gid'], m['x'], m['y'], m['s'], m['th'])], margin=24 if glow else 6, thin=-m.get('thick', 0.0))
             L.ink(can, x0, y0, d, m['col'], key=key, glow=glow, gr=6)
         for r in s.merges:
             if not (r['t0'] <= t < r['t0'] + r['D']):
@@ -335,6 +359,30 @@ class Scene11(MB.SceneB):
             u = (t - r['t0']) / r['D']
             sl = L.smooth(u / 0.62)
             mm = float(L.smooth((u - 0.52) / 0.48))
+            if r.get('to'):      # endgame: the old line's letters SLIDE into the new line's letters: every parent travels to the
+                # slot (converging there from its own side), growing to the new size; on arrival their union flows into the new letter
+                e = float(L.smooth(u / 0.8)); mm = float(L.smooth((u - 0.45) / 0.55))
+                ps = []
+                for a in src:
+                    ox, oy = (a['x'] - r['mx']) * 0.35, (a['y'] - r['my']) * 0.35
+                    tx, ty = c['x'] + ox * (1 - mm), c['y'] + oy * (1 - mm)
+                    ps.append((a, a['x'] + (tx - a['x']) * e, a['y'] + (ty - a['y']) * e, a['s'] + (c['s'] - a['s']) * e,
+                               a['th'] + (c['th'] - a['th']) * e))
+                gr = 6 + 0.05 * c['s']
+                comps = [(a['gid'], x, y, sz_, th_) for (a, x, y, sz_, th_) in ps] + [(c['gid'], c['x'], c['y'], c['s'], c['th'])]
+                bb = L.sdf_item(G, comps, margin=int(3 * gr))
+                x0, y0 = bb[0], bb[1]; hh, ww = bb[2].shape
+                ds = [L._warp_sdf(G, a['gid'], x, y, sz_, th_, x0, y0, ww, hh) for (a, x, y, sz_, th_) in ps]
+                dc = L._warp_sdf(G, c['gid'], c['x'], c['y'], c['s'], c['th'], x0, y0, ww, hh) - c.get('thick', 0.0)
+                dmin = np.min(np.stack(ds), 0)
+                d = (1 - mm) * dmin + mm * dc
+                wts = np.stack([np.exp(-np.clip(dd - dmin, 0, 30) / 3) for dd in ds]); wts /= wts.sum(0, keepdims=True)
+                colp = sum(wts[i][..., None] * (ps[i][0]['col'] * (1 - e * 0.6) + c['col'] * e * 0.6) for i in range(len(ps)))
+                colp = colp * (1 - mm) + c['col'] * mm
+                flash = math.sin(math.pi * np.clip((u - 0.45) / 0.5, 0, 1)) * (0.6 if len(src) > 1 else 0.25)
+                colp = colp + (1 - colp) * C['flash_col'] * flash
+                M0.Scene.ink_map(can, x0, y0, d, colp, key=key, glow=0.3 * flash, gcol=np.clip(c['col'] * 0.5 + 0.5, 0, 1), gr=gr)
+                continue
             if r['single']:      # a letter that only moves and changes (endgame): glide + shape flow
                 a = src[0]; e = L.smooth(u)
                 px, py = a['x'] + (c['x'] - a['x']) * e, a['y'] + (c['y'] - a['y']) * e
@@ -369,7 +417,7 @@ class Scene11(MB.SceneB):
         if SINK0 <= t < BECOME:
             u = (t - SINK0) / (BECOME - SINK0); e = u * u
             sz = m['s'] * (1 - 0.92 * e)
-            x0, y0, d = L.sdf_item(G, [(m['gid'], m['x'], m['y'] + 10 * e, sz, 0.0)], margin=50)
+            x0, y0, d = L.sdf_item(G, [(m['gid'], m['x'], m['y'] + 10 * e, sz, 0.0)], margin=50, thin=-m.get('thick', 0.0) * (1 - e))
             L.ink(can, x0, y0, d, m['col'] * (1 - e) + np.ones(3, np.float32) * e, a=1.0, key=key * (1 - e), glow=0.2 + 0.25 * e,
                   gcol=L.hexrgb('#C9B2FF'), gr=8)
         if BECOME <= t < BECOME + 0.45:

@@ -11,8 +11,18 @@ Indie Flower; downloads only, nothing sent).
       I vs 我 at 640 and close-up). Single stills in `dev/v11_glyph/a1/`, `a3/`, `a4/` (`*_wo` = 我).
 - [x] step 1b: notation sheets `dev/v11_glyph/notation_<life>.jpg` (top x1.6 size, bottom x1.0 = v9 size), `notation_all.jpg` (x1.6,
       640 per tile); `notation_all_k10.jpg` = all at v9 size. Atlases `dev/v11_glyph/atlas/<name>.npz` + `_sheet.png`.
-- [x] STOP 2026-11-22: reported to the main thread, waiting for its word (phrases, I/我, notation size, open questions below)
-- [ ] step 2: renders (A1, A3 incl. catch base, A4, cb02 + style-1 re-renders with B1 sizes), Wiring table
+- [x] STOP 2026-11-22: reported. Main thread: catch GO (phrases approved, last mark `I` heavier, no `_wo`; A4 fixes: written layer held
+      to ~228.0, survivors SLIDE into MERGE ME BACK TO MAIN and each later line, endgame letters in the family of the merging ones,
+      ragged daylight edge without blotches); cb02 + catch base on the corpus atlas; hold-fire "Style:" tail removed from the corpus;
+      B1 ramp approved (my values); B2 NOT yet: second pass as ink (notation2.py).
+- [x] A4 revision (merge11.py): n_te 70 (about 70 letters still on her at 228.0), late fusions in threes; endgame: every parent
+      travels to its slot and the group's union flows into the new letter there (old line slides into the new one), letters in mixed
+      heavy faces, size +-7 %, baseline +-5 %, slight tilt, colour blending to violet, keyline; last `I` DejaVu Serif Bold 180 px
+      thickened 1 px (stem about 31 px = 10 px at 640); daylight = star-shaped torn-paper edge (radius by angle, no islands) + fibre
+      jitter. Stills: `dev/v11_glyph/tests_A4rev.jpg` (227.99, 228.49, 228.78, 230.72, 233.51 from the rendered plates).
+- [x] catch renders: `render_v11.sh catch` (A1, A3 c2_hands, A4 x3 landed; catch base -> freeze -> A3 catch, cb02 running)
+- [x] B2 second pass sheets: `dev/v11_glyph/notation2_<life>.jpg`, `notation2_all.jpg` (notation2.py), waiting for the main thread
+- [ ] B1 renders: `render_v11.sh b1` running (8 shots, ids `<plate>_glyph11`)
 
 ## What v11 does (code in tools/glyphart/v11/)
 - `gl11.py`: corpus loader (hold-fire's trailing Suno "Style:" prompt is cut: not sung), `G11.em_char(c, font)` (any char/font as

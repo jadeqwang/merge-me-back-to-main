@@ -30,6 +30,7 @@ FONTS = {
     'mono': f'{U35}/NimbusMonoPS-Bold.otf', 'free_it': '/usr/share/fonts/truetype/freefont/FreeSerifItalic.ttf',
     'han': f'{FD}/NotoSerifSC[wght].ttf', 'han_bold': f'{FD}/NotoSerifSC[wght].ttf#Bold', 'han_light': f'{FD}/NotoSerifSC[wght].ttf#Regular',
     'han_sans': '/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf',
+    'slab': '/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf',
 }
 # fonts for a word, by weight tier (coarse: heavy; book; pen = the fine line the merge ends in)
 TIERS = [['sans_bold', 'serif_bold', 'serif_bi', 'gothic'], ['serif', 'serif_roman', 'serif_it', 'free_it'], ['pen', 'serif_it', 'free_it']]
