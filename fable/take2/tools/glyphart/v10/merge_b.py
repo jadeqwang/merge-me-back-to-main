@@ -22,7 +22,7 @@ import merge as M0
 from merge import W, H, T10, T11, T12, T13, BECOME, PULSE, BEAT, FOLD_BEATS, PS_A, PS_B
 
 PL = M0.PL
-SHOTS = {'cb10': ('fold_merge10b', T10, T11), 'cb11': ('patch_hold_merge10b', T11, T12), 'cb12': ('patch_settle_merge10b', T12, T13)}
+SHOTS = {'cb10': ('fold_merge10b', T10, T11), 'cb11': ('patch_hold_merge10b', T11, T12), 'cb12': ('patch_settle_merge10c', T12, T13)}   # rev c: cb12 only
 EIGHTH = BEAT / 2
 tick = lambda k: PULSE + k * EIGHTH
 # the countable end: 8 -> 4 -> 2 -> 1 on pulse ticks, then the one mark sinks in on "become"
@@ -209,18 +209,31 @@ class SceneB(M0.Scene):
             cv2.circle(m, (int(s.chest[0] / 4), int(s.chest[1] / 4)), int(max(0, rr) * 0.45 * W / 4), 1.0, -1)
         return cv2.resize(cv2.GaussianBlur(m, (0, 0), 3), (W, H))
 
-    def day_at(s, t):
-        """daylight spreading from where the last mark sank (the chest) from 231.21 to full at 235.038: per-pixel weight"""
-        if t < BECOME:
-            return None
-        u = (t - BECOME) / (T13 - BECOME); u = min(1.0, u)
-        R = (0.04 + 1.3 * (u ** 0.75)) * W
+    # rev c (listen_v10 "v10 measured"): daylight keeps growing to the impact. Share of the frame lit (from the chest), by song time:
+    DAY_KEYS = [(BECOME, 0.0), (232.5, 0.25), (233.8, 0.50), (234.6, 0.80), (T13, 1.0)]
+
+    def front_R(s, t):
+        """radius of the daylight front (centre of its soft edge) so the lit share of the frame follows DAY_KEYS"""
         if not hasattr(s, '_dist'):
             yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
             s._dist = np.hypot(xx - s.chest[0], yy - s.chest[1])
-        w = np.clip((R - s._dist) / (0.18 * W) + 0.5, 0, 1)
-        w = w * w * (3 - 2 * w)
-        return w * (0.35 + 0.65 * L.smooth(u * 1.4)) if u < 1 else np.ones((H, W), np.float32)
+            s._dsort = np.sort(s._dist[::4, ::4].ravel())
+        ts, fs = zip(*SceneB.DAY_KEYS)
+        f = float(np.interp(t, ts, fs))
+        if f >= 1.0:
+            return None
+        return float(s._dsort[min(len(s._dsort) - 1, int(f * len(s._dsort)))])
+
+    def day_at(s, t):
+        """per-pixel daylight weight: a front spreading from where the last mark sank; 0 before 231.21, all 1 from 235.038"""
+        if t < BECOME:
+            return None
+        R = s.front_R(t)
+        if R is None:
+            return np.ones((H, W), np.float32)
+        e = 0.06 * W
+        w = np.clip((R - s._dist) / e + 0.5, 0, 1)
+        return w * w * (3 - 2 * w)
 
     def picture(s, t):
         night = s.nj
@@ -234,16 +247,15 @@ class SceneB(M0.Scene):
             i0 = int(f); fb = f - i0
             day = s.psframe(i0) * (1 - fb) + s.psframe(min(PS_B, i0 + 1)) * fb
             # eyes open on "become": the face region switches in two frames, under the flash
-            e = min(1.0, (t - BECOME) / (2 / 24 + 1e-6))
+            e = 1.0   # rev c: eyes open on the frame of 231.210
             fh = (s.face_hard * e)[..., None]
             out = out * (1 - fh) + day * fh
             w = s.day_at(t)[..., None]
             out = out * (1 - w) + day * w
             # a warm rim on the daylight front
-            u = min(1.0, (t - BECOME) / (T13 - BECOME))
-            if u < 1:
-                R = (0.04 + 1.3 * (u ** 0.75)) * W
-                rim = np.exp(-((s._dist - R) / (0.05 * W)) ** 2) * 0.35 * (1 - u)
+            R = s.front_R(t)
+            if R is not None:
+                rim = np.exp(-((s._dist - R) / (0.035 * W)) ** 2) * 0.3
                 out = out + (1 - out) * rim[..., None] * np.array([1.0, 0.9, 0.7], np.float32)
         return out
 
@@ -324,13 +336,13 @@ class SceneB(M0.Scene):
             u = (t - SINK0) / (BECOME - SINK0); e = u * u
             sz = m['s'] * (1 - 0.92 * e)
             x0, y0, d = L.sdf_item(G, [(m['gid'], m['x'], m['y'] + 10 * e, sz, 0.0)], margin=60)
-            L.ink(can, x0, y0, d, m['col'] * (1 - e) + np.ones(3, np.float32) * e, a=1.0, key=key * (1 - e), glow=0.4 + 0.8 * e, gcol=L.hexrgb('#C9B2FF'), gr=16)
-        if BECOME - 1 / 24 <= t < BECOME + 0.6:
-            f = 1 - max(0.0, t - BECOME) / 0.6
+            L.ink(can, x0, y0, d, m['col'] * (1 - e) + np.ones(3, np.float32) * e, a=1.0, key=key * (1 - e), glow=0.25 + 0.25 * e, gcol=L.hexrgb('#C9B2FF'), gr=10)
+        if BECOME <= t < BECOME + 0.45:   # rev c: the flash starts ON 231.210, tight at her chest, and opens into the front
+            f = 1 - (t - BECOME) / 0.45
             if not hasattr(s, '_dist'):
-                s.day_at(BECOME)
-            g_ = np.exp(-(s._dist / (0.09 * W)) ** 2) * 0.9 * f
-            can = can + (1 - can) * g_[..., None] * np.array([0.95, 0.88, 1.0], np.float32)
+                s.front_R(BECOME)
+            g_ = np.exp(-(s._dist / (0.035 * W + 0.12 * W * (1 - f))) ** 2) * 0.85 * f
+            can = can + (1 - can) * g_[..., None] * np.array([0.97, 0.9, 1.0], np.float32)
         g = s.grade(t)
         if g is not None:
             can = g(can)

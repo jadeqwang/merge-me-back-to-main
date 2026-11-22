@@ -67,7 +67,7 @@ All under `work_fable/take2/plates/` (git-ignored), 1920x1080, 24 fps, `meta.jso
 | cb09 | catch_glyph | `catch_letters10/` | 121 | 221.436 | coarse.py catch on catch_glyph10f: 90-124 px, front 221.44-222.45 from r 170 at her hands, first 35 % violet, face clean |
 | cb10 | code 'fold' | `fold_merge10b/` | 84 | 223.135 | merge_b.py; push 0 |
 | cb11 | patch_hold | `patch_hold_merge10b/` | 84 | 226.532 | merge_b.py; push 0; dark ground; endgame ring from 228.30 |
-| cb12 | patch_settle | `patch_settle_merge10b/` | 125 | 229.931 | merge_b.py; push 0; no clip1; last mark in at 231.210 (f_0032), daylight from there to 235.038 |
+| cb12 | patch_settle | `patch_settle_merge10c/` (rev c; b superseded) | 125 | 229.931 | merge_b.py; push 0; no clip1; last mark in at 231.210 (f_0032); flash starts on that frame (tight, at the chest); daylight share 25 % 232.5, 50 % 233.8, 80 % 234.6, full 235.038 |
 | (base) | - | `catch_glyph10/`, `catch_glyph10f/` | 121 | 221.436 | de-shimmered style 1 catch without letters (fallback) |
 
 ## Commands
