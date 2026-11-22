@@ -1232,3 +1232,15 @@ Dev files `work_fable/take2/dev/v11/` (a2/, car/, v11off/).
   plates (fold sheet, drop inserts, merge) unchanged. Stills dev/v11/nota/ (s1.jpg with 5 of 10 landed).
 - Check when they land: a notation plate made from a different source than the A shot uses (wushu: PROOF_A wushu_v3; band: band_v2)
   would play on the wrong clip; read its meta.src.
+- Notation plates re-rendered in place by glyph (a07128a, clear of lyric/chip/ticker); sheet from the final plates
+  dev/v11/wire/notation_sheet_b.jpg. Grid panels on (main thread approved). A first public render started before that commit was
+  stopped and restarted, so 47.2-62.8 comes from the final plates.
+
+### Film v11 renders (commands)
+    WORKERS=6 fable/take2/tools/render_film.sh film_v11 "" "likeness=0"   # -> out/film_film_v11_master.mp4, film_film_v11.mp4, film_v11_sheet_0*.jpg
+    node fable/take2/tools/render.mjs --mp4 out/film_v11_local_master.mp4 --audio "inputs/Merge (keychange down).wav" --workers 6 --crf 16
+    ffmpeg ... -crf 20 -maxrate 2300k -> out/film_v11_local.mp4
+    cp out/film_film_v11.mp4 review/fable_take2/film_v11.mp4; cp out/film_v11_sheet_0*.jpg review/fable_take2/
+    .venv/bin/python fable/take2/tools/check.py out/film_film_v11_master.mp4 > out/check_v11.txt
+- review/fable_take2/review_v11.html built from review_v10.html (10 decisions, 7a-7m notation per life + where; thumbs v11/*.jpg from
+  the public master).
