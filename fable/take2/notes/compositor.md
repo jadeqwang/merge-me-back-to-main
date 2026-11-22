@@ -1082,3 +1082,19 @@ All four folders have meta now (va03 first 947 n 52 crop set; ca10 2768/104; bu 
 already wired (no code change). Local likeness, hud=0: stills dev/v9/check2/v9_<t>.png and v8-look (`glyph=0`) v8_<t>.png at 31.92,
 93.18, 133.42, 136.0, 139.15, 141.0, 153.65, 156.5, 241.71; sheet check2/all.jpg (left `glyph=0`, right v9); drop_zoom.jpg (slash marks
 vs v8 hatch at 153.65). 720p clips with audio: check2/wushu_orch.mp4 (132.4-142.5), check2/drop.mp4 (152.7-160) (1080p masters *_1080.mp4).
+
+### Film v9 renders (2026-11-22)
+Before: glyph_v9.md Wiring table re-read (style 1 re-rendered under the same names); stills dev/v9/s1/s1.jpg + render --info: all 11
+style-1 shots and oa03 draw their `_glyph` plate (ca11 main_back_wide_v2_glyph; ca01 proof hero /plates/hero_paper_v2_glyph); ba04's
+life window clean. No code change needed. Commands:
+    WORKERS=6 fable/take2/tools/render_film.sh film_v9 "" "likeness=0"      # 448 s -> out/film_film_v9_master.mp4, film_film_v9.mp4 (80.2 MB), sheets
+    cp out/film_film_v9.mp4 review/fable_take2/film_v9.mp4; cp out/film_v9_sheet_0*.jpg review/fable_take2/
+    ln -sfn keep_film_v9 out/keep_v9; .venv/bin/python fable/take2/tools/check.py out/film_film_v9_master.mp4 > out/check_v9.txt
+    node fable/take2/tools/render.mjs --mp4 out/film_v9_local_master.mp4 --audio ... --workers 6 --crf 16 (496 s), v8's encode -> out/film_v9_local.mp4 (76.7 MB)
+check.py: 188 hard cuts, mean |error| 0.35 fr, max 2.80, 172 of 182 within 0.5; outliers as v8 plus dr20 (+2.10 fr, the band insert
+behind the drop's hatch wipe: same kind as dr09/11/26/30); "no clear change" as v8; type all pass; 22 lines / 119 words, none under
+0.6 s; single frame vs full render 11 of 11 identical. Sheets looked at (all 5): 2:03 (tiles assembling) and 2:12 (bu09, dark hatch v7)
+look nearly black, identical in v8. Local checked: likeness at 3:56.5 (b137).
+Page: review/fable_take2/review_v9.html (video menu local v9 / public v9 / v8; "What changed in v9"; 8 decisions, decision 7
+multi-select (checkboxes, new in the page script)); thumbs review/fable_take2/v9/ from the public master.
+Removed (coordinator, Jade's disk request): out/film_film_v7_master.mp4, out/film_v7_local_master.mp4. Kept v7/v8 finals and v8 masters.
