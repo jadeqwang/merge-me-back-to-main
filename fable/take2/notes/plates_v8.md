@@ -48,4 +48,4 @@ the only Verse 2 plates with a pencil in hand are the vio_* writing plates, `pag
 | `page_reveal` | `page_reveal_v2` | b105 (`vio_wide` row, `next[0]`, shots.js ~line 358): same opts (clip0 0.3, clip1 4.6, page quad `page_track.json`) | identical framing and timing; `page_track.json` copied into the new folder, so the quadUrl can point at `/work_fable/take2/plates/page_reveal_v2/page_track.json` or stay |
 
 ## Spend
-5 nano-banana-pro? No: 3 edits x $0.134 = **$0.40** (see `docs/spend_ledger.jsonl`).
+3 edits x $0.134 = **$0.40** (see `docs/spend_ledger.jsonl`).
