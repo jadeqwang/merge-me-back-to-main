@@ -2,6 +2,14 @@
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
+## v9 round in flight (started 2026-11-21, main thread = Fable)
+Jade's v8 notes: `notes/jade_v8_notes.md`; brief `notes/v9_direction.md` (shot map for both glyph styles, drop slashes, sneakers,
+car camera, jacket match). Four background agents: art-direction essay (fable) -> `notes/art_direction_fable.md`; glyph (opus) ->
+`notes/glyph_v9.md` Wiring table; compositor (opus) -> `notes/compositor.md` "Film v9"; plates (opus) -> `notes/plates_v9.md`.
+Order: compositor renders `work_fable/take2/dev/v9/car3d_clean.mp4` -> plates uses it as video-model reference; plates delivers
+`day_eyes_v2` -> glyph paints it (oa03); compositor does the full render only when told the sources are complete.
+If resuming cold: read those four notes for state, then finish wiring, render film_v9, review_v9.html, push.
+
 ## Start here (next session)
 State at handoff: working tree clean, everything pushed on `fable/merge`, no agents running, nothing paid queued. Spend about $573
 (`tools/gen/spend.py`; the tools' cap constant is still 600 and Jade lifted the cap; raise it when needed).
