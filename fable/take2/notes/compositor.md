@@ -1058,3 +1058,9 @@ Nobody has watched film_v8 at speed with sound.
   look (solid MAIN, dark ink, merge 0.69). Stills dev/v9/fix/outro2.jpg (241.2, 242.2, 243.9, 244.6).
 - Car wheel rim / blurred mid-pan: see item 1 (the opening is now the driver's view: the wheel is seen whole, bottom centre; pan
   1.71 s with a 0.3-frame shutter). car_v9 (the video-model pass) is what the film shows now.
+
+### Status (end of items 1-4)
+Items 1-4 done and committed (c5a8732, febb4dd, 877309d, f6446e7, 6370801). glyph_s2_bu pre-wired (bu10-bu30 v7 shots). Film info: 208
+shots, only oa01 (likeness, ?likeness=0) is a card. NEXT: item 5 when the coordinator says the sources are complete: re-read
+glyph_v9.md's Wiring table (new rows: folder names, oa03 day_eyes_v2_glyph is picked up automatically), then
+`WORKERS=4 fable/take2/tools/render_film.sh film_v9 "" "likeness=0"`, check.py, the local render, review_v9.html (as v8's commands).
