@@ -22,7 +22,7 @@ Indie Flower; downloads only, nothing sent).
       jitter. Stills: `dev/v11_glyph/tests_A4rev.jpg` (227.99, 228.49, 228.78, 230.72, 233.51 from the rendered plates).
 - [x] catch renders: `render_v11.sh catch` (A1, A3 c2_hands, A4 x3 landed; catch base -> freeze -> A3 catch, cb02 running)
 - [x] B2 second pass sheets: `dev/v11_glyph/notation2_<life>.jpg`, `notation2_all.jpg` (notation2.py), waiting for the main thread
-- [ ] B1 renders: `render_v11.sh b1` running (8 shots, ids `<plate>_glyph11`)
+- [x] B1 renders landed (8 shots, ids `<plate>_glyph11`), Wiring table filled. All catch + B1 renders done 2026-11-22 15:05.
 
 ## What v11 does (code in tools/glyphart/v11/)
 - `gl11.py`: corpus loader (hold-fire's trailing Suno "Style:" prompt is cut: not sung), `G11.em_char(c, font)` (any char/font as
@@ -91,7 +91,25 @@ Wire exactly as the v10 row each one replaces (glyph_v10.md "For the compositor"
 | (base) | - | `catch_glyph11/`, `catch_glyph11f/` | 121 | 221.436 | corpus-atlas style 1 catch without letters (fallback) |
 | (base) | - | `c2_lookup_v2_glyph11/` | 121 | 209.366 | corpus-atlas cb02 before freeze (fallback) |
 
-B1 rows: below when the renders land.
+B1 (size as the merge variable): main-Jade style-1 shots re-rendered at one size each, v9 settings and v9 all-scripts atlas otherwise
+(main Jade keeps her v9 scripts until the catch), layer sizes = v9 [80 48 30 19 12 8] x k, face/focus sizes x sqrt(k). Swap the
+plate id only (`<plate>_glyph11` in place of `<plate>_glyph`); clip maps, opts, HERO_NEXT t0_song/lag unchanged. 640 check:
+`dev/v11_glyph/b1_640.jpg`.
+
+| shot | replaces (v9) | folder | frames | frame 1 = song | B1 size k | notes |
+|---|---|---|---|---|---|---|
+| va02 | main_split_glyph | `main_split_glyph11/` | 121 (11-80 painted) | 29.50 | 1.8 (largest) | |
+| va10 | main_release_glyph | `main_release_glyph11/` | 121 (1-44) | 43.725 | 1.6 | |
+| ca01 | hero_paper_v2_glyph (HERO_NEXT) | `hero_paper_v2_glyph11/` | 121 (10-98) | meta t0_song 69.2 | 1.45 | HERO_NEXT.id = 'hero_paper_v2_glyph11', same t0_song/lag |
+| ca03 | hero_feet_glyph | `hero_feet_glyph11/` | 121 (1-44) | 74.924 | 1.35 | |
+| ca09 | look_back_glyph | `look_back_glyph11/` | 121 (1-44) | 90.532 | 1.25 | |
+| ca11 | main_back_wide_v2_glyph | `main_back_wide_v2_glyph11/` | 121 (1-75) | 95.727 | 1.15 | |
+| ba01, ba03, ba04, ba05 | float_top_glyph | `float_top_glyph11/` | 121 (1-117) | 97.457 | 1.05 | float_top v9 extras kept |
+| ba02 | float_face_glyph | `float_face_glyph11/` | 121 (1-44) | 100.917 | 1.05 | float_face v9 extras kept |
+| cb02 | (above) | `c2_lookup_v2_glyph11f/` | | 209.366 | 0.95 | corpus atlas |
+| cb09 base | (above) | `catch_glyph11f/` | | 221.436 | 0.85 | corpus atlas; coarse letters on top are the film's largest |
+| cb10-cb12 | (above) | merge plates | | | letters 66 -> 180 | the merge finishes it: many letters into one |
+| oa03 | day_eyes_v2_glyph | unchanged | | | finest (v9) | decision 10 Keep: no re-render |
 
 ## Weak / open
 - Notations at 640: they read in flat light areas (poet, phd, biology, code screen, ames) and vanish into texture in busy plates
