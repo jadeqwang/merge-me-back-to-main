@@ -91,6 +91,10 @@ export const V11 = V10 && Q.get('v11') !== '0';
 // 219.737-238.450); film.js lyrics() skips these beat ranges. ?slab2=1 restores. Subtitles (.srt/.vtt) are not touched.
 export const LYR_OFF = V11 && Q.get('slab2') !== '1' ? [[[128, 1], [139, 1]]] : [];
 const V10G = V10 && !(typeof location !== 'undefined' && new URLSearchParams(location.search).get('glyph') === '0');
+// film v11 (notes/glyph_v11.md Wiring table): the `11` plates first in each list, then the v10 ids; off with ?v11=0 or ?glyph=0
+const W11 = (...ids) => (V11 ? ids : []);
+// film v11 B1 (glyph size as the merge variable): style-1 shots (opt.glyphPlate, and the ca01 hero) try `<plate>_glyph11` before `<plate>_glyph`
+export const GLYPH_SFX = V11 ? ['_glyph11', '_glyph'] : ['_glyph'];
 const G10 = (ids, opt = {}, kind) => (V10G ? ids.map((id) => ({ id, opt, ...(kind ? { kind } : {}) })) : []);
 const C = (from, to, src, pic, x) => shot(from, to, x && x.code || 'C', 'card', src, 'missing', pic, x);
 const PR = (from, to, src, pic, x) => shot(from, to, x && x.code || 'P', 'proof', src, 'exists', pic, { lyric: 'proof', ...x });
@@ -437,7 +441,7 @@ P(118, 121, 'vio_still', 'missing', 'She sits, hands in her lap, then atomizes: 
   { code: 'P+C', ov: ['chip:detached, not merged'], row: 'b118-120', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' },
     atom: { dir: '/work_fable/take2/kit/vio_still/atom', empty: 'vio_empty', standin: '/work_fable/take2/kit/vio_still/atom/standin.jpg', lead: 0.1, tail: 0.45, soft: 0.06 },
     // film v10 A1: she comes apart into the handoff's letters (glyph agent's frame sequence, 1:1 with song time): no atomize, no settle on top
-    next: G10(['vio_still_letters10b', 'vio_still_letters10'], { atom: null, settle: null, clip0: 0, speed: 1 }), settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
+    next: G10([...W11('vio_still_letters11'), 'vio_still_letters10b', 'vio_still_letters10'], { atom: null, settle: null, clip0: 0, speed: 1 }), settle: { matte: '/work_fable/take2/kit/vio_still', poly: [[0.62, 0.06], [0.8, 0.06], [0.85, 0.4], [0.84, 0.68], [0.73, 0.76], [0.71, 0.93], [0.65, 0.94], [0.61, 0.83], [0.5, 0.9], [0.39, 0.87], [0.39, 0.72], [0.5, 0.6], [0.58, 0.5], [0.6, 0.3]] } } });
 
 // ------------------------------------------------------------------ Chorus 2: bars 121-136
 section('chorus2');
@@ -455,7 +459,7 @@ V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of
     : { text: HANDOFF_TXT, path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52, move: 'on' } }
   : { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
 P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, lyr: { x0: 0.56, x1: 0.97, align: 'right' },
-  next: [...G10(['c2_lookup_v2_glyph10f'], { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 }),   // film v10: de-shimmered (boil 0, background frozen)
+  next: [...G10([...W11('c2_lookup_v2_glyph11f'), 'c2_lookup_v2_glyph10f'], { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 }),   // film v10: de-shimmered (boil 0, background frozen)
     { id: 'c2_lookup_v2', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 } }] } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one;
 // c2_lookup_v2 (plates_v7 wiring: breathing, hair in wind, no arm, its own meteor (0.716, 0.195) -> (0.596, 0.286) over clip 0.3-3.5): v1's
 // window and crop kept; the one blink (clip 3.0-3.2) lands ~1.45 s in; the meteor stays above the lyric block (MERGE starts y ~0.3)
@@ -473,25 +477,25 @@ for (let k = 0; k < 3; k++) shot(124 + k, 125 + k, 'K', 'kit', `runner_converge_
   { row: 'b124-127', opt: { lyr: { y: 'top', top: 0.035, x0: 0.03, x1: 0.97, align: 'left' }, kit: { mode: 'row', lanes: CONV[k], conv: true, hNear: 0.6 } } });
 V(127, 128, 'seq 12', 'From above, the roads converge.', { row: 'b124-127' });
 P(128, 129, 'c2_hands', 'missing', 'Close on her hands opening.', { row: 'b128', opt: { pageFly: { from: [0.62, -0.08], to: [0.5, 0.55], h: 46, arc: -0.02, arrive: 0.45, open: [0.5, 0.95], ease: 'out' },
-  next: G10(['c2_hands_letters10']) } });   // film v10 A3: coarse letters pour from her palms from 220.45, after the page opens (same clip map)   // the page-light comes down between her open palms and opens like a book
+  next: G10([...W11('c2_hands_letters11'), 'c2_hands_letters10']) } });   // film v10 A3: coarse letters pour from her palms from 220.45, after the page opens (same clip map)   // the page-light comes down between her open palms and opens like a book
 P(129, 130, 'catch', 'missing', 'She catches the violet light at her chest, eyes closed.', { row: 'b129', opt: { clip0: 0, lyr: { x0: 0.03, x1: 0.33, align: 'left' },
-  next: G10(['catch_letters10']) } });   // film v10 A3: written in coarse letters (on the de-shimmered style 1), face clean   // she is centred, hands at her chest: the slab left of her
+  next: G10([...W11('catch_letters11'), 'catch_letters10']) } });   // film v10 A3: written in coarse letters (on the de-shimmered style 1), face clean   // she is centred, hands at her chest: the slab left of her
 // b130-131: the folds, in code (opt.code 'fold'): night_jade on black paper; patchwork2's figure (aligned on the two cut-outs' bounding
 // boxes) shows through twelve patch masks, one more per beat for eight beats, then on the off-beats of beats 5-8; each new patch flashes
 // its life's lane colour on its edge
 shot(130, 132, 'K+S', 'code', 'fold', 'missing', 'The twelve fold into her, one per beat; each fold adds its medium to her (twelve patches on night_jade).', { row: 'b130-131',
   opt: { lyr: { x0: 0.03, x1: 0.33, align: 'left' }, code: 'fold', base: 'night_jade', top: 'patchwork2', mattes: { night_jade: '/work_fable/take2/kit/night_jade', patchwork2: '/work_fable/take2/kit/patchwork2' }, beats: [0, 1, 2, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5],
   // film v10 A4: the letters merging (glyph agent's merge.py frames, 1:1 with song time); daylight from "become" (231.21) to the b137 impact
-  next: G10(['fold_merge10b', 'fold_merge10'], { clip0: 0, speed: 1, push: 0 }, 'plate') } });
+  next: G10([...W11('fold_merge11'), 'fold_merge10b', 'fold_merge10'], { clip0: 0, speed: 1, push: 0 }, 'plate') } });
 P(132, 134, 'patch_hold', 'missing', "The poster frame: one Jade drawn in all twelve mediums at once, on white paper: full colour and daylight arrive.", { row: 'b132-133', opt: { lyr: { x0: 0.03, x1: 0.32, align: 'left' },
-  next: G10(['patch_hold_merge10b', 'patch_hold_merge10'], { clip0: 0, speed: 1, push: 0 }) } });
+  next: G10([...W11('patch_hold_merge11'), 'patch_hold_merge10b', 'patch_hold_merge10'], { clip0: 0, speed: 1, push: 0 }) } });
 // film v10 C1, revised on the listen agent's measure (the impact frame must carry the change; no double face): cb12 grows onto her eyes
 // BEFORE the bar, from 234.40 (under the 234.62 snare pickup) to the hit, ending exactly matched in scale and place to the tracing's eyes
 // (drawn 943.5,148 / 77 px apart; tracing 915,342 / 170 px, measured on film v9 frames); the likeness (next shot, oa01) mixes in over
 // the last 2 frames before the bar and is whole on the impact frame (235.038). film.js settleOut.
 const SETTLE_OUT = { from: 234.40, mix: 2, a: [943.5, 148, 77], b: [915, 342, 170] };
 P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136', opt: { clip0: 0, clip1: 4.95, lyr: { x0: 0.03, x1: 0.32, align: 'left' }, ...(V10 ? { settleOut: SETTLE_OUT } : {}),
-  next: G10(['patch_settle_merge10c', 'patch_settle_merge10b', 'patch_settle_merge10'], { clip0: 0, clip1: undefined, speed: 1, push: 0 }) } });   // the last letter sinks in on "become" (231.210)
+  next: G10([...W11('patch_settle_merge11'), 'patch_settle_merge10c', 'patch_settle_merge10b', 'patch_settle_merge10'], { clip0: 0, clip1: undefined, speed: 1, push: 0 }) } });   // the last letter sinks in on "become" (231.210)
 
 // ------------------------------------------------------------------ Outro A: bars 137-148 (full drums; has to top the drop)
 section('outro_a');

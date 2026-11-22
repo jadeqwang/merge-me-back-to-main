@@ -10,7 +10,7 @@
 // Layers: source (proof | plate | v7 [paper pass] | card) -> grain + vignette -> overlays (chip, counter, title) -> lyrics -> HUD.
 // Source kinds: see shots.js. A missing plate, or a v7 time outside the delivered sequence, draws as a labelled card.
 import { loadTiming, clamp01, lerp, seg, ease } from './timing.js';
-import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT, PROOF_STAY, LYR_OFF } from '../shots.js';
+import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT, PROOF_STAY, LYR_OFF, GLYPH_SFX } from '../shots.js';
 import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
@@ -1300,7 +1300,7 @@ async function boot() {
   for (const s of SH) if (s.opt && s.opt.next && !(s.opt.next.flag === 'orch' && ORCH_V7)) { const id = await firstPlate(s.opt.next.id); if (!id) continue; s.src = id; if (s.opt.next.kind) s.kind = s.opt.next.kind; s.opt = { ...s.opt, ...(s.opt.next.opt || {}) }; s.swapped = true; }
   // film v9 B1: a plate shot with opt.glyphPlate draws the glyph-art copy `<id>_glyph` (tools/glyphart style 1, same frames painted, same
   // framing) when it has landed; else its own plate. ?glyph=0 = v8.
-  for (const s of SH) if (GLYPH_ON && s.opt && s.opt.glyphPlate && s.kind === 'plate' && !/_glyph$/.test(s.src) && (await findPlate(s.src + '_glyph'))) s.src = s.src + '_glyph';
+  for (const s of SH) if (GLYPH_ON && s.opt && s.opt.glyphPlate && s.kind === 'plate' && !/_glyph(11)?$/.test(s.src)) for (const x of GLYPH_SFX) if (await findPlate(s.src + x)) { s.src = s.src + x; break; }   // film v11: _glyph11 first (shots.js GLYPH_SFX)
   for (const s of SH) if (s.opt && s.opt.tail && !ORCH_V7) await findPlate(s.opt.tail.id);
   // film v6: per-shot data files named in shots.js (pencil tip tracks, the page quads), loaded once the shot's source is decided
   for (const s of SH) { if (s.opt && s.opt.pencil && s.opt.pencil.trackUrl && !s.opt.pencil.track) { const j = await json(s.opt.pencil.trackUrl); if (j) s.opt = { ...s.opt, pencil: { ...s.opt.pencil, track: j.tip } }; }
@@ -1321,7 +1321,7 @@ async function boot() {
   // take-two changes inside the proof range (all off with proofbug=1): the black-paper hero (hero_paper, nearest frame; hero=old for the
   // first one), written lanes on the ten lives (prooflanes=0 off), bar 38 panel afterimages (trail=0 off)
   // film v3: hero_paper_v2 (she sings "Merge me back to main" as she runs) replaces hero_paper when it lands, song-locked to its meta t0_song
-  const heroV2 = !PROOFBUG && Q.get('hero') !== 'old' && HERO_NEXT && ((GLYPH_ON && HERO_NEXT.glyph && (await findPlate(HERO_NEXT.id + '_glyph'))) || (await findPlate(HERO_NEXT.id)));   // film v9: the glyph copy first
+  const heroV2 = !PROOFBUG && Q.get('hero') !== 'old' && HERO_NEXT && ((GLYPH_ON && HERO_NEXT.glyph && (await (async () => { for (const x of GLYPH_SFX) { const p = await findPlate(HERO_NEXT.id + x); if (p) return p; } return null; })())) || (await findPlate(HERO_NEXT.id)));   // film v9: the glyph copy first
   const heroNew = heroV2 || (!PROOFBUG && Q.get('hero') !== 'old' && (await findPlate('hero_paper')));
   // film v2: a life's A shot in bars 28-32 from a new plate (shots.js PROOF_A): clip0 puts its `land` moment on beat `landBeat` of the shot
   const dirs = heroNew ? { hero: heroNew.dir } : {}, aPlates = {}; const turnOv = {};

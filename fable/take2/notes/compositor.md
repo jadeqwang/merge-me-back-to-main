@@ -1216,3 +1216,11 @@ Dev files `work_fable/take2/dev/v11/` (a2/, car/, v11off/).
 - `CAR_BOX` v11: `at [0, 3.417]`, `cps 36`, `typeAt 0.22` (film.js carBox, default 0.3): typed by ~2.08 s (271.21), full to 3.07, gone
   on 272.543 (unchanged). Finished line ~1.0 s full + 0.35 fade (v10: ~0.45 + 0.35). Sheet dev/v11/c_sheet.jpg (269.3-272.6).
 - `?v11=0` checked on stills (dev/v11/v11off/sheet.jpg): v10 text streak, FOLD slab at 222, v10 car typing; `slab2=1` gives FOLD back.
+
+### Step 2 part 1: wiring (glyph_v11.md Wiring table) -- done
+- shots.js `W11(...ids)` prepends the `11` ids inside G10 lists (V11 only): vb10 vio_still_letters11, cb02 c2_lookup_v2_glyph11f, cb08
+  c2_hands_letters11, cb09 catch_letters11, cb10 fold_merge11, cb11 patch_hold_merge11, cb12 patch_settle_merge11 (v10 ids follow).
+- B1: shots.js `GLYPH_SFX` (`['_glyph11', '_glyph']` with V11, else `['_glyph']`); film.js tries them in order for opt.glyphPlate
+  shots and for the ca01 hero (HERO_NEXT + suffix = hero_paper_v2_glyph11). Checked with `render.mjs --info`: v11 picks every `11`
+  id, `?v11=0` every v10 id.
+- Stills dev/v11/wire/w_<t>.png, sheet dev/v11/wire/wire_sheet.jpg (sheet maker: PIL, tiles 640x360, labels t_shot).
