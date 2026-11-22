@@ -274,6 +274,17 @@ C["day_eyes_v2"] = ("v9_day_eyes_trim_half_a1", "a flat cel-shaded anime drawing
     {"fixed": True, "last": "v9_day_eyes_shut_a1"})
 VIEWS["day_eyes_v2"] = "none"
 
+# film v9 (plates_v9, coordinator: va07 glides, one shoe slides ~8-10 px/frame along the lane while the other swings): same still and
+# doorway, the old clip's own last frame (empty doorway) as last frame, and a run cycle with planted feet and real flight.
+HH9 = ("She runs along the mint-green line straight to the doorway of light, her back to the viewer the whole time, with a real running stride: "
+       "each trainer lands on the line, stays planted exactly where it landed while her body passes over it, then pushes off and lifts; between steps there is a clear moment with both feet off the ground. "
+       "Her feet never slide or glide along the line. Left and right legs strictly alternate in an even rhythm, about two steps per second, arms pumping, hair streaming. "
+       "She reaches the doorway in about two and a half seconds, runs through it and is gone into its light; the doorway glows brightly as she passes and then settles back. "
+       "The hand-drawn strokes of light around the doorway flicker as in hand-drawn animation; inside the doorway the small blank screens of the pixel-art room flicker in pixel steps and stay blank. "
+       "The camera is locked off: no zoom, no pan; the doorway stays exactly where it is in the first frame.")
+C["cross_hackerhouses_v9"] = ("cross_hackerhouses_a1", "a flat cel-shaded anime drawing on black paper, with flat colours and no glow", HH9, {"last": "v9_hh_last"})
+VIEWS["cross_hackerhouses_v9"] = "back"
+
 def ref(src, out):
     os.makedirs(os.path.dirname(out), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-vf", "scale=2048:1152:flags=lanczos", "-q:v", "2", out], check=True)

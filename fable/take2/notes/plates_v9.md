@@ -5,7 +5,8 @@ Brief: `notes/v9_direction.md` section C; Jade's v8 notes `notes/jade_v8_notes.m
 ## Resume state
 - [x] 1. `day_eyes_v2` (oa03): DONE, plate `work_fable/take2/plates/day_eyes_v2` (121 fr, 24 fps), matte `kit/day_eyes_v2`.
 - [x] 2. `car_v9` (ob04): DONE, plate `work_fable/take2/plates/car_v9` (210 fr, 30 fps, t0_song 269.9, song-locked, 1920x1080).
-State: both plates delivered, nothing queued. Round spend $4.25 (ledger total $577.53).
+- [x] 3. `cross_hackerhouses_v9` (va07, coordinator add-on): DONE (source plate; the compositor relocks it).
+State: three plates delivered, nothing queued. Round spend $6.57 (ledger total $579.85).
 
 ## day_eyes_v2 method
 Base: day_eyes plate frame 1, HFLIPPED (film orientation, she faces left; her LEFT arm = sleeve nearest viewer), scaled 2048
@@ -43,6 +44,29 @@ reference_videos (edit, duration -1, $0.9676/s at 720p video input, ~ $6.8); flu
 - Intake: 30 fps frames, 3 copies of clip frame 0 in front (t0_song 269.9 as car3d_v9) and 2 of the last at the end -> n 210.
 - Back of her head: the v9 camera never shows it (it starts at the driver's eye), so that half of Jade's note no longer applies.
 
+## cross_hackerhouses_v9 (va07) method and measurements
+- Why: va07's runner glides (compositor, slip.py: one shoe slides 8-10 px/frame for ~12 frames, almost no flight; cannot be locked).
+- Spec `gen_clips.py cross_hackerhouses_v9` (HH9): same first-frame still `cross_hackerhouses_a1`, last frame = the old clip's own last
+  frame (`stills/v9_hh_last.jpg`, empty doorway) to hold the doorway; prompt asks for planted feet, push-off, flight, no glide.
+  Two takes at once (seedance 2.5, $1.16 each): t1 job 1fff374815, t2 job 3d44331ec9.
+- Mattes: `kit/fig_cross_hackerhouses_v9` (BiRefNet, GPU; the GPU was nearly full, the first tries ran out of memory).
+- Measured (all plate px per plate frame; `slip.py` with `--door 0.20,0.07,0.38,0.50`; gait.py MINLAG=9):
+  | plate | frames | FLOW mean abs slip (standing pairs) | SHOE slip | gait step period |
+  |---|---|---|---|---|
+  | cross_hackerhouses (old) | 1-70 | 2.68 (15 pairs) | 19.25 | 10 fr, regular |
+  | t1 (ACCEPTED) | 1-70 | 3.26 (42 pairs: steady drift toward the door within each stance, stances separated by flight) | 6.41 | 10 fr, regular (autocorr 0.66-0.72) |
+  | t2 (rejected) | 1-70 | only 1 standing pair found | - | no period in any window: irregular cycle |
+  | t1 relocked (scratch, `relock.py` with off_hh9.json, frames 38-78, kend 78) | 38-78 | **0.14** (16 pairs, max 0.4) | 6.45 | - |
+  Relock start offset [-34.2, -33.3] (wetlab needed 114). `slip.py --shift` on the un-fixed plate does not predict a relock
+  (it shifts the matte only): it read 2.53 for t1 and 2.30 for the old plate; only a rebuilt plate measures it.
+- Reach: the old plate's glow starts ~f62 with reach 2.7 (f65); in t1 the same state (shoulders over the door's right edge, glow
+  beginning) is at f78-80 -> **reach 3.25**. Film window (film.js: c0 = reach - 1.5 x 0.58 x D) = clip 1.77-3.25 = frames 43-78.
+- Files: strip `work_fable/take2/dev/v9_plates/hh9_t1_strip.jpg` (t2: `hh9_t2_strip.jpg`, old: `hh_orig_strip.jpg`), reach comparison
+  `hh_reach_cmp.jpg` (top old, bottom t1, frames 50-83), slip sheets `slip_hh9_t1.jpg`, `slip_hh9_t1_lock.jpg`, relocked frames
+  38-78 `hh9_lock_frames.jpg`, offsets `off_hh9.json`, JSON `slip_hh9_t1.json`. Last second (4-5 s): empty doorway, same place, no figure.
+- Relock artifact seen in my scratch rebuild (deleted): in frames 38-48 a doubled lane line shows by her feet. Her matte carries a
+  strip of the lane and is moved 34 px with her. For the compositor's final relock: tune `--fill`, or key the lane out of the matte.
+
 ## Spend (start of round ~$573; round cap ~$25)
 | call | model | est $ | running |
 |---|---|---|---|
@@ -52,9 +76,11 @@ reference_videos (edit, duration -1, $0.9676/s at 720p video input, ~ $6.8); flu
 | clip t2_day_eyes_v2_t1 (job 394b404696), first=trim_half_a1, last=shut_a1: ACCEPTED take 1 | seedance-2.5 | 1.16 | 574.98 |
 | v9_car_first a1 (drawn driver's view, no body), v9_car_last a1 (interior behind her drawn, she unchanged) | nano-banana-pro | 0.27 | 575.25 |
 | car_v9 t1 (job bbd800bd7d) aleph-2 on car_ref_720.mp4 + first/last guidance: ACCEPTED take 1 | runwayml/aleph-2 | 2.30 | 577.55 (spend.py: $577.53) |
+| cross_hackerhouses_v9 t1 (1fff374815, ACCEPTED) + t2 (3d44331ec9, rejected) | seedance-2.5 | 2.31 | 579.85 (spend.py) |
 
 ## Wiring
 | plate id | shot | clip0/clip1 | eyes-close / key time | weak points |
 |---|---|---|---|---|
 | `car_v9` (first in b157-161 `next`, before car3d_v9) | ob04 | songLock (as car3d_v9: `{ songLock: true, push: 0, blend: false }`), same t0_song 269.9, n 210, 30 fps | turn as the 3D: blink ~273.67, smile settled ~274.4, hold to 276.82 | mid-pan 1.6-2.3 s a centre-console screen with unreadable scribble "text" grows (blurred, passes in ~0.5 s); a cyan glowing diamond on the console at frame left in the hold; she is a cheat (door behind her at frame left), as in 3D |
+| `cross_hackerhouses_v9` (replaces `cross_hackerhouses` in the va07 CROSS row, after relock: e.g. `cross_hackerhouses_v9_lock`) | va07 | cross: reach **3.25** (was 2.7), door unchanged [0.20,0.07,0.38,0.50]; window then clip 1.77-3.25 | doorway glow begins f78-80 (3.25-3.33 s) | NOT relocked here (offsets `dev/v9_plates/off_hh9.json`, 38-78, kend 78 -> 0.14 px/fr); doubled lane line by her feet in relock frames 38-48 (matte carries lane); she starts nearer the door than in the old plate (the old clip reframed big at the start; t1 keeps the still's framing), so she covers less screen distance in the window; reach is later than the old plate's |
 | `day_eyes_v2` (replaces `day_eyes` in b140.3-141.3 `next`) | oa03 | 0.62 / 2.33 (was 0.45 / 2.16), keep mirror:true, push, lyr; streaks matte -> `/work_fable/take2/kit/day_eyes_v2` | lids half-shut clip 1.15 s, shut 1.21 s (v1 0.98/1.08) -> at clip0 0.62 they fall ~0.53-0.59 s into the shot, same as v1 | patch text mirrored in the plate (correct in film); head drift as v1; stripes half-width (runner proportion, not hairline) |
