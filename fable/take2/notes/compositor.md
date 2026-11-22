@@ -935,3 +935,6 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
   page_strip_v8.jpg. If the plates agent's pencil fix lands as a new plate id (page_reveal_v2) with the same framing, the same track applies.
 - Weak: two-triangle affine, not a true homography (the crowd bends slightly along the diagonal); the crowd's band sits low on the pages
   (its own composition), upper half of the pages mostly dark hatch.
+
+### 3. Wiring (pending at report time)
+- plates_v8.md: not written yet. car_v8.md: "in progress" (matte of car_confess done, module being built). Nothing to wire yet.
