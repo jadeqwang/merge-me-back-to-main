@@ -235,7 +235,10 @@ function vignette() {
 function lagOf(o) { const q = o.lagQ && Q.get(o.lagQ); return q !== null && q !== undefined && q !== '' && isFinite(+q) ? +q / 1000 : o.lag || 0; }
 function clipMap(s) {
   const o = s.opt || {}, D = s.t1 - s.t0;
-  if (o.songLock && PLATE[s.src] && PLATE[s.src].meta.t0_song !== undefined) return { c0: s.t0 - PLATE[s.src].meta.t0_song + lagOf(o), sp: 1 };   // likeness: locked to song time
+  // film v10: opt.songShift [[bar, beat] old, [bar, beat] new]: a song-locked plate played as if its t0_song were moved by new - old (car_v9's
+  // v9 choreography two beats earlier)
+  if (o.songLock && PLATE[s.src] && PLATE[s.src].meta.t0_song !== undefined) { const sh = o.songShift ? T.beat(o.songShift[1][0], o.songShift[1][1]) - T.beat(o.songShift[0][0], o.songShift[0][1]) : 0;
+    return { c0: s.t0 - (PLATE[s.src].meta.t0_song + sh) + lagOf(o), sp: 1 }; }   // likeness: locked to song time
   // film v4: a sung shot's lip-sync lag L (s; + = the sound plays later than the picture, notes/plates_v4.md): clip = song - t0_song + L
   if (o.cross) { const x = o.cross, ta = x.at * D, sp = Math.max(1, Math.min(x.maxSpeed || 1.5, x.reach / ta)); return { c0: Math.max(0, x.reach - sp * ta), sp }; }
   if (o.clipFrom) { const tf = T.beat(o.clipFrom[0], o.clipFrom[1]); return { c0: (o.clip0 || 0) + (s.t0 - tf) * (o.speed || 1), sp: o.speed || 1 }; }   // film v6: a split shot continues its clip from clipFrom
@@ -1130,6 +1133,8 @@ function draw(t, sc) {
   if (s.opt && s.opt.hatch && (sc.eff === 'plate' || sc.eff === 'v7')) hatchIn(t, s);
   if (s.opt && s.opt.white && sc.eff === 'plate') { const f = fr(t, s.t0); if (f <= 1) { g.fillStyle = `rgba(255,250,240,${f === 0 ? 0.85 : 0.4})`; g.fillRect(0, 0, W, H); } }   // 2-frame white flash (impact, snare)
   grain(t); vignette();
+  if (sc.settleIn) settleIn(t, sc);
+  if (NOTEXT) return;
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.lane && !(sc.cross && sc.cross.u >= 1)) lane(t, sc);
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.road) roadLane(t, sc);
   overlays(t, sc);
@@ -1175,15 +1180,28 @@ function carBox(t, s) { const o = s.opt.carBox, ta = s.t0 + o.at[0], tb = s.t0 +
 // palm (opt.arrive.to, frame fractions, measured on root_light) over dur s, shrinking from a page to a point of light, and is gone into
 // the plate's own light
 function arrive(t, s) { const o = s.opt.arrive, u = clamp01((t - s.t0) / o.dur); if (u >= 1 || !OUTRO || !OUTRO.roadPage) return;
-  const P0 = OUTRO.roadPage(s.t0 - T.beat(156, 1)), e = ease.io(u), x = lerp(P0.x, o.to[0] * W, e), y = lerp(P0.y, o.to[1] * H, e) - Math.sin(u * Math.PI) * 0.05 * H;
+  const rf = o.from || [156, 1], P0 = OUTRO.roadPage(s.t0 - T.beat(rf[0], rf[1])), e = ease.io(u), x = lerp(P0.x, o.to[0] * W, e), y = lerp(P0.y, o.to[1] * H, e) - Math.sin(u * Math.PI) * 0.05 * H;
   pageLight(x, y, lerp(P0.h, 8 * S, e), 1 - ease.in(u), 0.15 * (1 - u));
   g.save(); g.globalCompositeOperation = 'lighter'; glowAt(x, y, lerp(20, 40, e) * S, VIO_GLOW, 0.6 * Math.sin(u * Math.PI)); g.restore(); }
+// film v10 C1 (essay move 3: "let the drawing settle into the tracing rather than cut to it"): opt.settleIn = { dur, a: [x, y, d], b: [x, y, d] }
+// on the likeness shot: the previous shot's last frame (drawn without its type: NOTEXT) lies over the plate at the cut, then grows and
+// moves so its eyes (a: midpoint px at 1080p, d = eye distance) land on the tracing's eyes (b) while it fades out over dur s. Under the
+// lyrics, so the slab (same place as cb12's) does not blink.
+let NOTEXT = false, SETTLE = null;
+function settleIn(t, sc) { const o = sc.s.opt.settleIn, u = clamp01((t - sc.s.t0 + HF) / o.dur); if (u >= 1 || !SETTLE || SETTLE.id !== sc.s.id) return;
+  const e = ease.io(u), k = Math.exp(lerp(0, Math.log(o.b[2] / o.a[2]), e)), mx = lerp(o.a[0], o.b[0], e) * S, my = lerp(o.a[1], o.b[1], e) * S;
+  g.save(); g.globalAlpha = 1 - ease.in(u); g.translate(mx, my); g.scale(k, k); g.translate(-o.a[0] * S, -o.a[1] * S); g.drawImage(SETTLE.c, 0, 0); g.restore(); }
+async function settlePrep(s) { const tp = s.t0 - 1 / FPS, s0 = scene(tp); READY.clear();
+  await Promise.all([...s0.imgs, ...(s0.tail || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  NOTEXT = true; try { draw(tp, s0); } finally { NOTEXT = false; }
+  const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(canvas, 0, 0); SETTLE = { id: s.id, c }; }
 let LOCK = Promise.resolve();
 function render(t) { const p = LOCK.then(() => render1(t)); LOCK = p.catch(() => {}); return p; }
 async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
-  const sc = scene(t); READY.clear();
+  if (s.opt && s.opt.settleIn && effKind(s) === 'plate' && t < s.t0 + s.opt.settleIn.dur && !(SETTLE && SETTLE.id === s.id)) await settlePrep(s);
+  const sc = scene(t); READY.clear(); if (s.opt && s.opt.settleIn && sc.eff === 'plate') sc.settleIn = true;
   await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.streak ? [{ url: sc.streak }] : []), ...(s.opt && s.opt.atom && ATOM[s.opt.atom.dir] ? [{ url: ATOM[s.opt.atom.dir].emptyUrl }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || []), ...(sc.pageImg ? [sc.pageImg] : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc);
   const z = s.opt && s.opt.toFrame0; if (z) { const t0 = T.duration - z; if (t > t0) {   // the end: cross to the film's own frame 0 (the last frame equals it)

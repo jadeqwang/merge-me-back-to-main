@@ -78,6 +78,10 @@ function shot(from, to, code, kind, src, status, pic, x = {}) {
 }
 const P = (from, to, src, status, pic, x) => shot(from, to, x && x.code || 'P', 'plate', src, status, pic, x);
 const V = (from, to, src, pic, x) => shot(from, to, x && x.code || 'V7', 'v7', src, 'exists', pic, x);
+// film v10: a shot cut in v10 keeps its id slot (skip()), so the ids after it stay as in every earlier note
+const skip = () => { n++; };
+// film v10 (notes/v10_direction.md): ?v10=0 renders the v9 cut for every passage v10 changes (outro re-division C1-C6, the catch A1-A4)
+export const V10 = !(typeof location !== 'undefined' && new URLSearchParams(location.search).get('v10') === '0');
 const C = (from, to, src, pic, x) => shot(from, to, x && x.code || 'C', 'card', src, 'missing', pic, x);
 const PR = (from, to, src, pic, x) => shot(from, to, x && x.code || 'P', 'proof', src, 'exists', pic, { lyric: 'proof', ...x });
 
@@ -457,7 +461,11 @@ P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully
 section('outro_a');
 // the sung likeness shots (code 'L'): used only if work_fable/take2/plates/like_sing1|2 exist locally; ?likeness=0 forces the cards
 // (every committed review file is rendered with likeness=0: likeness clips stay out of the public repo)
-shot(137, 139, 'L', 'plate', 'like_sing1', 'missing', 'The switch: on the impact the drawing becomes Jade herself, her traced likeness in the same jacket, singing.', { row: 'b137-138', opt: { songLock: true, push: 0 } });
+// film v10 C1: the drawing settles into the tracing instead of a hard cut (film.js settleIn: cb12's last frame grows onto her eyes and fades
+// over 0.9 s; eyes measured on film v9 frames: drawn 943.5,148 / 77 px apart at 234.99, the tracing 915,342 / 170 px at 235.3) and no slab
+// over her face: "Back to main" stays in cb12's place, the left column x 0.03-0.32 (her face is x 0.36-0.58)
+shot(137, 139, 'L', 'plate', 'like_sing1', 'missing', 'The switch: on the impact the drawing becomes Jade herself, her traced likeness in the same jacket, singing.', { row: 'b137-138', opt: { songLock: true, push: 0,
+  ...(V10 ? { settleIn: { dur: 0.9, a: [943.5, 148, 77], b: [915, 342, 170] }, lyr: { x0: 0.03, x1: 0.32, align: 'left' } } : {}) } });
 // b139-140 and b141-142: the town (opt.code 'town'): white paper, far pencil hills, the twelve facades (cut out) along the road, the road =
 // main's written lane, dense (she is merged); side travel with parallax; a chip with the branch name under each building
 // film v2: dir 1 = the world slides right (she faces frame left, unmirrored: her sleeve patch has text); x 0.58 gives her lead room on the left
@@ -492,14 +500,17 @@ shot([140, 3], [141, 3], 'P+K', 'code', 'day_run', 'missing', 'Close three-quart
     { id: 'day_eyes_v2', kind: 'plate', opt: { glyphPlate: 1, clip0: 0.62, clip1: 2.33, push: 0.02, mirror: true, streaks: { matte: '/work_fable/take2/kit/day_eyes_v2', speed: 2600, alpha: 1.0, thick: 1.4, n: 11 }, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.6, x1: 0.97, align: 'right' } } },
     { id: 'day_eyes', kind: 'plate', opt: { clip0: 0.45, clip1: 2.16, push: 0.02, mirror: true, streaks: { matte: '/work_fable/take2/kit/day_eyes', speed: 2600, alpha: 0.5, n: 9 }, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.6, x1: 0.97, align: 'right' } } }] } });   // plates_v8 Wiring: day_eyes (lids fall at clip ~0.85-1.0) at 1x from 0.45, so they close on the b140.4 snare (measured: beat 4 carries the 1.5-6 kHz hit in b139-141); mirrored: the plate runs right, the town runner runs left
 shot([141, 3], 143, 'P+K', 'code', 'day_run', 'missing', 'Wide: the written road ends ahead of her; she runs off it onto blank paper without breaking stride, and each footfall writes a patch of lane, one branch colour per step, turning main orange behind her.', { row: 'b141-142', opt: { ...TOWN_RUN, roadEnd: [142, 1] } });
-P(143, [144, 2], 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]] } });
-P([144, 2], 145, 'day_fork', 'missing', 'Intuition (c): her feet land in a true bow stance at a kerb; she notices, a quiet look down. (Until intuit_stance lands: day_fork continues.)', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]], clipFrom: [143, 1], next: INTUIT('intuit_stance', INT_O.intuit_stance) } });
+// film v10 C2 (Jade: "yes to clear the outro"; essay move 3): the stance oa06 is cut; the fork oa05 runs b143.1-145.1 as one shot. "Back to
+// main" (247.76) now starts inside it: the slab goes in the sky strip at the top on a dark cloud, as it did on the stance.
+P(143, V10 ? 145 : [144, 2], 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]],
+  ...(V10 ? { lyr: { y: 'top', top: 0.03, x0: 0.03, x1: 0.97, align: 'center', cloud: 0.62 } } : {}) } });
+if (V10) skip(); else P([144, 2], 145, 'day_fork', 'missing', 'Intuition (c): her feet land in a true bow stance at a kerb; she notices, a quiet look down. (Until intuit_stance lands: day_fork continues.)', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]], clipFrom: [143, 1], next: INTUIT('intuit_stance', INT_O.intuit_stance) } });
 // film v2: the second likeness shot is dropped (Jade: "it doesn't look like me"); plate wave_run (plates agent) instead: drawn Jade sprints
 // at the lens out of a breaking wave of the twelve lane colours. A card until work_fable/take2/plates/wave_run lands. Slab low.
 P(145, 147, 'wave_run', 'missing', 'Drawn Jade sprints at the lens on the orange road of main, hair streaming, out of a breaking wave made of the twelve lane colours (ribbons of written lanes curling over). Slab BACK TO MAIN low.', { row: 'b145-146', opt: { clip0: 1.4, clip1: 4.8, push: 0,
     lyr: { y: 'bottom', x0: 0.03, x1: 0.97, align: 'center', cloud: 0.62 },
     next: [{ id: 'wave_run_v4', opt: { clip0: 1.38, clip1: 4.93 } }, { id: 'wave_run_v3', opt: { clip0: 1.4, clip1: 4.8 } }] } });   // film v4: wave_run_v4 (no look-back; a small closed smile from clip 3.0-3.5, held 3.25-5.0). Director: end on the held smile. Steps measured every 8 frames (0.333 s; motion-energy peaks on twos at 1.71, 2.04, 2.38 ...): at 1.041x a step is exactly 3/4 beat (0.319 s) and clip 1.38 puts the step grid on the b145 downbeat; ends at 4.93, on the smile   // film v3: take 3 (glance back 1.75-2.5, smile from 3.25), same window and slab   // take 2 (plates_v2: 1.4-4.8): BACK TO MAIN low across the trousers band (y 0.75-0.97), cream on a darker cloud
-shot(147, 149, 'S+C', 'code', 'aerial', 'missing', 'Aerial pull-back: the road, the town, the new forks.', { row: 'b147-148', opt: { code: 'aerial', lives: LIFE } });
+if (V10) skip(); else shot(147, 149, 'S+C', 'code', 'aerial', 'missing', 'Aerial pull-back: the road, the town, the new forks.', { row: 'b147-148', opt: { code: 'aerial', lives: LIFE } });
 
 // ------------------------------------------------------------------ Outro B and C: bars 149-164
 section('outro_bc');
@@ -508,16 +519,26 @@ section('outro_bc');
 // credit card, then `$ git cherry-pick <hash of the violet commit>` typed); the road b156-157.3 (from the cursor a dashed line draws out
 // and tips into the night road); the car b157.3-161.3 (car_confess when it lands, else the road at speed) with the two lines of type from
 // the post-credits scene of Inference; the window from b161.3 as before, the road's page-light arriving in the frost at the child's palm.
-shot(149, 152, 'C', 'code', 'graph', 'missing', 'The whole film as one git graph, labels 26 px or more. The violet branch leaves; its dot; a dotted arc forward to main: cherry-pick HANDOFF.md (40 px). Riser at 261.0.',
-  { row: 'b149-152', opt: { code: 'graph', lives: LIFE, beats: 12, labelPx: 40 } });
+// film v10 C3: the aerial oa08 is cut; the graph starts at b147 (20 beats, 8.52 s; listen_v10.md): the reveal over beats 0-8, the violet
+// branch leaves on b149.1 (beat 8: drums and bass drop out, 255.485), the dotted arc beats 11-16 lands on b151.1 (258.892, the D chord);
+// the cherry-pick label (40 px) is on from beat ~11.3 (256.8) and held to the cut, ~3.8 s
+shot(V10 ? 147 : 149, 152, 'C', 'code', 'graph', 'missing', 'The whole film as one git graph, labels 26 px or more. The violet branch leaves; its dot; a dotted arc forward to main: cherry-pick HANDOFF.md (40 px). Riser at 261.0.',
+  { row: 'b149-152', opt: { code: 'graph', lives: LIFE, beats: V10 ? 16 : 12, labelPx: 40, ...(V10 ? { arc: [11, 16] } : {}) } });
 // credits: approved by Jade (film v1 notes, decision 11: "use as is", plus Opus 5.5). Plates: the spend log has both image models
 // (google/nano-banana-pro and openai/gpt-image-2.5)
 const CREDITS = [['main', 'Merge'], ['main', 'animated by Fable 5.2 and Opus 5.5, with a supporting cast of models'], ['jade/plates', 'Nano Banana Pro, GPT Image 2.5'], ['jade/clips', 'Seedance 2.5'],
   ['jade/motion', 'motion capture: CMU, ACCAD'], ['jade/arrangement', 'Suno'], ['jade/type', 'Archivo, Instrument Serif, JetBrains Mono']];
-const ENDCARD = { lines: CREDITS, burst: 2.0, cardBeat: 4.6, lineBeat: 0.5, pickBeat: 11.5, cps: 16 };
-shot(152, 156, 'C', 'code', 'endcredits', 'missing', 'A 2 s burst of the real git log, the credit card, then $ git cherry-pick <hash of the violet commit> typed.', { row: 'b152-155', opt: { code: 'endcredits', ...ENDCARD } });
-shot(156, [157, 3], 'C', 'code', 'road', 'missing', 'From the cursor a dashed line draws out, tips into perspective and becomes the centre line of a night road: pale yellow dashes racing past, the verse 2 Milky Way above, one violet page-light among them.',
-  { row: 'b156-157', opt: { code: 'road', phase: 'tip', from: [156, 1], card: ENDCARD } });
+const ENDCARD_V9 = { lines: CREDITS, burst: 2.0, cardBeat: 4.6, lineBeat: 0.5, pickBeat: 11.5, cps: 16 };
+// film v10 C4/C5: no log burst (credits b152.1-155.1, 12 beats); the card from beat 0.3; then ONE real commit line of this branch, a handoff
+// (essay move 8: "a relay of sessions that each wrote a HANDOFF.md and stopped"), landing on the b153.1 hit (262.301, beat 4) and held
+// through the road's fade-out (~4.2 s); `git cherry-pick` typed from b154.1 (beat 8); the typed cherry-pick takes that commit's real short hash. Picked from `git log -i --grep=handoff` (Jade can swap it: hash + subject).
+const HANDOFF_COMMIT = { hash: '0e96639', branch: 'fable/merge', msg: 'handoff: next-session start for v9 notes' };
+const ENDCARD_V10 = { lines: CREDITS, burst: 0, cardBeat: 0.3, lineBeat: 0.5, handoff: HANDOFF_COMMIT, handBeat: 4, pickBeat: 8, pickHash: HANDOFF_COMMIT.hash, cps: 16 };
+const ENDCARD = V10 ? ENDCARD_V10 : ENDCARD_V9;
+const ROAD0 = V10 ? [155, 1] : [156, 1];   // the road's first moment (outro.js road o.from; car3d.js road0; the window's arrive)
+shot(152, V10 ? 155 : 156, 'C', 'code', 'endcredits', 'missing', 'The credit card, one real handoff commit line, then $ git cherry-pick <its hash> typed (v9: a 2 s burst of the real git log first).', { row: 'b152-155', opt: { code: 'endcredits', ...ENDCARD } });
+shot(ROAD0, [157, V10 ? 1 : 3], 'C', 'code', 'road', 'missing', 'From the cursor a dashed line draws out, tips into perspective and becomes the centre line of a night road: pale yellow dashes racing past, the verse 2 Milky Way above, one violet page-light among them.',
+  { row: 'b156-157', opt: { code: 'road', phase: 'tip', from: ROAD0, card: ENDCARD } });
 // the car (Jade: the camera is in the driver's seat; she is in the passenger seat, it looks across at her). Never seen, never named: the
 // person she is talking to is the camera. Type (src/film.js carType): Instrument Serif, verse size, whole lines, no punctuation added:
 // the camera's line in the lower third, then hers beside her. Positions for the fallback (the road, no figure); set on the clip's frames
@@ -526,15 +547,25 @@ shot(156, [157, 3], 'C', 'code', 'road', 'missing', 'From the cursor a dashed li
 // RPG dialogue box with the name tab YOU (src/film.js carBox), typed letter by letter, done by ~3.1 s, the advance marker blinking after;
 // same box on the road fallback and on car_confess (the box covers the lower part: her hands and lap; her face stays clear above it)
 // v9 (Jade: "more evenly distribute the 'you' sentence on 2 lines so we don't just have a single word on the second line"): break at the phrase
-const CAR_BOX = { text: 'You could tell me anything\nand I would find it strangely plausible', name: 'YOU', at: [0.35, 6.55], cps: 26, box: [0.07, 0.75, 0.93, 0.93], px: 46 };
-const CAR_ROAD = { from: [156, 1], wins: [[[0.0, 0.0, 0.57, 0.5], [0.0, 0.18, 0.78, 0.86]], [[0.62, 0.0, 0.95, 0.36], [0.5, 0.0, 1.0, 0.42]]], dark: 22, alpha: 0.95 };
-shot([157, 3], [161, 3], 'P', 'code', 'road', 'missing', 'Inside the car at night: the camera in the driver\'s seat, drawn main Jade in the passenger seat, lit by the dash and the passing dashes; she turns to the camera with a mysterious almost-smile. The secret is not told.',
-  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carBox: CAR_BOX, next: [{ id: 'car_v9', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },   // film v9: video-model pass over the three.js clip (plates_v9), same camera path frame for frame
+const CAR_BOX_V9 = { text: 'You could tell me anything\nand I would find it strangely plausible', name: 'YOU', at: [0.35, 6.55], cps: 26, box: [0.07, 0.75, 0.93, 0.93], px: 46 };
+// film v10 C4 (listen_v10.md re-division, coordinator: "use the 7.7 s car rather than forcing 8.5 s"): road b155.1-157.1 (F chord on the
+// cut), car b157.1-161.3 (269.126-276.820, 7.69 s, C chord on the cut): the box types b157.1-b158.3 (open 0.1, typed by ~2.6 s at 30
+// letters/s), is read to b159.1 (272.543, G chord) where it has faded; then 4.28 s of her face with nothing over it (her turn starts there)
+const CAR_BOX = V10 ? { ...CAR_BOX_V9, at: [0.1, 3.417], cps: 30 } : CAR_BOX_V9;
+// film v10: car3d.js v10 timing = v9's two beats earlier (pan b157.4-158.4, turn b159.1). car_v10 (aleph-2 pass over car3d_v10's clean
+// clip) if one is made, else car_v9 shifted two beats earlier (songShift: its own choreography lands on the v10 beats; its last frame is
+// reached 0.77 s before the cut and held with a slow push), else car3d_v10 (the three.js render at v10 timing).
+const CAR_V10 = [{ id: 'car_v10', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },
+  { id: 'car_v9', kind: 'plate', opt: { songLock: true, songShift: [[159, 3], [159, 1]], push: 0.02, blend: false } },
+  { id: 'car3d_v10', kind: 'plate', opt: { songLock: true, push: 0, blend: false } }];
+const CAR_ROAD = { from: ROAD0, wins: [[[0.0, 0.0, 0.57, 0.5], [0.0, 0.18, 0.78, 0.86]], [[0.62, 0.0, 0.95, 0.36], [0.5, 0.0, 1.0, 0.42]]], dark: 22, alpha: 0.95 };
+shot([157, V10 ? 1 : 3], [161, 3], 'P', 'code', 'road', 'missing', 'Inside the car at night: the camera in the driver\'s seat, drawn main Jade in the passenger seat, lit by the dash and the passing dashes; she turns to the camera with a mysterious almost-smile. The secret is not told.',
+  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: ROAD0, carBox: CAR_BOX, next: [...(V10 ? CAR_V10 : []), { id: 'car_v9', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },   // film v9: video-model pass over the three.js clip (plates_v9), same camera path frame for frame
     { id: 'car3d_v9', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },   // film v9: starts at the driver's eye (car3d.js v9, hands off)
     { id: 'car3d', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },   // film v8 (car_v8.md Wiring): the three.js car, over her shoulder then round to the driver's eye, song-locked (t0_song 269.9)
     { id: 'car_confess', kind: 'plate', opt: { clip0: 1.5, clip1: 5.0, blend: true, push: 0.015, carRoad: CAR_ROAD } }] } });
 P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. The violet page-light from the road arrives in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3',
-  opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5, arrive: { to: [0.56, 0.35], dur: 1.4 } } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended; arrive: the road's page-light glides into the frost light (film v6)
+  opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5, arrive: { to: [0.56, 0.35], dur: 1.4, from: ROAD0 } } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended; arrive: the road's page-light glides into the frost light (film v6)
 
 // float_top geometry (plate fractions): her head (strand centre) and twelve hair ends in the lives' order; measured on the clip when it lands
 export const FLOAT = { at: 2.0, track: [[0, [0.555, 0.18], [0.297, 0.894]], [2.0, [0.588, 0.204], [0.266, 0.769]], [5.0, [0.623, 0.333], [0.259, 0.597]]], center: [0.59, 0.20], ends: [[0.31, 0.22], [0.344, 0.111], [0.4375, 0.037], [0.542, 0.019], [0.667, 0.015], [0.771, 0.056], [0.854, 0.148], [0.896, 0.278], [0.896, 0.426], [0.865, 0.556], [0.823, 0.667], [0.75, 0.74]] };   // measured on float_top frame 49

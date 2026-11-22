@@ -7,7 +7,8 @@ import { makeCar3D } from './car3d.js';
 window.FILM = {};
 const Q = new URLSearchParams(location.search), W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080), FPS = +(Q.get('fps') || 30), S = H / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const g = cv.getContext('2d', { willReadFrequently: true });
-const BOX = { text: 'You could tell me anything\nand I would find it strangely plausible', name: 'YOU', at: [0.35, 6.55], cps: 26, box: [0.07, 0.75, 0.93, 0.93], px: 46 };
+const Q0 = new URLSearchParams(location.search);
+const BOX = { text: 'You could tell me anything\nand I would find it strangely plausible', name: 'YOU', at: Q0.get('carv') === '9' || Q0.get('carv') === '8' ? [0.35, 6.55] : [0.1, 3.417], cps: Q0.get('carv') === '9' || Q0.get('carv') === '8' ? 26 : 30, box: [0.07, 0.75, 0.93, 0.93], px: 46 };
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
 function wrap(text, maxW) { const ws = text.split(' '), rows = []; let r = ''; for (const w of ws) { const t = r ? r + ' ' + w : w; if (g.measureText(t).width > maxW && r) { rows.push(r); r = w; } else r = t; } if (r) rows.push(r); return rows; }
 function carBox(t, t0) { const o = BOX, ta = t0 + o.at[0], tb = t0 + o.at[1]; if (t < ta || t > tb) return; const open = 1 - Math.pow(1 - clamp01((t - ta) / 0.22), 3), a = Math.min(1, clamp01((tb - t) / 0.35));

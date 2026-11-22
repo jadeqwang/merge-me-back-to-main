@@ -22,8 +22,16 @@ export function makeCar3D(THREE, o) {
   // time to turn"): the shot opens AT the driver's eye looking down the road (the 'you'), then pans round to her; no over-the-shoulder
   // opening, no dolly. The pan is longer (b158.2 -> b159.2, 1.7 s, gentler peak speed, shorter shutter: less mid-pan blur), her turn
   // starts on b159.3 and the almost-smile holds ~2.4 s (v7's hold). ?carv=8 = the v8 move.
-  const V8 = Q.get('carv') === '8';
-  const TM = V8 ? {
+  // film v10 C4 (essay move 3; listen_v10.md "Outro phrase map": every tail cut on a chord change): the car starts on b157.1 (269.126, C chord;
+  // the log burst before it is cut) and ends where it did (b161.3): every v9 event two beats earlier (pan b157.4 -> b158.4) and her turn
+  // on b159.1 (272.543, G chord), the moment the box has gone; the almost-smile holds ~3.3 s (v9 2.4). ?carv=9 = v9 timing, ?carv=8 the v8 move.
+  const V8 = Q.get('carv') === '8', V9 = Q.get('carv') === '9';
+  const TM = !V8 && !V9 ? {
+    t0: T.beat(157, 1), t1: T.beat(161, 3), road0: T.beat(155, 1),
+    holdEnd: T.beat(157, 1), dollyEnd: T.beat(157, 1),
+    panA: T.beat(157, 4) + num('panA', 0), panB: T.beat(158, 4) + num('panB', 0),
+    turn: T.beat(159, 1) + num('turn', 0),
+  } : V8 ? {
     t0: T.beat(157, 3), t1: T.beat(161, 3), road0: T.beat(156, 1),       // shot; the road's first moment (outro.js road o.from)
     holdEnd: T.beat(158, 3),                                              // over-the-shoulder until here (bar 158 beat 3)
     dollyEnd: T.beat(159, 2) + 0.6 * (T.beat(159, 3) - T.beat(159, 2)),   // the camera arrives at the driver's eye
@@ -38,7 +46,8 @@ export function makeCar3D(THREE, o) {
   };
   TM.swap = V8 ? TM.dollyEnd : TM.t0 - 1;   // v9: her card from the start (pure rotation about the eye: no parallax); the proxy is never seen
   // her clip time (car_confess, 24 fps, 121 frames): 3.0 at TM.turn; 0.75x through the turn (to clip 3.75 = the almost-smile settled), then 0.5x
-  const herClip = (t) => { const c = 3.0 + (t - TM.turn) * 0.75; return c <= 3.75 ? c : 3.75 + (c - 3.75) / 0.75 * 0.5; };
+  const HOLD = !V8 && !V9 ? 0.38 : 0.5;   // v10: the longer hold plays the clip's settled smile slower (0.38x) so it lasts to the cut (clip end 5.0)
+  const herClip = (t) => { const c = 3.0 + (t - TM.turn) * 0.75; return c <= 3.75 ? c : 3.75 + (c - 3.75) / 0.75 * HOLD; };
 
   // ------------------------------------------------------------------ layout
   const ROAD = { CL: -1.8, LANE: 3.6, V: 26, DASH: 3.05, PER: 12.2, EDGE: 0.12, DW: 0.11 };   // US: 10 ft dashes, 40 ft cycle; 26 m/s ~ 58 mph

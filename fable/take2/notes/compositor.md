@@ -1098,3 +1098,33 @@ look nearly black, identical in v8. Local checked: likeness at 3:56.5 (b137).
 Page: review/fable_take2/review_v9.html (video menu local v9 / public v9 / v8; "What changed in v9"; 8 decisions, decision 7
 multi-select (checkboxes, new in the page script)); thumbs review/fable_take2/v9/ from the public master.
 Removed (coordinator, Jade's disk request): out/film_film_v7_master.mp4, out/film_v7_local_master.mp4. Kept v7/v8 finals and v8 masters.
+
+## Film v10 (2026-11-22, compositor; brief: notes/v10_direction.md incl. "Timing corrections"; phrase maps notes/listen_v10.md)
+
+**Resume here.** Order: (1) C rough cut [DONE, aligned to listen_v10.md], (2) A2 streak, A1/A4 wiring from notes/glyph_v10.md,
+(3) dr20, (4) renders + review_v10.html after the glyph sources land. Dev files `work_fable/take2/dev/v10/` (st/ stills, car/).
+Switch: `?v10=0` = the v9 cut for every changed passage (shots.js `V10`, exported); `?carv=9` = v9 car timing in car3d.js.
+Cut shots keep their id slot (`skip()` in shots.js): ids after a cut are as in v9 (oa06, oa08 simply do not exist in v10).
+
+### 1. C: clear the outro -- done (rough cut built with the direction's bars, then moved to the listen map)
+| shot | v9 | v10 | notes |
+|---|---|---|---|
+| oa01 like_sing1 | hard cut, slab low over her chin | 235.038-238.450, `opt.settleIn` (film.js): cb12's last frame (drawn without type, NOTEXT) grows onto her eyes and fades over 0.9 s; slab in cb12's left column x 0.03-0.32 | eyes measured on v9 frames: drawn (943.5,148) 77 px apart, tracing (915,342) 170 px |
+| oa05 day_fork | 245.268-247.397 | 245.268-248.673 (b143.1-145.1), slab "Back to main" top on a cloud | oa06 stance cut |
+| oa08 aerial | 252.079-255.485 | cut | |
+| ob01 graph | 255.485-260.596 (12 beats) | 252.079-260.596 (b147.1-152.1), `beats 16`, `arc [11,16]` | violet leaves on b149.1 (drums out 255.485); arc lands b151.1 (258.892); label 40 px on from ~256.8, held ~3.8 s |
+| ob02 credits | 260.596-267.419, 2 s log burst | 260.596-265.712 (b152.1-155.1), `burst 0` | card from beat 0.3; real commit line `0e96639 (fable/merge) handoff: next-session start for v9 notes` lands on the b153.1 hit (262.301), held ~4.2 s incl. the road's fade; `$ git cherry-pick 0e96639` typed from b154.1 |
+| ob03 road | 267.419-269.980 | 265.712-269.126 (b155.1-157.1, F chord on the cut) | `ROAD0 = [155,1]` for road, car3d road0 and the window's arrive |
+| ob04 car | 269.980-276.820 (6.84 s) | 269.126-276.820 (b157.1-161.3, 7.69 s) | box `at [0.1, 3.417]`, 30 cps: typed by ~2.6 s, gone on b159.1 (272.543, G chord); then 4.28 s clear face |
+| ob05 window | 276.820-end | unchanged | |
+- What moved after the listen map (coordinator: "use the 7.7 s car rather than forcing 8.5 s"): rough cut had road b156.1-156.3 and the
+  car b156.3 (8.55 s, box [0.2,5.5] at 28 cps); now road b155.1-157.1, car b157.1. Graph arc stretched to land on b151.1; commit line
+  moved from beat 4.2 to 4 (the hit); cherry-pick typing from beat 6.6 to 8 (b154).
+- Car source: `car_v9` (aleph-2, $0) with `opt.songShift [[159,3],[159,1]]` (film.js clipMap): its v9 choreography two beats earlier =
+  pan b157.4-158.4, turn b159.1; the plate ends 0.77 s before the cut and the softcap eases into its last frame with push 0.02. Strip
+  `dev/v10/car/hold_strip.jpg` (274.2-276.6 every 4th frame): window lights still change; reads as a hold, not a freeze. No new
+  aleph-2 take made (spend unchanged). car3d.js v10 timing (default; `carv=9` v9) rendered as fallback plate `car3d_v10`
+  (`car3d_render.mjs --range 269.0333:276.9334 --crf 10 --workers 1 --q "box=0&hands=0"`, 238 fr, t0_song 269.0333), clip
+  `dev/v10/car/car3d_v10_clean.mp4` (also the clean source if an aleph take is wanted later). Her card holds at 0.38x after the settle.
+- Checked on stills (dev/v10/st/sheet_a.jpg, sheet_b.jpg, local likeness): settle 235.05-236.0, slab clear of her face, oa05 slab,
+  graph 252.5-259.5, credits 260.8-265.5, road 266.5-268.5, car 269.3-276.7. Range render dev/v10/car/car_film_v10.mp4 (269-277.2).

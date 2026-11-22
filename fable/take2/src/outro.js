@@ -198,7 +198,7 @@ export function makeOutro(E) {
     g.restore();
     // the violet branch leaves (bar 3), its dot; the dotted arc forward to main (bar 4)
     const V = byId.violet, vy = my - (60 + 46 * lives.length) * S, xv = X(0.7), xd = X(0.82), xc = X(0.94);
-    const k1 = clamp01((ub - 8) / 3), k2 = clamp01((ub - 11) / 3.5);
+    const AR = s.opt.arc || [11, 14.5], k1 = clamp01((ub - 8) / 3), k2 = clamp01((ub - AR[0]) / (AR[1] - AR[0]));   // film v10: opt.arc [start, landed] beats (the arc lands on b151.1's chord change)
     if (ub >= 7.5) { const xe = lerp(xv, xd, ease.out(k1)); g.strokeStyle = V.color; g.lineWidth = lw; g.beginPath(); g.moveTo(xv, my); g.bezierCurveTo(xv + 40 * S, my, xv, vy, xv + 40 * S, vy); g.lineTo(Math.max(xv + 40 * S, xe), vy); g.stroke();
       g.font = mono(28 * S, 600); g.fillStyle = V.color; g.fillText(V.branch, xv + 50 * S, vy - 14 * S);
       if (k1 >= 1) { g.fillStyle = V.color; g.beginPath(); g.arc(xd, vy, 12 * S, 0, 6.2832); g.fill(); } }
@@ -245,26 +245,31 @@ export function makeOutro(E) {
   // then a prompt typed character by character: `$ git cherry-pick <hash of the violet commit>` (hashOf('violet'), the hash her branch
   // carries in the proof's chips), the block cursor blinking at its end. endLayout() is shared with the road, whose dashed line starts at
   // the cursor.
-  const PICK = () => '$ git cherry-pick ' + hashOf('violet');
+  // film v10 C5: o.pickHash (a real short hash: the handoff commit shown on the card, o.handoff) replaces the proof's violet hash
+const PICK = (o) => '$ git cherry-pick ' + ((o && o.pickHash) || hashOf('violet'));
   function endLayout(o) { const fpx = 34 * S, lh = 60 * S, X0 = 150 * S; g.font = mono(fpx, 600);
-    const n = o.lines.length, y0 = (H - (n + 1.6) * lh) / 2 + lh * 0.7, py = y0 + (n + 0.6) * lh, cw = g.measureText('M').width;
-    return { fpx, lh, X0, y0, py, cx: X0 + g.measureText(PICK()).width + cw * 0.25, cw }; }
+    const n = o.lines.length, ex = o.handoff ? 1.5 : 0, y0 = (H - (n + 1.6 + ex) * lh) / 2 + lh * 0.7, hy = y0 + (n + 0.5) * lh, py = y0 + (n + 0.6 + ex) * lh, cw = g.measureText('M').width;
+    return { fpx, lh, X0, y0, hy, py, cx: X0 + g.measureText(PICK(o)).width + cw * 0.25, cw }; }
   function endCard(o, ub, tt, alpha = 1) { const L = endLayout(o), n = o.lines.length, lt = o.lineBeat || 0.5, t0b = o.cardBeat || 4.6, pb = o.pickBeat || 12, cps = o.cps || 16;
     g.save(); g.globalAlpha = alpha; g.font = mono(L.fpx, 600);
     o.lines.forEach(([br, msg], i) => { const a = clamp01((ub - t0b - i * lt) / 0.25); if (a <= 0) return; const y = L.y0 + i * L.lh; let x = L.X0;
       g.globalAlpha = a * alpha; g.fillStyle = '#FF7A1A'; g.fillText('*', x, y); x += L.fpx * 1.1; const h = hashOf('credits/' + i); g.fillStyle = '#FFD23F'; g.fillText(h, x, y); x += g.measureText(h + ' ').width;
       const b = `(${br})`; g.fillStyle = br === 'main' ? MAIN : '#9B6BFF'; g.fillText(b, x, y); x += g.measureText(b + ' ').width; g.fillStyle = '#F3EFE6'; g.fillText(msg, x, y); });
+    // film v10 C5: the real handoff commit line, a gap under the card, in the real log's colours (hash yellow, branch violet), slightly larger
+    if (o.handoff) { const a = clamp01((ub - (o.handBeat || 4) + 0.05) / 0.2); if (a > 0) { const Hc = o.handoff; let x = L.X0; g.globalAlpha = a * alpha; g.font = mono(L.fpx * 1.12, 700);
+      g.fillStyle = '#FF7A1A'; g.fillText('*', x, L.hy); x += L.fpx * 1.2; g.fillStyle = '#FFD23F'; g.fillText(Hc.hash, x, L.hy); x += g.measureText(Hc.hash + ' ').width;
+      const b = `(${Hc.branch})`; g.fillStyle = '#B79BFF'; g.fillText(b, x, L.hy); x += g.measureText(b + ' ').width; g.fillStyle = '#F3EFE6'; g.fillText(Hc.msg, x, L.hy); g.font = mono(L.fpx, 600); } }
     g.globalAlpha = alpha;
-    if (ub >= pb) { const txt = PICK(), nch = Math.min(txt.length, 2 + Math.floor((tt - o.pickT) * cps)); g.fillStyle = '#9EF0B0'; g.fillText(txt.slice(0, 5), L.X0, L.py);
+    if (ub >= pb) { const txt = PICK(o), nch = Math.min(txt.length, 2 + Math.floor((tt - o.pickT) * cps)); g.fillStyle = '#9EF0B0'; g.fillText(txt.slice(0, 5), L.X0, L.py);
       if (nch > 5) { g.fillStyle = '#E8E2D4'; g.fillText(txt.slice(5, Math.min(nch, 18)), L.X0 + g.measureText(txt.slice(0, 5)).width, L.py); }
       if (nch > 18) { g.fillStyle = '#B79BFF'; g.fillText(txt.slice(18, nch), L.X0 + g.measureText(txt.slice(0, 18)).width, L.py); }
       const cx = L.X0 + g.measureText(txt.slice(0, nch)).width + L.cw * 0.25; if (nch < txt.length || Math.floor(tt * 2.5) % 2 === 0) { g.fillStyle = 'rgba(232,226,212,0.9)'; g.fillRect(cx, L.py - L.fpx * 0.75, L.cw * 0.6, L.fpx * 0.9); } }
     g.restore(); return L; }
   function endcredits(t, s) {
     g.fillStyle = '#0B0C10'; g.fillRect(0, 0, W, H);
-    const o = s.opt, ub = bposT(t) - Math.round(bposT(s.t0)), tt = t - s.t0, burst = o.burst || 2.0;
+    const o = s.opt, ub = bposT(t) - Math.round(bposT(s.t0)), tt = t - s.t0, burst = o.burst === undefined ? 2.0 : o.burst;
     o.pickT = (T.beatT(Math.round(bposT(s.t0)) + (o.pickBeat || 12)) - s.t0);
-    if (tt < burst && st.log) {   // the burst: the real log racing up
+    if (burst > 0 && tt < burst && st.log) {   // the burst: the real log racing up
       const fpx = 30 * S, lh = 42 * S, rows = Math.ceil(H / lh), k = Math.floor(tt / burst * Math.max(0, st.log.length - rows)), fade = 1 - clamp01((tt - burst + 0.25) / 0.25);
       g.save(); g.globalAlpha = fade; g.font = mono(fpx, 500);
       for (let r = 0; r < rows; r++) { const L = st.log[k + r]; if (!L) break; const y = 50 * S + r * lh, m = L.match(/^([*|\\/ ]*)([0-9a-f]{7})? ?(.*)$/); let x = 60 * S;
