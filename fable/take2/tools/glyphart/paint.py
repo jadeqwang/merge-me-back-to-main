@@ -193,9 +193,12 @@ def paint(src, at, cfg, rng, focus=(), canvas=None, log=print, matte=None, dcan=
     skip_paper = cfg.get('skip_paper', True)
     L = lum(src).astype(np.float32)
     coarse = tensor_field(L, 96)
-    fm = ellipse_mask(H, W, focus) if focus else np.zeros((H, W), np.float32)
+    if isinstance(focus, np.ndarray):        # v9: a focus MAP (e.g. the skin mask of a plate frame, v9/skin.py)
+        fm = focus.astype(np.float32); has_focus = bool(fm.max() > 0.3)
+    else:
+        fm = ellipse_mask(H, W, focus) if focus else np.zeros((H, W), np.float32); has_focus = bool(focus)
     glyphs = []
-    layers = [(s, False) for s in cfg['sizes']] + [(s, True) for s in cfg.get('focus_sizes', []) if focus]
+    layers = [(s, False) for s in cfg['sizes']] + [(s, True) for s in cfg.get('focus_sizes', []) if has_focus]
     for li, (s, focus_only) in enumerate(layers):
         t0 = time.time()
         tgt = cv2.GaussianBlur(src, (0, 0), max(0.5, s * cfg.get('blur', 0.25)))

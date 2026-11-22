@@ -79,10 +79,17 @@ def run_segment(args):
     for k in seg:
         t0 = time.time()
         src = P.load(frame_path(k))
+        if opt.get('crop'):         # v9: the shot's v7crop [sx, sy, sw, sh] applied to the source first (va03), then 1920x1080
+            sx, sy, sw, sh = opt['crop']; h0, w0 = src.shape[:2]
+            src = np.ascontiguousarray(cv2.resize(src[int(sy * h0):int((sy + sh) * h0), int(sx * w0):int((sx + sw) * w0)], (1920, 1080),
+                                                  interpolation=cv2.INTER_LANCZOS4)).clip(0, 1)
         H, W = src.shape[:2]
         if opt.get('matte'):        # body mask: BiRefNet matte of the source range, f_%04d.png numbered from t0
             mm = cv2.imread(os.path.join(opt['matte'], f"f_{k - opt['k0'] + 1:04d}.png"), cv2.IMREAD_UNCHANGED)
-            cfg = dict(cfg, _body=cv2.resize(mm[..., 3], (W, H)) > 127)
+            bm = (cv2.resize(mm[..., 3], (W, H)) > 127).astype(np.uint8)
+            if opt.get('matte_open'):   # v9: people only: an opening removes thin things the matte caught (music stands, chair legs)
+                bm = cv2.morphologyEx(bm, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (opt['matte_open'],) * 2))
+            cfg = dict(cfg, _body=bm > 0)
         an = HG.Analysis(src, cfg)
         small = cv2.resize(cv2.cvtColor((src * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY), (W // 2, H // 2), interpolation=cv2.INTER_AREA)
         if m is None:
@@ -150,16 +157,22 @@ def main():
     # frames themselves run continuously there, so only real camera cuts (found by histogram) re-seed.
     ap.add_argument('--cuts', default='')
     ap.add_argument('--matte', default='', help='dir of f_%%04d.png RGBA mattes numbered from --t0 (body mask)')
+    ap.add_argument('--matte-open', type=int, default=0, help='v9: opening kernel (px) on the body matte: drops thin stands/legs')
+    ap.add_argument('--crop', default='', help='v9: sx,sy,sw,sh fractions (the shot v7crop) applied before painting')
+    ap.add_argument('--k0', type=int, default=0, help='v9: first frame number (else round(t0*30))')
+    ap.add_argument('--k1', type=int, default=0, help='v9: last frame number, inclusive (else round(t1*30)-1)')
     a = ap.parse_args()
     cfg = dict(line_min=0.35)
     for kv in a.set:
         k, v = kv.split('=', 1); cfg[k] = json.loads(v)
     os.makedirs(a.out, exist_ok=True)
-    ks = list(range(round(a.t0 * 30), round(a.t1 * 30)))
+    k0 = a.k0 or round(a.t0 * 30); k1 = a.k1 or round(a.t1 * 30) - 1
+    ks = list(range(k0, k1 + 1))
     forced = {round(float(c) * 30) for c in a.cuts.split(',') if c}
     segs = segments(ks, forced)
     print('segments', [(s[0], len(s)) for s in segs], flush=True)
-    opt = dict(font=a.font, em=a.em, boil=a.boil, beat=a.beat, beat0=a.beat0, matte=a.matte, k0=round(a.t0 * 30))
+    opt = dict(font=a.font, em=a.em, boil=a.boil, beat=a.beat, beat0=a.beat0, matte=a.matte, k0=k0,
+               crop=[float(v) for v in a.crop.split(',')] if a.crop else None, matte_open=a.matte_open)
     jobs = sorted([(s, cfg, a.out, 7 + i, opt) for i, s in enumerate(segs)], key=lambda j: -len(j[0]))
     t0 = time.time()
     with Pool(a.workers) as pool:
@@ -167,6 +180,10 @@ def main():
     allt = [x for l in logs for x in l]
     json.dump(dict(segments=[(s[0], len(s)) for s in segs], frames=allt, cfg=cfg, opt=opt, wall=time.time() - t0),
               open(os.path.join(a.out, 'log.json'), 'w'), indent=1)
+    # v9: a v7-style folder (film.js loadV7): f_%05d.jpg numbered round(t*30), meta.json with first/n
+    json.dump(dict(fps=30, n=len(ks), t0=k0 / 30, first=k0, w=1920, h=1080, crop=opt['crop'],
+                   note=f'style-2 glyph frames (animate_hash.py, {a.font} em {a.em}, set {a.set}, matte {a.matte})'),
+              open(os.path.join(a.out, 'meta.json'), 'w'))
     print(f'{len(allt)} frames, {np.mean([x[2] for x in allt]):.2f} s/frame/worker, wall {time.time() - t0:.0f} s, '
           f'glyphs/frame {np.mean([x[1] for x in allt]):.0f}')
 

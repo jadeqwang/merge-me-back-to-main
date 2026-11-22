@@ -1,0 +1,26 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#000">
+<canvas id="c" width="1920" height="1080"></canvas>
+<script type="module">
+import { slashPaperPass, GLYPH_MARKS } from './slashpaper.js';
+import { paperPass } from '/fable/take2/src/paper.js';
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+// the drop section's paper options (shots.js SECTIONS.drop): black paper, gold ink, gold neutral stroke
+const SEC = { paper: 'black', ink: ['#FFB020'], stroke: '#FFC23A' };
+window.renderFrame = async (url, t, seed, which, extra) => {
+  const im = new Image(); im.src = url; await im.decode();
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 1920, 1080);
+  const f = which === 'paper' ? paperPass : slashPaperPass;
+  g.save(); f(g, im, { x: 0, y: 0, w: 1920, h: 1080 }, { ...SEC, seed, t, ...(extra || {}) }); g.restore();
+  const b = await new Promise((r) => cv.toBlob(r, 'image/jpeg', 0.93)); const buf = new Uint8Array(await b.arrayBuffer());
+  let s = ''; for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000)); return btoa(s);
+};
+window.testChart = async () => {   // debug: marks at 0..170 deg (rows: lengths 20, 60; widths 2)
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#000'; g.fillRect(0, 0, 1920, 1080); g.fillStyle = '#FFC23A'; g.strokeStyle = '#555';
+  for (let i = 0; i < 18; i++) for (let r = 0; r < 4; r++) { const th = i * 10 * Math.PI / 180, X = 60 + i * 100, Y = 120 + r * 250, L = [20, 40, 60, 90][r];
+    g.beginPath(); g.moveTo(X - Math.cos(th) * L / 2, Y + 60 - Math.sin(th) * L / 2); g.lineTo(X + Math.cos(th) * L / 2, Y + 60 + Math.sin(th) * L / 2); g.stroke();
+    GLYPH_MARKS.drawGlyphMarks(g, [X, Y, th, L, 2, 0], 2); g.fillStyle = '#FFC23A'; }
+  const b = await new Promise((r) => cv.toBlob(r, 'image/png')); const buf = new Uint8Array(await b.arrayBuffer());
+  let s = ''; for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000)); return [btoa(s), JSON.stringify(GLYPH_MARKS.glyphTable().info.map((q) => [q.ch, (q.al * 180 / Math.PI).toFixed(0), q.len.toFixed(0), q.thick.toFixed(1)]))];
+};
+await document.fonts.load('100px "DejaVu Sans Mono"'); window.READY = true;
+</script>
