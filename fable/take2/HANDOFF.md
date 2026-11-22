@@ -1,14 +1,23 @@
-# Take two: handoff (updated 2026-11-22: film v8 rendered, waiting for Jade's notes)
+# Take two: handoff (updated 2026-11-22: film v9 rendered, waiting for Jade's notes)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
-## v9 round in flight (started 2026-11-21, main thread = Fable)
-Jade's v8 notes: `notes/jade_v8_notes.md`; brief `notes/v9_direction.md` (shot map for both glyph styles, drop slashes, sneakers,
-car camera, jacket match). Four background agents: art-direction essay (fable) -> `notes/art_direction_fable.md`; glyph (opus) ->
-`notes/glyph_v9.md` Wiring table; compositor (opus) -> `notes/compositor.md` "Film v9"; plates (opus) -> `notes/plates_v9.md`.
-Order: compositor renders `work_fable/take2/dev/v9/car3d_clean.mp4` -> plates uses it as video-model reference; plates delivers
-`day_eyes_v2` -> glyph paints it (oa03); compositor does the full render only when told the sources are complete.
-If resuming cold: read those four notes for state, then finish wiring, render film_v9, review_v9.html, push.
+## Film v9 (2026-11-22: rendered, waiting for Jade's notes)
+Notes `notes/jade_v8_notes.md`, brief `notes/v9_direction.md`; built: `notes/compositor.md` "Film v9", `notes/glyph_v9.md` (Wiring
+table, settings), `notes/plates_v9.md`. Art-direction essay (Fable, her request): `notes/art_direction_fable.md` (thesis: the film
+is about the violet branch that does not merge; top moves: catch at 3:42 as climax, a glyph grammar, clear the outro).
+- Public `review/fable_take2/film_v9.mp4`, sheets `film_v9_sheet_01..05.jpg`, page `review_v9.html` (8 decisions). Local
+  `work_fable/take2/out/film_v9_local.mp4`. check.py: v8's outliers plus dr20 (+2.1 frames). Spend $579.85.
+- In: style 1 (multi-size) on va02, va10, ca01, ca03, ca09, ca11, ba01-05, cb02, cb09, oa03 (`<plate>_glyph`); style 2 (mono 20 px,
+  upright bodies) on va03, ca10 (windows as v8), bu10-bu30; drop in slash glyphs (`v7/glyph_drop`); `?glyph=0` = v8 look. Car:
+  driver's-eye start, `car_v9` (aleph-2 pass over the 3D clip, no driver hands; `car3d_v9` fallback), box in two even lines.
+  `day_eyes_v2` (thin trim, left-arm patch). Sneakers locked on va05/va06 (`tools/slip.py`, `tools/relock.py`). Carried v8 fixes done.
+- Weak / open: va07 (0:39) still glides (retake `cross_hackerhouses_v9_lock` locks but barely travels; v8 plate kept); orchestra in
+  upright letters loses pink and reads as grey blocks at small size; style-1 shimmer on near-static plates (catch, c2_lookup);
+  va01 face left un-glyphed; car console scribble mid-pan and cyan diamond. Nobody has watched v9 at speed with sound.
+- Disk: full renders v1-v6 of this cut and v7 masters deleted at her request. Other cuts untouched (out/tmp ~27 GB, out/final +
+  out/review ~14 GB, work_fable/out v1-v5 ~12 GB): offered to her, awaiting her word.
+- Next: her v9 notes (run a notes round as below), and her answer on which essay moves to pursue.
 
 ## Start here (next session)
 State at handoff: working tree clean, everything pushed on `fable/merge`, no agents running, nothing paid queued. Spend about $573

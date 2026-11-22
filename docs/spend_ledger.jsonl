@@ -1331,3 +1331,17 @@
 {"ts": "2026-11-22T02:04:43Z", "model": "google/nano-banana-pro", "tag": "t2_v8_day_eyes", "ok": true, "est_usd": 0.1344, "where": "box"}
 {"ts": "2026-11-22T02:05:03Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_eyes_t1", "job": "mergemain/t2_day_eyes_t1-6144aa4042", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
 {"ts": "2026-11-22T02:13:17Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_eyes_t1", "job": "mergemain/t2_day_eyes_t1-6144aa4042", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-22T04:44:39Z", "model": "google/nano-banana-pro", "tag": "t2_v9_day_eyes_trim", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T04:44:43Z", "model": "google/nano-banana-pro", "tag": "t2_v9_day_eyes_trim", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T04:46:38Z", "model": "google/nano-banana-pro", "tag": "t2_v9_day_eyes_trim_half", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T04:47:34Z", "model": "google/nano-banana-pro", "tag": "t2_v9_day_eyes_shut", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T04:47:52Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_eyes_v2_t1", "job": "mergemain/t2_day_eyes_v2_t1-394b404696", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-22T04:54:17Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_eyes_v2_t1", "job": "mergemain/t2_day_eyes_v2_t1-394b404696", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-22T04:58:10Z", "model": "google/nano-banana-pro", "tag": "t2_v9_car_first", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T04:58:35Z", "model": "google/nano-banana-pro", "tag": "t2_v9_car_last", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T04:59:01Z", "model": "runwayml/aleph-2", "tag": "t2_car_v9_t1", "job": "mergemain/t2_car_v9_t1-bbd800bd7d", "event": "submit", "ok": null, "est_usd": 2.2959, "where": "box"}
+{"ts": "2026-11-22T05:03:24Z", "model": "runwayml/aleph-2", "tag": "t2_car_v9_t1", "job": "mergemain/t2_car_v9_t1-bbd800bd7d", "event": "result", "ok": true, "est_usd": 2.2959, "where": "box"}
+{"ts": "2026-11-22T05:13:38Z", "model": "bytedance/seedance-2.5", "tag": "t2_cross_hackerhouses_v9_t1", "job": "mergemain/t2_cross_hackerhouses_v9_t1-1fff374815", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-22T05:13:39Z", "model": "bytedance/seedance-2.5", "tag": "t2_cross_hackerhouses_v9_t2", "job": "mergemain/t2_cross_hackerhouses_v9_t2-3d44331ec9", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-22T05:19:00Z", "model": "bytedance/seedance-2.5", "tag": "t2_cross_hackerhouses_v9_t1", "job": "mergemain/t2_cross_hackerhouses_v9_t1-1fff374815", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-22T05:21:04Z", "model": "bytedance/seedance-2.5", "tag": "t2_cross_hackerhouses_v9_t2", "job": "mergemain/t2_cross_hackerhouses_v9_t2-3d44331ec9", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}
