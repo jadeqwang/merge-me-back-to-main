@@ -1,22 +1,23 @@
-# Take two: handoff (updated 2026-11-21: v8 round in progress)
-
-## v8 round (in progress, 2026-11-21)
-Jade's v7 notes: `notes/jade_v7_notes.md`; brief `notes/v8_direction.md`. She asked to PRIORITISE the dense composed-glyph-art
-experiment (1:34, 2:15, 3:42 notes). Agents running, each with a resume note: glyph (`notes/glyph_v8.md`), outro ideation by a
-Fable (`notes/outro_ideas_v8.md`, 4:01/4:04), compositor (`notes/compositor.md` "Film v8": tree drawn in code, book re-track),
-plates (`notes/plates_v8.md`: 3:03 pencils), car in three.js (`notes/car_v8.md`, 4:30). Full film render waits for the outro pick.
+# Take two: handoff (updated 2026-11-22: film v8 rendered, waiting for Jade's notes)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
 ## Start here (next session)
-1. Jade is watching `review/fable_take2/review_v7.html` (opened as a local file from the checkout; its video menu has the public
-   render and `work_fable/take2/out/film_v7_local.mp4` with her likeness). She exports notes + four decisions and pastes them in.
-2. Run the notes round as below ("How a notes round runs"): save her paste verbatim to `notes/jade_v7_notes.md`, render stills at
-   her timestamps and look, write `notes/v8_direction.md`, two background agents (plates, compositor), look at strips yourself.
-3. If she picks "new master" on decision 4: master from v7 settings under "The master" below (`--q hud=0`), then the encodes and
-   subtitles; the compositor leans that way. Release files are local only (likeness).
-4. The working tree was clean at handoff (everything pushed on `fable/merge`); `docs/spend_ledger.jsonl` is rewritten by the gen tools,
-   commit it with the round.
+1. Jade reviews `review/fable_take2/review_v8.html` (five decisions: 4:01-4:04, car camera, jacket bands, tree, v9/master) and the
+   glyph experiment in `review/fable_take2/v8_glyph/`. Run the notes round as below ("How a notes round runs").
+2. Glyph art: her decisions so far (verbatim in `notes/glyph_v8.md`): TWO styles. Style 1 for anime close-ups = iteration-1 look B
+   (`tools/glyphart/paint.py`, colour, all scripts, full frame) e.g. 3:42 catch. Style 2 for 1:34 night and 2:15 wushu/orchestra =
+   English/ASCII glyphs, one font size at hatch resolution, D ink palette (`hashglyph.py`, `animate_hash.py`); latest ask was V3
+   (bodies upright, background rotated): `2m15_wushu_orch_mono_s2b_V3_720p.mp4`. Not wired into the film yet; wiring = per-shot
+   `v7dir` + skip the paper pass (notes in glyph_v8.md). Style 1 animated needs `animate.py` to read plate frames (24 fps) + per-frame cut-outs.
+
+## Film v8 (2026-11-22)
+Notes `notes/jade_v7_notes.md`, brief `notes/v8_direction.md`; built: `notes/compositor.md` "Film v8", `plates_v8.md`, `car_v8.md`,
+`outro_ideas_v8.md` (she picked A "she doesn't look", kept the 4:07 stance). Tree drawn in code (`src/tree.js`); book re-tracked
+(`tools/page_track_v8.py`); `page_reveal_v2` one bun pencil; 4:01 `day_eyes` (mirrored, eyes close on b140.4); 4:04 lane patches
+under her steps (`src/outro.js`); car in three.js (`src/car3d.js`, plate `car3d`). Public `review/fable_take2/film_v8.mp4`, local
+`work_fable/take2/out/film_v8_local.mp4`. check.py: nothing new. Spend about $573. Weak: purple branch drops at 0:24.6 cut; jacket
+bands; faint 4:01 streaks; car opening stand-in plain, wheel rim, blurred pan, smile hold 1.9 s. Nobody watched v8 at speed.
 
 ## Film v7 (2026-11-21)
 Jade's v6 notes: `notes/jade_v6_notes.md`; brief `notes/v7_direction.md`; built: `notes/compositor.md` "Film v7" (resume note,
