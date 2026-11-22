@@ -2,6 +2,14 @@
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
+## Film v10 (2026-11-22: IN PROGRESS)
+Jade: "start the v10 vision". Brief `notes/v10_direction.md`: scope = A (catch as letters merging, 3:16-3:53) + C (clear the
+outro) + L (picture measured against the song) + carried fixes (dr20, shimmer). Gates G2, G3, G5-G8 unanswered: B, D, E, F not built.
+Three opus agents started: glyph (`notes/glyph_v10.md`), compositor (`notes/compositor.md` "Film v10"), listen
+(`notes/listen_v10.md`, `tools/listen/`). If the session died: read those three notes for state, re-spawn whichever is unfinished
+with the same brief (prompts paraphrase the direction file's owner sections). Main thread still owes: looking at glyph tests
+(`work_fable/take2/dev/v10_glyph/tests_A.jpg`) and v10 sheets, listen pass on the v10 render, push, memory update.
+
 ## Film v9 (2026-11-22: rendered, waiting for Jade's notes)
 Notes `notes/jade_v8_notes.md`, brief `notes/v9_direction.md`; built: `notes/compositor.md` "Film v9", `notes/glyph_v9.md` (Wiring
 table, settings), `notes/plates_v9.md`. Art-direction essay (Fable, her request): `notes/art_direction_fable.md` (thesis: the film
