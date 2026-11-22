@@ -1,8 +1,13 @@
 {
 "cmd": "git log --graph --format=\"%h %s\" fable/merge",
 "note": "real lines of this repo branch, captured for the terminal shot (b153-156) by tools/gitlog.py at render time; messages cut at 86 characters",
-"head": "28a01a9",
+"head": "d6c9bc7",
 "lines": [
+"* d6c9bc7 film v10 fixes (listen measure): settle leads into the b137 hit (grow 234.4\u2026",
+"* dec30af glyph v10 rev c: cb12 daylight grows to the impact, flash starts on 'become'",
+"* 67ed548 listen v10: v10 measured (sync, cuts vs beats, energy, per-event offsets fr\u2026",
+"* 3fed637 film v10: review page (15 decisions, ear clips E1-E6), render record",
+"* 7ab9430 film v10: public render (likeness=0), sheets, review thumbs; git log data",
 "* 28a01a9 glyph v10 rev b: many letters into one (count halves, size holds), drawing \u2026",
 "* e74e094 film v10 A1/A3/A4: glyph plates wired (letters atomize, coarse catch, merge\u2026",
 "* be9accc glyph v10: renders landed; note updated",
