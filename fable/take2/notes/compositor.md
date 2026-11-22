@@ -938,3 +938,6 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
 
 ### 3. Wiring (pending at report time)
 - plates_v8.md: not written yet. car_v8.md: "in progress" (matte of car_confess done, module being built). Nothing to wire yet.
+- WIRED: page_reveal_v2 (b105 next[0] id list ['page_reveal_v2', 'page_reveal'], same opts; v8 track still fits: identical frames,
+  checked f_0001 byte-identical and the still at 181.65); car3d first in the b157-161 next list (songLock, push 0, no blend, no carRoad),
+  car_confess as fallback. Stills dev/v8/wire/wire.jpg (181.65, 183.39 one bun pencil, 270.5 over the shoulder, 273.0 mid-pan, 276.0).

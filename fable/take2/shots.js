@@ -365,7 +365,9 @@ P(105, 107, 'vio_wide', 'missing', 'A tiny figure on a violet lane under an engr
       // clip 0.3-4.6 (1.25x: the fast part 0.5-2.5, the wide from ~4.0). vio_wide's written road is not used (it replaces that shot).
       // film v8 (Jade: "drawing misaligned from book slightly", 3:01.65): page_track_v8.json (tools/page_track_v8.py) tracks the whole spread per
       // frame; film.js maps the crowd onto its four corners and clips it to the two pages' outline
-      { id: 'page_reveal', opt: { clip0: 0.3, clip1: 4.6, push: 0, road: null, page: { v7: [179.4, 0.25], quadUrl: '/work_fable/take2/plates/page_reveal/page_track_v8.json', single: 99 },
+      // film v8 (plates_v8 Wiring): page_reveal_v2 = the same frames with one pencil in the bun at 3:03; the v8 page track (measured on
+      // page_reveal, identical framing) applies; page_reveal stays as the fallback
+      { id: ['page_reveal_v2', 'page_reveal'], opt: { clip0: 0.3, clip1: 4.6, push: 0, road: null, page: { v7: [179.4, 0.25], quadUrl: '/work_fable/take2/plates/page_reveal/page_track_v8.json', single: 99 },
         lyr: { y: 'top', top: 0.14, x0: 0.03, x1: 0.42, align: 'left' } } },
       { id: 'vio_wide_v2', opt: { clip0: 0, clip1: 3.4, road: { track: ROAD_VW2, color: VIO, text: 'violet', cap: 20 } } }] } });   // film v3 item 4: the lane written only as far as she has got (src/film.js roadMask/roadLane). vio_wide_v2 (she runs, slowing): measure its track with tools/track_road.py and put it in place of null (a null track = no road drawn)
 P(107, 108, 'vio_walk', 'missing', 'Side medium, walking.', { row: 'b107-108', opt: { lyr: { x0: 0.03, x1: 0.55, align: 'left' }, lane: { pts: [[0, 0.955], [1, 0.955]], color: VIO, text: 'violet', cap: 22, scroll: -10, under: 0.2 } } });
@@ -507,7 +509,8 @@ shot(156, [157, 3], 'C', 'code', 'road', 'missing', 'From the cursor a dashed li
 const CAR_BOX = { text: 'You could tell me anything and I would find it strangely plausible', name: 'YOU', at: [0.35, 6.55], cps: 26, box: [0.07, 0.75, 0.93, 0.93], px: 46 };
 const CAR_ROAD = { from: [156, 1], wins: [[[0.0, 0.0, 0.57, 0.5], [0.0, 0.18, 0.78, 0.86]], [[0.62, 0.0, 0.95, 0.36], [0.5, 0.0, 1.0, 0.42]]], dark: 22, alpha: 0.95 };
 shot([157, 3], [161, 3], 'P', 'code', 'road', 'missing', 'Inside the car at night: the camera in the driver\'s seat, drawn main Jade in the passenger seat, lit by the dash and the passing dashes; she turns to the camera with a mysterious almost-smile. The secret is not told.',
-  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carBox: CAR_BOX, next: { id: 'car_confess', kind: 'plate', opt: { clip0: 1.5, clip1: 5.0, blend: true, push: 0.015, carRoad: CAR_ROAD } } } });
+  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carBox: CAR_BOX, next: [{ id: 'car3d', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },   // film v8 (car_v8.md Wiring): the three.js car, over her shoulder then round to the driver's eye, song-locked (t0_song 269.9)
+    { id: 'car_confess', kind: 'plate', opt: { clip0: 1.5, clip1: 5.0, blend: true, push: 0.015, carRoad: CAR_ROAD } }] } });
 P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. The violet page-light from the road arrives in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3',
   opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5, arrive: { to: [0.56, 0.35], dur: 1.4 } } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended; arrive: the road's page-light glides into the frost light (film v6)
 
