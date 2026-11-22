@@ -84,6 +84,12 @@ const skip = () => { n++; };
 export const V10 = !(typeof location !== 'undefined' && new URLSearchParams(location.search).get('v10') === '0');
 // the v10 glyph plates (notes/glyph_v10.md Wiring table) only with glyphs on: ?glyph=0 keeps the v8 look; each list newest first (the
 // glyph agent's revision `...b` ids, then the first delivery), the v9 source when none has landed
+// film v11 (notes/v11_direction.md): ?v11=0 renders the v10 cut for every passage v11 changes (A2 comet, E slab off, C car box, glyph wiring)
+const Q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams('');
+export const V11 = V10 && Q.get('v11') !== '0';
+// film v11 E (Jade, gate G6: "take it off for those bars"): no slab or verse lyric drawn from cb08 through oa01 (b128.1-b139.1,
+// 219.737-238.450); film.js lyrics() skips these beat ranges. ?slab2=1 restores. Subtitles (.srt/.vtt) are not touched.
+export const LYR_OFF = V11 && Q.get('slab2') !== '1' ? [[[128, 1], [139, 1]]] : [];
 const V10G = V10 && !(typeof location !== 'undefined' && new URLSearchParams(location.search).get('glyph') === '0');
 const G10 = (ids, opt = {}, kind) => (V10G ? ids.map((id) => ({ id, opt, ...(kind ? { kind } : {}) })) : []);
 const C = (from, to, src, pic, x) => shot(from, to, x && x.code || 'C', 'card', src, 'missing', pic, x);
@@ -441,15 +447,20 @@ section('chorus2');
 // 207.819), decelerates, and its head reaches its mark (the galaxy's core) on b122.1, the cut to cb02, where it is slowest and the letters
 // read. It enters at y 0.28, where vb10's last letters (the circle's) leave east at the cut (glyph_v10.md). cb03: a second streak enters on that cut from her side and settles into the city at the top of the plate's beam on b123.4.
 const HANDOFF_TXT = 'HANDOFF.md  Read this first.  Where things stand.  What it cost to learn.  What comes next.';
+// film v11 A2 (Jade: "just the filename as the streak of a comet's tail"): HANDOFF.md once, the head a bright point, the ten characters
+// trailing it (film.js comet): same paths and timing as v10 (enters on 207.819, head at the mark on 209.526)
+const COMET = (x) => ({ text: 'HANDOFF.md', comet: true, px: 74, stretch: 2.3, thin: 0.5, wt1: 300, wash: 0.5, tailX: 3.5, ...x });
 V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: V10
-  ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52, move: 'on' } }
+  ? { streak: V11 ? COMET({ path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], move: 'on' })
+    : { text: HANDOFF_TXT, path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52, move: 'on' } }
   : { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
 P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, lyr: { x0: 0.56, x1: 0.97, align: 'right' },
   next: [...G10(['c2_lookup_v2_glyph10f'], { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 }),   // film v10: de-shimmered (boil 0, background frozen)
     { id: 'c2_lookup_v2', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 } }] } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one;
 // c2_lookup_v2 (plates_v7 wiring: breathing, hair in wind, no arm, its own meteor (0.716, 0.195) -> (0.596, 0.286) over clip 0.3-3.5): v1's
 // window and crop kept; the one blink (clip 3.0-3.2) lands ~1.45 s in; the meteor stays above the lyric block (MERGE starts y ~0.3)
-V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123', opt: V10 ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.71], [0.16, 0.6], [0.36, 0.56]], at: [[123, 1], [123, 4]], px: 44, n: 40, fade: 0.5 } } : {} });
+V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123', opt: V10 ? { streak: V11 ? COMET({ path: [[-0.03, 0.71], [0.16, 0.6], [0.36, 0.56]], at: [[123, 1], [123, 4]], px: 64, fade: 0.5 })
+  : { text: HANDOFF_TXT, path: [[-0.03, 0.71], [0.16, 0.6], [0.36, 0.56]], at: [[123, 1], [123, 4]], px: 44, n: 40, fade: 0.5 } } : {} });
 // b124-126: the twelve converge on her (src/kit.js 'row' with conv): runners from the right run in toward main (large, centre), from the
 // left they are mirrored; each reaches her and fades into her as the bar ends. Lanes as section 2.
 const KC = (ids, xs) => ids.map((id, i) => ({ id, x: xs[i] }));
@@ -575,7 +586,9 @@ const CAR_BOX_V9 = { text: 'You could tell me anything\nand I would find it stra
 // film v10 C4 (listen_v10.md re-division, coordinator: "use the 7.7 s car rather than forcing 8.5 s"): road b155.1-157.1 (F chord on the
 // cut), car b157.1-161.3 (269.126-276.820, 7.69 s, C chord on the cut): the box types b157.1-b158.3 (open 0.1, typed by ~2.6 s at 30
 // letters/s), is read to b159.1 (272.543, G chord) where it has faded; then 4.28 s of her face with nothing over it (her turn starts there)
-const CAR_BOX = V10 ? { ...CAR_BOX_V9, at: [0.1, 3.417], cps: 30 } : CAR_BOX_V9;
+// film v11 C ("start typing earlier so the finished line is up longer than 0.8 s"): opens on the cut (at 0), typing from 0.22 s (as the
+// box finishes opening) at 36 letters/s: typed by ~2.08 s (271.21), full until 3.07 s, faded by 3.417 (272.543, unchanged)
+const CAR_BOX = V11 ? { ...CAR_BOX_V9, at: [0, 3.417], cps: 36, typeAt: 0.22 } : V10 ? { ...CAR_BOX_V9, at: [0.1, 3.417], cps: 30 } : CAR_BOX_V9;
 // film v10: car3d.js v10 timing = v9's two beats earlier (pan b157.4-158.4, turn b159.1). car_v10 (aleph-2 pass over car3d_v10's clean
 // clip) if one is made, else car_v9 shifted two beats earlier (songShift: its own choreography lands on the v10 beats; its last frame is
 // reached 0.77 s before the cut and held with a slow push), else car3d_v10 (the three.js render at v10 timing).

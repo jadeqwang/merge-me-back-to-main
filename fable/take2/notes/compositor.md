@@ -1183,3 +1183,30 @@ G2/G3/G5/G6, next; ear-clip questions E1-E6), thumbs review/fable_take2/v10/ fro
 check.py: 186 hard cuts, mean |error| 0.30 fr, 174 of 179 within 0.5; dr26 and dr30 no longer flagged; remaining outliers pc03, bu39,
 bu41, dr35 (+0.55), dr36 (+1.10) as v9; type and lyrics pass; 11 of 11 single frames identical. Public, sheets, local, catch_v9_v10 and
 all six ear clips re-made.
+
+## Film v11 (2026-11-22, compositor; brief: notes/v11_direction.md, Jade's words: notes/jade_v10_notes.md)
+
+**Resume here.** Step 1 (A2, E, C) done, waiting for the main thread's look at the A2 strip. Step 2 (next): when the Wiring table in
+notes/glyph_v11.md is filled, wire the `...11` ids ahead of the v10 ids (only with V11 and glyphs on), render film_v11 local + public
+(`likeness=0`), sheets film_v11_sheet_01..05, check.py, review_v11.html from review_v10.html with the main thread's decision list.
+Switches: `?v11=0` = the v10 cut for everything v11 changes (shots.js `V11`, exported); `?slab2=1` = slab/lyrics back over b128-b139.
+Dev files `work_fable/take2/dev/v11/` (a2/, car/, v11off/).
+
+### A2 comet -- done
+- film.js `cometTail` (called from `streak` when `opt.streak.comet`); shots.js `COMET({...})` on cb01 and cb03, same paths and timing as
+  v10 (cb01 enters 207.819, head at the mark 209.526, `move: 'on'`; cb03 b123.1-b123.4, fade 0.5). Text `HANDOFF.md` once, head = a
+  bright white/violet point leading; characters along the path turned to its tangent, head side px 74 (cb03 64), wght 800, VIO_CORE;
+  toward the tail half height (`thin 0.5`), wght 300, stretched along the path to 2.3x (`stretch`), dimmer, 3 ghost copies behind each
+  (smear), over a faint violet wash running 3.5 px0 past the H (`wash 0.5`, `tailX`).
+- Strip `dev/v11/a2_strip.jpg` (207.90-209.45, 640 full | 1920 1:1 crop); cb03 `dev/v11/a2_cb03.jpg`. Readable at 640 from ~208.2 on.
+    D=work_fable/take2/dev/v11/a2; node fable/take2/tools/render.mjs --stills 207.90:$D/f_207.90.png,... --q "hud=0&likeness=0"
+
+### E slab off -- done
+- shots.js `LYR_OFF` (beat ranges [[128,1],[139,1]] with V11 and not slab2), film.js `lyrics()` returns inside it. Subtitles untouched.
+  Stills dev/v11/e_222.png, e_226.png, e_231.3.png, e_236.png, edges e_edge_219.60/219.80/238.40/238.55, sheet dev/v11/e_sheet.jpg:
+  "Every road I ran becomes the one" (ends 219.67) is still up in cb07 at 219.60, clean from the cut; oa02 at 238.55 clean.
+
+### C car box -- done
+- `CAR_BOX` v11: `at [0, 3.417]`, `cps 36`, `typeAt 0.22` (film.js carBox, default 0.3): typed by ~2.08 s (271.21), full to 3.07, gone
+  on 272.543 (unchanged). Finished line ~1.0 s full + 0.35 fade (v10: ~0.45 + 0.35). Sheet dev/v11/c_sheet.jpg (269.3-272.6).
+- `?v11=0` checked on stills (dev/v11/v11off/sheet.jpg): v10 text streak, FOLD slab at 222, v10 car typing; `slab2=1` gives FOLD back.

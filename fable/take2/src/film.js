@@ -10,7 +10,7 @@
 // Layers: source (proof | plate | v7 [paper pass] | card) -> grain + vignette -> overlays (chip, counter, title) -> lyrics -> HUD.
 // Source kinds: see shots.js. A missing plate, or a v7 time outside the delivered sequence, draws as a labelled card.
 import { loadTiming, clamp01, lerp, seg, ease } from './timing.js';
-import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT, PROOF_STAY } from '../shots.js';
+import { resolveShots, SECTIONS, FLOAT, PLATE_ALIAS, PROOF_A, LIFE_SWAP, HERO_NEXT, PROOF_STAY, LYR_OFF } from '../shots.js';
 import { LIVES, MAIN, byId, hashOf } from '../../proof/lives.js';
 import { drawWrittenLane, laneString, measureMono } from './lanes.js';
 import { makeKit } from './kit.js';
@@ -186,6 +186,7 @@ function layoutLine(l, place, lyr, tEnd) {
 }
 function lyrics(t, eff, s) {
   if (proofOwns(t)) return;
+  if (LYR_OFF.some(([a, b]) => t >= T.beat(a[0], a[1]) - HF && t < T.beat(b[0], b[1]) - HF)) return;   // film v11 E
   const skip = s && s.opt && s.opt.lane && s.opt.lane.lyric !== undefined && eff === 'plate' ? String(s.opt.lane.lyric) : null;   // b26: the lane carries it
   for (const l of LYR) {
     if (!on(t, l.t0) || t > l.out || String(l.id) === skip) continue;
@@ -740,6 +741,24 @@ const VIO_CORE = '#EEE6FF', VIO_GLOW = '#9B6BFF';
 // the trail reads left to right behind it) is at p0 on at[0] and at the mark on at[1], ease-out (fastest on entry, slowest on arrival);
 // characters sit at fixed arc-length steps behind the head (behind p0 the path continues straight back off frame), upright, the head
 // largest and brightest, size and alpha tapering to the tail. After at[1]: held at the mark, fading over o.fade s (default: to the cut).
+// film v11 A2 (Jade: "just the filename as the streak of a comet's tail"): opt.streak.comet = the text once (no repeat), the head a bright
+// point leading, the characters trailing behind it along the path, each turned to the path's tangent: nearest the head largest, heaviest
+// (wght 800) and whitest; toward the tail smaller (o.thin), lighter weight (o.wt1), stretched along the path (o.stretch) and dimmer, each
+// with a short smear of ghosts behind it, over a faint violet wash along the path (o.wash, 0 = none). Same path and timing as v10.
+function cometTail(t, o, P, at, len, head, fa) { const txt = o.text, n = txt.length, px0 = (o.px || 72) * S, st1 = o.stretch ?? 2.0, th = o.thin ?? 0.5, wt1 = o.wt1 ?? 320;
+  const tan = (d) => { const a = at(d - 2 * S), b = at(d + 2 * S); return Math.atan2(b[1] - a[1], b[0] - a[0]); };
+  const cs = []; let d = head - px0 * 0.62; g.save(); g.textBaseline = 'middle'; g.textAlign = 'center';
+  for (let i = 0; i < n; i++) { const k = i / Math.max(1, n - 1), px = px0 * (1 - th * k), sx = 1 + (st1 - 1) * k * k, wt = Math.round(800 - (800 - wt1) * k);
+    g.font = `${wt} ${px}px "JetBrains Mono"`; const w = g.measureText(txt[n - 1 - i]).width * sx; d -= i ? w * 0.5 + 0.06 * px : w * 0.5; cs.push({ ch: txt[n - 1 - i], d, px, sx, wt, k }); d -= w * 0.5; }
+  const tailD = d - px0 * (o.tailX ?? 3.5);
+  if ((o.wash ?? 0.32) > 0) { g.save(); g.globalCompositeOperation = 'lighter'; const M = 28;
+    for (let j = 0; j <= M; j++) { const v = j / M, dd = lerp(head, tailD, v), [x, y] = at(dd); glowAt(x, y, lerp(30, 12, v) * S, VIO_GLOW, (o.wash ?? 0.32) * fa * (1 - v) * (1 - v) * 0.5); } g.restore(); }
+  for (const c of cs) { const [x, y] = at(c.d); if (x < -c.px * 3 || x > W + c.px * 3 || y < -c.px * 2 || y > H + c.px * 2) continue; const r = tan(c.d), a0 = fa * (1 - 0.5 * c.k);
+    g.save(); g.translate(x, y); g.rotate(r); g.scale(c.sx, 1); g.font = `${c.wt} ${c.px}px "JetBrains Mono"`;
+    for (let j = 3; j >= 1; j--) { g.globalAlpha = a0 * 0.13 * (4 - j) * (0.4 + c.k); g.fillStyle = '#9B6BFF'; g.fillText(c.ch, -j * c.px * 0.09 * (0.5 + c.k), 0); }
+    g.globalAlpha = a0; g.lineJoin = 'round'; g.lineWidth = c.px * 0.16; g.strokeStyle = 'rgba(5,6,26,0.6)'; g.strokeText(c.ch, 0, 0);
+    g.shadowColor = VIO_GLOW; g.shadowBlur = lerp(24, 10, c.k) * S; g.fillStyle = c.k < 0.25 ? VIO_CORE : c.k < 0.6 ? '#D2C2FF' : '#B79BFF'; g.fillText(c.ch, 0, 0); g.fillText(c.ch, 0, 0); g.restore(); }
+  g.restore(); const [hx, hy] = at(head); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(hx, hy, 46 * S, VIO_GLOW, 0.7 * fa); glowAt(hx, hy, 12 * S, '#FFFFFF', 0.95 * fa); g.restore(); }
 function streak(t, s) { const o = s.opt.streak, ta = T.beat(o.at[0][0], o.at[0][1]), tb = T.beat(o.at[1][0], o.at[1][1]); if (t < ta - HF) return;
   const P = o.path.map(([x, y]) => [x * W, y * H]), N = 64, pts = [], L = [0];
   for (let i = 0; i <= N; i++) { const u = i / N, a = (1 - u) * (1 - u), b = 2 * u * (1 - u), c = u * u; pts.push([a * P[0][0] + b * P[1][0] + c * P[2][0], a * P[0][1] + b * P[1][1] + c * P[2][1]]); if (i) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); }
@@ -747,6 +766,7 @@ function streak(t, s) { const o = s.opt.streak, ta = T.beat(o.at[0][0], o.at[0][
   const at = (d) => { if (d <= 0) return [P[0][0] + bd[0] * -d, P[0][1] + bd[1] * -d]; if (d >= len) return pts[N]; let i = 1; while (L[i] < d) i++; const f = (d - L[i - 1]) / (L[i] - L[i - 1]); return [lerp(pts[i - 1][0], pts[i][0], f), lerp(pts[i - 1][1], pts[i][1], f)]; };
   const u = clamp01((t - ta + HF) / (tb - ta)), head = len * (o.move === 'on' ? u * (1.3 - 0.3 * u) : ease.out(u)),   // v10: 'on' = still moving (0.7x mean speed) when the head reaches the mark
     fa = o.fade ? 1 - clamp01((t - tb) / o.fade) : 1; if (fa <= 0) return;
+  if (o.comet) { cometTail(t, o, P, at, len, head, fa); return; }
   const txt = o.text, n = Math.min(o.n || 40, txt.length), px0 = (o.px || 44) * S, adv = px0 * 0.62;
   g.save(); g.textBaseline = 'middle'; g.textAlign = 'center';
   let d = head; for (let i = 0; i < n; i++) { const ch = txt[txt.length - 1 - ((i + (o.skip || 0)) % txt.length)], k = i / n, px = px0 * (1 - 0.5 * k); d -= i ? adv * (1 - 0.5 * k) : 0;
@@ -1189,10 +1209,10 @@ function carBox(t, s) { const o = s.opt.carBox, ta = s.t0 + o.at[0], tb = s.t0 +
     g.fillStyle = 'rgba(8,10,34,0.94)'; g.beginPath(); g.roundRect(nx, ny, nw, nh, 9 * S); g.fill();
     g.strokeStyle = 'rgba(255,241,214,0.95)'; g.lineWidth = lw; g.beginPath(); g.roundRect(nx, ny, nw, nh, 9 * S); g.stroke();
     g.fillStyle = CREAM; g.fillText(o.name, nx + 20 * S, ny + nh / 2 + 12 * S);
-    const rows = o.text.split('\n').flatMap((ln) => wrap(ln, f, w - 2 * pad)), n = Math.floor(Math.max(0, t - ta - 0.3) * o.cps); setFont(f); g.fillStyle = CREAM;
+    const rows = o.text.split('\n').flatMap((ln) => wrap(ln, f, w - 2 * pad)), n = Math.floor(Math.max(0, t - ta - (o.typeAt ?? 0.3)) * o.cps); setFont(f); g.fillStyle = CREAM;
     const ty = y + pad + px * 0.72; let k = n;
     rows.forEach((row, i) => { if (k <= 0) return; const part = row.slice(0, k); k -= row.length + 1; g.fillText(part, x + pad, ty + i * lead); });
-    const done = n >= o.text.length, tDone = ta + 0.3 + o.text.length / o.cps;
+    const done = n >= o.text.length, tDone = ta + (o.typeAt ?? 0.3) + o.text.length / o.cps;
     if (done && Math.floor((t - tDone) * 2.4) % 2 === 0) { const ax = x + w - pad, ay = y + h - pad * 0.62, sz = 13 * S, bob = Math.sin((t - tDone) * 7) * 2 * S;
       g.beginPath(); g.moveTo(ax - sz, ay - sz * 0.8 + bob); g.lineTo(ax + sz, ay - sz * 0.8 + bob); g.lineTo(ax, ay + sz * 0.8 + bob); g.closePath(); g.fill(); } }
   g.restore(); }
