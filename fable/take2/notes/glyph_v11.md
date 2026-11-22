@@ -134,6 +134,12 @@ the alias at them). Sheets: `dev/v11_glyph/notation11_<life>.jpg` (+ `_safe.jpg`
 | (grid etc.) | parenthood | `home_v3` (LIFE_SWAP) | `home_v3_notation11/` | 121 | all | a child's capitals, some mirrored |
 | - | rare-earth | unchanged | - | - | - | v9 as placed |
 
+Notation plates re-rendered IN PLACE 2026-11-22 15:40 (no film render had used them): exclusion zones per plate for the film's
+overlays (read off `dev/v11/wire/notation_sheet.jpg`): the shot's verse-lyric box, one full-width chip/caption + ticker band
+(y 0.66-0.87), each + 4 % of frame (notation11.py ZONES / CHIP_TICKER / ZONE_PAD); poet's words smaller (60/42/30 px) and lighter
+(ink contrast x0.55) and kept a line-height clear of the lyric. Check: `dev/v11_glyph/notation11_zones.jpg` (zones outlined).
+Review copies regenerated.
+
 cb12 note: `patch_settle_merge11/` was re-rendered IN PLACE 2026-11-22 15:00 (daylight front rev 2: a few large irregular lobes +
 fine paper fibre, no spikes; authorised by the main thread, no film render had used it). Still `dev/v11_glyph/cb12_233.5_640.jpg`.
 
