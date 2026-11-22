@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Merge film v10: notes and decisions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: dark; --bg:#111016; --panel:#1b1924; --line:#3c394a; --ink:#f3ead8; --dim:#b3ab9d; --acc:#ff7a1a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui,sans-serif; }
+  main { max-width:1500px; margin:0 auto; padding:16px; display:grid; grid-template-columns:minmax(0,1.5fr) minmax(340px,1fr); gap:18px; }
+  @media (max-width:1050px){ main{ grid-template-columns:1fr; } }
+  h1 { font-size:19px; margin:0 0 4px; } h2 { font-size:16px; margin:22px 0 8px; } h3 { font-size:14px; margin:0 0 6px; }
+  p { margin:6px 0; color:var(--dim); }
+  video { width:100%; background:#000; border-radius:6px; display:block; }
+  .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:8px 0; }
+  button, select, input[type=text], textarea { font:inherit; color:inherit; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:7px 11px; }
+  button { cursor:pointer; } button:hover { border-color:var(--acc); } button.primary { background:var(--acc); border-color:var(--acc); color:#14122b; font-weight:600; }
+  textarea, input[type=text] { width:100%; }
+  #pos { font:600 15px ui-monospace,monospace; min-width:250px; }
+  .note { display:grid; grid-template-columns:150px 1fr 30px; gap:8px; align-items:start; padding:6px 0; border-top:1px solid var(--line); }
+  .note a { color:var(--acc); cursor:pointer; font:13px ui-monospace,monospace; text-decoration:none; }
+  .note textarea { min-height:38px; resize:vertical; }
+  .note button { padding:3px 8px; }
+  .dec { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:10px 0; }
+  .dec label { display:block; margin:4px 0; cursor:pointer; }
+  .dec .rec { color:var(--acc); font-size:13px; }
+  .dec .links a { color:var(--acc); margin-right:12px; font-size:13px; }
+  .thumbs { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin:8px 0; }
+  .thumbs figure { margin:0; } .thumbs img { width:100%; border-radius:4px; display:block; } .thumbs figcaption { font-size:12px; color:var(--dim); }
+  kbd { background:#26232f; border:1px solid var(--line); border-radius:4px; padding:0 5px; font:12px ui-monospace,monospace; }
+  #out { min-height:160px; font:12px ui-monospace,monospace; }
+  .side { max-height:calc(100vh - 32px); overflow:auto; position:sticky; top:16px; }
+  @media (max-width:1050px){ .side{ position:static; max-height:none; } }
+</style>
+</head>
+<body>
+<main>
+<section>
+  <h1>Merge, film v10: timestamped notes and decisions</h1>
+  <p>Everything you type is kept in this browser (it survives a reload). When you are done, press <b>Copy everything</b> at the bottom of the right column and paste it to Fable, or download it as a file.</p>
+  <div class="bar">
+    <span>Video</span>
+    <select id="src">
+      <option value="../../work_fable/take2/out/film_v10_local.mp4">Film v10, local (best quality)</option>
+      <option value="film_v10.mp4">Film v10, pushed version</option>
+      <option value="film_v9.mp4">Film v9, pushed version (to compare)</option>
+      <option value="../../work_fable/take2/out/catch_v9_v10.mp4" data-t0="0">Compare 3:16-3:58, v9 then v10, local (times are clip times)</option>
+    </select>
+    <select id="rate"><option value="1">1x</option><option value="0.5">0.5x</option><option value="0.25">0.25x</option></select>
+  </div>
+  <video id="v" controls playsinline></video>
+  <div class="bar">
+    <span id="pos"></span>
+    <button class="primary" id="add">Add note here (N)</button>
+    <button id="b5">-5 s</button><button id="b1">-1 s</button><button id="f1">+1 s</button><button id="f5">+5 s</button>
+    <button id="pf">frame -</button><button id="nf">frame +</button>
+  </div>
+  <p>Keys (when not typing): <kbd>N</kbd> add a note at the current time, <kbd>space</kbd> play or pause, <kbd>&larr;</kbd> <kbd>&rarr;</kbd> one second, <kbd>,</kbd> <kbd>.</kbd> one frame, <kbd>Esc</kbd> leave a text box. Adding a note pauses the film and puts the cursor in the note. Note times are song times, whichever file is playing. The section files have more detail than the whole film but their times are approximate to a few frames.</p>
+  <h2>Notes <span id="count" style="color:var(--dim);font-weight:400"></span></h2>
+  <div id="notes"></div>
+</section>
+
+<section class="side">
+  <h2 style="margin-top:0">What changed in v10</h2>
+  <ul>
+    <li><b>The catch (3:22-3:55): letters merging.</b> At 3:22 she comes apart into the letters of the handoff she typed at 3:16 (the pale-blue circle goes last). At 3:28 those letters cross the sky as a readable streak: it enters on the "Merge" hit and reaches the galaxy's core on the next bar; a second streak arrives from her side at 3:31. At 3:39-3:42 the letters pour into her hands and she is written in large letters (face clean). From 3:43 the twelve lives arrive as runs of letters in their colours and fuse pair by pair, one slow arc on the dark ground; the last mark sinks in on "become" (3:51.2), then daylight grows to the 3:55 impact. The patchwork jacket is gone.</li>
+    <li><b>3:30</b>: less shimmer on the look-up (background letters held still).</li>
+    <li><b>3:55</b>: the drawing settles into your traced likeness (it grows onto your eyes and dissolves, 0.9 s) instead of a hard cut; "Back to main" stays where it was, left of your face.</li>
+    <li><b>The outro, cleared</b> (every cut on a chord change or a section hit, measured): 4:07 stance cut (the fork runs on); 4:12 aerial cut, so the git graph runs 4:12-4:20 and the violet branch leaves when the drums drop out (4:15.5), cherry-pick label held about 3.8 s; the log burst cut, so the credits open on the card; one real line from this repo's log, <code>0e96639 (fable/merge) handoff: next-session start for v9 notes</code>, lands on the 4:22.3 hit and the typed <code>git cherry-pick 0e96639</code> uses its hash; the road from 4:25.7; the car from 4:29.1 (7.7 s): the box types, is read, and is gone at 4:32.5, then 4.3 s of her face with nothing over it. Window unchanged; the last frame still equals the first.</li>
+    <li><b>The drop inserts (2:41-2:53)</b>: the pencil-hatch wipe is already 60 % drawn on the beat, so each life reads on the hit (the cuts did not move).</li>
+    <li>Every v10 change can be switched off for comparison (<code>?v10=0</code> renders the v9 cut).</li>
+  </ul>
+  <h2>Clips for your ear (with sound, local)</h2>
+  <p>Measurement placed every cut and arrival on the song (bar map, hits, chord changes, sung words: <code>notes/listen_v10.md</code>). These are the questions only listening can answer. Each clip starts 2 s early.</p>
+  <ul><li><b>E1</b> 3:24-3:33: <a href="../../work_fable/take2/out/ear/E1_catch_arrival.mp4" target="_blank" style="color:var(--acc)">clip</a>. The violet light arrives on the bar at 3:29.5 (b122), where the song has no drum; the only hit nearby is 3:27.8 ("Merge", where the streak now enters). Does the arrival feel like it lands, or should it land on the hit?</li><li><b>E2</b> 3:40-3:53: <a href="../../work_fable/take2/out/ear/E2_merge.mp4" target="_blank" style="color:var(--acc)">clip</a>. The lives fold in as letters over a stretch with no beat in the music (pads only; your voice silent 3:45.9-3:47.4). v10 makes it one slow arc instead of one per beat. Does the merging feel paced with the song, or imposed?</li><li><b>E3</b> 3:46-3:57: <a href="../../work_fable/take2/out/ear/E3_become.mp4" target="_blank" style="color:var(--acc)">clip</a>. Does "I have become" (3:51.2, held to 3:54.1) feel like the moment the last letter sinks in, and is the daylight build before the 3:55.0 impact the right length?</li><li><b>E4</b> 3:52-4:00: <a href="../../work_fable/take2/out/ear/E4_settle_v9_v10.mp4" target="_blank" style="color:var(--acc)">clip</a>. v9 then v10: v10 settles the drawing into your likeness instead of a hard cut on 3:55.0, the biggest hit since 3:00. Does the impact still hit?</li><li><b>E5</b> 4:03-4:24: <a href="../../work_fable/take2/out/ear/E5_graph_credits.mp4" target="_blank" style="color:var(--acc)">clip</a>. With the stance and aerial gone, the graph holds 8.5 s across the drums dropping out (4:15.5). Does it feel long, or does it breathe? Does the commit line land on the 4:22.3 hit?</li><li><b>E6</b> 4:24-4:42: <a href="../../work_fable/take2/out/ear/E6_car.mp4" target="_blank" style="color:var(--acc)">clip</a>. The road and car now cut on chord changes (4:25.7, 4:29.1) and your face holds 4.3 s from 4:32.5 to the final hit. Right length for the almost-smile, too long, or too short?</li></ul>
+  <h2>Decisions Fable needs from you</h2>
+  <div id="decisions"></div>
+  <h2>Send it back</h2>
+  <div class="bar"><button class="primary" id="copy">Copy everything</button><button id="dl">Download as a file</button><button id="clear">Clear all (asks first)</button></div>
+  <textarea id="out" readonly></textarea>
+</section>
+</main>
+<script>
+const BARS = [0.219, 1.971, 3.72, 5.468, 7.214, 8.959, 10.702, 12.444, 14.185, 15.925, 17.664, 19.402, 21.14, 22.877, 24.614, 26.35, 28.087, 29.823, 31.559, 33.296, 35.033, 36.77, 38.508, 40.246, 41.985, 43.725, 45.465, 47.206, 48.945, 50.683, 52.419, 54.15, 55.876, 57.6, 59.323, 61.046, 62.773, 64.504, 66.239, 67.977, 69.716, 71.454, 73.19, 74.924, 76.659, 78.392, 80.126, 81.859, 83.594, 85.329, 87.064, 88.798, 90.532, 92.264, 93.996, 95.727, 97.457, 99.187, 100.917, 102.647, 104.376, 106.106, 107.835, 109.565, 111.295, 113.025, 114.754, 116.484, 118.214, 119.944, 121.674, 123.403, 125.133, 126.862, 128.592, 130.321, 132.05, 133.779, 135.508, 137.237, 138.965, 140.694, 142.422, 144.15, 145.878, 147.606, 149.333, 151.06, 152.787, 154.514, 156.241, 157.967, 159.693, 161.419, 163.144, 164.87, 166.594, 168.319, 170.042, 171.766, 173.489, 175.211, 176.933, 178.655, 180.375, 182.095, 183.815, 185.534, 187.253, 188.972, 190.69, 192.408, 194.125, 195.842, 197.558, 199.271, 200.982, 202.691, 204.401, 206.11, 207.819, 209.526, 211.231, 212.935, 214.637, 216.338, 218.038, 219.737, 221.436, 223.135, 224.833, 226.532, 228.231, 229.931, 231.632, 233.335, 235.038, 236.744, 238.45, 240.156, 241.861, 243.565, 245.268, 246.971, 248.673, 250.376, 252.079, 253.782, 255.485, 257.188, 258.892, 260.596, 262.301, 264.006, 265.712, 267.419, 269.126, 270.834, 272.543, 274.253, 275.964, 277.675, 279.386, 281.097];
+const SECS = [[1, "Intro A"], [9, "Intro B"], [17, "Verse 1"], [33, "Pre-Chorus"], [41, "Chorus 1"], [57, "Breakdown A"], [65, "Breakdown B"], [73, "Build Up A"], [86, "Build Up B"], [89, "Instrumental Drop"], [105, "Verse 2 A"], [117, "Verse 2 B"], [121, "Chorus 2"], [137, "Outro A"], [149, "Outro B"], [153, "Outro C"]];
+const DECISIONS = [
+ {"id": "catch", "title": "1. The catch as letters merging (3:22-3:55)", "why": "She breaks into the handoff's letters; they cross the sky as a streak, pour into her hands, and the twelve lives fuse pair by pair into the clean line; the last mark sinks in on \"become\". Compare clip: v9 then v10 (video menu, local).", "imgs": [["v10/vb10_205.8.jpg", "3:25.8 letters"], ["v10/cb01_208.8.jpg", "3:28.8 the streak"], ["v10/cb09_222.0.jpg", "3:42 written in letters"], ["v10/cb10_224.5.jpg", "3:44.5 merging"], ["v10/cb12_231.3.jpg", "3:51.3 become"]], "opts": ["Right", "Adjust (say where)"]},
+ {"id": "patch", "title": "2. The patchwork jacket is gone", "why": "The poster frame of one Jade in all twelve mediums is replaced by the merge (letters fusing). It could come back as a one-bar trace before the daylight.", "opts": ["Right", "Bring back a trace"]},
+ {"id": "outro", "title": "3. The cleared outro (3:55-4:42): pacing", "why": "Stance and aerial cut, the graph and the car hold longer; every cut lands on a chord change or a hit. The ear clips above ask E4, E5 and E6 one question each; answer them in the box.", "imgs": [["v10/ob01_258.0.jpg", "4:18 the graph, label held"], ["v10/ob02_263.0.jpg", "4:23 the credit card and the commit line"]], "opts": ["Right", "Adjust (say what)"], "extra": "E1-E6 answers, or anything to add"},
+ {"id": "car", "title": "4. The car hold (4:29-4:37)", "why": "Box types (2.6 s), is read, gone at 4:32.5 on the chord change; she turns and holds the almost-smile 4.3 s with nothing over her. The last 0.8 s is the plate's last frame held with a slow push (no new paid take).", "imgs": [["v10/car_271.0.jpg", "4:31 the box"], ["v10/car_275.0.jpg", "4:35 the hold"]], "opts": ["Right", "Shorter hold", "Box on screen longer", "Make a new take for the last second"]},
+ {"id": "commit", "title": "5. The credits commit line", "why": "One real handoff commit from this repo (0e96639, \"handoff: next-session start for v9 notes\") lands on the 4:22.3 hit; the typed git cherry-pick takes its hash. Another commit can be swapped in (hash + subject).", "imgs": [["v10/ob02_265.0.jpg", "4:25 typed cherry-pick"]], "opts": ["Right", "A different commit (say which)", "No commit line"]},
+ {"id": "glyph", "title": "6. (from v9, unanswered) The two glyph styles as placed", "why": "Style 1 (many scripts, sizes, colour) on the close-ups; style 2 (one size, upright letters) on 0:31.9, 1:33, the wushu run and the orchestra.", "imgs": [["v9/va02_30.69.jpg", "0:30.7 style 1"], ["v9/va03_31.92.jpg", "0:31.9 style 2"]], "opts": ["Right", "Adjust (say where)"]},
+ {"id": "orch", "title": "7. (from v9) The orchestra at 2:19 in upright letters", "why": "At small size it loses its pink and reads as grey blocks.", "imgs": [["v9/orch_139.15.jpg", "2:19"]], "opts": ["Keep", "Rotated letters on bodies", "Back to hatch"]},
+ {"id": "drop", "title": "8. (from v9) The drop in slashes", "why": "Same black-and-gold hatch, drawn with slashes and kin.", "imgs": [["v9/drop_zoom.jpg", "close up: v8 hatch left, v9 slashes right"]], "opts": ["Right", "Make the characters more visible"]},
+ {"id": "glide", "title": "9. (from v9) 0:39, the runner still glides", "why": "Her shoe slides along the lane; the retake with planted feet barely travels in this window.", "imgs": [["v9/runner_39.0.jpg", "0:39"]], "opts": ["Accept", "Try another plate"]},
+ {"id": "paper", "title": "10. (from v9) 4:01 on glyph paper", "why": "Her running face in style 1 on white paper covered in letters.", "imgs": [["v9/eyes_241.71.jpg", "4:01.7"]], "opts": ["Keep", "Clean line here"]},
+ {"id": "g2", "title": "11. Gate G2: glyph size as the merge variable", "why": "Coarse letters in verse 1, finer in chorus 1, closing into line in chorus 2, none in daylight (decides 4:01 too).", "opts": ["Yes", "No", "Not now"]},
+ {"id": "g3", "title": "12. Gate G3: a notation per life", "why": "Each life written in its own notation (staff for piano and violin, hanzi strokes for wushu, A C G U for biology and the band, IPA for neuroscience, her own lines for poet, code for hacker houses and open source, a child's capitals for parenthood); all scripts kept for violet only. Tested on two shots first.", "opts": ["Yes", "No", "Not now"]},
+ {"id": "g5", "title": "13. Gate G5: one true line per ended life", "why": "Would you write about eight lines, one per life that ended, about its last day? The 2:00 detail pass would become the same hands stopping, captioned with your lines. Not built without them.", "opts": ["Yes, I will write them", "No"]},
+ {"id": "g6", "title": "14. Gate G6: slab lyrics off chorus 2 from 3:39 to 3:58", "why": "Your rule is every lyric on screen; this would let the letters on her carry those 19 s instead.", "opts": ["Keep the slab", "Take it off for those bars"]},
+ {"id": "next", "title": "15. What next", "why": "A v11 with your notes, or the master and the YouTube and X encodes from v10.", "opts": ["v11 with my notes", "Master"]}
+];
+const KEY='merge_film_v10_review';
+let S = JSON.parse(localStorage.getItem(KEY) || '{"notes":[],"dec":{}}');
+const v=document.getElementById('v'), src=document.getElementById('src'), pos=document.getElementById('pos');
+const save=()=>{ localStorage.setItem(KEY, JSON.stringify(S)); out(); };
+const t0=()=>+(src.selectedOptions[0].dataset.t0||0);
+const song=()=>v.currentTime+t0();
+function barAt(t){ let i=0; while(i+1<BARS.length && BARS[i+1]<=t) i++; const len=(i+1<BARS.length?BARS[i+1]:BARS[i]+1.74)-BARS[i]; const beat=Math.max(0,Math.min(3.99,(t-BARS[i])/len*4)); return {bar:i+1, beat:Math.floor(beat)+1}; }
+function secAt(bar){ let n=''; for(const [b,name] of SECS) if(bar>=b) n=name; return n; }
+function fmt(t){ const m=Math.floor(t/60), s=t-m*60; return m+':'+(s<10?'0':'')+s.toFixed(2); }
+function label(t){ const b=barAt(t); return fmt(t)+'  bar '+b.bar+'.'+b.beat+'  '+secAt(b.bar); }
+function tick(){ pos.textContent=label(song()); requestAnimationFrame(tick); } tick();
+function load(){ const t=song(); v.src=src.value; v.playbackRate=+document.getElementById('rate').value; v.addEventListener('loadedmetadata',()=>{ const want=t-t0(); if(want>0 && want<v.duration) v.currentTime=want; },{once:true}); }
+src.onchange=load; document.getElementById('rate').onchange=e=>v.playbackRate=+e.target.value;
+v.addEventListener('error',()=>{ if(src.selectedIndex===0){ src.selectedIndex=1; load(); } });
+const seek=d=>{ v.currentTime=Math.max(0,v.currentTime+d); };
+b5.onclick=()=>seek(-5); b1.onclick=()=>seek(-1); f1.onclick=()=>seek(1); f5.onclick=()=>seek(5); pf.onclick=()=>{v.pause();seek(-1/30)}; nf.onclick=()=>{v.pause();seek(1/30)};
+function addNote(){ v.pause(); const n={t:+song().toFixed(2), text:''}; S.notes.push(n); S.notes.sort((a,b)=>a.t-b.t); save(); renderNotes(S.notes.indexOf(n)); }
+add.onclick=addNote;
+function renderNotes(focus){ const box=document.getElementById('notes'); box.innerHTML=''; document.getElementById('count').textContent=S.notes.length?'('+S.notes.length+')':'';
+  S.notes.forEach((n,i)=>{ const row=document.createElement('div'); row.className='note';
+    const a=document.createElement('a'); a.textContent=label(n.t); a.title='jump to this time'; a.onclick=()=>{ const w=n.t-t0(); if(w>=0) v.currentTime=w; };
+    const ta=document.createElement('textarea'); ta.value=n.text; ta.placeholder='what you see, what you want'; ta.oninput=()=>{ n.text=ta.value; save(); };
+    const x=document.createElement('button'); x.textContent='x'; x.title='delete this note'; x.onclick=()=>{ S.notes.splice(i,1); save(); renderNotes(); };
+    row.append(a,ta,x); box.append(row); if(i===focus) ta.focus(); }); }
+function renderDec(){ const box=document.getElementById('decisions'); box.innerHTML='';
+  DECISIONS.forEach(d=>{ const st=S.dec[d.id]||(S.dec[d.id]={pick:null,text:''}); const el=document.createElement('div'); el.className='dec';
+    let h='<h3>'+d.title+'</h3><p>'+d.why+'</p>';
+    if(d.links) h+='<div class="links">'+d.links.map(l=>'<a href="'+l[0]+'" target="_blank">'+l[1]+'</a>').join('')+'</div>';
+    if(d.imgs) h+='<div class="thumbs">'+d.imgs.map(m=>'<figure><a href="'+m[0]+'" target="_blank"><img src="'+m[0]+'" alt="'+m[1]+'"></a><figcaption>'+m[1]+'</figcaption></figure>').join('')+'</div>';
+    el.innerHTML=h;
+    if(d.multi && !Array.isArray(st.picks)) st.picks=[];
+    d.opts.forEach((o,i)=>{ const l=document.createElement('label'); const r=document.createElement('input'); r.type=d.multi?'checkbox':'radio'; r.name=d.id;
+      if(d.multi){ r.checked=st.picks.includes(i); r.onchange=()=>{ st.picks=r.checked?[...st.picks.filter(x=>x!==i),i].sort():st.picks.filter(x=>x!==i); save(); }; }
+      else { r.checked=st.pick===i; r.onchange=()=>{ st.pick=i; save(); }; }
+      l.append(r,' '+o); if(d.rec===i){ const s=document.createElement('span'); s.className='rec'; s.textContent='  (Fable\'s lean)'; l.append(s); } el.append(l); });
+    const ta=document.createElement('textarea'); ta.placeholder=d.extra||'anything to add (optional)'; ta.value=st.text; ta.oninput=()=>{ st.text=ta.value; save(); }; el.append(ta); box.append(el); }); }
+function text(){ let s='MERGE FILM V10: JADE\'S NOTES\n\nTIMESTAMPED NOTES ('+S.notes.length+')\n';
+  S.notes.forEach(n=>{ s+='- '+label(n.t)+': '+(n.text.trim()||'(no text)')+'\n'; });
+  s+='\nDECISIONS\n'; DECISIONS.forEach(d=>{ const st=S.dec[d.id]||{}; s+='- '+d.title+': '+(d.multi?((st.picks&&st.picks.length)?st.picks.map(i=>d.opts[i]).join(', '):'(not answered)'):(st.pick==null?'(not answered)':d.opts[st.pick]))+(st.text&&st.text.trim()?'\n    note: '+st.text.trim():'')+'\n'; }); return s; }
+function out(){ document.getElementById('out').value=text(); }
+copy.onclick=async()=>{ const o=document.getElementById('out'); try{ await navigator.clipboard.writeText(o.value); copy.textContent='Copied'; }catch(e){ o.select(); document.execCommand('copy'); copy.textContent='Copied'; } setTimeout(()=>copy.textContent='Copy everything',1500); };
+dl.onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text()],{type:'text/plain'})); a.download='merge_film_v10_notes.txt'; a.click(); };
+let armed=0; clear.onclick=()=>{ if(Date.now()-armed<4000){ S={notes:[],dec:{}}; save(); renderNotes(); renderDec(); clear.textContent='Clear all (asks first)'; } else { armed=Date.now(); clear.textContent='Press again to clear everything'; setTimeout(()=>clear.textContent='Clear all (asks first)',4000); } };
+addEventListener('keydown',e=>{ const typing=/TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName);
+  if(e.key==='Escape'){ document.activeElement.blur(); return; } if(typing) return;
+  if(e.key==='n'||e.key==='N'){ e.preventDefault(); addNote(); } else if(e.key===' '){ e.preventDefault(); v.paused?v.play():v.pause(); }
+  else if(e.key==='ArrowLeft') seek(-1); else if(e.key==='ArrowRight') seek(1); else if(e.key===','){ v.pause(); seek(-1/30); } else if(e.key==='.'){ v.pause(); seek(1/30); } });
+load(); renderNotes(); renderDec(); out();
+</script>
+</body>
+</html>

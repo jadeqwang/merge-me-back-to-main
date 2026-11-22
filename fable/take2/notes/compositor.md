@@ -1153,3 +1153,21 @@ Cut shots keep their id slot (`skip()` in shots.js): ids after a cut are as in v
 - cb01 streak now enters at y 0.28 to pick up vb10's last (circle) letters leaving east at the cut (stills dev/v10/a2/sheet2.jpg).
 - Stills (likeness=0) dev/v10/catch/sheet.jpg, 203-235.3 with the first (non-b) merge plates: slabs readable on the dark ground; on cb11-cb12
   white paper the cream slab reads by its cloud only (as v9). Re-check when the `b` plates (daylight from 231.21) land.
+
+### Film v10 renders (2026-11-22)
+Sources: glyph_v10.md rev b (vio_still_letters10b, fold/patch_hold/patch_settle_merge10b) + c2_hands_letters10, catch_letters10,
+c2_lookup_v2_glyph10f; stills dev/v10/catchb/sheet.jpg (204.5-235.8, local): slabs legible on the dark ground and on the daylight
+(cloud); cb12b's last frame has the drawn eyes where v9's were, so settleIn's numbers hold (strip dev/v10/st/settle_strip.jpg).
+    WORKERS=6 fable/take2/tools/render_film.sh film_v10 "" "likeness=0"   # 454 s -> out/film_film_v10_master.mp4, film_film_v10.mp4 (80.7 MB), sheets
+    cp out/film_film_v10.mp4 review/fable_take2/film_v10.mp4; cp out/film_v10_sheet_0*.jpg review/fable_take2/; ln -sfn keep_film_v10 out/keep_v10
+    .venv/bin/python fable/take2/tools/check.py out/film_film_v10_master.mp4 > out/check_v10.txt
+    node fable/take2/tools/render.mjs --mp4 out/film_v10_local_master.mp4 --audio ... --workers 6 --crf 16, encode CRF 20 maxrate 2300k -> out/film_v10_local.mp4 (77 MB)
+check.py: 186 hard cuts, mean |error| 0.32 fr (v9 0.35), max 2.80 (bu39/41 flashes, as before); dr09, dr11, dr20 no longer outliers
+(pre-roll); left: dr26 +2.50, dr30 +2.00 (the b101-103 hatch inserts, not given pre-roll: same one-line fix, `pre: 3` on those rows);
+cb11 "no clear change" (the merge runs across the cut by design); type all pass; lyrics 22 lines / 119 words, none under 0.6 s; single
+frame vs full render 11 of 11 identical. C6: frame 8483 vs frame 0 rendered alone (hud=0 likeness=0): max diff 0.
+Sheets looked at (all 5). ?v10=0 checked against the v9 master at 6 times (mean abs diff 2.1-3.3 of 255: grain and encode only).
+Compare (local, with sound): out/catch_v9_v10.mp4 (3:16-3:58 v9, then v10, labelled). Ear clips (local, with sound, 2 s lead-in):
+out/ear/E1_catch_arrival.mp4 (202-213), E2_merge (218-233), E3_become (224-237), E4_settle_v9_v10 (230-240 v9 then v10),
+E5_graph_credits (241-264), E6_car (262-282.8). Page review/fable_take2/review_v10.html (15 decisions: 5 new, v9's 1/2/3/5/6, gates
+G2/G3/G5/G6, next; ear-clip questions E1-E6), thumbs review/fable_take2/v10/ from the public master.
