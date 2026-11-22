@@ -74,16 +74,21 @@ def find_cuts(ks, thr=0.10):
     return segs
 
 
-def under(src, cfg, k):
+def under(src, cfg, k, fm=None):
     """underpainting: the source heavily blurred and darkened, so a hole left by a culled glyph is a soft patch of the
     right colour instead of black paper"""
     paper = P.hexrgb(cfg.get('paper', '#060509'))
     if k <= 0:
         c = np.empty_like(src); c[:] = paper; return c
+    if fm is not None and isinstance(fm, np.ndarray):   # v9: full-strength underpainting in the face, so gaps between glyphs are skin,
+        b = cv2.GaussianBlur(src, (0, 0), 4)               # not dark cracks (read as scarring at film size)
+        u = paper + (cv2.GaussianBlur(src, (0, 0), 18) - paper) * k
+        f = np.clip(fm, 0, 1)[..., None]
+        return (u * (1 - f) + b * f).astype(np.float32)
     return (paper + (cv2.GaussianBlur(src, (0, 0), 18) - paper) * k).astype(np.float32)
 
 
-def render(gl, at, cfg, H, W, fade, base):
+def render(gl, at, cfg, H, W, fade, base, fm=None):
     """gl columns: x y s th gid r g b layer age"""
     can = base.copy()
     dcan = can.copy()
@@ -94,6 +99,8 @@ def render(gl, at, cfg, H, W, fade, base):
         col = np.array([r, g, b], np.float32)
         op = min(1.0, (age + 1) / fade)
         kl = kl0 * float(np.clip((s - cfg.get('kl_min', 6)) / 8, 0, 1))
+        if fm is not None:   # v9: softer keylines in the focus (face), as paint() does for new glyphs
+            kl *= 1 - cfg.get('focus_soft', 0.0) * float(fm[min(H - 1, max(0, int(y))), min(W - 1, max(0, int(x)))])
         P.stamp(can, at, float(x), float(y), float(s), float(th), int(gid), col, op, kl * op, None, dcan, col)
     return can, dcan
 
@@ -132,11 +139,21 @@ def run_segment(args):
         src = P.load(src_path(opt, k))
         H, W = src.shape[:2]
         foc = focus_at(opt, k, src)
+        if opt.get('focus_bright'):   # v9: bright saturated thin things (lanes, lights, glow edges) stay sharp: a weaker focus there
+            hsv = cv2.cvtColor((src * 255).astype(np.uint8), cv2.COLOR_RGB2HSV)
+            bm = ((hsv[..., 1] > 90) & (hsv[..., 2] > 110)).astype(np.float32)
+            bm = cv2.GaussianBlur(cv2.dilate(bm, np.ones((5, 5), np.uint8)), (0, 0), 3) * opt['focus_bright']
+            fm0 = foc if isinstance(foc, np.ndarray) else (P.ellipse_mask(H, W, foc) if foc else np.zeros((H, W), np.float32))
+            foc = np.maximum(fm0, np.minimum(bm, opt['focus_bright']))
+        mat = None
+        if opt.get('matte_dir'):   # v9: figure matte (BiRefNet) of this plate frame: lift on the figure, bg_dim on the background
+            mm = cv2.imread(os.path.join(opt['matte_dir'], f'f_{k:04d}.png'), cv2.IMREAD_UNCHANGED)
+            mat = cv2.resize(mm[..., 3], (W, H)).astype(np.float32) / 255 if mm is not None else None
         small = cv2.cvtColor((src * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
         small = cv2.resize(small, (W // 2, H // 2), interpolation=cv2.INTER_AREA)
         if gl is None:
-            base = under(src, cfg, opt['under'])
-            can, g0 = P.paint(src, at, cfg, rng, foc, canvas=base.copy(), dcan=base.copy(), log=lambda *a: None)
+            base = under(src, cfg, opt['under'], foc if opt.get('focus_skin') else None)
+            can, g0 = P.paint(src, at, cfg, rng, foc, canvas=base.copy(), dcan=base.copy(), log=lambda *a: None, matte=mat)
             gl = np.concatenate([g0, np.full((len(g0), 1), 99, np.float32)], 1)
             dcan = None
         else:
@@ -164,7 +181,13 @@ def run_segment(args):
                 m = gl[:, 8] == li
                 s = float(np.median(gl[m, 2]))
                 tgt = cv2.GaussianBlur(src, (0, 0), max(0.5, s * cfg.get('blur', 0.25)))
-                c = tgt[np.clip(gl[m, 1].astype(int), 0, H - 1), np.clip(gl[m, 0].astype(int), 0, W - 1)]
+                iy_, ix_ = np.clip(gl[m, 1].astype(int), 0, H - 1), np.clip(gl[m, 0].astype(int), 0, W - 1)
+                c = tgt[iy_, ix_]
+                if mat is not None:    # same treatment as paint() gives new glyphs, so carried ones keep it
+                    fg = (mat[iy_, ix_] > 0.5)[:, None]
+                    if cfg.get('lift'):
+                        c = np.where(fg, 1 - (1 - c) * (1 - cfg['lift']), c)
+                    c = np.where(fg, c, c * P.bg_dim_k(c, cfg.get('bg_dim', 1.0)))
                 gl[m, 5:8] = 0.5 * gl[m, 5:8] + 0.5 * c
             # boil on the eighth notes
             t = song_t(opt, k)
@@ -186,10 +209,11 @@ def run_segment(args):
                     gid, _ = P.choose(at, G.astype(np.float32), 0, cfg.get('tau', 0.1) * 1.5, rng, 0.0)
                     gl[b, 4] = gid
             gl = cap_crowding(gl, cfg, H, W, rng, opt['cap'])
-            can, dcan = render(gl, at, cfg, H, W, opt['fade'], under(src, cfg, opt['under']))
+            fmr = foc if isinstance(foc, np.ndarray) else (P.ellipse_mask(H, W, foc) if foc else None)
+            can, dcan = render(gl, at, cfg, H, W, opt['fade'], under(src, cfg, opt['under'], foc if opt.get('focus_skin') else None), fmr)
             # fill holes on top (error-driven, thresholded also in the coarsest layer)
             fcfg = dict(cfg, layer0_thresh=True, thresh=cfg.get('thresh', 0.07) * opt['fill_k'])
-            can, gnew = P.paint(src, at, fcfg, rng, foc, canvas=can, dcan=dcan, log=lambda *a: None, fade_new=opt['fade'])
+            can, gnew = P.paint(src, at, fcfg, rng, foc, canvas=can, dcan=dcan, log=lambda *a: None, fade_new=opt['fade'], matte=mat)
             if len(gnew):
                 gl = np.concatenate([gl, np.concatenate([gnew, np.zeros((len(gnew), 1), np.float32)], 1)])
         gl[:, 9] += 1
@@ -219,6 +243,8 @@ def main():
     ap.add_argument('--fps', type=float, default=24)
     ap.add_argument('--first', type=int, default=1); ap.add_argument('--last', type=int, default=0)
     ap.add_argument('--focus', action='append', default=[], help='cx,cy,rx,ry (1920x1080 px), static')
+    ap.add_argument('--matte-dir', default='', help='plate mode: dir of f_%%04d.png RGBA mattes (figure) per plate frame')
+    ap.add_argument('--focus-bright', type=float, default=0, help='v9: focus strength (0-1) on bright saturated structure (lanes)')
     ap.add_argument('--focus-skin', type=float, default=0, help='>0: per-frame skin map (faces, hands) as focus, this strength')
     ap.add_argument('--seed', type=int, default=1000)
     a = ap.parse_args()
@@ -240,7 +266,7 @@ def main():
     print('segments', [(s[0], len(s)) for s in segs])
     opt = dict(weights={'stroke': 6, 'box': 2, 'cjk': 3, 'latin': 2, 'math': 2}, focus=[], boil=a.boil, beat=a.beat,
                beat0=a.beat0, cap=a.cap, fade=a.fade, fill_k=a.fill_k, fb_tol=a.fb_tol, under=a.under,
-               frames=a.frames, fps=a.fps, t0=a.t0, focus_skin=a.focus_skin)
+               frames=a.frames, fps=a.fps, t0=a.t0, focus_skin=a.focus_skin, matte_dir=a.matte_dir, focus_bright=a.focus_bright)
     opt['focus'] = [tuple(float(v) for v in f.split(',')) for f in a.focus]
     jobs = [(s, cfg, fdir, a.seed + i, opt) for i, s in enumerate(segs)]
     jobs.sort(key=lambda j: -len(j[0]))

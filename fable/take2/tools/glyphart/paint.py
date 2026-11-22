@@ -222,6 +222,9 @@ def paint(src, at, cfg, rng, focus=(), canvas=None, log=print, matte=None, dcan=
         px = ox + cx * g + am % g
         fmc = fm[py, px]
         thr = cfg.get('thresh', 0.06) * (1 - 0.6 * fmc)
+        if cfg.get('dark_k'):     # v9: lower threshold in darks, so dark-on-dark structure (black hair on charcoal) is refined too
+            lt = lum(tgt[py, px])
+            thr = thr * (cfg['dark_k'] + (1 - cfg['dark_k']) * np.clip(lt / 0.35, 0, 1))
         sel = (mean > thr) if (li > 0 or cfg.get('layer0_thresh', False)) else np.ones_like(mean, bool)
         if focus_only:
             sel &= fmc > 0.3
@@ -258,7 +261,7 @@ def paint(src, at, cfg, rng, focus=(), canvas=None, log=print, matte=None, dcan=
             lc = 1 - (1 - col) * (1 - cfg['lift'])
             col = np.where(fg[:, None], lc, col) if matte is not None else lc
         if matte is not None and cfg.get('bg_dim', 1.0) != 1.0:
-            col = np.where(fg[:, None], col, col * cfg['bg_dim'])
+            col = np.where(fg[:, None], col, col * bg_dim_k(col, cfg['bg_dim']))
         if pal is not None:
             col, pi = quantise(col, pal)
             if skip_paper:
@@ -282,7 +285,8 @@ def paint(src, at, cfg, rng, focus=(), canvas=None, log=print, matte=None, dcan=
         vj = cfg.get('val_jit', 0.0)
         dcol = col
         if vj:
-            col = np.clip(col * rng.uniform(1 - vj, 1 + vj, (len(col), 1)).astype(np.float32), 0, 1)
+            vjk = vj * (1 - fm[py.astype(int), px.astype(int)])[:, None]     # v9: no value jitter in the face (no 'scarring')
+            col = np.clip(col * (1 + vjk * rng.uniform(-1, 1, (len(col), 1)).astype(np.float32)), 0, 1)
         klf = kl * (1 - cfg.get('focus_soft', 0.0) * fm[py.astype(int), px.astype(int)])   # softer keylines in the face
         for k in order:
             stamp(canvas, at, float(px[k]), float(py[k]), float(ss[k]), float(th[k]), int(gid[k]), col[k], op, float(klf[k]), kcol,
@@ -292,6 +296,14 @@ def paint(src, at, cfg, rng, focus=(), canvas=None, log=print, matte=None, dcan=
         log(f'  layer {li} s={s:5.1f}{" focus" if focus_only else ""}: {len(order):7d} glyphs  {time.time() - t0:5.1f}s')
     gl = np.concatenate(glyphs) if glyphs else np.zeros((0, 9), np.float32)
     return canvas, gl
+
+
+def bg_dim_k(col, k):
+    """v9: background dim factor per colour: dark background recedes, bright/saturated things (lanes, lights, horizon glow) keep
+    their brightness"""
+    mx = col.max(-1); mn = col.min(-1); sat = (mx - mn) / (mx + 1e-3)
+    keep = np.clip(np.maximum(lum(col) - 0.15, 0) / 0.2 + np.clip((sat - 0.25) / 0.3, 0, 1) * np.clip((mx - 0.2) / 0.2, 0, 1), 0, 1)
+    return (k + (1 - k) * keep)[..., None]
 
 
 def finish(canvas, cfg, rng):
