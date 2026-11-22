@@ -959,3 +959,8 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
 - Coordinator's notes on steps2: each patch now lives in its own cell (half a step either side of its landing, clipped): neighbours butt
   edge to edge, no overprint; solid band in the life's colour, message in dark ink (#2A1206, 3 rows); main's saturated orange (#FF7A1A)
   wipes across it from behind (age 0.12-0.5 s; a colour mix went through mud). 3:2 rhythm kept. Stills dev/v8/outro/steps3.jpg, band3.png.
+- WIRED day_eyes (plates_v8 row): oa03 b140.3-141.3, clip 0.45-2.16 at 1x so the lids fall on b140.4 (the snare: measured the 1.5-6 kHz
+  energy per beat in b139-141, beat 4 carries the hit); `mirror: true` (new film.js opt: the plate runs right, the town runner left);
+  `streaks` (new film.js `streaks`): nine soft lane-colour streaks sliding right behind her, cut by her matte
+  `work_fable/take2/kit/day_eyes` (tools/matte.py on media/gen/t2_day_eyes_t1_6144aa4042.mp4, 121 frames), multiplied onto the paper.
+  Stills dev/v8/outro/eyes.jpg, eyes2.jpg.

@@ -268,6 +268,7 @@ function scene(t) {
   if (sc.eff === 'plate' && s.opt && s.opt.strands && s.opt.strands.window && PLATE[s.opt.strands.window]) {   // the life window (b61-62)
     sc.win = []; plateDraw({ t0: s.t0, t1: s.t1, opt: { clip0: 1.0, push: 0 } }, t, s.opt.strands.window, sc.win); }
   if (sc.eff === 'plate' && s.opt && s.opt.settle && sc.imgs[0]) { const m = sc.imgs[0].url.match(/f_(\d{4})\.jpg$/); if (m && SETTLE_OK[s.opt.settle.matte]) sc.settle = `${s.opt.settle.matte}/rgba/f_${m[1]}.png`; }
+  if (sc.eff === 'plate' && s.opt && s.opt.streaks && sc.imgs[0]) { const m = sc.imgs[0].url.match(/f_(\d{4})\.jpg$/); if (m) sc.streak = `${s.opt.streaks.matte}/rgba/f_${m[1]}.png`; }   // film v8: day_eyes
   if (sc.eff === 'plate' && s.opt && s.opt.fan && sc.imgs[0]) { const m = sc.imgs[0].url.match(/f_(\d{4})\.jpg$/); if (m) sc.fan = `${s.opt.fan.matte}/rgba/f_${m[1]}.png`; }
   const x = s.opt && s.opt.cross;   // the crossing: from `at` the doorway grows into the life plate
   if (sc.eff === 'plate' && x && PLATE[x.life] && !ALLCARDS) { const D = s.t1 - s.t0, ta = s.t0 + x.at * D, te = s.t0 + x.end * D;
@@ -1046,6 +1047,21 @@ function hatchIn(t, s) {
 }
 
 // ---------------------------------------------------------------- the frame
+// film v8 (outro A, b140.3-141.3): the town's colours smearing past behind her running face: long soft streaks in the lane colours
+// sliding the way the town slides (right), kept only where her cut-out (opt.streaks.matte, the plate's own frame) is empty
+let STC = null;
+function streaks(t, sc) { const s = sc.s, o = s.opt.streaks, im = sc.imgs[0], m = READY.get(sc.streak), b = READY.get(im.url);
+  if (!STC) { STC = document.createElement('canvas'); STC.width = W; STC.height = H; } const x = STC.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.globalCompositeOperation = 'source-over'; x.clearRect(0, 0, W, H);
+  const cols = LIVES.map((l) => l.color), n = o.n || 9, tt = t - s.t0;
+  for (let k = 0; k < n; k++) { const r = (j) => { const v = Math.sin((k + 1) * 12.9898 + j * 78.233) * 43758.5453; return v - Math.floor(v); };
+    const y = (0.08 + 0.84 * r(1)) * H, th = (5 + 26 * r(2)) * S, len = (420 + 700 * r(3)) * S, sp = (o.speed || 2600) * (0.7 + 0.6 * r(4)) * S, span = W + len + 200 * S;
+    const x0 = ((r(5) * span + tt * sp) % span) - len, a = (o.alpha || 0.5) * (0.5 + 0.5 * r(6)), c = cols[k % cols.length];
+    const gr = x.createLinearGradient(x0, 0, x0 + len, 0); gr.addColorStop(0, hexA(c, 0)); gr.addColorStop(0.7, hexA(c, a)); gr.addColorStop(1, hexA(c, 0));
+    x.fillStyle = gr; x.beginPath(); x.roundRect(x0, y - th / 2, len, th, th / 2); x.fill(); }
+  // her cut-out, framed exactly as the plate is drawn (cover + zoom, mirrored when the plate is)
+  const cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]), kx = m.width / b.width, ky = m.height / b.height;
+  x.globalCompositeOperation = 'destination-out'; x.save(); if (s.opt.mirror) { x.translate(W, 0); x.scale(-1, 1); } x.drawImage(m, cr.sx * kx, cr.sy * ky, cr.sw * kx, cr.sh * ky, 0, 0, W, H); x.restore(); x.globalCompositeOperation = 'source-over';
+  g.save(); g.globalCompositeOperation = 'multiply'; g.drawImage(STC, 0, 0); g.restore(); }
 function drawImgs(list) {
   for (const im of list) { const b = READY.get(im.url); const cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
     g.save(); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.globalAlpha = im.alpha === undefined ? 1 : im.alpha; g.drawImage(b, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, W, H); g.restore(); }
@@ -1059,7 +1075,9 @@ function draw(t, sc) {
     const st = s.opt && s.opt.strands, rot = st && st.mode === 'rotate';
     if (rot) { const u = seg(t, s.t0, s.t1), a = (-7 * ease.io(u)) * Math.PI / 180, z = 1 - 0.2 * ease.io(u); g.save(); g.translate(W / 2, H / 2); g.rotate(a); g.scale(z, z); g.translate(-W / 2, -H / 2); }
     const RCV = s.opt.carRoad && OUTRO ? carRoadFrame(t, s) : null;
-    drawImgs(sc.imgs); if (RCV) carWindows(RCV, s.opt.carRoad); if (s.opt.road && LANES) roadMask(t, sc); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc);
+    if (s.opt.mirror) { g.save(); g.translate(W, 0); g.scale(-1, 1); drawImgs(sc.imgs); g.restore(); } else drawImgs(sc.imgs);   // film v8: opt.mirror flips a plate left-right (screen direction)
+    if (sc.streak && READY.get(sc.streak)) streaks(t, sc);
+    if (RCV) carWindows(RCV, s.opt.carRoad); if (s.opt.road && LANES) roadMask(t, sc); if (sc.cross) crossing(sc); if (sc.fan && READY.get(sc.fan)) fan(t, sc);
     if (st && STRANDS) strands(t, sc);
     if (rot) g.restore();
     if (s.opt.tips) tips(t, sc);
@@ -1155,7 +1173,7 @@ async function render1(t) {
   const s = shotAt(t);
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   const sc = scene(t); READY.clear();
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(s.opt && s.opt.atom && ATOM[s.opt.atom.dir] ? [{ url: ATOM[s.opt.atom.dir].emptyUrl }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || []), ...(sc.pageImg ? [sc.pageImg] : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.streak ? [{ url: sc.streak }] : []), ...(s.opt && s.opt.atom && ATOM[s.opt.atom.dir] ? [{ url: ATOM[s.opt.atom.dir].emptyUrl }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || []), ...(sc.pageImg ? [sc.pageImg] : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc);
   const z = s.opt && s.opt.toFrame0; if (z) { const t0 = T.duration - z; if (t > t0) {   // the end: cross to the film's own frame 0 (the last frame equals it)
     if (!F0) { const c = document.createElement('canvas'); c.width = W; c.height = H; const keep = g.getImageData(0, 0, W, H); const s0 = scene(0); READY.clear();
