@@ -49,4 +49,38 @@ legible glyphs) / H dense (down to 3.4 px).
   My picks: 3:42 B (colour figure on black) and F (ink on cream paper); 1:34 A (whole frame in glyphs) and B.
   Weak: at full-frame viewing size the glyphs read as painterly texture; they are legible only at 1:1 (crops). The 1:34
   figure is small so her glyphs are tiny. Hair is the weakest area (dark grey glyph smoke). D on 1:34 is sparse.
-- [ ] step 2: animation test (wushu/orchestra, ~2:15), mp4 + strip
+- [x] step 2: `animate.py` (temporal glyph painting), preset colour_all (whole frame).
+  - 2:15 test: song 135.0-141.6 (seq 08 wushu formation -> orchestra shots 1-3), 198 frames, 5.8 s/frame per worker, 731 s wall
+    on 4 workers, ~58k glyphs/frame. `dev/v8_glyph/anim_wushu_orch/f_%05d.jpg` (number = round(t*30)),
+    `dev/v8_glyph/glyph_2m15_wushu_orch.mp4` (1080p, with audio) + `_strip.jpg`.
+  - 1:34 test: song 92.264-95.727 (ca10 night world, whole shot), 104 frames, 3.2 s/frame, 339 s wall on 2 workers.
+    `dev/v8_glyph/anim_night/`, `dev/v8_glyph/glyph_1m34_night.mp4` + `_strip.jpg`.
+  - Committed 720p copies + strips in `review/fable_take2/v8_glyph/`.
+  - Method: shot cut by frame difference; first frame painted fresh; then glyphs carried by DIS optical flow (fwd-bwd check
+    kills occluded ones), rotated by flow curl, scaled by flow divergence, recoloured from the new frame (50% smoothing);
+    crowding cap 1 per (0.6 s) cell for fine layers (coarse layers never culled); holes filled by the painter's error-driven
+    layers on top (threshold x2, new glyphs fade in over 3 frames); underpainting = source blurred 18 px at 70% so a hole is
+    never black; boil: 8% of glyphs re-choose their character by shape fit on every eighth note (beat 0.43225 s from b79.1).
+  - Coherence check: mean |frame - previous| of the output is 0.8-1.5x the source's (a random re-scatter would be far higher).
+  - Known weak: cut detection missed the seq 08 -> orchestra "above" cut at ~139.0 (dark frames), so that shot inherits
+    carried glyphs for its first frames (fill repaints it within a few frames). The 1:34 sky shows darker patches where the
+    underpainting shows through holes. Fast motion + v7 motion blur makes bodies soft (glyphs smear into texture).
+    No matte in animate.py (whole-frame style only); figure-only styles (B/D/F) would need a per-frame matte (tools/matte.py
+    runs on mp4s).
+
+## Commands
+    OMP_NUM_THREADS=4 bash fable/take2/tools/glyphart/stills.sh [names]
+    work_fable/venv_hybrid/bin/python fable/take2/tools/glyphart/animate.py --t0 T0 --t1 T1 --beat0 BARSTART --out DIR --workers 4 [--preset P --set k=json]
+    bash fable/take2/tools/glyphart/encode.sh DIR T0 T1 OUTBASE        # mp4 with song + 8-frame strip
+
+## Wiring into the film (for the compositor; not done here)
+Frames are written with the v7 numbering (f_%05d.jpg, number = round(t*30)), so the cheapest route is the existing per-shot
+`v7dir` mechanism (orchestra.md "For the compositor" item 2 makes `v7dir` per shot):
+1. Render the wanted range with animate.py into e.g. `work_fable/take2/v7/glyph/` and write a `meta.json` there like
+   v7/orchestra's: {"fps":30,"n":N,"t0":T0,"first":round(T0*30),"w":1920,"h":1080}.
+2. In shots.js give those V shots `opt: { v7dir: '/work_fable/take2/v7/glyph', paper: 0 }` and make film.js skip
+   `paperPass` for a shot with `opt.paper === 0` (the glyph frames are finished pictures; the hatch pass on top would muddy them).
+3. For a plate shot (3:42 cb09 catch): run animate.py on the plate frames instead (needs a `--frames DIR` option, ~10 lines:
+   frame_path() from the plate dir, plate fps 24 -> resample to 30), write a new plate dir `plates/catch_glyph/` with
+   meta.json + REAL, and point the shot at it (`next`/id change). With the B/F looks it also needs the matte per frame.
+4. Lyrics/overlays draw on top as for any other source.

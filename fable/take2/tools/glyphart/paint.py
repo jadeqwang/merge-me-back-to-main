@@ -182,12 +182,13 @@ def choose(at, G, cand_scale, tau, rng, cover_pen, coh=None, flow_bias=0.0):
     return out, best
 
 
-def paint(src, at, cfg, rng, focus=(), canvas=None, log=print, matte=None):
+def paint(src, at, cfg, rng, focus=(), canvas=None, log=print, matte=None, dcan=None, fade_new=None):
     H, W = src.shape[:2]
     paper = hexrgb(cfg.get('paper', '#0d0c12'))
     if canvas is None:
         canvas = np.empty_like(src); canvas[:] = paper
-    dcan = canvas.copy()          # decision canvas: same glyphs, flat colour, no keylines
+    if dcan is None:
+        dcan = canvas.copy()          # decision canvas: same glyphs, flat colour, no keylines
     pal = None   # palettes are applied to the source first (posterise)
     skip_paper = cfg.get('skip_paper', True)
     L = lum(src).astype(np.float32)
@@ -270,9 +271,9 @@ def paint(src, at, cfg, rng, focus=(), canvas=None, log=print, matte=None):
         G = G.reshape(M, 256).astype(np.float32)
         gid, best = choose(at, G, s, cfg.get('tau', 0.08), rng, cfg.get('cover_pen', 0.0),
                            coh[py.astype(int), px.astype(int)], cfg.get('flow_bias', 0.0))
-        ok = best > 0 if li > 0 else np.ones(M, bool)
+        ok = best > 0 if (li > 0 or cfg.get('layer0_thresh')) else np.ones(M, bool)
         order = rng.permutation(np.nonzero(ok)[0])
-        op = cfg.get('opacity', 1.0)
+        op = cfg.get('opacity', 1.0) * (1.0 / fade_new if fade_new else 1.0)
         kl = cfg.get('keyline', 0.0) * float(np.clip((s - cfg.get('kl_min', 6)) / 8, 0, 1))
         kcol = hexrgb(cfg['keycol']) if cfg.get('keycol') else None
         vj = cfg.get('val_jit', 0.0)
