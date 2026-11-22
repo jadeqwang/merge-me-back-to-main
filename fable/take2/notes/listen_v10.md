@@ -7,8 +7,7 @@
   `analysis_v3/timing.json` (beats, bars, events, aligned lyric words), cues `review/fable_take2/merge.en.srt`.
 - 2026-11-22: deliverables 1-4 done (below). Phrase maps sent to main; the compositor's working shots.js already uses the
   recommended outro cuts (b145.1 / b147.1 / b152.1 / b155.1 / b157.1 / b161.3).
-- WAITING: v10 renders. When they land, re-run sections "Re-run on v10" below (film_energy + strips) and add per-event
-  offsets (streak arrival, first letter in her hands, last letter closing, "become", each new outro cut, box finished, smile).
+- 2026-11-22: v10 measured (section "v10 measured"). Done; next only on request (e.g. after fixes, re-run the same commands).
 
 ## How this was measured (deliverable 1)
 
@@ -237,3 +236,56 @@ tail; the film's audio offset (0 ms); every v9 cut's offset from table, beat and
 Waiting on her ear (E1-E6): whether an arrival on a quiet downbeat reads as landing; whether per-beat folds over a
 beatless passage feel right; whether a settle can carry the b137 impact without a cut; the outro's pacing and the face hold.
 Nothing was sent to any outside service.
+
+## v10 measured (film_v10_local.mp4, 2026-11-22)
+
+Commands as in "Re-run on v10"; table `film_v10/table_v10.txt` (committed shots.js = the render's). Event frames read from
+contact sheets made with `tools/listen/sheet.sh MASTER T0 EVERY_N COLSxROWS WIDTH OUT` (absolute pts + frame labels) and
+per-frame luma in crops; all under `work_fable/take2/dev/v10_listen/v10ev/` (local, likeness). A frame is 33.3 ms; the
+first frame shown at or after a target time is up to +33 ms late by quantization alone.
+
+**(a) Sync and cuts.** Audio = song at +0.0 ms. 176 table cuts detected (v9 179), 173 within 17 ms of table, 158 within 17 ms
+of a beat. Changed vs v9: the drop-insert wipes (dr09-dr20) now read on the cut frame (their +87-117 ms "internal"
+detections are gone); dr26 still legible +117 ms (no pre-roll, as compositor noted, with dr30). New outro cuts, ms from the
+beat: oa05 -1, oa07 -7, ob01 -12, ob02 +4, ob04 +7, ob05 +13; ob03 is a continuous transition (no hard cut, by design); oa01 is
+no longer a hard cut (settle). cb11 has no hard cut, but the cb11->cb12 cut (229.933, b134.1) shows as a step in the torso
+(luma 95 -> 71, glowing marks drop from ~4 to 2 in one frame).
+
+**(b) Energy** (`film_v10/energy.png`; vis = mean |dY| at 192 px): b130-b133 1.58 -> 1.61, b133-b135 0.61 -> 1.25,
+riser b135-b137 1.29 -> 1.54, outro tail b149-end 2.12 -> 1.31 (log burst gone), all else unchanged. **b130-b137 still does
+not rise with the riser**: it doubled in b133-b135 but stays the stillest stretch of the back half and jumps only after b137.
+Caveat: small letters fusing move few pixels at 192 px, so this undercounts the merge's activity as seen at full size.
+
+**(c) Per-event offsets** (strips `strips/v10_catch_p00..05`, `v10_outro_p00..05`; sheets in `v10ev/`)
+
+| event | target | measured | offset |
+|---|---|---|---|
+| streak enters cb01 | 207.819 | head on screen at the left edge on the cut frame 6235 (207.833) | +14 ms (0 fr) |
+| streak reaches its mark | 209.526 | ease-out: head x 1345 px at 209.0, 1375 at 209.2, 1380 at 209.3, 1385 at 209.5; within 5 px of rest from ~209.30 | **about -230 ms (-7 fr)**: it reads as arrived before the bar; the cut is +7 ms |
+| first letters in her hands (cb08) | 220.45 | glow only at 220.467; first letters 220.500-220.533 (f6615-16), pour by 220.60 | +50 to +83 ms (1.5-2.5 fr) |
+| fusion steps (to 16, 8, 4, 2, 1) | design 228.69, 229.12, 229.54, 229.97, 230.39 (beat +35 ms) | each fusion: slide starts ~+60-90 ms after the beat, glow peaks 228.867, 229.27-229.30, 229.70-229.77, 230.10-230.13, 230.57; new mark resolved ~+290 ms (229.367, 229.80). The step at b134.1 lands on the cb11->cb12 cut (229.933) | **glow peaks +190 to +230 ms after b133.2, b133.3, b133.4, b134.1, b134.2 = on the off-beat 8th ("and"), 6-7 fr after the beat** |
+| last mark gone | 231.210 | violet R shrinks 230.97-231.13, last seen f6935 (231.167, under the flash onset), gone f6936 (231.200) | -10 ms (0 fr) |
+| flash | (become) | starts f6935 231.167 | -43 ms |
+| eyes open | 231.210 | closed through 231.200, double (closed + open) 231.233, open 231.267 | +57 ms (2 fr) |
+| daylight full | 235.038 | background luma (right half) 90 % of final at 233.3, 98 % at 233.8, flat after | **-1.2 s**: ease-out, visually full by b136.2 |
+| settle into likeness | 235.038 | impact frame unchanged (drawn Jade, static to ~235.37); growth visible 235.37-235.47; likeness cross-fade 235.57-235.95 with a visible double face (drawn + traced, different scale) | **growth +330-430 ms, likeness +530-900 ms; nothing changes on the impact** |
+| violet branch leaves graph | 255.485 | absent f7664, present whole (branch + label) f7665 255.500 | +15 ms (0 fr) |
+| commit line lands | 262.301 | fade-in f7869 262.300, full f7871 262.367 | -1 ms / full +66 ms |
+| car box fully typed | (b158.3 271.689) | "plausib" 271.667, complete with marker by 271.80 (~271.73 at 30 cps) | about +40 ms |
+| car box gone | 272.543 | text fades 272.233 -> gone f8177 272.567 | +24 ms (fade starts -310 ms) |
+| her turn | 272.543 | looks left to 272.60, blink 272.633-272.767, eyes to camera 272.80, settled with the almost-smile ~272.93 | start +90 ms, eyes on camera +257 ms (8 fr) |
+
+Off by more than 2 frames: streak arrival (eases in, at rest ~7 fr before b122); fusion glows on the "and" of each beat
+(+6-7 fr; they do sit on the 8th-note pulse, so this may be right musically, but not "on the beat" as designed); daylight
+full 1.2 s early; settle into her likeness 0.3-0.9 s after the impact with nothing on the impact frame; eyes to camera +8 fr
+(the blink-turn starts +3 fr, probably fine).
+
+Looks wrong on the frames (for the main thread to judge): the double face during the settle (235.57-235.87); the R and the
+flash overlap so the last mark's exit is hidden under the flash; merge plates are 24 fps in a 30 fps film (one repeated
+frame in five, visible as zero-difference frames 6854, 6859, 6864 ...: a slight judder on the fusions, as on every plate);
+oa05 (245.27-248.67) is a nearly static back view through the loudest groove. Dev HUD text (bottom right) is burned into the
+local master as in v9.
+
+Measured: all offsets above, sync, cut table, energy. Waiting on Jade's ear: whether the streak should still be moving on
+the bar (E1); whether fusions on the "and" feel like the pulse (E2); whether "become" + flash + eyes land as one moment (E3);
+whether the impact holds with a settle that starts 0.3 s later (E4); E5/E6 pacing.
