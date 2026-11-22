@@ -147,11 +147,16 @@ const CROSS = [
 // measured by tools/slip.py (DIS flow over the standing shoe minus the ground's homography): every standing pair locked exactly, she starts
 // further back and catches up stance by stance, 0 at `reach` (the wipe). wetlab from the source plate (supersedes v4: v4's constant
 // shift slid her 4 px on the held frames of a plate drawn on twos). Measured mean |slip| per plate frame: wetlab 4.45 -> 0.50, ames 1.45 -> 0.0.
-const CROSS_V4 = { cross_wetlab: ['cross_wetlab_v9', 'cross_wetlab_v4'], cross_ames: ['cross_ames_v9'] };
+// va07 (tried, kept v8): a new plate (plates_v9: cross_hackerhouses_v9, planted feet, no glide) relocked here (cross_hackerhouses_v9_lock: tools/relock.py
+// with --keylane, the matte takes the lane line), reach 3.25 (its doorway), so the window is clip 1.74-3.25 before the wipe; the old plate is the fallback.
+const CROSS_V4 = { cross_wetlab: ['cross_wetlab_v9', 'cross_wetlab_v4'], cross_ames: ['cross_ames_v9'],
+  /* cross_hackerhouses: [{ id: 'cross_hackerhouses_v9_lock', reach: 3.25 }] -- NOT used: in the window (clip 1.74-3.25) she starts at the
+     doorway and covers almost no ground before the wipe; v8's plate runs the lane's length (dev/v9/feet/va07_v8_strip.jpg vs va07_v9_strip.jpg) */ };
 CROSS.forEach(([id, m, life, c], i) =>
   P(20 + i, 21 + i, id, 'missing', `Crossing ${i + 1} of 4: a cel-drawn branch-Jade runs her lane toward a doorway of light; as she crosses, the whole picture turns into her medium: ${m}.`,
     { code: 'P+C', row: 'b20-23', opt: { push: 0, cross: { life, at: 0.58, end: 0.84, maxSpeed: 1.5, life0: 1.0, ...c }, lyr: { x0: 0.04, x1: 0.5, align: 'left' },
-      ...(CROSS_V4[id] ? { next: [].concat(CROSS_V4[id]).map((nid) => ({ id: nid, opt: {} })) } : {}) } }));
+      ...(CROSS_V4[id] ? { next: [].concat(CROSS_V4[id]).map((n) => (typeof n === 'string' ? { id: n, opt: {} }
+        : { id: n.id, opt: { cross: { life, at: 0.58, end: 0.84, maxSpeed: 1.5, life0: 1.0, ...c, reach: n.reach } } })) } : {}) } }));
 P(24, 25, 'cross_violet', 'missing', 'The fifth road has no doorway: the violet one runs out into engraved dark, and she keeps going.', { row: 'b24' });
 P(25, 26, 'main_light', 'missing', 'Close on cupped hands; a light kindles.', { row: 'b25', opt: { clip0: 2.0, clip1: 4.5, lyr: { y: 'top' },
   next: [{ id: 'main_light_v3', opt: { clip0: 1.6, clip1: 3.35, push: 0 } }, { id: 'main_light_v2', opt: { clip0: 0.0, clip1: 1.75, push: 0 } }] } });   // film v4: main_light_v3 (one slow opening, never closes): 1.6-3.35 (plates_v4)   // film v3: main_light_v2 take 2 (the hands move in waves; locked camera): 0.0-1.75 (plates_v3)   // the light appears from about 2.2 s (director: use 2.0-4.5)

@@ -1064,3 +1064,15 @@ Items 1-4 done and committed (c5a8732, febb4dd, 877309d, f6446e7, 6370801). glyp
 shots, only oa01 (likeness, ?likeness=0) is a card. NEXT: item 5 when the coordinator says the sources are complete: re-read
 glyph_v9.md's Wiring table (new rows: folder names, oa03 day_eyes_v2_glyph is picked up automatically), then
 `WORKERS=4 fable/take2/tools/render_film.sh film_v9 "" "likeness=0"`, check.py, the local render, review_v9.html (as v8's commands).
+
+### va07 new plate (coordinator add-on) -- tried, v8 kept
+- `cross_hackerhouses_v9` (plates agent) relocked: `relock.py cross_hackerhouses_v9 cross_hackerhouses_v9_lock dev/v9/feet/off_hh9.json
+  --kit kit/fig_cross_hackerhouses_v9 --door 0.20,0.07,0.38,0.50 --keylane 121 --fill -4,4,-6,6,-10,10,-14,14,a121`. New relock options:
+  `--keylane R` (the matte takes the whole lane strip: the lane's place from the empty frame R, grown 15 px, is cut from her except
+  shoe-white/navy, components < 15 % dropped, cut again after the grow: no doubled lane) and `aNNN` absolute fill frames. Filling from
+  frame 121 first doubled the lane (it drifts a few px): neighbours first, 121 last. Remaining: small notches in the lane by the shoe.
+- Slip (plate px/plate frame, 43-78): source 2.97 (max 11.3) -> lock 0.13 (max 0.2).
+- Film strips dev/v9/feet/va07_v8_strip.jpg vs va07_v9_strip.jpg (38.5-40.3, every 3rd frame): with reach 3.25 the window starts at
+  clip 1.74, where she is already at the doorway; she covers almost no ground before the wipe. v8 runs the lane's length. Per the
+  coordinator's rule: v9 reads worse, v8 kept (wiring commented out in shots.js CROSS_V4). An earlier window needs a faster clip rate
+  (maxSpeed 2 -> c0 1.24) or a later wipe; not done.
