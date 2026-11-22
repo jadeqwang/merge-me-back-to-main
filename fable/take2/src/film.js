@@ -745,7 +745,8 @@ function streak(t, s) { const o = s.opt.streak, ta = T.beat(o.at[0][0], o.at[0][
   for (let i = 0; i <= N; i++) { const u = i / N, a = (1 - u) * (1 - u), b = 2 * u * (1 - u), c = u * u; pts.push([a * P[0][0] + b * P[1][0] + c * P[2][0], a * P[0][1] + b * P[1][1] + c * P[2][1]]); if (i) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); }
   const len = L[N], back = [P[0][0] - P[1][0], P[0][1] - P[1][1]], bl = Math.hypot(back[0], back[1]), bd = [back[0] / bl, back[1] / bl];
   const at = (d) => { if (d <= 0) return [P[0][0] + bd[0] * -d, P[0][1] + bd[1] * -d]; if (d >= len) return pts[N]; let i = 1; while (L[i] < d) i++; const f = (d - L[i - 1]) / (L[i] - L[i - 1]); return [lerp(pts[i - 1][0], pts[i][0], f), lerp(pts[i - 1][1], pts[i][1], f)]; };
-  const u = clamp01((t - ta + HF) / (tb - ta)), head = len * ease.out(u), fa = o.fade ? 1 - clamp01((t - tb) / o.fade) : 1; if (fa <= 0) return;
+  const u = clamp01((t - ta + HF) / (tb - ta)), head = len * (o.move === 'on' ? u * (1.3 - 0.3 * u) : ease.out(u)),   // v10: 'on' = still moving (0.7x mean speed) when the head reaches the mark
+    fa = o.fade ? 1 - clamp01((t - tb) / o.fade) : 1; if (fa <= 0) return;
   const txt = o.text, n = Math.min(o.n || 40, txt.length), px0 = (o.px || 44) * S, adv = px0 * 0.62;
   g.save(); g.textBaseline = 'middle'; g.textAlign = 'center';
   let d = head; for (let i = 0; i < n; i++) { const ch = txt[txt.length - 1 - ((i + (o.skip || 0)) % txt.length)], k = i / n, px = px0 * (1 - 0.5 * k); d -= i ? adv * (1 - 0.5 * k) : 0;
@@ -1152,6 +1153,7 @@ function draw(t, sc) {
   if (s.opt && s.opt.white && sc.eff === 'plate') { const f = fr(t, s.t0); if (f <= 1) { g.fillStyle = `rgba(255,250,240,${f === 0 ? 0.85 : 0.4})`; g.fillRect(0, 0, W, H); } }   // 2-frame white flash (impact, snare)
   grain(t); vignette();
   if (sc.settleIn) settleIn(t, sc);
+  if (s.opt && s.opt.settleOut) settleOut(t, sc);
   if (NOTEXT) return;
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.lane && !(sc.cross && sc.cross.u >= 1)) lane(t, sc);
   if (sc.eff === 'plate' && LANES && s.opt && s.opt.road) roadLane(t, sc);
@@ -1213,6 +1215,19 @@ async function settlePrep(s) { const tp = s.t0 - 1 / FPS, s0 = scene(tp); READY.
   await Promise.all([...s0.imgs, ...(s0.tail || [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   NOTEXT = true; try { draw(tp, s0); } finally { NOTEXT = false; }
   const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(canvas, 0, 0); SETTLE = { id: s.id, c }; }
+// film v10 C1 (revised): opt.settleOut = { from (song s), mix (frames), a, b } on the shot before the likeness: from `from` to the shot's last
+// `mix` frames the picture (source, grain, vignette; the type stays put) grows about her eyes from a to b (ease in-out), then holds that
+// scale while the next shot's plate (sc.into, the likeness, when it is drawn as a plate) mixes in, k/(mix+1) on the k-th of those frames;
+// the next shot's first frame is the likeness alone. Above the grown frame's top edge its top rows are stretched (no gap).
+let SOC = null;
+function settleOut(t, sc) { const o = sc.s.opt.settleOut, te = sc.s.t1 - o.mix / FPS; if (t < o.from - HF) return;
+  const e = ease.io(clamp01((t - o.from) / (te - o.from))), k = Math.exp(lerp(0, Math.log(o.b[2] / o.a[2]), e)), mx = lerp(o.a[0], o.b[0], e) * S, my = lerp(o.a[1], o.b[1], e) * S;
+  if (!SOC) { SOC = document.createElement('canvas'); SOC.width = W; SOC.height = H; } const x = SOC.getContext('2d'); x.drawImage(canvas, 0, 0);
+  const ox = mx - o.a[0] * S * k, oy = my - o.a[1] * S * k;
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.imageSmoothingQuality = 'high';
+  if (oy > 0) g.drawImage(SOC, 0, 0, W, 3, ox, 0, W * k, oy + 1);
+  g.drawImage(SOC, ox, oy, W * k, H * k); g.restore();
+  if (sc.into && sc.into.length) { const f = Math.round((t - te) * FPS) + 1; if (f >= 1) { const a = clamp01(f / (o.mix + 1)); drawImgs(sc.into.map((im) => ({ ...im, alpha: (im.alpha === undefined ? 1 : im.alpha) * a }))); } } }
 let LOCK = Promise.resolve();
 function render(t) { const p = LOCK.then(() => render1(t)); LOCK = p.catch(() => {}); return p; }
 async function render1(t) {
@@ -1220,7 +1235,8 @@ async function render1(t) {
   if (s.kind === 'proof' && !ALLCARDS) { await PROOF.render(t); const sc = { t, s, eff: 'proof' }; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; noShadow(); if (HUD) hud(t, sc); return sc; }
   if (s.opt && s.opt.settleIn && effKind(s) === 'plate' && t < s.t0 + s.opt.settleIn.dur && !(SETTLE && SETTLE.id === s.id)) await settlePrep(s);
   const sc = scene(t); READY.clear(); if (s.opt && s.opt.settleIn && sc.eff === 'plate') sc.settleIn = true;
-  await Promise.all([...sc.imgs, ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.streak ? [{ url: sc.streak }] : []), ...(s.opt && s.opt.atom && ATOM[s.opt.atom.dir] ? [{ url: ATOM[s.opt.atom.dir].emptyUrl }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || []), ...(sc.pageImg ? [sc.pageImg] : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
+  if (s.opt && s.opt.settleOut && t >= s.t1 - s.opt.settleOut.mix / FPS - HF) { const nx = SH[s.i + 1]; if (nx && effKind(nx) === 'plate') { sc.into = []; plateDraw(nx, t, nx.src, sc.into); } }
+  await Promise.all([...sc.imgs, ...(sc.into || []), ...(sc.flash || []), ...(sc.cross ? sc.cross.life : []), ...(sc.fan ? [{ url: sc.fan }] : []), ...(sc.settle ? [{ url: sc.settle }] : []), ...(sc.streak ? [{ url: sc.streak }] : []), ...(s.opt && s.opt.atom && ATOM[s.opt.atom.dir] ? [{ url: ATOM[s.opt.atom.dir].emptyUrl }] : []), ...(sc.win || []), ...(sc.wins || []), ...(sc.tail || []), ...(sc.pageImg ? [sc.pageImg] : [])].map(async (im) => READY.set(im.url, await bitmap(im.url))));
   draw(t, sc);
   const z = s.opt && s.opt.toFrame0; if (z) { const t0 = T.duration - z; if (t > t0) {   // the end: cross to the film's own frame 0 (the last frame equals it)
     if (!F0) { const c = document.createElement('canvas'); c.width = W; c.height = H; const keep = g.getImageData(0, 0, W, H); const s0 = scene(0); READY.clear();

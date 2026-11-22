@@ -353,12 +353,12 @@ V(98, 100, '2:44', 'From above the bodies spell MAIN; hold; they rise as one.', 
 P(100, 101, 'drop_face', 'missing', 'Close: her face in the sun, wind in her hair, singing the wordless "ooh" (172.5).', { row: 'b100', opt: { next: { id: 'drop_face_v2', opt: { songLock: true, push: 0 } } } });
 V(101, [101, 3], '2:57', 'Last phrase.', { row: 'b101-103' });
 // film v6 A5: the cut rate rises into the end of the drop: two 1-beat lives in b101, two half-beat ones in b103, four in the last two beats of b104
-shot([101, 3], [101, 4], 'S', 'plate', 'chezjj', 'exists', 'Life insert (hacker houses: her at the laptop), pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { ...HATCH, seed: 31 } } });
-shot([101, 4], 102, 'S', 'plate', 'sandstorm', 'exists', 'Life insert (open source: her at the lectern), pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { ...HATCH, seed: 37 } } });
+shot([101, 3], [101, 4], 'S', 'plate', 'chezjj', 'exists', 'Life insert (hacker houses: her at the laptop), pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { ...HATCH, seed: 31, ...(V10 ? { pre: 3 } : {}) } } });
+shot([101, 4], 102, 'S', 'plate', 'sandstorm', 'exists', 'Life insert (open source: her at the lectern), pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { ...HATCH, seed: 37, ...(V10 ? { pre: 3 } : {}) } } });
 shot(102, [102, 3], 'S', 'plate', 'drop_hero_4', 'missing', 'Insert: her hair and jacket whip through the turn, lit gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: { id: 'drop_hero_4_v2', opt: { push: 0, white: false, clip0: 1.2, speed: 1.5 } } } });
 V([102, 3], 103, '2:58', 'Tornado kick.', { row: 'b101-103' });
-shot(103, [103, 1.5], 'S', 'plate', 'home', 'exists', 'Life insert (parenthood: her with the kids, from behind them), half a beat, pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { frames: 4, seed: 41 } } });
-shot([103, 1.5], [103, 2], 'S', 'plate', 'ins_guitar', 'exists', 'Life insert (rna-band: the strum), half a beat, pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 0.95, push: 0.03, hatch: { frames: 4, seed: 43 } } });
+shot(103, [103, 1.5], 'S', 'plate', 'home', 'exists', 'Life insert (parenthood: her with the kids, from behind them), half a beat, pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 1.0, push: 0.03, hatch: { frames: 4, seed: 41, ...(V10 ? { pre: 3 } : {}) } } });
+shot([103, 1.5], [103, 2], 'S', 'plate', 'ins_guitar', 'exists', 'Life insert (rna-band: the strum), half a beat, pencil-hatch wipe.', { row: 'b101-103', opt: { clip0: 0.95, push: 0.03, hatch: { frames: 4, seed: 43, ...(V10 ? { pre: 3 } : {}) } } });
 V([103, 2], [103, 3], '2:58', 'Tornado kick, landing.', { row: 'b101-103' });
 shot([103, 3], 104, 'S', 'plate', 'drop_hero_5', 'missing', 'Insert: the landing, dust rising gold.', { row: 'b101-103', opt: { push: 0.035, white: true, next: [{ id: 'drop_hero_5_v3', opt: { push: 0, clip0: 0.62 } }, { id: 'drop_hero_5_v2', opt: { push: 0, clip0: 0.05 } }] } });   // v3 (plates_v3): feet strike at 0.67 s, so it lands on the cut with the flash   // v2: feet touch down at about 0.1 s: on the cut, with the white flash
 V(104, [104, 3], '2:59', '1,024 salute the sun.', { row: 'b104' });
@@ -442,7 +442,7 @@ section('chorus2');
 // read. It enters at y 0.28, where vb10's last letters (the circle's) leave east at the cut (glyph_v10.md). cb03: a second streak enters on that cut from her side and settles into the city at the top of the plate's beam on b123.4.
 const HANDOFF_TXT = 'HANDOFF.md  Read this first.  Where things stand.  What it cost to learn.  What comes next.';
 V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: V10
-  ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52 } }
+  ? { streak: { text: HANDOFF_TXT, path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52, move: 'on' } }
   : { pageFly: { from: [-0.04, 0.47], to: [1.06, 0.36], h: 30, arc: 0.03 } } });
 P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row: 'b122-123', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02, lyr: { x0: 0.56, x1: 0.97, align: 'right' },
   next: [...G10(['c2_lookup_v2_glyph10f'], { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 }),   // film v10: de-shimmered (boil 0, background frozen)
@@ -474,18 +474,22 @@ shot(130, 132, 'K+S', 'code', 'fold', 'missing', 'The twelve fold into her, one 
   next: G10(['fold_merge10b', 'fold_merge10'], { clip0: 0, speed: 1, push: 0 }, 'plate') } });
 P(132, 134, 'patch_hold', 'missing', "The poster frame: one Jade drawn in all twelve mediums at once, on white paper: full colour and daylight arrive.", { row: 'b132-133', opt: { lyr: { x0: 0.03, x1: 0.32, align: 'left' },
   next: G10(['patch_hold_merge10b', 'patch_hold_merge10'], { clip0: 0, speed: 1, push: 0 }) } });
-P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136', opt: { clip0: 0, clip1: 4.95, lyr: { x0: 0.03, x1: 0.32, align: 'left' },
-  next: G10(['patch_settle_merge10b', 'patch_settle_merge10'], { clip0: 0, clip1: undefined, speed: 1, push: 0 }) } });   // the last letter sinks in on "become" (231.210)
+// film v10 C1, revised on the listen agent's measure (the impact frame must carry the change; no double face): cb12 grows onto her eyes
+// BEFORE the bar, from 234.40 (under the 234.62 snare pickup) to the hit, ending exactly matched in scale and place to the tracing's eyes
+// (drawn 943.5,148 / 77 px apart; tracing 915,342 / 170 px, measured on film v9 frames); the likeness (next shot, oa01) mixes in over
+// the last 2 frames before the bar and is whole on the impact frame (235.038). film.js settleOut.
+const SETTLE_OUT = { from: 234.40, mix: 2, a: [943.5, 148, 77], b: [915, 342, 170] };
+P(134, 137, 'patch_settle', 'missing', 'The mediums settle into the clean, fully coloured Jade in daylight. Riser; snare pickup at 234.62.', { code: 'P+C', row: 'b134-136', opt: { clip0: 0, clip1: 4.95, lyr: { x0: 0.03, x1: 0.32, align: 'left' }, ...(V10 ? { settleOut: SETTLE_OUT } : {}),
+  next: G10(['patch_settle_merge10c', 'patch_settle_merge10b', 'patch_settle_merge10'], { clip0: 0, clip1: undefined, speed: 1, push: 0 }) } });   // the last letter sinks in on "become" (231.210)
 
 // ------------------------------------------------------------------ Outro A: bars 137-148 (full drums; has to top the drop)
 section('outro_a');
 // the sung likeness shots (code 'L'): used only if work_fable/take2/plates/like_sing1|2 exist locally; ?likeness=0 forces the cards
 // (every committed review file is rendered with likeness=0: likeness clips stay out of the public repo)
-// film v10 C1: the drawing settles into the tracing instead of a hard cut (film.js settleIn: cb12's last frame grows onto her eyes and fades
-// over 0.9 s; eyes measured on film v9 frames: drawn 943.5,148 / 77 px apart at 234.99, the tracing 915,342 / 170 px at 235.3) and no slab
-// over her face: "Back to main" stays in cb12's place, the left column x 0.03-0.32 (her face is x 0.36-0.58)
+// film v10 C1: the drawing settles into the tracing instead of a hard cut, and no slab over her face: "Back to main" stays in cb12's place,
+// the left column x 0.03-0.32 (her face is x 0.36-0.58). The move is on cb12 (opt.settleOut, defined there).
 shot(137, 139, 'L', 'plate', 'like_sing1', 'missing', 'The switch: on the impact the drawing becomes Jade herself, her traced likeness in the same jacket, singing.', { row: 'b137-138', opt: { songLock: true, push: 0,
-  ...(V10 ? { settleIn: { dur: 0.9, a: [943.5, 148, 77], b: [915, 342, 170] }, lyr: { x0: 0.03, x1: 0.32, align: 'left' } } : {}) } });
+  ...(V10 ? { lyr: { x0: 0.03, x1: 0.32, align: 'left' } } : {}) } });
 // b139-140 and b141-142: the town (opt.code 'town'): white paper, far pencil hills, the twelve facades (cut out) along the road, the road =
 // main's written lane, dense (she is merged); side travel with parallax; a chip with the branch name under each building
 // film v2: dir 1 = the world slides right (she faces frame left, unmirrored: her sleeve patch has text); x 0.58 gives her lead room on the left
