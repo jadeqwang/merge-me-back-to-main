@@ -49,3 +49,21 @@ the only Verse 2 plates with a pencil in hand are the vio_* writing plates, `pag
 
 ## Spend
 3 edits x $0.134 = **$0.40** (see `docs/spend_ledger.jsonl`).
+
+## Outro A, b140 face: `day_eyes` (from `outro_ideas_v8.md` concept A)
+Still `v8_day_eyes_a2` (spec in `gen/stills.json`, ONE reference: `day_run` still): chest-up three-quarter, faces RIGHT (as the town runner
+does; the ideas note says frame left, the film's runner runs right, so this matches the film), large eyes, centre parting, cream paper,
+the same cel style as the kit runner; `a1` (calmer, more static) kept as an alternative. Clip: seedance 2.5, 5 s, camera_fixed
+(`gen_clips.py` id `day_eyes`, take 1, `media/gen/t2_day_eyes_t1_6144aa4042.mp4`), intake as `work_fable/take2/plates/day_eyes` (121 frames, 24 fps).
+Strip: `work_fable/take2/dev/v8_plates/day_eyes_strip.jpg`; face crops `day_eyes_face.jpg`. Eyes open 0-0.8 s, close at ~0.85-1.0 s and stay
+closed to the end; she keeps running (head bob, fist swing), hair streams throughout. Mouth: small gentle closed smile from the still
+all through, nothing grows in the last second; nothing blooms on the paper (plain cream; the still's blue pencil hatch fades out of the
+clip). No other figure. Weak points: the plate has no buildings (the compositor puts facade colour behind her, as in the note);
+head drifts a little lower in frame over the clip (compare 0 s and 4.75 s); the sleeve patch is not in view.
+Usable window: eyes-closed beat at clip 0.85-1.0 s; for four beats (1.7 s) plus handles use clip 0.4-2.6 (snare on the close), or 0.0-2.5.
+
+| old id | new id | where used | notes |
+|---|---|---|---|
+| `intuit_piano` (b140.3-141.1) | `day_eyes` | b140.3-141.3, the second shot of the town in `shots.js` (line ~470, `INTUIT(...)`) | window clip 0.4-2.6 puts the eye close at 0.5-0.6 s in; to put it on the b140.3 snare start clip at ~0.7 so the lids fall at 0.15 s. Keep screen direction (she faces right). Mouth closed. |
+
+Spend this task: 2 stills ($0.269) + 1 clip ($1.156) = **$1.42**. Round total (with the bun edits) about $1.82.

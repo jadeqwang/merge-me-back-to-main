@@ -1327,3 +1327,7 @@
 {"ts": "2026-11-22T01:24:27Z", "model": "google/nano-banana-pro", "tag": "t2_v8_nopencil_page_reveal90", "ok": true, "est_usd": 0.1344, "where": "box"}
 {"ts": "2026-11-22T01:24:41Z", "model": "google/nano-banana-pro", "tag": "t2_v8_nopencil_page_reveal118", "ok": true, "est_usd": 0.1344, "where": "box"}
 {"ts": "2026-11-22T01:24:53Z", "model": "google/nano-banana-pro", "tag": "t2_v8_nopencil_page_reveal102", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T02:04:39Z", "model": "google/nano-banana-pro", "tag": "t2_v8_day_eyes", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T02:04:43Z", "model": "google/nano-banana-pro", "tag": "t2_v8_day_eyes", "ok": true, "est_usd": 0.1344, "where": "box"}
+{"ts": "2026-11-22T02:05:03Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_eyes_t1", "job": "mergemain/t2_day_eyes_t1-6144aa4042", "event": "submit", "ok": null, "est_usd": 1.156, "where": "box"}
+{"ts": "2026-11-22T02:13:17Z", "model": "bytedance/seedance-2.5", "tag": "t2_day_eyes_t1", "job": "mergemain/t2_day_eyes_t1-6144aa4042", "event": "result", "ok": true, "est_usd": 1.156, "where": "box"}

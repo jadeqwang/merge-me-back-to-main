@@ -1211,6 +1211,14 @@
     "work_fable/take2/dev/v8_plates/ref_page_reveal_f118.jpg"
    ],
    "prompt": "Edit this picture and change only one thing. Two yellow pencils are stuck crosswise through the black hair bun on top of her head. Remove exactly ONE of them: the pencil that runs from the lower left to the upper right of the bun, whose purple eraser end sticks out at the upper right of the bun and whose sharpened end points down to the lower left over the back of her head. Where that pencil was, continue her black inked hair strands and the black starry night sky naturally, with no gap, smear or trace of it. Keep the other pencil in the bun exactly as it is: its sharpened tip sticks out at the upper left of the bun and its purple eraser at the lower right. Keep everything else exactly identical: the same drawing style and line work, the same framing and size, the same pose and face, the pencil in her hand and the notebook, the dish, the sky and the stars. After the edit there is exactly one pencil in her hair. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v8_day_eyes",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v8_plates/ref_day_run.jpg"
+   ],
+   "prompt": "Redraw this picture as a close-up of the same young woman's head and shoulders while she runs, in exactly the same clean anime cel drawing style, line weight, colours and cream paper as the reference. Three-quarter view: her face is turned toward the right side of the picture, nearly facing us but angled to the right, her running direction is to the right. Chest-up framing: her head fills about half the picture height, with her shoulders in the white cropped bomber jacket with an orange band and orange headphones around her neck. Her face: an oval face with a tall clear forehead, black hair parted exactly in the centre with no fringe, large very dark brown eyes with a clear double eyelid, soft straight brows, a small straight nose, natural closed lips in a calm gentle expression, not a wide smile, no makeup. Both eyes are OPEN and looking ahead. Her long black hair streams back behind her to the left in the wind. Plain cream paper background with a faint pale blue pencil hatch at the top, no buildings, no ground, no pencil in her hand. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
   }
  ]
 }

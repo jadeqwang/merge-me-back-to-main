@@ -256,6 +256,16 @@ C["c2_lookup_v2"] = ("c2_lookup_far_a2", DAWN_, ALIVE, {"last": "c2_lookup_a1", 
 C["c2_lookup_v2b"] = ("c2_lookup_far_a2", DAWN_, ALIVE, {"fixed": True})
 VIEWS.update({"c2_lookup_v2": "none", "c2_lookup_v2b": "none"})
 
+# ---- Film v8: outro A, b140 face (plates agent; notes plates_v8.md) ----
+EYES = ("She runs at a steady sprint toward the right of the picture, seen close in three-quarter view, chest up. Her head bobs very slightly with the stride and her shoulders and fist swing with a calm, even, running rhythm. "
+        "Her long black hair streams back to the left in the wind continuously, ripples and flicks, never still. For the first second her large dark eyes are open and look ahead. "
+        "Then, at about one second, she slowly closes both eyes, lids down, and keeps them gently closed for the rest of the shot while she keeps running exactly as before, calm, trusting, not slowing down. "
+        "Her mouth stays closed in a calm, neutral, relaxed line the whole time: she does not smile more, does not grin, does not open her mouth, does not speak. "
+        "Nothing grows, blooms or appears anywhere on the paper; the plain cream paper stays empty. She is the only person and no other figure or hand appears. "
+        "The camera is locked off: no zoom, no pan, no cut; the framing stays exactly as in the first frame.")
+C["day_eyes"] = ("v8_day_eyes_a2", "a flat cel-shaded anime drawing on cream paper", EYES, {"fixed": True})
+VIEWS["day_eyes"] = "none"
+
 def ref(src, out):
     os.makedirs(os.path.dirname(out), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-vf", "scale=2048:1152:flags=lanczos", "-q:v", "2", out], check=True)
