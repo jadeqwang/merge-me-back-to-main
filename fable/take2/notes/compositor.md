@@ -1076,3 +1076,9 @@ glyph_v9.md's Wiring table (new rows: folder names, oa03 day_eyes_v2_glyph is pi
   clip 1.74, where she is already at the doorway; she covers almost no ground before the wipe. v8 runs the lane's length. Per the
   coordinator's rule: v9 reads worse, v8 kept (wiring commented out in shots.js CROSS_V4). An earlier window needs a faster clip rate
   (maxSpeed 2 -> c0 1.24) or a later wipe; not done.
+
+### check2 (coordinator: style 2 and the drop complete)
+All four folders have meta now (va03 first 947 n 52 crop set; ca10 2768/104; bu 3974/416; drop 4584/802) and day_eyes_v2_glyph: they were
+already wired (no code change). Local likeness, hud=0: stills dev/v9/check2/v9_<t>.png and v8-look (`glyph=0`) v8_<t>.png at 31.92,
+93.18, 133.42, 136.0, 139.15, 141.0, 153.65, 156.5, 241.71; sheet check2/all.jpg (left `glyph=0`, right v9); drop_zoom.jpg (slash marks
+vs v8 hatch at 153.65). 720p clips with audio: check2/wushu_orch.mp4 (132.4-142.5), check2/drop.mp4 (152.7-160) (1080p masters *_1080.mp4).
