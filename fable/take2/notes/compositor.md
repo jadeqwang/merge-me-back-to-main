@@ -954,3 +954,5 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
   writes a patch (fixed path, revealed from the foot outward over 0.09 s, glow pop), life k's colour and message in LIVES order (piano
   pink, violin gold, wushu coral, biology green, phd cyan, poet magenta), joins its neighbours and crossfades to MAIN by ~0.5 s age.
 - Checked on stills dev/v8/outro/steps2.jpg (243.56-245.2): patches land under the front foot, one per 2/3 beat.
+- Range render 235-280 (likeness=0, audio, 4 workers, 74 s): dev/v8/outro/outro_v8.mp4, beat strip dev/v8/outro/outro_beats_v8.jpg
+  (b137.1-b161.4). day_eyes had not landed: b140.3-141.3 shows the run. Next: wire day_eyes from plates_v8.md when its row appears.
