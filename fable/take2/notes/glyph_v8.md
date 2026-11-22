@@ -105,3 +105,45 @@ Judgement: 3:42 F2 is the best image so far (a pen drawing whose every mark is a
 E2/C2 3:42: skin is now dense legible glyph marks with gaps; hair reads as strands. 1:34 night: the background reads as
 composed glyphs, but her figure is small and murky (few marks, dark trousers = paper on black); weaker than 3:42.
 Next if wanted: night figure contrast (lift fg tone, finer cells), a mark-based animate (carry marks by flow, as animate.py does).
+
+## Jade's direction after iterations 1-2 (relayed 2026-11-21), verbatim
+"I think we should have 2 different styles of glyph art. * 3m42_catch_B_colour_figure.jpg is very good for these anime close-ups; I like all scripts full frame. * For 1m34_night_D_ink_palette.jpg and glyph_2m15_wushu_orch_strip.jpg, let's try another experimental type, where we have all the same font size and English glyphs only, and we end up with a similar resolution to the hashes. Can we see what that looks like?"
+Coordinator's plan from it (replaces the iteration-3 list: no mark animation, no E2/C2 skin work):
+- Style 1 (anime close-ups): paint.py preset colour_figure (look B), all scripts, full frame incl. background. Approved.
+- Style 2 (new, priority): Latin/ASCII only, one font size, density/resolution matched to the hatch strokes, D ink palette on black.
+
+### Style 1 (anime close-ups), approved: paint.py look B, all scripts, full frame
+Still: `work_fable/venv_hybrid/bin/python fable/take2/tools/glyphart/paint.py SRC OUT.jpg --preset colour_figure --matte M.png --focus ...`
+(see stills.sh, catch_B_colour_figure). Jade wants full frame incl. background in glyphs: use `--preset colour_all` with the
+B settings, or colour_figure with `--set skip_lum=0` (background painted too).
+Animated later for the 3:42 catch plate: `animate.py` (same painter, flow-carried, eighth-note boil) needs a `--frames DIR --fps 24`
+option (frame_path() from `work_fable/take2/plates/catch/frames/f_%04d.jpg`, nearest plate frame for song t = 221.436 +
+(i+0.5)/24) and the per-frame matte if B's figure/background split is wanted (`tools/matte.py` on an mp4 of the plate frames).
+Command once added: `animate.py --frames work_fable/take2/plates/catch/frames --fps 24 --t0 221.436 --t1 223.135 --beat0 221.436 --preset colour_figure --out ...`.
+Not built yet (no new style-1 work requested now).
+
+### Style 2 (hash glyphs), 2026-11-21 ~20:20: `hashglyph.py` (stills), `animate_hash.py` (animation)
+Scale measured from src/paper.js at 1080p: contour strokes 9-17 px long, one per 4x4 px cell; hatch spacing 8 px, strokes
+~20-35 px, tone layers from .12/.40/.66; paper #141317; chalk #ECE6D8, inks by hue when saturated.
+Built: ASCII printable only (86 glyphs, specks . , ' ` : ; " ^ dropped), ONE font at ONE size (em 14 px: cap ~10 px, '|' ~14 px
+= a contour stroke), centred on ink centroid. Contour: one glyph per 7x7 cell at the strongest DoG edge pixel, its own main
+axis turned along the edge, chosen by shape fit to the edge patch (| / \ - l I ( ) win on lines). Tone: three layers on 8/9/10
+px jittered grids where tone (lum, .3 floor) > .12/.40/.66, turned along the structure tangent, shape fit to the tone patch
+(M W # @ & in brights). Colour: chalk, or the nearest D ink by hue where saturated (as paper.js). Paper #141317.
+Animation: glyphs carried by DIS flow; keep character + flip; re-aim along current edge (nearest branch); dropped when their
+reason goes (edge < 70% threshold / tone below layer) or crowded (one per 0.7-cell); new ones fill empty cells (fade 2 frames);
+boil 10% re-chosen on each eighth note; re-seed at camera cuts (hue/sat histogram correlation < .7: 4170, 4195, 4221 in this
+range; the raw v7 wushu frames 4050-4169 are one continuous camera, the film's cuts there are to plate inserts).
+Speed: 0.4 s per still; animation 0.9 s/frame/worker, 198 frames in ~100 s on 4 workers, ~26-31k glyphs/frame.
+Outputs (dev): `work_fable/take2/dev/v8_glyph/s2/` (night_mono, night_serif, night_mono_em20, anim_mono/, anim_serif/,
+s2_2m15_wushu_orch_{mono,serif}.mp4 + _strip.jpg). Sheet `dev/v8_glyph/sheet_1m34_night_s2.jpg` (v7 hatch | v1 D | s2 mono |
+s2 serif | s2 mono 20 px, 1:1 crops). Committed `_s2` copies in `review/fable_take2/v8_glyph/` (sheet, 3 stills, 2 x 720p mp4 + strips).
+Commands:
+    work_fable/venv_hybrid/bin/python fable/take2/tools/glyphart/hashglyph.py SRC OUT.jpg --font mono|serif|sans|typewriter --em 14
+    work_fable/venv_hybrid/bin/python fable/take2/tools/glyphart/animate_hash.py --t0 135.0 --t1 141.6 --font mono --out DIR --workers 4
+    bash fable/take2/tools/glyphart/encode.sh DIR 135.0 141.6 OUTBASE
+Judgement: at 14 px it has the hatch's resolution and reads like the hatch shots, but the letters are only legible up close
+(at full frame it is "sketchy lines"); 20 px shows letters (0 9 G u #) while keeping the look. Mono vs serif differ little at
+this size. Weak: the night sea glow is a cloud of small glyphs; in the orchestra shots frame-to-frame change is ~1.5-2x the
+source's (dense sharp marks moving plus some churn), so there is some shimmer; wushu part is as stable as the source.
+Wiring: same as before (frames use v7 numbering -> per-shot v7dir with the paper pass skipped).
