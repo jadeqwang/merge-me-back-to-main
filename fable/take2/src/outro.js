@@ -199,7 +199,7 @@ export function makeOutro(E) {
     // the violet branch leaves (bar 3), its dot; the dotted arc forward to main (bar 4)
     const V = byId.violet, vy = my - (60 + 46 * lives.length) * S, xv = X(0.7), xd = X(0.82), xc = X(0.94);
     const AR = s.opt.arc || [11, 14.5], k1 = clamp01((ub - 8) / 3), k2 = clamp01((ub - AR[0]) / (AR[1] - AR[0]));   // film v10: opt.arc [start, landed] beats (the arc lands on b151.1's chord change)
-    if (ub >= 7.5) { const xe = lerp(xv, xd, ease.out(k1)); g.strokeStyle = V.color; g.lineWidth = lw; g.beginPath(); g.moveTo(xv, my); g.bezierCurveTo(xv + 40 * S, my, xv, vy, xv + 40 * S, vy); g.lineTo(Math.max(xv + 40 * S, xe), vy); g.stroke();
+    if (ub >= (s.opt.arc ? 8 : 7.5)) { const xe = lerp(xv, xd, ease.out(k1)); g.strokeStyle = V.color; g.lineWidth = lw; g.beginPath(); g.moveTo(xv, my); g.bezierCurveTo(xv + 40 * S, my, xv, vy, xv + 40 * S, vy); g.lineTo(Math.max(xv + 40 * S, xe), vy); g.stroke();
       g.font = mono(28 * S, 600); g.fillStyle = V.color; g.fillText(V.branch, xv + 50 * S, vy - 14 * S);
       if (k1 >= 1) { g.fillStyle = V.color; g.beginPath(); g.arc(xd, vy, 12 * S, 0, 6.2832); g.fill(); } }
     if (k2 > 0) { g.save(); g.setLineDash([10 * S, 12 * S]); g.strokeStyle = V.color; g.lineWidth = 3.5 * S; g.beginPath(); const N = 40;

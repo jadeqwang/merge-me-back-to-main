@@ -1051,8 +1051,9 @@ function hatchStrokes(seed, ang) { const k = seed + ':' + ang; if (HATCHS.has(k)
     const sweep = clamp01(i / (n - 1)), start = 0.62 * sweep + 0.12 * r(); out.push({ a, b, start, w: (24 + 14 * r()) * S }); }
   HATCHS.set(k, out); return out; }
 function hatchIn(t, s) {
-  const o = s.opt.hatch, n = o.frames || 6, f = fr(t, s.t0); if (f >= n || f < 0) return;
-  const p = (f + 1) / (n + 0.6), st = hatchStrokes(o.seed || 0, o.angle !== undefined ? o.angle : -1.05);
+  const o = s.opt.hatch, n = o.frames || 6, f = fr(t, s.t0); if (f >= n - (o.pre || 0) || f < 0) return;
+  const p = (f + 1 + (o.pre || 0)) / (n + 0.6), st =   // film v10: o.pre = frames of wipe progress already done on the cut frame (the cut does not move)
+    hatchStrokes(o.seed || 0, o.angle !== undefined ? o.angle : -1.05);
   if (!HC) { HC = document.createElement('canvas'); HC.width = W; HC.height = H; HM = document.createElement('canvas'); HM.width = W; HM.height = H; }
   const hc = HC.getContext('2d'); hc.globalCompositeOperation = 'source-over'; hc.clearRect(0, 0, W, H); hc.drawImage(canvas, 0, 0);
   const hm = HM.getContext('2d'); hm.clearRect(0, 0, W, H); hm.lineCap = 'round'; hm.strokeStyle = '#fff';

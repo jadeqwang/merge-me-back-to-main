@@ -1136,6 +1136,10 @@ Cut shots keep their id slot (`skip()` in shots.js): ids after a cut are as in v
   core on b122.1 (209.526, the cut). cb03: enters on 211.231 from the left above the slab, settles at the beam's top (0.36,0.56) on b123.4,
   fades 0.5 s. Stills dev/v10/a2/sheet.jpg (207.82-212.6) and b_crop.jpg: "What it cost to learn.  What comes next." readable from ~208.1 on.
 
-### 3. dr20 -- done
-- The band insert's hatch wipe 6 -> 2 frames (v10 only). Frame difference (dev/v10/dr20/, fd on 320x180 grey): v9 peak at frame 4987
-  (+2.1 fr), 3-frame wipe 4986, 2-frame wipe 66/79 on 4985/4986 (centroid about +0.5 fr). Strip dev/v10/dr20/strip.jpg: the wipe still shows.
+### 3. dr20 -- done (revised on the listen agent's finding)
+- listen_v10.md: the cut is on time (+4 ms); the pencil-hatch wipe on the drop inserts made the image legible 87-117 ms after the beat.
+  Fix (v10 only, every DROP_LIFE insert dr09-dr26): `hatch.pre 3` (film.js hatchIn): the wipe is 3 frames along on the cut frame
+  (~60 % drawn), done 3 frames later; the cut does not move. Frame difference (dev/v10/dr20/, 320x180 grey) at dr20: v9 peak on frame
+  4987 (+2.1 fr), v10 100.1 on 4985 (the cut frame), 19.6 on 4986. Strip dev/v10/dr20/strip_pre.jpg: legible on the cut, wipe still seen.
+  (Tried first and dropped: a 2-frame wipe on dr20 only.)
+- Graph: the violet branch now starts exactly on b149.1 (255.485, drums out) in v10 (`ub >= 8`; v9 7.5).
