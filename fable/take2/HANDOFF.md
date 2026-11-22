@@ -1,8 +1,42 @@
-# Take two: handoff (updated 2026-11-22: film v10 rendered, waiting for Jade's notes)
+# Take two: handoff (updated 2026-11-22: film v11 rendered, waiting for Jade's notes)
 
-Read this first ("Film v10", then "Start here"), then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
+Read this first ("Film v11", then "Start here"; where they disagree, "Film v11" wins), then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
-## Film v10 (2026-11-22: rendered, waiting for Jade's notes)
+## Film v11 (2026-11-22: rendered, waiting for Jade's notes)
+Her v10 notes: `notes/jade_v10_notes.md` (verbatim); brief `notes/v11_direction.md`; built: `notes/glyph_v11.md` (Wiring table,
+phrase list, commands; code `tools/glyphart/v11/`), `notes/compositor.md` "Film v11", `notes/listen_v11.md` ("v11 measured").
+- Public `review/fable_take2/film_v11.mp4`, sheets `film_v11_sheet_01..05.jpg`, page `review_v11.html` (10 decisions; decision 7
+  is twelve notation thumbnails from `review/fable_take2/v11/`). Local `work_fable/take2/out/film_v11_local.mp4`.
+  Spend unchanged $579.85 (no paid generation). `?v11=0` = the v10 cut; `?notation=0`, `?notationgrid=0`, `?slab2=1`.
+- Corpus (new): `tools/glyphart/v11/corpus/` = sung words of Merge, her five published songs on jadewang.me (rare-earth,
+  orbital-sunrise, moongazing, rewind, hold-fire) and chaosmonkey; English + Simplified Chinese. The catch (3:22-3:55) uses only
+  these words and scripts. "Published" = has a Watch link on the site; Vibe Coding Song and Halys left out (in the works).
+- Catch: vb10 `vio_still_letters11` (she comes apart into Merge's own words, in song order); cb01/cb03 comet whose tail is the
+  word `HANDOFF.md` (code, settings on the shot rows); cb08/cb09 `c2_hands_letters11`, `catch_letters11` (Merge's lines, violet);
+  cb10-cb12 `fold_merge11`, `patch_hold_merge11`, `patch_settle_merge11`: she is written in corpus words, each life arrives as a
+  phrase from one of her songs in its colour (list in glyph_v11.md), survivors assemble into MERGE ME BACK TO MAIN (228.30-228.71),
+  then FOLD ME IN, MAIN, ME, and the last mark is a violet `I` gone on "become" 231.210; daylight opens as torn paper.
+- G6: no slab or lyric 219.737-238.450. G5: no (D1 dropped for good). G2: size ramp `<plate>_glyph11` on the main-Jade style-1
+  shots (va02 x1.8 down to ba x1.05, cb02 x0.95). G3: notation per life as INK on the plates' flat areas (`<plate>_notation11`:
+  staff for piano/violin, hanzi wushu, ATGC biology, ACGU band, IPA phd, her lines poet, Greek/maths ames, code + hex for
+  hacker-houses/open-source, child's capitals parenthood; violet unchanged), wired on va12-va21 and the pc01 grid only.
+- Her answers closed: decisions 2-10 of v10 (patchwork gone, outro, car, commit line, glyph styles, orchestra letters, drop
+  slashes, 0:39 glide accepted, 4:01 paper kept). Car box now holds about 1.0 s fully typed.
+- Measured (listen agent, final files): cuts identical to v10; the five line steps within +47 ms (v10's fusions were +190-230);
+  I gone / eyes open +23 ms; comet enters on time, head at mark -35 ms. Over 2 frames: first letters in her hands +117-183 ms
+  (target 220.45); daylight full 11-15 frames before the b137 bar; comet core first visible +81 ms; unchanged: her turn +8 fr,
+  pc01, dr01. One-frame luma blips at 104.37, 125.07, 131.2, 132.87 vs v10: NOT looked at yet.
+- Weak (told to her): A4 corpus layer is thinner than v10's (about 129 letters); phrase blocks overlap briefly around 225;
+  cb09 has only 12 words; the endgame words may read as a title; notation glyphs are fixed on screen (background slides under
+  them if a plate's camera drifts); violin and hacker-houses notation sparse; poet's words sit near the lyric on va17; the
+  size ramp reads as texture at 640 except va02; merge plates still 24 fps in a 30 fps film.
+- Next: her v11 notes (`notes/jade_v11_notes.md`), then a round as in "How a notes round runs". Split that worked: glyph and
+  compositor on opus, listen and scouting on sonnet; main thread looks at every test sheet before ranges render.
+- Still open from before: gates G7 (night drive frame), G8 (rainbow run: leave); disk cleanup awaiting her word (v9 and older
+  finals may go under her keep-two rule: now v10 and v11); v9 open items not answered: va04 slip, va01 face un-glyphed, car
+  console scribble, bu09 dark hatch, no hard cut on the drop b89.1.
+
+## Film v10 (2026-11-22)
 Jade: "start the v10 vision" (no v9 notes sent). Brief `notes/v10_direction.md` (with "Timing corrections"); built:
 `notes/glyph_v10.md` (Wiring table), `notes/compositor.md` "Film v10", `notes/listen_v10.md` (phrase maps, v9 baseline, "v10 measured").
 Scope built = A (catch as letters merging) + C (cleared outro) + L (picture measured against the song). B, D, E, F NOT built
