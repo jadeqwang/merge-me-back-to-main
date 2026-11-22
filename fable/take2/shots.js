@@ -449,7 +449,7 @@ section('chorus2');
 const HANDOFF_TXT = 'HANDOFF.md  Read this first.  Where things stand.  What it cost to learn.  What comes next.';
 // film v11 A2 (Jade: "just the filename as the streak of a comet's tail"): HANDOFF.md once, the head a bright point, the ten characters
 // trailing it (film.js comet): same paths and timing as v10 (enters on 207.819, head at the mark on 209.526)
-const COMET = (x) => ({ text: 'HANDOFF.md', comet: true, px: 74, stretch: 2.3, thin: 0.5, wt1: 300, wash: 0.5, tailX: 3.5, ...x });
+const COMET = (x) => ({ text: 'HANDOFF.md', comet: true, px: 116, sx0: 0.82, stretch: 1.25, thin: 0.66, wt1: 360, wash: 0.3, under: 0.4, tailX: 2.4, ...x });   // v11b: ~2x, comet head + tail envelope
 V(121, 122, 'seq 12', 'The violet light streaks east over the night continent of roads. Slab type.', { code: 'V7+C', row: 'b121', opt: V10
   ? { streak: V11 ? COMET({ path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], move: 'on' })
     : { text: HANDOFF_TXT, path: [[-0.03, 0.28], [0.36, 0.25], [0.72, 0.37]], at: [[121, 1], [122, 1]], px: 46, n: 52, move: 'on' } }
@@ -459,7 +459,7 @@ P(122, 123, 'c2_lookup', 'missing', 'Main Jade at first light looks up.', { row:
     { id: 'c2_lookup_v2', opt: { clip0: 0.3, clip1: 3.5, zoom0: 1.19, fx: 0, fy: 0.5, push: 0.02 } }] } });   // left 84 % (a stray arm at the right edge); film v7: no code comet, the plate's own violet meteor is the only one;
 // c2_lookup_v2 (plates_v7 wiring: breathing, hair in wind, no arm, its own meteor (0.716, 0.195) -> (0.596, 0.286) over clip 0.3-3.5): v1's
 // window and crop kept; the one blink (clip 3.0-3.2) lands ~1.45 s in; the meteor stays above the lyric block (MERGE starts y ~0.3)
-V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123', opt: V10 ? { streak: V11 ? COMET({ path: [[-0.03, 0.71], [0.16, 0.6], [0.36, 0.56]], at: [[123, 1], [123, 4]], px: 64, fade: 0.5 })
+V(123, 124, 'seq 12', 'The light arriving, from her side.', { row: 'b122-123', opt: V10 ? { streak: V11 ? COMET({ path: [[-0.03, 0.71], [0.16, 0.6], [0.36, 0.56]], at: [[123, 1], [123, 4]], px: 104, fade: 0.5 })
   : { text: HANDOFF_TXT, path: [[-0.03, 0.71], [0.16, 0.6], [0.36, 0.56]], at: [[123, 1], [123, 4]], px: 44, n: 40, fade: 0.5 } } : {} });
 // b124-126: the twelve converge on her (src/kit.js 'row' with conv): runners from the right run in toward main (large, centre), from the
 // left they are mirrored; each reaches her and fades into her as the bar ends. Lanes as section 2.

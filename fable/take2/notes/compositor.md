@@ -1201,6 +1201,12 @@ Dev files `work_fable/take2/dev/v11/` (a2/, car/, v11off/).
 - Strip `dev/v11/a2_strip.jpg` (207.90-209.45, 640 full | 1920 1:1 crop); cb03 `dev/v11/a2_cb03.jpg`. Readable at 640 from ~208.2 on.
     D=work_fable/take2/dev/v11/a2; node fable/take2/tools/render.mjs --stills 207.90:$D/f_207.90.png,... --q "hud=0&likeness=0"
 
+- **Rev b** (main thread: "reads as a caption following a dot"): ~2x (px 116, cb03 104; `d` ~85-90 px tall at 1920, head-to-H ~27 %
+  of frame width), condensed near the head (`sx0 0.82`), spacing widening to the tail, H A N fading and smeared (7 ghosts), a real head
+  (white core, violet coma 0.95 px0), a tapered violet-white tail envelope that bends outward and flares past the H (`wash 0.3`,
+  `tailX 2.4`), 9 shed motes, a dark-violet under-glow under the letters (`under 0.4`) for the galaxy core. Strip
+  dev/v11/a2_strip_b.jpg, cb03 dev/v11/a2_cb03_b.jpg (frames dev/v11/a2b/).
+
 ### E slab off -- done
 - shots.js `LYR_OFF` (beat ranges [[128,1],[139,1]] with V11 and not slab2), film.js `lyrics()` returns inside it. Subtitles untouched.
   Stills dev/v11/e_222.png, e_226.png, e_231.3.png, e_236.png, edges e_edge_219.60/219.80/238.40/238.55, sheet dev/v11/e_sheet.jpg:

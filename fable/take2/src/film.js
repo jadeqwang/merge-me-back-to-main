@@ -745,20 +745,37 @@ const VIO_CORE = '#EEE6FF', VIO_GLOW = '#9B6BFF';
 // point leading, the characters trailing behind it along the path, each turned to the path's tangent: nearest the head largest, heaviest
 // (wght 800) and whitest; toward the tail smaller (o.thin), lighter weight (o.wt1), stretched along the path (o.stretch) and dimmer, each
 // with a short smear of ghosts behind it, over a faint violet wash along the path (o.wash, 0 = none). Same path and timing as v10.
-function cometTail(t, o, P, at, len, head, fa) { const txt = o.text, n = txt.length, px0 = (o.px || 72) * S, st1 = o.stretch ?? 2.0, th = o.thin ?? 0.5, wt1 = o.wt1 ?? 320;
+function cometTail(t, o, P, at, len, head, fa) { const txt = o.text, n = txt.length, px0 = (o.px || 128) * S, st1 = o.stretch ?? 1.45, th = o.thin ?? 0.55, wt1 = o.wt1 ?? 360;
   const tan = (d) => { const a = at(d - 2 * S), b = at(d + 2 * S); return Math.atan2(b[1] - a[1], b[0] - a[0]); };
-  const cs = []; let d = head - px0 * 0.62; g.save(); g.textBaseline = 'middle'; g.textAlign = 'center';
-  for (let i = 0; i < n; i++) { const k = i / Math.max(1, n - 1), px = px0 * (1 - th * k), sx = 1 + (st1 - 1) * k * k, wt = Math.round(800 - (800 - wt1) * k);
-    g.font = `${wt} ${px}px "JetBrains Mono"`; const w = g.measureText(txt[n - 1 - i]).width * sx; d -= i ? w * 0.5 + 0.06 * px : w * 0.5; cs.push({ ch: txt[n - 1 - i], d, px, sx, wt, k }); d -= w * 0.5; }
-  const tailD = d - px0 * (o.tailX ?? 3.5);
-  if ((o.wash ?? 0.32) > 0) { g.save(); g.globalCompositeOperation = 'lighter'; const M = 28;
-    for (let j = 0; j <= M; j++) { const v = j / M, dd = lerp(head, tailD, v), [x, y] = at(dd); glowAt(x, y, lerp(30, 12, v) * S, VIO_GLOW, (o.wash ?? 0.32) * fa * (1 - v) * (1 - v) * 0.5); } g.restore(); }
-  for (const c of cs) { const [x, y] = at(c.d); if (x < -c.px * 3 || x > W + c.px * 3 || y < -c.px * 2 || y > H + c.px * 2) continue; const r = tan(c.d), a0 = fa * (1 - 0.5 * c.k);
+  // v11b (main thread): about 2x; a real comet head (white core, violet coma); the letters sit inside a tapered luminous tail that flares
+  // past the H; spacing widens and the far letters (H A N) smear and fade into the light; .md and OFF stay crisp
+  const cs = []; let d = head - px0 * 0.42; g.save(); g.textBaseline = 'middle'; g.textAlign = 'center';
+  for (let i = 0; i < n; i++) { const k = i / Math.max(1, n - 1), px = px0 * (1 - th * k), sx = (o.sx0 ?? 0.84) + (st1 - (o.sx0 ?? 0.84)) * k * k, wt = Math.round(800 - (800 - wt1) * k);
+    g.font = `${wt} ${px}px "JetBrains Mono"`; const w = g.measureText(txt[n - 1 - i]).width * sx, gap = px * (0.0 + 0.2 * k * k); d -= i ? w * 0.5 + gap : w * 0.5; cs.push({ ch: txt[n - 1 - i], d, px, sx, wt, k }); d -= w * 0.5; }
+  const tailD = d - px0 * (o.tailX ?? 2.2), TL = head - tailD; g.restore();
+  const pt = (dd, side) => { const [x, y] = at(dd), r = tan(dd); return [x - Math.sin(r) * side, y + Math.cos(r) * side]; };
+  const M = 40, onF = (x, y, r) => x > -r && x < W + r && y > -r && y < H + r;
+  // under-glow: a dark violet bed under the letters, so they read over the galaxy's bright core
+  g.save(); for (let j = 0; j <= M; j++) { const v = j / M, dd = head - v * (head - d), [x, y] = at(dd), r = lerp(0.55, 0.4, v) * px0; if (!onF(x, y, r)) continue;
+    const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(14,6,40,${(o.under ?? 0.34) * fa})`); gr.addColorStop(1, 'rgba(14,6,40,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill(); } g.restore();
+  // tail envelope: soft violet-white wedge, brightest at the head, widening and bending slightly outward (a dust tail), gone past the H
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (let j = 0; j <= M; j++) { const v = j / M, dd = head - v * TL, [x, y] = pt(dd, v * v * 0.6 * px0), r = lerp(0.6, 1.25, v) * px0; if (!onF(x, y, r)) continue;
+    const a = (o.wash ?? 0.2) * fa * Math.pow(1 - v, 1.3), gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(214,198,255,${a})`); gr.addColorStop(0.45, hexA(VIO_GLOW, a * 0.6)); gr.addColorStop(1, hexA(VIO_GLOW, 0)); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill(); }
+  // a few motes shed off the tail, drifting outward and back
+  for (let m = 0; m < 9; m++) { const h1 = Math.abs(Math.sin(m * 12.9898 + 7.1) * 43758.5) % 1, h2 = Math.abs(Math.sin(m * 78.233 + 1.3) * 12345.6) % 1, life = ((t * 0.9 + h1) % 1);
+    const dd = head - (0.35 + 0.65 * h2) * TL - life * 0.25 * px0, [x, y] = pt(dd, (h1 - 0.5) * 1.4 * px0 * (0.4 + life)); if (!onF(x, y, 10 * S)) continue; glowAt(x, y, (5 + 4 * h2) * S, VIO_GLOW, 0.7 * fa * (1 - life) * Math.min(1, (head - dd) / (0.6 * TL))); }
+  g.restore();
+  // the letters: the tail's bright matter
+  g.save(); g.textBaseline = 'middle'; g.textAlign = 'center';
+  for (const c of cs) { const [x, y] = at(c.d); if (!onF(x, y, c.px * 3)) continue; const r = tan(c.d), a0 = fa * (1 - 0.7 * Math.pow(c.k, 1.6)), sm = c.k > 0.5 ? 7 : 3;
     g.save(); g.translate(x, y); g.rotate(r); g.scale(c.sx, 1); g.font = `${c.wt} ${c.px}px "JetBrains Mono"`;
-    for (let j = 3; j >= 1; j--) { g.globalAlpha = a0 * 0.13 * (4 - j) * (0.4 + c.k); g.fillStyle = '#9B6BFF'; g.fillText(c.ch, -j * c.px * 0.09 * (0.5 + c.k), 0); }
-    g.globalAlpha = a0; g.lineJoin = 'round'; g.lineWidth = c.px * 0.16; g.strokeStyle = 'rgba(5,6,26,0.6)'; g.strokeText(c.ch, 0, 0);
-    g.shadowColor = VIO_GLOW; g.shadowBlur = lerp(24, 10, c.k) * S; g.fillStyle = c.k < 0.25 ? VIO_CORE : c.k < 0.6 ? '#D2C2FF' : '#B79BFF'; g.fillText(c.ch, 0, 0); g.fillText(c.ch, 0, 0); g.restore(); }
-  g.restore(); const [hx, hy] = at(head); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(hx, hy, 46 * S, VIO_GLOW, 0.7 * fa); glowAt(hx, hy, 12 * S, '#FFFFFF', 0.95 * fa); g.restore(); }
+    for (let j = sm; j >= 1; j--) { g.globalAlpha = a0 * (0.1 + 0.25 * c.k) * (sm + 1 - j) / sm; g.fillStyle = j > 2 ? '#9B6BFF' : '#C9B6FF'; g.fillText(c.ch, -j * c.px * (0.04 + 0.32 * c.k * c.k * c.k), 0); }
+    g.globalAlpha = a0; g.lineJoin = 'round'; g.lineWidth = c.px * 0.13 * (1 - 0.5 * c.k); g.strokeStyle = `rgba(16,6,44,${0.7 - 0.4 * c.k})`; g.strokeText(c.ch, 0, 0);
+    g.shadowColor = VIO_GLOW; g.shadowBlur = lerp(26, 12, c.k) * S; g.fillStyle = c.k < 0.3 ? '#FFFFFF' : c.k < 0.6 ? '#E6DCFF' : '#C2AAFF'; g.fillText(c.ch, 0, 0); g.shadowBlur = 0; g.fillText(c.ch, 0, 0); g.restore(); }
+  g.restore();
+  // the head: white core in a violet coma
+  const [hx, hy] = at(head); g.save(); g.globalCompositeOperation = 'lighter'; glowAt(hx, hy, 0.95 * px0, VIO_GLOW, 0.55 * fa); glowAt(hx, hy, 0.42 * px0, '#C9B6FF', 0.9 * fa); glowAt(hx, hy, 0.16 * px0, '#FFFFFF', 1.0 * fa); g.restore(); }
 function streak(t, s) { const o = s.opt.streak, ta = T.beat(o.at[0][0], o.at[0][1]), tb = T.beat(o.at[1][0], o.at[1][1]); if (t < ta - HF) return;
   const P = o.path.map(([x, y]) => [x * W, y * H]), N = 64, pts = [], L = [0];
   for (let i = 0; i <= N; i++) { const u = i / N, a = (1 - u) * (1 - u), b = 2 * u * (1 - u), c = u * u; pts.push([a * P[0][0] + b * P[1][0] + c * P[2][0], a * P[0][1] + b * P[1][1] + c * P[2][1]]); if (i) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); }
