@@ -1,17 +1,37 @@
-# Take two: handoff (updated 2026-11-21: film v7 rendered, waiting for Jade's notes)
-
-## Film v7 (2026-11-21)
-Jade's v6 notes: `notes/jade_v6_notes.md`; brief `notes/v7_direction.md`; built: `notes/compositor.md` "Film v7", `notes/plates_v7.md`.
-- Car: her line deleted, almost-smile holds ~2.4 s; his line is a JRPG dialogue box with a `YOU` tab (`carBox` / `CAR_BOX`).
-- 3:30 (b122): `c2_lookup_v2` (breathes, blink at ~211.0, hair in wind); code comet removed, the plate's meteor is the only one.
-- Pencils: `vio_write2_v2`, `vio_cutaway_v2`, `vio_grid_stay_v2`, `violet_v2` (via LIFE_SWAP) have one bun pencil when one is in hand.
-- Decided: the violet branch stays special (decision 1 of v6). like_sing0 stays off.
-- Public `review/fable_take2/film_v7.mp4`, sheets, `review_v7.html` (four decisions). Local `work_fable/take2/out/film_v7_local.mp4`.
-- Spend **$571.45**. Weak: meteor already in the sky at the cut-in and drifts (no arrival on the downbeat); box covers her hands;
-  hair wind may read gusty; fold sheet b49-50 not checked for pencils. Nobody has watched v7 at speed with sound.
-
+# Take two: handoff (updated 2026-11-21: film v7 rendered and pushed, waiting for Jade's notes)
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
+
+## Start here (next session)
+1. Jade is watching `review/fable_take2/review_v7.html` (opened as a local file from the checkout; its video menu has the public
+   render and `work_fable/take2/out/film_v7_local.mp4` with her likeness). She exports notes + four decisions and pastes them in.
+2. Run the notes round as below ("How a notes round runs"): save her paste verbatim to `notes/jade_v7_notes.md`, render stills at
+   her timestamps and look, write `notes/v8_direction.md`, two background agents (plates, compositor), look at strips yourself.
+3. If she picks "new master" on decision 4: master from v7 settings under "The master" below (`--q hud=0`), then the encodes and
+   subtitles; the compositor leans that way. Release files are local only (likeness).
+4. The working tree was clean at handoff (last push `def30fc` on `fable/merge`); `docs/spend_ledger.jsonl` is rewritten by the gen tools,
+   commit it with the round.
+
+## Film v7 (2026-11-21)
+Jade's v6 notes: `notes/jade_v6_notes.md`; brief `notes/v7_direction.md`; built: `notes/compositor.md` "Film v7" (resume note,
+render record), `notes/plates_v7.md` (Wiring table, measurements). Strips and stills: `work_fable/take2/dev/v7_plates/`, `work_fable/take2/dev/v7/`.
+- Car (4:27-4:37): her line `I have a confession to make` deleted; the turn and almost-smile hold ~2.4 s with nothing over her face.
+  His line is a JRPG dialogue box (x 0.07-0.93, y 0.75-0.93, `YOU` name tab, typed at 26 letters/s, blinking ▼, fades 0.3 s
+  before the cut): `carBox` in `src/film.js`, `CAR_BOX` in `shots.js`.
+- 3:30 (b122): `c2_lookup_v2` (breathes ~6 px, one blink at ~211.0, hair streaming in wind, mouth closed), clip 0.3-3.5;
+  `opt.comet` removed so the plate's own meteor is the only one. Alt take `c2_lookup_v2a` (less motion) not recommended.
+- Pencils (new canon: a pencil in her hand means one in the bun): `vio_write2_v2`, `vio_cutaway_v2`, `vio_grid_stay_v2`
+  (first in PROOF_STAY), `violet_v2` (via `LIFE_SWAP.violet`, covers every life-plate use). Old `vio_write` still has two but is not shown.
+  Made by image-editing a keyframe and ECC-tracking the clean patch (`gen/bun_pencil_v7.py`).
+- Decided by Jade: the violet branch stays special (v6 decision 1). Unanswered v6 decisions stay as built (like_sing0 off).
+- Public `review/fable_take2/film_v7.mp4` (80 MB, likeness=0), sheets `film_v7_sheet_01..05.jpg`, `review_v7.html` (four
+  decisions: car box, 3:30, pencils, what next; thumbs in `review/fable_take2/v7/`). Local `work_fable/take2/out/film_v7_local.mp4`.
+  `check.py`: same outliers as v6, nothing new (`work_fable/take2/out/check_v7.txt`).
+- Spend **$571.45** (round $3.39); the tools' cap constant is still 600 — raise it when needed (Jade lifted the cap).
+- Weak points told to her: the meteor is already in the sky at the cut-in and drifts (no arrival on the downbeat; the violet
+  light's arrival is weaker than in v6 — if she misses it, an option is a later clip window or a matched code streak that enters);
+  the box covers her hands; the wind may read gusty; `violet_v2` has a soft dark patch in the bun at frames 71-74; fold sheet
+  b49-50 not checked for pencils at readable size. Nobody has watched v7 at speed with sound.
 
 ## Film v6 (2026-11-15: rendered, waiting for Jade's notes)
 
