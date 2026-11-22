@@ -1003,3 +1003,34 @@ Nobody has watched film_v8 at speed with sound.
 - Plate `work_fable/take2/plates/car3d_v9/` (210 fr, t0_song 269.9, from dev/v9/car/car3d_v9_plate.mp4), first in b157-161 `next`;
   car3d (v8) and car_confess stay as fallbacks. Checked: dev/v9/car/clean_strip.jpg (4 fps), film stills dev/v9/car/film.jpg
   (269.7 road, 270.6 driver view + box, 273.3, 275.5).
+- Coordinator follow-ups (done): hands OFF by default (`?hands=1` shows them); car3d_v9 plate and the clean clip re-rendered with no hands
+  (GPU is shared: 3 workers hit GL_OUT_OF_MEMORY and lost the context -> black frames; render the car with `--workers 1` and check YAVG).
+  `car_v9` (plates agent, aleph-2 restyle of the clean clip, t0_song 269.9, 210 fr) first in b157-161 next, car3d_v9 then car3d then
+  car_confess as fallbacks. YOU box checked on car_v9 frames (dev/v9/car/carv9.jpg: 270.2-276.6): two lines, her face clear above it.
+- `day_eyes_v2` wired for oa03 (next list: v2 then v1): clip 0.62-2.33, mirror, streak matte kit/day_eyes_v2 (tools/matte.py on the plate
+  frames as mp4, dev/v9/day_eyes_v2_plate.mp4). Stills dev/v9/eyes/eyes.jpg: half-shut on b140.4 (241.435), shut by 241.6; patch left arm.
+
+### 2. Sneaker slip (B2) -- va05 and va06 fixed; va07 glides (not fixed); va04 not measured
+- New `tools/slip.py` (measure): per plate frame the standing shoe (white blob, lowest, in the matte's bottom 15 %), ground motion by a
+  RANSAC homography on features outside her; slip = DIS optical-flow median over the shoe's pixels minus the ground's motion at its
+  centre (the toe measure of v4 mistakes the heel-to-toe roll for slip; template tracking was too noisy). Standing pair: sole within
+  10 px and |slip| < --maxslip (15). `--offsets` writes the lock; `--shift` measures a rebuilt plate with its offsets; `--sheet`.
+- The plates are drawn on twos: every other pair is 0. v4's constant 4 px/frame shift therefore slid her on the held frames.
+- New `tools/relock.py` (build): moves her by per-frame offsets (matte, door keyed out with `--ref`, as recross), fills the ground.
+  Offsets: every standing pair locked exactly; she starts further back and catches up stance by stance; 0 at `reach` (the wipe).
+  (Giving the correction back in the flight frames was tried first: it runs her backwards in the air.)
+      PY=work_fable/venv_hybrid/bin/python; D=work_fable/take2/dev/v9/feet
+      $PY fable/take2/tools/slip.py cross_wetlab 33 73 --door 0.29,0.10,0.44,0.74 --offsets $D/off_wetlab.json --kend 73
+      $PY fable/take2/tools/relock.py cross_wetlab cross_wetlab_v9 $D/off_wetlab.json --ref 116
+      $PY fable/take2/tools/slip.py cross_ames 26 66 --offsets $D/off_ames.json --kend 66        # (no --door: the ames matte is her only)
+      $PY fable/take2/tools/relock.py cross_ames cross_ames_v9 $D/off_ames.json
+- Measured mean |slip| over standing pairs, plate px per plate frame (film px per film frame = x1.8: 1280->1920 and clip rate 1.5x):
+  va05 wetlab: source 4.45 (max 14.1), v4 4.34 (max 12.5), **v9 0.50 (max 2.4)**; start offset (114, -31) plate px.
+  va06 ames: source 1.45 (max 6.2; the shoe creeps toward the door 1-6 px/pair in 26-41 and 44-65), **v9 0.0**; start (-21, -14).
+  The measure is the same tool that made the offsets; checked by eye too: dev/v9/feet/va05_fr.jpg (v8) vs va05_fr9.jpg (v9, film
+  frames 56-85): in 62-68 the shoe keeps its distance to the doorway's corner. Wiring: shots.js CROSS_V4 now lists
+  cross_wetlab_v9 > cross_wetlab_v4, cross_ames_v9. Range render dev/v9/feet/cross_v9.mp4 (33.2-40.3).
+- va07 hackerhouses: NOT fixed. The runner glides: one shoe slides along the lane line for frames ~29-40 (about 8-10 plate px/frame,
+  ~15-18 film px/frame) while the other leg swings; there is almost no flight, so a lock leaves her running in place. Options: a new
+  plate (paid), or accept. Her 39.58 timestamp is clip ~2.8 s (frame ~68), at the doorway, where the matte takes the door: not measured.
+- va04 wushu: not measured (small, back view, inside the doorway; the matte takes the door).

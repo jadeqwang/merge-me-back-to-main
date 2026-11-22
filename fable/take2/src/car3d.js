@@ -134,8 +134,9 @@ export function makeCar3D(THREE, o) {
     for (const a of [0, Math.PI, -Math.PI / 2]) { const sp = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.03, 0.015), toon(PAL.trim)); sp.position.set(Math.cos(a) * 0.12, Math.sin(a) * 0.12, 0); sp.rotation.z = a; SW.add(sp); }
     beam([-0.37, 0.86 - 0.02, -0.62], [-0.37, 0.78, -0.85], 0.07, 0.07, PAL.dash);
     // film v9: the driver's hands on the wheel at ten and two (the camera is the driver; a wheel turning nobody's hands read as empty).
-    // Fists over the rim, dark sleeves running back and down out of frame. ?hands=0 hides them.
-    if (Q.get('hands') !== '0') {
+    // Fists over the rim, dark sleeves running back and down out of frame.
+    // Off by default (coordinator, v9: Jade did not ask for them, they give YOU a body and read crude); ?hands=1 shows them.
+    if (Q.get('hands') === '1') {
       SW.updateMatrixWorld(true); const SKN = '#8f7466';   // skin in the dark cabin (the dash light only)
       const limb = (P, Qv, r0, r1, hex) => { const d = Qv.clone().sub(P), m = new THREE.Mesh(new THREE.CylinderGeometry(r1, r0, d.length(), 18), toon(hex));
         m.position.copy(P).add(Qv).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); G.add(m); return m; };
