@@ -941,3 +941,16 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
 - WIRED: page_reveal_v2 (b105 next[0] id list ['page_reveal_v2', 'page_reveal'], same opts; v8 track still fits: identical frames,
   checked f_0001 byte-identical and the still at 181.65); car3d first in the b157-161 next list (songLock, push 0, no blend, no carRoad),
   car_confess as fallback. Stills dev/v8/wire/wire.jpg (181.65, 183.39 one bun pencil, 270.5 over the shoulder, 273.0 mid-pan, 276.0).
+
+### 4. Outro concept A, "she doesn't look" (Jade's pick; notes/outro_ideas_v8.md)
+- shots.js: intuit_piano and intuit_violin removed (INT_O keeps intuit_stance only, b144.2 unchanged). New oa03 b140.3-141.3 (four
+  beats): town run, next = plate `day_eyes` (plates agent, pending; opts guessed: clip0 0, push 0.02 -- re-set from its Wiring row).
+  oa04 b141.3-143: town run with `roadEnd: [142, 1]`.
+- Run retimed: TOWN.speed 1050 -> 1023.4 (3 steps per 2 beats at the 0.4261 s beat); RUNNER.plant (feet.py on kit/day_run frames
+  35-95, dev/v8/feet_day_run.json: new foot touches at plate x ~546 on loop offset 13, period 15; stepPx 290.7) and outro.js runPhase
+  shift the run so a landing falls exactly on b142.1. `townEnd: [142, 1, 0.66]` speeds the facades (one factor for the whole run) so
+  the twelfth (rare-earth) has passed her on b142.1: blank paper ahead.
+- outro.js town: road drawn `from` its end (end reaches her landing foot on b142.1, then recedes with the ground); each landing after it
+  writes a patch (fixed path, revealed from the foot outward over 0.09 s, glow pop), life k's colour and message in LIVES order (piano
+  pink, violin gold, wushu coral, biology green, phd cyan, poet magenta), joins its neighbours and crossfades to MAIN by ~0.5 s age.
+- Checked on stills dev/v8/outro/steps2.jpg (243.56-245.2): patches land under the front foot, one per 2/3 beat.

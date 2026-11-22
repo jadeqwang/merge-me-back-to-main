@@ -452,27 +452,34 @@ shot(137, 139, 'L', 'plate', 'like_sing1', 'missing', 'The switch: on the impact
 // b139-140 and b141-142: the town (opt.code 'town'): white paper, far pencil hills, the twelve facades (cut out) along the road, the road =
 // main's written lane, dense (she is merged); side travel with parallax; a chip with the branch name under each building
 // film v2: dir 1 = the world slides right (she faces frame left, unmirrored: her sleeve patch has text); x 0.58 gives her lead room on the left
-const TOWN = { code: 'town', lives: LIFE, speed: 1050, spacing: 0.3, dir: 1 };   // all twelve pass in the four bars (b139-142), piano first
+const TOWN = { code: 'town', lives: LIFE, speed: 1023.4, spacing: 0.3, dir: 1 };   // film v8: 1050 -> 1023.4 so her steps come 3 to 2 beats (step = 2/3 beat at b139-143's 0.4261 s beat): with RUNNER.plant a landing falls on every other beat   // all twelve pass in the four bars (b139-142), piano first
 // film v4 item 4 (Jade: "she seems to pop into existence partway thru this run"): she runs from the first frame of b139, one continuous run
 // across both shots (runner.t0 = the seconds of run before the shot: b141 picks up b139's stride phase). foot = day_run's standing foot
 // in plate px per clip frame (tools/feet.py on kit/day_run: 20.84, step every 15 frames); outro.js sets the clip rate from it so her
 // planted foot moves with the road (about 2.26x at h 0.62 and speed 1050). loop: frames 35..94 (frame 95 matches 35, two strides).
-const RUNNER = { dir: '/work_fable/take2/kit/day_run', x: 0.58, h: 0.62, y: 0.9, edge: 0.02, foot: 20.84, loop: [35, 95] };
+const RUNNER = { dir: '/work_fable/take2/kit/day_run', x: 0.58, h: 0.62, y: 0.9, edge: 0.02, foot: 20.84, loop: [35, 95],
+  // film v8: landings measured with tools/feet.py on kit/day_run frames 35-95 (dev/v8/feet_day_run.json): the new foot touches at plate x
+  // ~546 on frames 48, 63, 78, 93 (loop offset 13, period 15); stepPx = foot x q x 15 (screen px between landings at 1080p); on = the
+  // landing put exactly on b142.1 (the road's end)
+  plant: { on: [142, 1], off: 13, period: 15, px: 546, py: 600, stepPx: 290.7 } };
 // film v6 A7 (intuition, not memory): three inserts of main Jade doing what nobody taught her on screen, no chip, no label, cel on white
 // paper, daylight: (a) b140.3-141.1 her fingers play a piano figure on the hem of her jacket; (b) b142.1-142.3 her left hand curls into
 // violin fingering on her own forearm; (c) b144.2-145.1 her feet land in a true bow stance at a kerb, a quiet look down. Each is a town
 // (or day_fork) shot that becomes the plate when it lands (next); until then the run simply continues. townFrom: the town's first moment,
 // so every piece of the run is one continuous travel and stride (outro.js town/runFrame).
-const TOWN_RUN = { ...TOWN, townFrom: [139, 1], runner: { ...RUNNER } };
+const TOWN_RUN = { ...TOWN, townFrom: [139, 1], runner: { ...RUNNER }, townEnd: [142, 1, 0.66] };   // film v8: the last facade has passed her (left edge at x 0.66) on b142.1, when the road ends
 const INTUIT = (id, o) => ({ id, kind: 'plate', opt: { clip0: 0, push: 0.02, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.03, x1: 0.4, align: 'left' }, ...o } });
 // plates_v6 wiring: piano any 2-3 beats (1.0 on); violin most finger movement 1.5-3.0; stance 0.4-3.4 keeps the landing (settles 1.25).
 // "Back to main" (247.76) starts inside the stance insert: the slab goes in the sky strip at the top on a dark cloud
-const INT_O = { intuit_piano: { clip0: 1.0 }, intuit_violin: { clip0: 1.5, clip1: 2.9 }, intuit_stance: { clip0: 0.6, clip1: 2.5, lyr: { y: 'top', top: 0.03, x0: 0.03, x1: 0.97, align: 'center', cloud: 0.62 } } };
+const INT_O = { intuit_stance: { clip0: 0.6, clip1: 2.5, lyr: { y: 'top', top: 0.03, x0: 0.03, x1: 0.97, align: 'center', cloud: 0.62 } } };
 shot(139, [140, 3], 'S+C', 'code', 'facades', 'missing', 'Day. The road runs past the twelve places of her life standing along it like a town, each still in its medium. Side travel with parallax. She runs down the road from the first frame.', { row: 'b139-140', opt: { ...TOWN_RUN } });
-shot([140, 3], 141, 'S+C', 'code', 'facades', 'missing', 'Intuition (a): her fingers play a piano figure on the hem of her jacket. Close, cel on white paper, daylight, no chip. (Until intuit_piano lands: the run.)', { row: 'b139-140', opt: { ...TOWN_RUN, next: INTUIT('intuit_piano', INT_O.intuit_piano) } });
-shot(141, [142, 1], 'P+K', 'code', 'day_run', 'missing', 'Main Jade runs and dances down the road past them; she twirls a pencil, the flourish she learned from violet.', { row: 'b141-142', opt: { ...TOWN_RUN } });
-shot([142, 1], [142, 3], 'P+K', 'code', 'day_run', 'missing', 'Intuition (b): her left hand curls into violin fingering on her own forearm. Close, no chip. (Until intuit_violin lands: the run.)', { row: 'b141-142', opt: { ...TOWN_RUN, next: INTUIT('intuit_violin', INT_O.intuit_violin) } });
-shot([142, 3], 143, 'P+K', 'code', 'day_run', 'missing', 'The run, on past the last facades.', { row: 'b141-142', opt: { ...TOWN_RUN } });
+// film v8 (Jade on v7: 4:01 "the hand really doesn't make sense here", 4:04 "looks alien and wrong"; she picked outro concept A, "she
+// doesn't look", notes/outro_ideas_v8.md): intuit_piano and intuit_violin are gone. b140.3-141.3 (four beats): a close three-quarter on
+// her running face, she closes her eyes on the snare and keeps running (plate day_eyes from the plates agent; until it lands, the run).
+// b141.3-143: wide, the run goes on; the written road ENDS ahead of her and its end reaches her landing foot on b142.1 (roadEnd); from
+// there each landing writes a patch of lane under that foot, one life per step in its colour, joining and turning main's orange behind her.
+shot([140, 3], [141, 3], 'P+K', 'code', 'day_run', 'missing', 'Close three-quarter on her running face; on the snare she closes her eyes and keeps running past her history. (Until day_eyes lands: the run.)', { row: 'b139-140', opt: { ...TOWN_RUN, next: { id: 'day_eyes', kind: 'plate', opt: { clip0: 0, push: 0.02, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.03, x1: 0.4, align: 'left' } } } } });
+shot([141, 3], 143, 'P+K', 'code', 'day_run', 'missing', 'Wide: the written road ends ahead of her; she runs off it onto blank paper without breaking stride, and each footfall writes a patch of lane, one branch colour per step, turning main orange behind her.', { row: 'b141-142', opt: { ...TOWN_RUN, roadEnd: [142, 1] } });
 P(143, [144, 2], 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]] } });
 P([144, 2], 145, 'day_fork', 'missing', 'Intuition (c): her feet land in a true bow stance at a kerb; she notices, a quiet look down. (Until intuit_stance lands: day_fork continues.)', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]], clipFrom: [143, 1], next: INTUIT('intuit_stance', INT_O.intuit_stance) } });
 // film v2: the second likeness shot is dropped (Jade: "it doesn't look like me"); plate wave_run (plates agent) instead: drawn Jade sprints

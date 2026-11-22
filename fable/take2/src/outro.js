@@ -38,7 +38,17 @@ export function makeOutro(E) {
     const base = s.opt.townFrom ? T.beat(s.opt.townFrom[0], s.opt.townFrom[1]) : s.t0 - (R.t0 || 0);   // film v6: townFrom = the run's first moment
     const rate = R.foot ? v / (R.foot * m.fps * q) : 1, c = Math.max(0, t - base) * rate;
     if (!R.loop) return Math.min(m.n - 1, Math.round(c * m.fps));
-    const [a, b] = R.loop, P = b - a; return a - 1 + (Math.round(c * m.fps) % P); }
+    const [a, b] = R.loop, P = b - a; return a - 1 + ((Math.round(c * m.fps) + runPhase(s)) % P); }
+  // film v8: R.plant = { on: [bar, beat], off, period, px, py }: a foot lands at loop offset `off` (+ k period) at plate px (px, py)
+  // (tools/feet.py on kit/day_run: the new foot touches at x ~546 on loop frames 48, 63, 78, 93). runPhase shifts the whole run by whole
+  // clip frames so that a landing falls exactly on `on`; with speed set for 3 steps per 2 beats every later landing keeps the grid.
+  function runClip(s, t) { const R = s.opt.runner, m = st.run, v = s.opt.speed * S, q = (R.h * H) / (m.h || 720), base = s.opt.townFrom ? T.beat(s.opt.townFrom[0], s.opt.townFrom[1]) : s.t0 - (R.t0 || 0);
+    return { rate: R.foot ? v / (R.foot * m.fps * q) : 1, base, q }; }
+  function runPhase(s) { const R = s.opt.runner; if (!R.plant || !st.run) return 0; const { rate, base } = runClip(s, 0), cf = Math.round((T.beat(R.plant.on[0], R.plant.on[1]) - base) * rate * st.run.fps);
+    return (((R.plant.off - cf) % R.plant.period) + R.plant.period) % R.plant.period; }
+  // song times of the landings in [t0, t1]
+  function plants(s, t0, t1) { const R = s.opt.runner, P = R.plant, { rate, base } = runClip(s, 0), fps = st.run.fps, ph = runPhase(s), out = [];
+    const k0 = Math.ceil(((t0 - base) * rate * fps + ph - P.off) / P.period - 1e-6); for (let k = k0; ; k++) { const cf = P.off + k * P.period - ph, tp = base + (cf - 0.5) / (rate * fps); if (tp > t1) break; if (tp >= t0 - 1e-6) out.push(tp); } return out; }
   // urls a shot needs at t (the harness preloads them into READY)
   function need(s, t) { const o = s.opt, out = [];
     if (o.code === 'town' || o.code === 'aerial') for (const id of o.lives) if (st.facades[id]) out.push(st.facades[id].url);
@@ -105,7 +115,11 @@ export function makeOutro(E) {
     // the facades along the road. film v3: a v2 facade may be wider (up to 0.42 W: Hangar One, the cut-away living room), and every facade
     // gets a slot of max(spacing, its width + 0.05 W); the slots are laid end to end (with the v1 facades all slots equal the spacing, so
     // the v1 layout is unchanged) and the travel speed scales with the total so the twelve still pass in the same time
-    const lay = townLayout(o), vs = lay.ratio, chips = [];
+    const lay = townLayout(o), chips = [];
+    // film v8: o.townEnd = [bar, beat]: the facades travel a little faster (one factor for the whole run, so every shot stays continuous)
+    // so that the LAST one has passed her (its left edge at x townEnd[2] of the frame) on that beat: the paper ahead of her is blank
+    let vs = lay.ratio; if (o.townEnd && dir > 0) { const kL = o.lives.length - 1, QL = lay.q[kL], tE = T.beat(o.townEnd[0], o.townEnd[1]) - (o.townFrom ? T.beat(o.townFrom[0], o.townFrom[1]) : s.t0);
+      if (QL) vs = Math.max(vs, (o.townEnd[2] * W + QL.bw * QL.q / 2 - 0.22 * W + lay.c[kL]) / (v * tE)); }
     o.lives.forEach((id, k) => { const F = st.facades[id]; if (!F) return; const L = byId[id], bb = F.bb, img = F.img, Q = lay.q[k];
       const bw = Q.bw, bh = Q.bh, q = Q.q, sc2 = scroll * vs,
         cx = dir > 0 ? 0.22 * W - lay.c[k] + sc2 : 0.78 * W + lay.c[k] - sc2;
@@ -118,7 +132,21 @@ export function makeOutro(E) {
     // the road: main written dense (she is merged), scrolling with the ground (the path starts off-frame: a negative scroll leaves up to
     // one glyph cell empty at the path's start)
     const adv = 26 * S / 0.73 * 0.6, x0r = -3 * adv;
-    drawWrittenLane(g, [{ x: x0r, y: roadY }, { x: W, y: roadY }], { text: laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true), color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: dir * -(scroll / adv) });
+    // film v8 (outro concept A, "she doesn't look"): o.roadEnd = [bar, beat]: the written road ENDS ahead of her (frame left) and its end
+    // reaches her landing foot on that beat; from then each landing writes a patch of lane under the foot (one life per step, its own
+    // colour and message), which joins its neighbours and turns main's orange as it falls behind her
+    const footX = o.runner && o.runner.plant ? o.runner.x * W - (st.run ? st.run.w : 1280) * ((o.runner.h * H) / 720) / 2 + o.runner.plant.px * ((o.runner.h * H) / 720) : 0.5 * W;
+    const tEnd = o.roadEnd ? T.beat(o.roadEnd[0], o.roadEnd[1]) : null, xEnd = tEnd !== null ? footX + dir * (scroll - v * (tEnd - (o.townFrom ? T.beat(o.townFrom[0], o.townFrom[1]) : s.t0 - (o.x0 || 0)))) : -1e9;
+    drawWrittenLane(g, [{ x: x0r, y: roadY }, { x: W, y: roadY }], { text: laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true), color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: dir * -(scroll / adv), from: Math.max(0, xEnd - x0r) });
+    if (tEnd !== null && t >= tEnd - 0.01 && o.runner && st.run) { const step = o.runner.plant.stepPx * S, tps = plants(s, tEnd - 0.02, t);
+      tps.forEach((tp, k) => { const age = t - tp, x = footX + dir * v * age, L = LIVES[(o.stepLife0 || 0) + k] || LIVES[k % LIVES.length];
+        // the patch grows out from the foot (its text fixed on the paper: a fixed path, revealed from/upto), then widens to meet its
+        // neighbours and turns orange: joined by ~0.5 s, i.e. two steps behind her
+        const grow = ease.out(clamp01(age / 0.09)), join = ease.io(clamp01((age - 0.12) / 0.38)), M = step * 0.56, half = (step * (0.44 + 0.12 * join)) * grow, pts = [{ x: x - M, y: roadY }, { x: x + M, y: roadY }];
+        const lo = { text: laneString([L.msg], true), cap: 26 * S, under: 0, scroll: 0, from: M - half, upto: M + half };
+        if (join < 1) { g.save(); g.globalAlpha = 1 - join; drawWrittenLane(g, pts, { ...lo, color: L.color, merge: 0.82 }); g.restore(); }
+        if (join > 0) { g.save(); g.globalAlpha = join; drawWrittenLane(g, pts, { ...lo, color: MAIN, merge: 0.82 }); g.restore(); }
+        if (age < 0.22) glowAt(x, roadY, 70 * S, L.color, 0.7 * (1 - age / 0.22)); }); }
     if (o.runner && st.run) { const R = o.runner, f = runFrame(s, t), img = READY.get(`${R.dir}/rgba/f_${String(f + 1).padStart(4, '0')}.png`);
       if (img) { const h = R.h * H, q = h / img.height, w = img.width * q, e = R.edge || 0;   // edge: the outer margin of the cut-out is dropped (stray specks)
         g.drawImage(img, e * img.width, e * img.height, img.width * (1 - 2 * e), img.height * (1 - 2 * e), R.x * W - w / 2 + e * w, R.y * H - h + e * h, w * (1 - 2 * e), h * (1 - 2 * e)); }
