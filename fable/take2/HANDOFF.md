@@ -3,13 +3,34 @@
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
 ## Start here (next session)
-1. Jade reviews `review/fable_take2/review_v8.html` (five decisions: 4:01-4:04, car camera, jacket bands, tree, v9/master) and the
-   glyph experiment in `review/fable_take2/v8_glyph/`. Run the notes round as below ("How a notes round runs").
-2. Glyph art: her decisions so far (verbatim in `notes/glyph_v8.md`): TWO styles. Style 1 for anime close-ups = iteration-1 look B
-   (`tools/glyphart/paint.py`, colour, all scripts, full frame) e.g. 3:42 catch. Style 2 for 1:34 night and 2:15 wushu/orchestra =
-   English/ASCII glyphs, one font size at hatch resolution, D ink palette (`hashglyph.py`, `animate_hash.py`); latest ask was V3
-   (bodies upright, background rotated): `2m15_wushu_orch_mono_s2b_V3_720p.mp4`. Not wired into the film yet; wiring = per-shot
-   `v7dir` + skip the paper pass (notes in glyph_v8.md). Style 1 animated needs `animate.py` to read plate frames (24 fps) + per-frame cut-outs.
+State at handoff: working tree clean, everything pushed on `fable/merge`, no agents running, nothing paid queued. Spend about $573
+(`tools/gen/spend.py`; the tools' cap constant is still 600 and Jade lifted the cap; raise it when needed).
+
+1. **Her v8 notes.** She is reviewing `review/fable_take2/review_v8.html` (open it as a local file; the video menu has local v8 with
+   likeness, public v8, and v7). Five decisions: (1) 4:01-4:04 "she doesn't look" right / needs work; (2) car camera move right /
+   adjust; (3) 4:01 face plate's broad orange jacket bands vs the runner's thin trim: fine / match; (4) tree drawn in code right /
+   adjust; (5) next: v9 / master. Run the notes round as below ("How a notes round runs"): save her paste verbatim to
+   `notes/jade_v8_notes.md`, stills at her timestamps, `notes/v9_direction.md`, agents.
+2. **Glyph art (she asked to prioritise it).** Everything verbatim plus commands in `notes/glyph_v8.md`; review files in
+   `review/fable_take2/v8_glyph/`. Her decisions so far: TWO styles.
+   - Style 1, anime close-ups (e.g. 3:42 catch, b129): iteration-1 look B, colour, all scripts, FULL FRAME (`tools/glyphart/paint.py
+     --preset colour_all`). Her pick: `3m42_catch_B_colour_figure.jpg`. Not yet animated: `animate.py` needs a `--frames/--fps 24`
+     option to read plate frames (and per-frame cut-outs if the figure/background split is kept).
+   - Style 2 for 1:34 night (ca10) and 2:15 wushu/orchestra (b79): English/ASCII glyphs only, one font, one size at hatch resolution,
+     D film-ink palette on black (`hashglyph.py`, `animate_hash.py`, about 1 s/frame). She said "big improvement", then asked for
+     bodies upright only (V3): `2m15_wushu_orch_mono_s2b_V3_720p.mp4` + `sheet_2m15_s2b_V3.jpg` (bodies upright, background rotated).
+     **Open with her:** V3 upright vs rotated, and 14 px vs 20 px (we lean 20, mono and serif look alike). My read on V3: bodies read as
+     typeset text, busier and flatter than rotated; works best on the wushu, the orchestra close-ups turn into blocks of type, and the
+     BiRefNet body mask also catches chairs/stands there.
+   - Iteration-2 `marks.py` (flat marks, F2 ink on cream) exists but she chose the styles above; parked.
+   - Wiring into the film (after she picks): render frames in v7 numbering, per-shot `v7dir` pointing at the glyph folder, and a
+     `paper: 0` option so film.js skips the hatch pass for those shots; for the 3:42 plate, a new plate folder `plates/catch_glyph/`.
+     The compositor does this; the glyph renderer's owner paths are `tools/glyphart/**`.
+3. Fix-list carried from v8 (do with her v8 notes): purple branch drops at the 0:24.6 cut into the old swoop (ib11); 4:01 streaks faint
+   and old peach road behind the 4:04 patches; car: plain 3D stand-in in the over-shoulder opening (a drawn back-view still would cost
+   about $0.2 + $1-3 clip, ask her), steering wheel rim bottom-left, blurred mid-pan, smile hold 1.9 s vs 2.4 s in v7.
+4. If she picks "master": master from v8 settings under "The master" below (`--q hud=0`), then encodes and subtitles; release files are
+   local only (likeness).
 
 ## Film v8 (2026-11-22)
 Notes `notes/jade_v7_notes.md`, brief `notes/v8_direction.md`; built: `notes/compositor.md` "Film v8", `plates_v8.md`, `car_v8.md`,
