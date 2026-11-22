@@ -302,12 +302,14 @@ class Scene11(MB.SceneB):
             rng = np.random.default_rng(31)
             ang = np.arctan2(yy - s.chest[1], xx - s.chest[0])
             n = np.zeros((H, W), np.float32)
-            for k, amp in ((2, 0.07), (3, 0.06), (5, 0.05), (8, 0.04), (13, 0.03), (21, 0.022), (34, 0.015), (55, 0.01), (89, 0.007)):
-                for _ in range(2):
-                    n += amp * np.cos(k * ang + rng.uniform(0, 2 * np.pi)).astype(np.float32) * rng.uniform(0.6, 1.2)
-            fib = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), 2.0)
-            fib /= fib.std() + 1e-6
-            s._dfront = np.hypot((xx - s.chest[0]) * 0.86, yy - s.chest[1]) * (1 + n) + 5.0 * fib
+            # rev 2 (main thread: the star read as a cartoon burst): a few large irregular lobes only (low angular frequencies,
+            # random phases), no regular spikes; the paper's fibre is a fine 2-D jitter of a few px along the edge
+            for k, amp in ((1, 0.05), (2, 0.07), (3, 0.06), (4, 0.045), (6, 0.025)):
+                n += amp * np.cos(k * ang + rng.uniform(0, 2 * np.pi)).astype(np.float32) * rng.uniform(0.7, 1.2)
+            fib = np.zeros((H, W), np.float32)
+            for sig, amp in ((1.5, 3.0), (5.0, 6.0), (14.0, 9.0)):
+                z = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), sig); fib += amp * z / (z.std() + 1e-6)
+            s._dfront = np.hypot((xx - s.chest[0]) * 0.86, yy - s.chest[1]) * (1 + n) + fib
             s._dsort = np.sort(s._dfront[::4, ::4].ravel())
         ts, fs = zip(*MB.SceneB.DAY_KEYS)
         f = float(np.interp(t, ts, fs))

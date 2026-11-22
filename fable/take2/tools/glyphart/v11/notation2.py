@@ -56,6 +56,19 @@ def font(path, px, var=None):
     return _fc[k]
 
 
+def has_glyph(fp, text):
+    """every character of text has a real glyph in the font (not the .notdef box): ink differs from the notdef's"""
+    f = font(fp, 64)
+    nd = np.asarray(f.getmask('\U0010FFFD'))
+    for c in text:
+        if c == ' ':
+            continue
+        m = np.asarray(f.getmask(c))
+        if m.size == 0 or (m.shape == nd.shape and np.array_equal(m, nd)):
+            return False
+    return True
+
+
 # ------------------------------------------------------------------ word generators: (text, fontpath, var, rel size)
 def gen_words(life, rng):
     if life in ('wetlab', 'band'):
@@ -81,8 +94,14 @@ def gen_words(life, rng):
             yield (words[k % len(words)].lower(), C059I if k % 4 else C059BI, None, 1.0); k += 1
     if life == 'ames':
         ws = ['∂ρ/∂t', '∇·u = 0', 'Σ', 'π', '∫', '≈', 'ρ', 'Δv', 'ω', 'θ', 'λ', 'α', '∇p', 'μ', 'L = ½ρv²S', 'Γ', 'ζ', '∂/∂x', '√2', 'β', 'φ', 'Ω']
+        DJSB = '/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf'
+        ok = [(w, f) for w in ws for f in (DJB, DJSB) if has_glyph(f, w)]      # no empty boxes
+        bad = sorted({w for w in ws if not any(w == o[0] for o in ok)})
+        if bad:
+            print('ames: dropped tokens with missing glyphs', bad)
         while True:
-            yield (ws[int(rng.integers(len(ws)))], DJB if rng.random() < 0.6 else '/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf', None, 1.0)
+            w, f = ok[int(rng.integers(len(ok)))]
+            yield (w, f, None, 1.0)
     if life in ('chezjj', 'sandstorm'):
         ws = ['{', '}', ';', '=>', '/*', '*/', '|', '#', '0x3f', 'a9', 'ff', '1e', 'c0', 'de', 'ad', '7b', '{ }', '();', '||', '#!', '=>', 'e2', '42', '0x00']
         while True:

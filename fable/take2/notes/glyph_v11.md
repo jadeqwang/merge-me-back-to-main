@@ -111,6 +111,32 @@ plate id only (`<plate>_glyph11` in place of `<plate>_glyph`); clip maps, opts, 
 | cb10-cb12 | (above) | merge plates | | | letters 66 -> 180 | the merge finishes it: many letters into one |
 | oa03 | day_eyes_v2_glyph | unchanged | | | finest (v9) | decision 10 Keep: no re-render |
 
+B2 (a notation per life, approved 2026-11-22): moving plates written in each life's notation as ink (`v11/notation11.py`, look of
+`notation2.py`). ONE static layout per clip (no boil, no re-layout); glyphs only on flat areas outside, in every frame, the BiRefNet
+figure mattes (v11 pmatte, union), face/hand skin blobs, anything that moves (4 px blur, > 0.10) and dense sketch lines (violin,
+wushu), all + 36 px margin. Every frame of the source painted (121), `meta.json` copied (+ glyph field) so ids swap with the same clip
+maps: proof plates live in `work_fable/proof/plates/<id>`, the new folders are under `work_fable/take2/plates/` (point o.dirs /
+the alias at them). Sheets: `dev/v11_glyph/notation11_<life>.jpg` (+ `_safe.jpg`: red = kept clean); review copies
+`review/fable_take2/v11/notation_<life>.jpg` (committed; violet's is the v9 all-scripts look, unchanged in the film).
+
+| shot | life | plate replaced | folder | frames | clip range painted | notation |
+|---|---|---|---|---|---|---|
+| va12 | piano | proof `piano` | `piano_notation11/` | 121 | all (0-5.0 s) | staff, treble/bass, pedal |
+| va13 | violin | proof `violin` | `violin_notation11/` | 121 | all | staff + bowing |
+| va14 | wushu | `wushu_v3` (PROOF_A) | `wushu_v3_notation11/` | 121 | all | hanzi words |
+| va15 | biology | proof `wetlab` | `wetlab_notation11/` | 121 | all | ATGC codons |
+| va16 | phd-neuroscience | proof `phd` | `phd_notation11/` | 121 | all | IPA |
+| va17 | poet | proof `poet` | `poet_notation11/` | 121 | all | her lines, lower-case serif |
+| va18 | nasa-ames | proof `ames` | `ames_notation11/` | 121 | all | Greek + maths (missing-glyph tokens dropped: none left) |
+| va19 | rna-band | `band_v2` (LIFE_SWAP) | `band_v2_notation11/` | 121 | all | ACGU codons (walls, door, floor) |
+| va20 | hacker-houses | proof `chezjj` | `chezjj_notation11/` | 121 | all | code + hex, monospace |
+| va21 | open-source | proof `sandstorm` | `sandstorm_notation11/` | 121 | all | code + hex, monospace |
+| (grid etc.) | parenthood | `home_v3` (LIFE_SWAP) | `home_v3_notation11/` | 121 | all | a child's capitals, some mirrored |
+| - | rare-earth | unchanged | - | - | - | v9 as placed |
+
+cb12 note: `patch_settle_merge11/` was re-rendered IN PLACE 2026-11-22 15:00 (daylight front rev 2: a few large irregular lobes +
+fine paper fibre, no spikes; authorised by the main thread, no film render had used it). Still `dev/v11_glyph/cb12_233.5_640.jpg`.
+
 ## Weak / open
 - Notations at 640: they read in flat light areas (poet, phd, biology, code screen, ames) and vanish into texture in busy plates
   (piano, wushu, band, parenthood) at either size; at x1.0 most are texture only. Larger (x2+) would read but coarsen faces.
@@ -119,6 +145,7 @@ plate id only (`<plate>_glyph11` in place of `<plate>_glyph`); clip maps, opts, 
   them; fusions start at once). Life phrases can overlap a neighbour block for a moment (bh check is per 6 blocks).
 - A4 lone `I` (C059 Bold 170 px) is readable at 640 but thin (about 6 px stroke); 我 is denser. It stands alone only 230.69-231.21
   (shrinking as it sinks).
-- Daylight front now smooth: reads as a soft white oval opening from her chest (no blotches/dark islands) but more "spotlight".
+- Daylight front: rev 2 torn-paper lobes (cb12 re-rendered in place).
+- B2 plates: the safe mask is conservative: violin and hacker-houses are sparse (the orchestra sketch and the busy room stay clean); band's top rows crowd each other a little; glyphs are fixed on screen, so where the plate's camera drifts the background moves under them.
 - A3 catch: 40 letters / 12 words (longer words later in the song, narrow allowed area with the face clean): sparse.
 - A1: release order vs song order is by row piece, so a line's words leave together but lines interleave at the edges.
