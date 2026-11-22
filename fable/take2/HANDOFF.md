@@ -1,4 +1,10 @@
-# Take two: handoff (updated 2026-11-21: film v7 rendered and pushed, waiting for Jade's notes)
+# Take two: handoff (updated 2026-11-21: v8 round in progress)
+
+## v8 round (in progress, 2026-11-21)
+Jade's v7 notes: `notes/jade_v7_notes.md`; brief `notes/v8_direction.md`. She asked to PRIORITISE the dense composed-glyph-art
+experiment (1:34, 2:15, 3:42 notes). Agents running, each with a resume note: glyph (`notes/glyph_v8.md`), outro ideation by a
+Fable (`notes/outro_ideas_v8.md`, 4:01/4:04), compositor (`notes/compositor.md` "Film v8": tree drawn in code, book re-track),
+plates (`notes/plates_v8.md`: 3:03 pencils), car in three.js (`notes/car_v8.md`, 4:30). Full film render waits for the outro pick.
 
 Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
