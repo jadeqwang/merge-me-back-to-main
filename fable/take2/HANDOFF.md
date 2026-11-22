@@ -1,6 +1,6 @@
 # Take two: handoff (updated 2026-11-22: film v10 rendered, waiting for Jade's notes)
 
-Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
+Read this first ("Film v10", then "Start here"), then `fable/take2/PLAN.md` (section 3 rules and section 11 state), then the notes file for whatever you touch.
 
 ## Film v10 (2026-11-22: rendered, waiting for Jade's notes)
 Jade: "start the v10 vision" (no v9 notes sent). Brief `notes/v10_direction.md` (with "Timing corrections"); built:
@@ -30,6 +30,60 @@ Scope built = A (catch as letters merging) + C (cleared outro) + L (picture meas
   near-static back view through the loudest groove; picture energy b133-137 still below the riser; dr35/dr36 +0.55/+1.10 frames.
 - Next: her v10 notes and gate answers (`notes/jade_v10_notes.md`, then a notes round as below).
 
+## Start here (next session)
+State at handoff (2026-11-22, after film v10): working tree clean, everything pushed on `fable/merge`, no agents running, nothing
+paid queued. Spend $579.85 (`tools/gen/spend.py`; cap constant still 600, Jade lifted the cap; raise it when needed). v10 cost
+nothing. Read `notes/v10_direction.md` (short) before touching the catch or the outro.
+
+1. **Her v10 notes.** She has `review/fable_take2/review_v10.html` (15 decisions) and six with-sound clips
+   `work_fable/take2/out/ear/E1..E6` (one question each; the questions are in `notes/listen_v10.md` "Ear clips for Jade"), plus
+   `work_fable/take2/out/catch_v9_v10.mp4`. Run the round as in "How a notes round runs": paste verbatim to
+   `notes/jade_v10_notes.md`, stills at her timestamps, write `notes/v11_direction.md`, then agents.
+   The split that worked this round: three opus agents, **glyph** (`tools/glyphart/v10/`, note `glyph_v10.md`), **compositor**
+   (`compositor.md` "Film v10"), **listen** (`tools/listen/`, `listen_v10.md`), with the main thread looking at every test image
+   before a range is rendered and sending revisions back by message (the merge took three passes: `10`, `10b`, `10c`).
+2. **Measure before and after, every round** (her standing ask; do not write "nobody has watched it at speed"):
+   - BEFORE building: take timings from the phrase maps in `listen_v10.md`, not from the shot table or the lyric sheet. This round
+     the map moved three things the plan had wrong: the violet hit is b121.1 (207.819), not b122; nothing percussive plays under
+     the twelve folds; "become" is at 231.210 inside cb12. For any other passage, run `tools/listen/phrase_map.py` first.
+   - AFTER rendering: re-run the "Re-run on v10" commands in `listen_v10.md` (film energy, cut table, strips, per-event offsets)
+     and fix what is off by more than 2 frames before telling her. Then say what was measured and what waits on her ear.
+   - **Owed now:** the offsets in "v10 measured" are from the FIRST v10 render. The fix pass (settle at 235.038, streak, daylight
+     curve, dr26-dr31) was checked on strips and check.py only. Re-measure the final `film_v10_local.mp4` at the start of the next
+     round and correct the table.
+3. **Open gates** from `notes/v10_plan.md` (asked on the review page; nothing built for them): G2 glyph size as the merge variable
+   (B1), G3 a notation per life (B2), G5 her one true line per ended life (D1 waits on it), G6 slab lyrics off 3:39-3:58 (E1),
+   G7 night drive as frame (test stills only), G8 rainbow wave run (leave unless she raises it). Also still unanswered from v9:
+   decisions 1, 2, 3, 5, 6 (glyph placement, orchestra letters, drop slashes, 0:39 glide, 4:01 glyph paper).
+4. **v10 weak points told to her** (fix with her notes): daylight front at 233-234.6 is a blotchy cloud with dark patches at the
+   top of frame (`patch_settle_merge10c`; the `c` id was re-rendered in place once, by permission, before any film render used it);
+   the last mark is an arbitrary violet "R" (offer her the choice of character); letters are a bright haze around 224 and most of
+   the drawing is uncovered by 228.5; fusions land +190-230 ms after the beat (on the off-beat 8th: her ear, E2); A1 small letters
+   are specks at 640; car box is up 0.8 s after typing ends (it must be gone by the 272.543 chord change; starting the typing
+   earlier is the fix); oa05 (4:05) is a near-static back view through the loudest groove; picture energy b133-b137 stays below
+   the riser; merge plates are 24 fps in a 30 fps film (one frame in five repeats, as on every plate); dr35/dr36 +0.55/+1.10
+   frames; credits commit `0e96639` was my pick.
+5. **v9 open items still standing:** va07 0:39 glide (`cross_hackerhouses_v9_lock` commented out in `CROSS_V4`; or a third paid
+   take); va04 slip never measured; orchestra pink lost and bodies read as grey blocks at 640 px; 4:01 paper light-grey type;
+   va01 face un-glyphed; `car_v9` console scribble at 1.6-2.3 s and cyan diamond (a new aleph-2 take over the longer `car3d_v10`
+   clip, about $3, is approved if she wants the car redone); bu09 (2:12) dark hatch shot before the glyph wushu run; the drop at
+   b89.1 (152.787) has no hard cut on it (listen baseline finding, not yet told to her as a question).
+6. **Disk, awaiting her word:** other cuts' old renders untouched: `out/tmp/v_*.mp4` (~27 GB), `out/final` + `out/review`
+   (~14 GB), `work_fable/out/v1..v5.mp4` and r2/r3/r4/act parts (~12 GB; keep v6, v7, v7_uhd, whose frames feed take two). Her rule:
+   keep the latest two full films; in take two that is now v9 and v10, so v8 finals (and v7) may go once she agrees. Stale
+   files `work_fable/take2/dev/v10_listen/strips/chk2_*.png` can be deleted.
+7. If she picks "master": settings under "The master" below (`--q hud=0`), then encodes and subtitles; release files local only.
+   The .srt/.vtt predate the outro re-cut: the lyric cue times are unchanged, but check them against `listen_v10.md` word times.
+
+v10 switches: `?v10=0` gives the v9 cut for the catch and outro. Plate fallback order on the changed shots: `b`/`c` ids, then
+the first `10` ids, then v9 sources. Never overwrite a plate id that a render has used.
+Switches worth knowing: `?glyph=0` renders the v8 look everywhere; `?carv=8` the v8 car move; `?hands=1` driver's hands in the 3D
+car (off by default: she did not ask for them). The car 3D render needs `--workers 1` (GPU memory; 3 workers gave black frames).
+New tools: `tools/slip.py` (stance-foot slip vs ground homography; trust it over the v4 toe measure), `tools/relock.py`
+(`--keylane`, `--fill aNNN`), `tools/swoop_track.py`; glyph renderers and the slash paper pass in `tools/glyphart/` (see glyph_v9.md).
+Video-to-video that keeps camera motion: runwayml/aleph-2, $0.336/s (`gen/car_v9.py`); feed it a clean 3D clip plus image-edited
+first/last stills, and audit every frame for invented people.
+
 ## Film v9 (2026-11-22: rendered, waiting for Jade's notes)
 Notes `notes/jade_v8_notes.md`, brief `notes/v9_direction.md`; built: `notes/compositor.md` "Film v9", `notes/glyph_v9.md` (Wiring
 table, settings), `notes/plates_v9.md`. Art-direction essay (Fable, her request): `notes/art_direction_fable.md` (thesis: the film
@@ -46,52 +100,6 @@ is about the violet branch that does not merge; top moves: catch at 3:42 as clim
 - Disk: full renders v1-v6 of this cut and v7 masters deleted at her request. Other cuts untouched (out/tmp ~27 GB, out/final +
   out/review ~14 GB, work_fable/out v1-v5 ~12 GB): offered to her, awaiting her word.
 - Next: her v9 notes (run a notes round as below), and her answer on which essay moves to pursue.
-
-## Start here (next session)
-State at handoff (2026-11-22): working tree clean, everything pushed on `fable/merge`, no agents running, nothing paid queued.
-Spend $579.85 (`tools/gen/spend.py`; cap constant still 600, Jade lifted the cap; raise it when needed). Disk about 200 GB free.
-
-1. **Her v9 notes.** She is reviewing `review/fable_take2/review_v9.html` (local file; menu: local v9, public v9, v8). Eight
-   decisions: (1) the two glyph styles as placed: right / adjust; (2) orchestra 2:19 in upright letters: keep / rotated / back to
-   hatch; (3) drop in slashes: right / more visible characters; (4) car 4:30: right / adjust; (5) 0:39 runner glide: accept / another
-   plate; (6) 4:01 on glyph paper: keep / clean line; (7) which essay moves to pursue (multi-select); (8) v10 / master.
-   Run the round as in "How a notes round runs": paste verbatim to `notes/jade_v9_notes.md`, stills at her timestamps, write
-   `notes/v10_direction.md`, then agents. This round used three opus agents (glyph, compositor, plates) plus the main thread
-   looking at every sheet; that split worked. Order dependencies: plates before glyph for any new plate that gets glyphs;
-   compositor's full render only after all sources land.
-2. **The v10 plan** drawn from the essay: `notes/v10_plan.md` (proposal: eight gates for Jade, items A-F with shot ids, order of
-   work, risks). It becomes `notes/v10_direction.md` once she answers the gates and sends v9 notes.
-   **The essay** (`notes/art_direction_fable.md`, 4,300 words, she has only my summary so far). If she picks moves from it, the
-   feasible-in-pipeline ones are ranked there with timestamps: catch at 3:42 as climax (violet's handoff text crosses and writes main
-   through), glyph grammar (a notation per life; glyph size as the merge variable), clearing the outro (cut 4:07 stance, 4:12
-   aerial, log burst), lives ending once at 2:00 (needs captions written by Jade), drop as violet's drawing. Its opinions against
-   her binding choices (slab lyrics over chorus 2, the 4:09 rainbow wave run) are hers to weigh; do not act on them unasked.
-   The essay also disagrees with parts of v9 as she specified it (style 1 on every close-up; glyphs at 4:01): told to her, her call.
-   **Answered 2026-11-22:** G1 yes (the catch is the climax; she wants letters *merging together*, which "the patchwork jacket was
-   only metaphorically gesturing at") and G4 yes (clear the outro). Gates G2, G3, G5-G8 still open.
-   **Her ask for v10:** actually check the film against the song. We cannot hear or watch; do `notes/v10_plan.md` section 6
-   (audio measured and read as spectrograms/energy against the bar map, dense frame strips with beat ticks, picture-vs-music
-   energy plot, per-event offsets in ms, short clips with one question each for her ear) and report which checks were measured
-   and which wait on her. Stop writing "nobody has watched it at speed" as a bare caveat; say what was measured instead.
-3. **Open items told to her** (fix with her notes): va07 0:39 glide (options: `cross_hackerhouses_v9_lock` with an earlier window
-   via maxSpeed 2 or a later wipe, entry commented out in `CROSS_V4` in shots.js; or a third paid take that starts further from the
-   door); va04 slip never measured (matte takes the door); orchestra pink lost in the D palette and bodies read as grey blocks at
-   640 px; style-1 shimmer on catch and c2_lookup (eighth-note boil + background refill; lower the boil or freeze background
-   glyphs on near-static plates); 4:01 paper turns light-grey type; va01 face un-glyphed (her 0:29.82 note sat on the cut, applied
-   to va02 only); car_v9 console scribble at 1.6-2.3 s and cyan diamond in the hold; bu09 (2:12) dark hatch shot sits right before
-   the glyph wushu run; dr20 cut registers +2.1 frames late.
-4. **Disk, awaiting her word:** other cuts' old renders untouched: `out/tmp/v_*.mp4` (~27 GB, temp renders, safest),
-   `out/final` + `out/review` (~14 GB), `work_fable/out/v1..v5.mp4` and r2/r3/r4/act parts (~12 GB; keep v6, v7, v7_uhd, whose
-   frames feed take two). She said keep the latest two versions of the full film; in take two that is now v8 and v9 (v7 finals
-   are still there and may go when v10 exists).
-5. If she picks "master": settings under "The master" below (`--q hud=0`), then encodes and subtitles; release files local only.
-
-Switches worth knowing: `?glyph=0` renders the v8 look everywhere; `?carv=8` the v8 car move; `?hands=1` driver's hands in the 3D
-car (off by default: she did not ask for them). The car 3D render needs `--workers 1` (GPU memory; 3 workers gave black frames).
-New tools: `tools/slip.py` (stance-foot slip vs ground homography; trust it over the v4 toe measure), `tools/relock.py`
-(`--keylane`, `--fill aNNN`), `tools/swoop_track.py`; glyph renderers and the slash paper pass in `tools/glyphart/` (see glyph_v9.md).
-Video-to-video that keeps camera motion: runwayml/aleph-2, $0.336/s (`gen/car_v9.py`); feed it a clean 3D clip plus image-edited
-first/last stills, and audit every frame for invented people.
 
 ## Film v8 (2026-11-22)
 Notes `notes/jade_v7_notes.md`, brief `notes/v8_direction.md`; built: `notes/compositor.md` "Film v8", `plates_v8.md`, `car_v8.md`,
