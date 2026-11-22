@@ -118,7 +118,7 @@ FL.forEach(([id, b], i) => {
   if (i < 3) V([b, 4], [b + 1, 3], 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE, tree: TREE } });
 });
 V([14, 4], 15, 'seq 02', 'The tree grows east.', { row: 'b10-14', opt: { vlane: VLANE, tree: TREE } });
-V(15, [16, 3], 'seq 02', 'Swoop down the trunk to ground level.', { row: 'b15-16' });
+V(15, [16, 3], 'seq 02', 'Swoop down the trunk to ground level.', { row: 'b15-16', opt: { treeCarry: TREE } });   // film v9: the violet branch carried into the swoop (film.js treeCarry)
 P([16, 3], 17, 'main_palm', 'missing', "Adult Jade from behind at the root, palm raised exactly like the child's.", { row: 'b15-16', opt: { clip0: 1.0, clip1: 3.0 } });   // clip: the tree grows fastest at about 1-3 s
 
 // ------------------------------------------------------------------ Verse 1: bars 17-32
@@ -483,7 +483,8 @@ shot(139, [140, 3], 'S+C', 'code', 'facades', 'missing', 'Day. The road runs pas
 // b141.3-143: wide, the run goes on; the written road ENDS ahead of her and its end reaches her landing foot on b142.1 (roadEnd); from
 // there each landing writes a patch of lane under that foot, one life per step in its colour, joining and turning main's orange behind her.
 shot([140, 3], [141, 3], 'P+K', 'code', 'day_run', 'missing', 'Close three-quarter on her running face; on the snare she closes her eyes and keeps running past her history. (Until day_eyes lands: the run.)', { row: 'b139-140', opt: { ...TOWN_RUN, next: [   // film v9: day_eyes_v2 (plates_v9: jacket as the runner's, 1420 MHz patch on her left arm; lids close ~4 frames later than v1: clip 0.62-2.33 keeps the close on b140.4)
-    { id: 'day_eyes_v2', kind: 'plate', opt: { glyphPlate: 1, clip0: 0.62, clip1: 2.33, push: 0.02, mirror: true, streaks: { matte: '/work_fable/take2/kit/day_eyes_v2', speed: 2600, alpha: 0.5, n: 9 }, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.6, x1: 0.97, align: 'right' } } },
+    // v9 carried fix ("4:01 streaks faint"): alpha 0.5 -> 1.0, 1.4x thicker, 11 streaks (they sank into the glyph paper)
+    { id: 'day_eyes_v2', kind: 'plate', opt: { glyphPlate: 1, clip0: 0.62, clip1: 2.33, push: 0.02, mirror: true, streaks: { matte: '/work_fable/take2/kit/day_eyes_v2', speed: 2600, alpha: 1.0, thick: 1.4, n: 11 }, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.6, x1: 0.97, align: 'right' } } },
     { id: 'day_eyes', kind: 'plate', opt: { clip0: 0.45, clip1: 2.16, push: 0.02, mirror: true, streaks: { matte: '/work_fable/take2/kit/day_eyes', speed: 2600, alpha: 0.5, n: 9 }, clipFrom: null, forks: false, forksSpan: null, lyr: { x0: 0.6, x1: 0.97, align: 'right' } } }] } });   // plates_v8 Wiring: day_eyes (lids fall at clip ~0.85-1.0) at 1x from 0.45, so they close on the b140.4 snare (measured: beat 4 carries the 1.5-6 kHz hit in b139-141); mirrored: the plate runs right, the town runner runs left
 shot([141, 3], 143, 'P+K', 'code', 'day_run', 'missing', 'Wide: the written road ends ahead of her; she runs off it onto blank paper without breaking stride, and each footfall writes a patch of lane, one branch colour per step, turning main orange behind her.', { row: 'b141-142', opt: { ...TOWN_RUN, roadEnd: [142, 1] } });
 P(143, [144, 2], 'day_fork', 'missing', 'She forks again: new branches run out as bare pencil lines on blank paper.', { code: 'P+C', row: 'b143-144', opt: { forks: true, push: 0, forksSpan: [[143, 1], [145, 1]] } });

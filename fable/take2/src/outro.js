@@ -137,7 +137,12 @@ export function makeOutro(E) {
     // colour and message), which joins its neighbours and turns main's orange as it falls behind her
     const footX = o.runner && o.runner.plant ? o.runner.x * W - (st.run ? st.run.w : 1280) * ((o.runner.h * H) / 720) / 2 + o.runner.plant.px * ((o.runner.h * H) / 720) : 0.5 * W;
     const tEnd = o.roadEnd ? T.beat(o.roadEnd[0], o.roadEnd[1]) : null, xEnd = tEnd !== null ? footX + dir * (scroll - v * (tEnd - (o.townFrom ? T.beat(o.townFrom[0], o.townFrom[1]) : s.t0 - (o.x0 || 0)))) : -1e9;
-    drawWrittenLane(g, [{ x: x0r, y: roadY }, { x: W, y: roadY }], { text: laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true), color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: dir * -(scroll / adv), from: Math.max(0, xEnd - x0r) });
+    // film v9 (carried v8 fix: "old peach road behind the 4:04 patches"): from the road's end (tEnd) the old road behind her turns, over
+    // 0.3 s, into the joined patches' finished look (solid main orange, dark message ink), so nothing peach is left beside them
+    const oldK = tEnd !== null ? ease.io(clamp01((t - tEnd) / 0.3)) : 0, roadTxt = laneString(['merge me back to main', ...LIVES.map((l) => l.msg)], true);
+    if (oldK < 1) { g.save(); g.globalAlpha = 1 - oldK; drawWrittenLane(g, [{ x: x0r, y: roadY }, { x: W, y: roadY }], { text: roadTxt, color: MAIN, cap: 26 * S, merge: 0.82, under: 0, scroll: dir * -(scroll / adv), from: Math.max(0, xEnd - x0r) }); g.restore(); }
+    if (oldK > 0) { const bh = 54 * S, xa = Math.max(-10, xEnd); if (xa < W) { g.save(); g.globalAlpha = oldK; g.beginPath(); g.rect(xa, roadY - bh, W + 10 - xa, 2 * bh); g.clip(); g.fillStyle = MAIN; g.fillRect(xa, roadY - bh, W + 10 - xa, 2 * bh);
+      drawWrittenLane(g, [{ x: x0r, y: roadY }, { x: W, y: roadY }], { text: roadTxt, cap: 26 * S, under: 0, scroll: dir * -(scroll / adv), color: '#2A1206', merge: 0.69 }); g.restore(); } }
     if (tEnd !== null && t >= tEnd - 0.01 && o.runner && st.run) { const step = o.runner.plant.stepPx * S, tps = plants(s, tEnd - 0.02, t);
       tps.forEach((tp, k) => { const age = t - tp, x = footX + dir * v * age, L = LIVES[(o.stepLife0 || 0) + k] || LIVES[k % LIVES.length];
         // the patch: its own cell on the paper (half a step either side of the landing: neighbours butt edge to edge, nothing

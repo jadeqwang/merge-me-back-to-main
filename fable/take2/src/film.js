@@ -362,7 +362,7 @@ function hud(t, sc) {
 }
 
 // ---------------------------------------------------------------- crossing wipe and written lanes (Step 2)
-let CROPC = null, LIGHTC = null;
+let CROPC = null, LIGHTC = null, CARRYC = null, SWOOP = null;
 // plate fraction (px, py) -> screen, through the first image's cover crop (zoom and focus): overlays stay on the drawn plate
 function plateToScreen(im, px, py) { const b = READY.get(im.url), cr = cover(b.width, b.height, W, H, im.zoom || 1, (im.fo || [0.5, 0.5])[0], (im.fo || [0.5, 0.5])[1]);
   return { x: ((px * b.width - cr.sx) / cr.sw) * W, y: ((py * b.height - cr.sy) / cr.sh) * H }; }
@@ -1059,7 +1059,7 @@ function streaks(t, sc) { const s = sc.s, o = s.opt.streaks, im = sc.imgs[0], m 
   if (!STC) { STC = document.createElement('canvas'); STC.width = W; STC.height = H; } const x = STC.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.globalCompositeOperation = 'source-over'; x.clearRect(0, 0, W, H);
   const cols = LIVES.map((l) => l.color), n = o.n || 9, tt = t - s.t0;
   for (let k = 0; k < n; k++) { const r = (j) => { const v = Math.sin((k + 1) * 12.9898 + j * 78.233) * 43758.5453; return v - Math.floor(v); };
-    const y = (0.08 + 0.84 * r(1)) * H, th = (5 + 26 * r(2)) * S, len = (420 + 700 * r(3)) * S, sp = (o.speed || 2600) * (0.7 + 0.6 * r(4)) * S, span = W + len + 200 * S;
+    const y = (0.08 + 0.84 * r(1)) * H, th = (5 + 26 * r(2)) * S * (o.thick || 1), len = (420 + 700 * r(3)) * S, sp = (o.speed || 2600) * (0.7 + 0.6 * r(4)) * S, span = W + len + 200 * S;
     const x0 = ((r(5) * span + tt * sp) % span) - len, a = (o.alpha || 0.5) * (0.5 + 0.5 * r(6)), c = cols[k % cols.length];
     const gr = x.createLinearGradient(x0, 0, x0 + len, 0); gr.addColorStop(0, hexA(c, 0)); gr.addColorStop(0.7, hexA(c, a)); gr.addColorStop(1, hexA(c, 0));
     x.fillStyle = gr; x.beginPath(); x.roundRect(x0, y - th / 2, len, th, th / 2); x.fill(); }
@@ -1105,6 +1105,11 @@ function draw(t, sc) {
     let b = codeTree ? TREE.frame(t, s.opt.tree.violet, s.opt.tree) : READY.get(sc.imgs[0].url); const rect = { x: 0, y: 0, w: W, h: H }, vc = !codeTree && s.opt && s.opt.v7crop && !(sc.glyph && sc.glyph.crop);
     if (vc) { if (!CROPC) { CROPC = document.createElement('canvas'); CROPC.width = W; CROPC.height = H; } const x = CROPC.getContext('2d'); x.imageSmoothingQuality = 'high';
       x.drawImage(b, vc[0] * b.width, vc[1] * b.height, vc[2] * b.width, vc[3] * b.height, 0, 0, W, H); b = CROPC; }
+    // film v9: ib11 carries the code tree's violet branch into v7's swoop (opt.treeCarry = shots.js TREE; homographies from
+    // tools/swoop_track.py), laid on the raw frame before the paper pass so it comes out in the same strokes
+    if (s.opt && s.opt.treeCarry && TREE && SWOOP && !sc.glyph) { const Hm = SWOOP.H[String(Math.round(t * 30))];
+      if (Hm) { if (!CARRYC) { CARRYC = document.createElement('canvas'); CARRYC.width = W; CARRYC.height = H; } const x = CARRYC.getContext('2d');
+        x.drawImage(b, 0, 0, W, H); x.drawImage(TREE.violetCarry(t, s.opt.treeCarry.violet, Hm), 0, 0); b = CARRYC; } }
     const look = s.opt && s.opt.paperLook && PAPER_LOOKS[s.opt.paperLook] ? PAPER_LOOKS[s.opt.paperLook][ORCHPAPER] : null;
     if (sc.glyph && s.opt.paper === 0) g.drawImage(b, 0, 0, W, H);   // film v9: finished glyph frames
     else if (paperPass && USE_PAPER && look && look.light) {   // raw frame, the paper pass's contour (no tone) added over it
@@ -1221,7 +1226,8 @@ async function boot() {
   try { ({ paperPass } = await import('./paper.js')); } catch (e) { console.log('paper.js not loaded (' + String(e).slice(0, 80) + '); v7 shots are raw'); }
   try { ({ glyphPass } = await import('./glyph.js')); } catch (e) { console.log('glyph.js not loaded'); }
   // film v8: the MERGE tree drawn in code (src/tree.js); ?tree=v7 brings back the v7 frames with the clean violet overlay
-  if (Q.get('tree') !== 'v7' && SH.some((s) => s.opt && s.opt.tree)) { try { const { makeTree } = await import('./tree.js'); TREE = await makeTree({ W, H, timingUrl: TIMING }); } catch (e) { console.log('ERROR tree.js ' + (e.stack || e)); } }
+  if (Q.get('tree') !== 'v7' && SH.some((s) => s.opt && s.opt.treeCarry)) SWOOP = await json('/work_fable/take2/v7/swoop_H.json');   // film v9
+  if (Q.get('tree') !== 'v7' && SH.some((s) => s.opt && (s.opt.tree || s.opt.treeCarry))) { try { const { makeTree } = await import('./tree.js'); TREE = await makeTree({ W, H, timingUrl: TIMING }); } catch (e) { console.log('ERROR tree.js ' + (e.stack || e)); } }
   { const KJ = await json('/fable/take2/kit.json'); if (KJ) KITX = makeKit({ g, W, H, S, T, KJ, READY, drawWrittenLane, laneString, glyphPass, byId, MAIN, clamp01, lerp, ease }); }
   // take-two changes inside the proof range (all off with proofbug=1): the black-paper hero (hero_paper, nearest frame; hero=old for the
   // first one), written lanes on the ten lives (prooflanes=0 off), bar 38 panel afterimages (trail=0 off)

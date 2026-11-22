@@ -1047,3 +1047,14 @@ Nobody has watched film_v8 at speed with sound.
   (still rendering) -> v8. day_eyes_v2_glyph frames only (no meta) -> v8.
 - Checked (dev/v9/glyph/all.jpg, v8 left / v9 right): 32.0 va03, 70.79 ca01 (MERGE slab + lanes on top), 93.18 ca10 (window row
   identical to v8), 153.65 (fallback = v8), 222.36 cb09 (FOLD on top).
+
+### 4. Carried fixes (B4)
+- Purple branch at the 0:24.6 cut (ib10 code tree -> ib11 v7 swoop): `tools/swoop_track.py 738 817 work_fable/take2/v7/swoop_H.json`
+  (frame-to-frame ORB homographies on v7's raw swoop, composed from the cut frame; ground plane = exact), tree.js `violetCarry(t, VL,
+  Hm)` draws the code tree's violet branch through them, film.js lays it on the raw ib11 frame BEFORE the paper pass (`opt.treeCarry`
+  on ib11): same strokes, rides the swoop until it leaves frame. Stills dev/v9/fix/carry.jpg (24.58 code tree, 24.64, 24.80, 25.0-25.4).
+- 4:01 streaks: alpha 0.5 -> 1.0, `thick` 1.4 (new streaks opt), n 11 (day_eyes_v2 entry). They had sunk into the glyph paper.
+- 4:04 old peach road: outro.js, from the road's end (tEnd) the old main road behind her turns over 0.3 s into the patches' finished
+  look (solid MAIN, dark ink, merge 0.69). Stills dev/v9/fix/outro2.jpg (241.2, 242.2, 243.9, 244.6).
+- Car wheel rim / blurred mid-pan: see item 1 (the opening is now the driver's view: the wheel is seen whole, bottom centre; pan
+  1.71 s with a 0.3-frame shutter). car_v9 (the video-model pass) is what the film shows now.

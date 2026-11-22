@@ -103,5 +103,24 @@ export async function makeTree({ W, H, timingUrl = '/analysis_v3/timing.json' })
         g.globalCompositeOperation = 'lighter'; const R = 22 * S, gr = g.createRadialGradient(X, Y, 0, X, Y, R); gr.addColorStop(0, rgba([235, 225, 255], al)); gr.addColorStop(0.25, rgba(V.col, 0.7 * al)); gr.addColorStop(1, rgba(V.col, 0));
         g.fillStyle = gr; g.fillRect(X - R, Y - R, 2 * R, 2 * R); g.globalCompositeOperation = 'source-over'; } }
     return cv; }
-  return { frame, cam, world: Wd };
+  // film v9 (carried v8 fix: "purple branch drops at the 0:24.6 cut"): the violet branch alone on a transparent canvas, its points
+  // mapped through Hm (3x3 row-major: the cut frame's screen -> this frame's screen, tools/swoop_track.py on v7's swoop), so film.js can
+  // lay it on ib11's v7 frames before the paper pass. Widths scale with the homography's local zoom.
+  const cvV = document.createElement('canvas'); cvV.width = W; cvV.height = H; const gv = cvV.getContext('2d');
+  function violetCarry(t, VL, Hm) {
+    gv.setTransform(1, 0, 0, 1, 0, 0); gv.clearRect(0, 0, W, H); if (!VL || t < VL.grow[0]) return cvV;
+    const c = cam(t), P0 = proj(c), V = violet(VL), r = V.r;
+    const M = (X, Y) => { const w = Hm[6] * X + Hm[7] * Y + Hm[8]; return [(Hm[0] * X + Hm[1] * Y + Hm[2]) / w, (Hm[3] * X + Hm[4] * Y + Hm[5]) / w]; };
+    const P = (x, z) => { const [X, Y] = P0(x, z); return M(X, Y); };
+    const [nx, ny] = P0(V.node.x, V.node.z), a0 = M(nx, ny), a1 = M(nx + 10, ny), a2 = M(nx, ny + 10);
+    const zoom = Math.sqrt(Math.abs((a1[0] - a0[0]) * (a2[1] - a0[1]) - (a1[1] - a0[1]) * (a2[0] - a0[0]))) / 10;
+    const p = sm(seg(t, VL.grow[0], VL.grow[1])), s1 = r.len * p, wCore = 2.4 * S * 1.5 * Math.max(1, Math.min(6, zoom)), col = V.col.map((v) => Math.min(255, v + 25));
+    gv.lineCap = 'round'; gv.lineJoin = 'round'; const step = Math.max(1.5, r.len / 90); gv.beginPath(); let k = 0;
+    for (let q = 0; ; q += step) { const ss = Math.min(q, s1), a = r.at(ss), [X, Y] = P(a.x, a.z); if (k++) gv.lineTo(X, Y); else gv.moveTo(X, Y); if (ss >= s1) break; }
+    gv.strokeStyle = rgba(col, 0.35); gv.lineWidth = wCore * 3.2; gv.stroke(); gv.strokeStyle = rgba(col, 0.95); gv.lineWidth = wCore; gv.stroke();
+    const hl = p < 1 ? s1 : r.len * (((t - VL.grow[1]) * 0.45) % 1), ah = r.at(hl), [X, Y] = P(ah.x, ah.z), al = p < 1 ? 1 : Math.sin((hl / r.len) * Math.PI) * 0.8;
+    gv.globalCompositeOperation = 'lighter'; const R = 22 * S * Math.max(1, Math.min(6, zoom)), gr = gv.createRadialGradient(X, Y, 0, X, Y, R); gr.addColorStop(0, rgba([235, 225, 255], al)); gr.addColorStop(0.25, rgba(V.col, 0.7 * al)); gr.addColorStop(1, rgba(V.col, 0));
+    gv.fillStyle = gr; gv.fillRect(X - R, Y - R, 2 * R, 2 * R); gv.globalCompositeOperation = 'source-over';
+    return cvV; }
+  return { frame, cam, world: Wd, violetCarry };
 }
