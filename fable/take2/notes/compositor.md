@@ -982,3 +982,24 @@ bu39/bu41 flashes, dr09/11/26/30/35/36 hatch-wipe inserts) minus oa07 (gone with
 bb31, dr01, cb04, cb06 as before. ib11 (code tree -> v7 swoop at b15.1) is listed by check.py as "same v7 sequence" (not cut-checked):
 it is now a real cut, on the bar. Type all pass; 22 lines, 119 words, none under 0.6 s; single frame vs full render 11 of 11 identical.
 Nobody has watched film_v8 at speed with sound.
+
+## Film v9 (2026-11-21, compositor; brief: notes/v9_direction.md section B, Jade's words: notes/jade_v8_notes.md)
+
+**Resume here.** Order: (1) car [DONE], (2) sneaker slip va04-va07, (3) glyph wiring from notes/glyph_v9.md, (4) carried fixes,
+(5) full render only when main says. Dev files: `work_fable/take2/dev/v9/`. Workers ~4 (shared machine).
+
+### 1. Car (B3) -- done
+- **Clean reference clip for the plates agent:** `work_fable/take2/dev/v9/car3d_clean.mp4` (1920x1080, 30 fps, 205 frames, 270.000-276.833 s
+  = the whole ob04 shot, no box/HUD/lyric), first frame `dev/v9/car3d_clean_first.jpg`, last frame `dev/v9/car3d_clean_last.jpg`.
+- `src/car3d.js` v9 (v8 move kept behind `?carv=8`): the shot opens AT the driver's eye looking down the road (yaw -2 -> 0 settle), no
+  over-shoulder opening and no dolly; the proxy is never seen; her card is on from the first frame (pure rotation, no parallax).
+  Pan b158.2 -> b159.2 (271.26-272.97, 1.71 s vs 1.13 s in v8; smoothstep, peak ~89 deg/s vs ~168), shutter 0.3 frame (was 0.5): less
+  mid-pan blur. Her turn starts on b159.3 (273.40, clip 3.0), almost-smile settled ~274.40, held **~2.42 s** to the cut (v8 1.87).
+  Dev knobs `panA`, `panB`, `turn` (s offsets).
+- Steering wheel: now seen whole at the bottom centre (the driver's view) with the driver's hands at ten and two (`?hands=0` hides):
+  toon fists + dark sleeves; stand-in quality (a bit mannequin-like), mostly under the box in the film.
+- YOU box: text now carries `\n` -> "You could tell me anything / and I would find it strangely plausible" (film.js carBox splits on
+  '\n' before wrapping; same in car3d_page.js preview).
+- Plate `work_fable/take2/plates/car3d_v9/` (210 fr, t0_song 269.9, from dev/v9/car/car3d_v9_plate.mp4), first in b157-161 `next`;
+  car3d (v8) and car_confess stay as fallbacks. Checked: dev/v9/car/clean_strip.jpg (4 fps), film stills dev/v9/car/film.jpg
+  (269.7 road, 270.6 driver view + box, 273.3, 275.5).

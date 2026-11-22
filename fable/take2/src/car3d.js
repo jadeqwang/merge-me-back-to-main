@@ -18,15 +18,25 @@ export function makeCar3D(THREE, o) {
   const C = (h) => new THREE.Color(h);
 
   // ------------------------------------------------------------------ timing (song seconds, from the beat grid)
-  const TM = {
+  // film v9 (Jade's v8 note on the car: "once you're inside the car, the initial camera position should be driver's eyes so you have more
+  // time to turn"): the shot opens AT the driver's eye looking down the road (the 'you'), then pans round to her; no over-the-shoulder
+  // opening, no dolly. The pan is longer (b158.2 -> b159.2, 1.7 s, gentler peak speed, shorter shutter: less mid-pan blur), her turn
+  // starts on b159.3 and the almost-smile holds ~2.4 s (v7's hold). ?carv=8 = the v8 move.
+  const V8 = Q.get('carv') === '8';
+  const TM = V8 ? {
     t0: T.beat(157, 3), t1: T.beat(161, 3), road0: T.beat(156, 1),       // shot; the road's first moment (outro.js road o.from)
     holdEnd: T.beat(158, 3),                                              // over-the-shoulder until here (bar 158 beat 3)
     dollyEnd: T.beat(159, 2) + 0.6 * (T.beat(159, 3) - T.beat(159, 2)),   // the camera arrives at the driver's eye
     panA: T.beat(159, 1) + 0.37 * (T.beat(159, 2) - T.beat(159, 1)),      // pan starts (overlaps the end of the dolly)
     panB: T.beat(159, 4),                                                 // lands on bar 159 beat 4
     turn: T.beat(159, 4) + 0.3 * (T.beat(160, 1) - T.beat(159, 4)),       // her turn starts (clip 3.0 s)
+  } : {
+    t0: T.beat(157, 3), t1: T.beat(161, 3), road0: T.beat(156, 1),
+    holdEnd: T.beat(157, 3), dollyEnd: T.beat(157, 3),                    // (no dolly: at the eye from the first frame)
+    panA: T.beat(158, 2) + num('panA', 0) , panB: T.beat(159, 2) + num('panB', 0),   // pan b158.2 -> b159.2
+    turn: T.beat(159, 3) + num('turn', 0),                                // her turn starts (clip 3.0 s) on b159.3; settled ~1.0 s later
   };
-  TM.swap = TM.dollyEnd;
+  TM.swap = V8 ? TM.dollyEnd : TM.t0 - 1;   // v9: her card from the start (pure rotation about the eye: no parallax); the proxy is never seen
   // her clip time (car_confess, 24 fps, 121 frames): 3.0 at TM.turn; 0.75x through the turn (to clip 3.75 = the almost-smile settled), then 0.5x
   const herClip = (t) => { const c = 3.0 + (t - TM.turn) * 0.75; return c <= 3.75 ? c : 3.75 + (c - 3.75) / 0.75 * 0.5; };
 
@@ -123,6 +133,23 @@ export function makeCar3D(THREE, o) {
     const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.065, 0.05, 24), toon(PAL.trim)); hub.rotation.x = Math.PI / 2; SW.add(hub);
     for (const a of [0, Math.PI, -Math.PI / 2]) { const sp = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.03, 0.015), toon(PAL.trim)); sp.position.set(Math.cos(a) * 0.12, Math.sin(a) * 0.12, 0); sp.rotation.z = a; SW.add(sp); }
     beam([-0.37, 0.86 - 0.02, -0.62], [-0.37, 0.78, -0.85], 0.07, 0.07, PAL.dash);
+    // film v9: the driver's hands on the wheel at ten and two (the camera is the driver; a wheel turning nobody's hands read as empty).
+    // Fists over the rim, dark sleeves running back and down out of frame. ?hands=0 hides them.
+    if (Q.get('hands') !== '0') {
+      SW.updateMatrixWorld(true); const SKN = '#8f7466';   // skin in the dark cabin (the dash light only)
+      const limb = (P, Qv, r0, r1, hex) => { const d = Qv.clone().sub(P), m = new THREE.Mesh(new THREE.CylinderGeometry(r1, r0, d.length(), 18), toon(hex));
+        m.position.copy(P).add(Qv).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); G.add(m); return m; };
+      for (const [ang, side] of [[148, -1], [32, 1]]) {
+        const a = ang * D2R, onRim = SW.localToWorld(new THREE.Vector3(Math.cos(a) * 0.185, Math.sin(a) * 0.185, 0.012));
+        const fist = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), toon(SKN)); fist.scale.set(0.05, 0.032, 0.036);
+        fist.position.copy(SW.localToWorld(new THREE.Vector3(Math.cos(a) * 0.19, Math.sin(a) * 0.19, 0.03))); fist.quaternion.copy(SW.quaternion); fist.rotateZ(a - Math.PI / 2); G.add(fist);
+        const thumb = new THREE.Mesh(new THREE.CapsuleGeometry(0.01, 0.026, 4, 10), toon(SKN)); thumb.position.copy(SW.localToWorld(new THREE.Vector3(Math.cos(a) * 0.15, Math.sin(a) * 0.15, 0.03)));
+        thumb.quaternion.copy(SW.quaternion); thumb.rotateZ(a); G.add(thumb);
+        const wrist = onRim.clone().add(new THREE.Vector3(side * 0.02, -0.05, 0.07)), elbow = new THREE.Vector3(-0.37 + side * 0.27, 0.70, -0.12);
+        limb(wrist, onRim.clone().add(new THREE.Vector3(0, -0.01, 0.03)), 0.024, 0.022, SKN);
+        limb(elbow, wrist, 0.05, 0.036, '#2b3350');
+      }
+    }
     // front seats (cushion, back reclined, headrest on posts) and rear bench
     for (const sx of [-0.37, 0.37]) {
       rbox(0.52, 0.14, 0.52, 0.05, PAL.seat, sx, 0.5, -0.06);
@@ -277,6 +304,17 @@ export function makeCar3D(THREE, o) {
   const V3 = (a) => new THREE.Vector3(...a);
   function camAt(t) {
     let p, yaw, pitch, vfov;
+    if (!V8) {
+      // v9: fixed at the driver's eye; looking down the road (a slight settle from yaw -2), then a pure pan onto her
+      const uP = sm(seg(t, TM.panA, TM.panB));
+      p = V3(CAM.E.p);
+      const yaw0 = lerp(-2, 0, sm(seg(t, TM.t0, TM.panA))), pit0 = -2;
+      yaw = lerp(yaw0, CAM.F.yaw, uP); pitch = lerp(pit0, CAM.F.pitch, uP);
+      vfov = lerp(CAM.E.vfov, CAM.F.vfov, uP);
+      vfov *= lerp(1, CAM.F.push, sm(seg(t, TM.panB, TM.t1)));
+      const vib = 0.0012 * Math.sin(t * 37.0) + 0.0008 * Math.sin(t * 23.3 + 1);
+      p = p.add(new THREE.Vector3(0, vib * (1 - seg(t, TM.panA - 0.3, TM.panA + 0.3)), 0));   // road vibration only while she is out of frame
+    } else {
     const uH = seg(t, TM.t0, TM.holdEnd), uD = smr(seg(t, TM.holdEnd, TM.dollyEnd)), uP = smr(seg(t, TM.panA, TM.panB));
     const pA = V3(CAM.A0.p).lerp(V3(CAM.A1.p), sm(uH));
     // dolly: quadratic bezier A1 -> M -> E
@@ -291,6 +329,7 @@ export function makeCar3D(THREE, o) {
     // the car's ride: a little road vibration (the eye, not the card's frame: kept tiny)
     const vib = 0.0012 * Math.sin(t * 37.0) + 0.0008 * Math.sin(t * 23.3 + 1);
     if (t < TM.swap) p = p.clone().add(new THREE.Vector3(0, vib, 0));
+    }
     if (Q.get('dcam')) { const v = Q.get('dcam').split(',').map(Number); p = new THREE.Vector3(v[0], v[1], v[2]); yaw = v[3]; pitch = v[4]; vfov = v[5]; }   // dev: a fixed camera
     return { p, q: qOf(yaw, pitch), vfov, yaw, pitch };
   }
@@ -342,7 +381,7 @@ export function makeCar3D(THREE, o) {
     camera.layers.enableAll();
     R.setRenderTarget(rtTmp); R.render(comp.s, ORTHO);
   }
-  const SUB = num('sub', 6), SHUT = num('shutter', 0.5) / 30;
+  const SUB = num('sub', 6), SHUT = num('shutter', V8 ? 0.5 : 0.3) / 30;   // v9: shorter shutter (Jade's v8 'blurred mid-pan')
   async function render(t) {
     // her frames for the sub-frames' clip times (blend of the two nearest frames)
     if (t >= TM.swap - 0.1) { const c = herClip(t) * 24, i0 = Math.floor(c), f = c - i0; const [a, b] = await Promise.all([herFrame(i0), herFrame(i0 + 1)]);

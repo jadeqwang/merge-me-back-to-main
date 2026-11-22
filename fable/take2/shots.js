@@ -513,10 +513,12 @@ shot(156, [157, 3], 'C', 'code', 'road', 'missing', 'From the cursor a dashed li
 // film v7 (Jade's v6 notes): her line "I have a confession to make" is gone; she only turns and almost smiles. The camera's line is an
 // RPG dialogue box with the name tab YOU (src/film.js carBox), typed letter by letter, done by ~3.1 s, the advance marker blinking after;
 // same box on the road fallback and on car_confess (the box covers the lower part: her hands and lap; her face stays clear above it)
-const CAR_BOX = { text: 'You could tell me anything and I would find it strangely plausible', name: 'YOU', at: [0.35, 6.55], cps: 26, box: [0.07, 0.75, 0.93, 0.93], px: 46 };
+// v9 (Jade: "more evenly distribute the 'you' sentence on 2 lines so we don't just have a single word on the second line"): break at the phrase
+const CAR_BOX = { text: 'You could tell me anything\nand I would find it strangely plausible', name: 'YOU', at: [0.35, 6.55], cps: 26, box: [0.07, 0.75, 0.93, 0.93], px: 46 };
 const CAR_ROAD = { from: [156, 1], wins: [[[0.0, 0.0, 0.57, 0.5], [0.0, 0.18, 0.78, 0.86]], [[0.62, 0.0, 0.95, 0.36], [0.5, 0.0, 1.0, 0.42]]], dark: 22, alpha: 0.95 };
 shot([157, 3], [161, 3], 'P', 'code', 'road', 'missing', 'Inside the car at night: the camera in the driver\'s seat, drawn main Jade in the passenger seat, lit by the dash and the passing dashes; she turns to the camera with a mysterious almost-smile. The secret is not told.',
-  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carBox: CAR_BOX, next: [{ id: 'car3d', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },   // film v8 (car_v8.md Wiring): the three.js car, over her shoulder then round to the driver's eye, song-locked (t0_song 269.9)
+  { row: 'b157-161', opt: { code: 'road', phase: 'drive', from: [156, 1], carBox: CAR_BOX, next: [{ id: 'car3d_v9', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },   // film v9: starts at the driver's eye (car3d.js v9)
+    { id: 'car3d', kind: 'plate', opt: { songLock: true, push: 0, blend: false } },   // film v8 (car_v8.md Wiring): the three.js car, over her shoulder then round to the driver's eye, song-locked (t0_song 269.9)
     { id: 'car_confess', kind: 'plate', opt: { clip0: 1.5, clip1: 5.0, blend: true, push: 0.015, carRoad: CAR_ROAD } }] } });
 P([161, 3], 'end', 'root_light', 'missing', 'The child at the frost window. The violet page-light from the road arrives in the frost in front of her palm. They do not touch. She watches it. Hold through the fade. Last frame equals frame 0.', { row: 'b161 beat 3',
   opt: { clip0: 2.5, clip1: 5.0, toFrame0: 1.5, arrive: { to: [0.56, 0.35], dur: 1.4 } } });   // clip 2.5 s to the end (a clear gap between hand and light), slowed and blended; arrive: the road's page-light glides into the frost light (film v6)

@@ -1153,7 +1153,7 @@ function carBox(t, s) { const o = s.opt.carBox, ta = s.t0 + o.at[0], tb = s.t0 +
     g.fillStyle = 'rgba(8,10,34,0.94)'; g.beginPath(); g.roundRect(nx, ny, nw, nh, 9 * S); g.fill();
     g.strokeStyle = 'rgba(255,241,214,0.95)'; g.lineWidth = lw; g.beginPath(); g.roundRect(nx, ny, nw, nh, 9 * S); g.stroke();
     g.fillStyle = CREAM; g.fillText(o.name, nx + 20 * S, ny + nh / 2 + 12 * S);
-    const rows = wrap(o.text, f, w - 2 * pad), n = Math.floor(Math.max(0, t - ta - 0.3) * o.cps); setFont(f); g.fillStyle = CREAM;
+    const rows = o.text.split('\n').flatMap((ln) => wrap(ln, f, w - 2 * pad)), n = Math.floor(Math.max(0, t - ta - 0.3) * o.cps); setFont(f); g.fillStyle = CREAM;
     const ty = y + pad + px * 0.72; let k = n;
     rows.forEach((row, i) => { if (k <= 0) return; const part = row.slice(0, k); k -= row.length + 1; g.fillText(part, x + pad, ty + i * lead); });
     const done = n >= o.text.length, tDone = ta + 0.3 + o.text.length / o.cps;
