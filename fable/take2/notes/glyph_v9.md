@@ -13,7 +13,10 @@ style-2 and drop frames `work_fable/take2/v7/glyph_*/`, dev/tests `work_fable/ta
 - [x] drop: `tools/glyphart/drop/slashpaper.js` (paper.js copy, marks = chains of keyboard stroke glyphs), `drop.html`,
       `drop_run.mjs` (headless Chrome, 3 pages, ~0.25 s/frame). 802 frames.
 - [x] day_eyes_v2_glyph (oa03, white paper).
-- [ ] style 1, matte plates: re-render in progress (`work_fable/take2/dev/v9_glyph/style1_jobs.txt`, xargs -P 4). Logs `dev/v9_glyph/logs/`.
+- [x] style 1, all 11 plates (2026-11-22 ~00:45). Jobs `work_fable/take2/dev/v9_glyph/style1_jobs.txt`; logs `dev/v9_glyph/logs/`.
+      float_face uses `--set bg_dim=1.0 --set lift=0 --set keyline=0.12 --under 1.0`, float_top the same + `--set dark_k=0.12 --fill-k 1.0` (black hair fan on charcoal water:
+      lifting the figure or dimming the water reverses or erases the fan; light keylines keep the water its own grey).
+- Sheets v8 | v9 | source at 640 px, one per style-1 shot: `work_fable/take2/dev/v9_glyph/s1sheet/s1_<shot>.jpg`, all: `s1_all.jpg`.
 
 ## Commands
     bash fable/take2/tools/glyphart/v9/plate_mattes.sh ID...                         # BiRefNet mattes of plate frames (GPU)
@@ -38,6 +41,10 @@ style-2 and drop frames `work_fable/take2/v7/glyph_*/`, dev/tests `work_fable/ta
   (dark keylines of carried glyphs). Fixed (see status). ca01 mouth-darkness curve glyph vs source: corr 0.994, derivative 0.992.
   Hair strands that BiRefNet leaves out of the matte (long flying strands, catch/hero) are dimmed with the background.
   day_eyes_v2 on white: the white paper becomes a light-grey type page; the white jacket picks up grey glyph strokes; patch visible.
+- Style 1 final: silhouettes, trousers, lanes and faces read at 640 px as in v8; ca01 mouth curve corr 0.996 (derivative 0.994).
+  Shimmer: mean frame-to-frame change (480 px luma) glyph/source = 1.1x hero (moving), 1.6x float_top, 3-4x on the near-static
+  catch and c2_lookup (about 1.5-2 levels of 255: the eighth-note boil + hole refill breathing in the background glyphs).
+  float_top: the hair fan reads at 640 px as dark radial strands, softer than the source.
 - va01 (main_face) is left as it was (her note was at va02's time).
 
 ## Wiring table
