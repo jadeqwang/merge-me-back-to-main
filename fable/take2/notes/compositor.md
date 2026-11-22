@@ -966,3 +966,19 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
   Stills dev/v8/outro/eyes.jpg, eyes2.jpg.
 - Range render 235-280 with day_eyes: dev/v8/outro/outro_v8b.mp4 (77 s), beat strip dev/v8/outro/outro_beats_v8b.jpg (b137.1-b161.4).
   Resume: waiting for main (no full film until told).
+
+### Film v8 renders (2026-11-21)
+Commands (all wiring committed first; gitlog.py ran once inside render_film.sh):
+    WORKERS=4 fable/take2/tools/render_film.sh film_v8 "" "likeness=0"      # 517 s; master work_fable/take2/out/film_film_v8_master.mp4
+    cp work_fable/take2/out/film_film_v8.mp4 review/fable_take2/film_v8.mp4; cp work_fable/take2/out/film_v8_sheet_0*.jpg review/fable_take2/
+    ln -sfn keep_film_v8 work_fable/take2/out/keep_v8; .venv/bin/python fable/take2/tools/check.py work_fable/take2/out/film_film_v8_master.mp4  # out/check_v8.txt
+    node fable/take2/tools/render.mjs --mp4 work_fable/take2/out/film_v8_local_master.mp4 --audio "inputs/Merge (keychange down).wav" --workers 4 --crf 16
+      then v2's encode (CRF 20 capped 2.3 Mb/s) -> work_fable/take2/out/film_v8_local.mp4 (76.5 MB; likeness at b137-138 checked on a still)
+Public: review/fable_take2/film_v8.mp4 (80.4 MB, 282.8 s, likeness=0, HUD on), film_v8_sheet_01..05.jpg, thumbs review/fable_take2/v8/,
+page review/fable_take2/review_v8.html ("What changed in v8" list; decisions: 4:01-4:04, car camera, jacket bands, tree, what next;
+points to review/fable_take2/v8_glyph/ for the glyph experiment).
+check.py (out/check_v8.txt): 188 hard cuts, mean |error| 0.33 fr, max 2.80, 173 of 182 within 0.5 fr; outliers the same as v7 (pc03,
+bu39/bu41 flashes, dr09/11/26/30/35/36 hatch-wipe inserts) minus oa07 (gone with the outro restructure); "no clear change" bb16, bb22,
+bb31, dr01, cb04, cb06 as before. ib11 (code tree -> v7 swoop at b15.1) is listed by check.py as "same v7 sequence" (not cut-checked):
+it is now a real cut, on the bar. Type all pass; 22 lines, 119 words, none under 0.6 s; single frame vs full render 11 of 11 identical.
+Nobody has watched film_v8 at speed with sound.
