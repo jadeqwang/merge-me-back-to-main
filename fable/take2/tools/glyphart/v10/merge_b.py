@@ -217,7 +217,16 @@ class SceneB(M0.Scene):
         if not hasattr(s, '_dist'):
             yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
             s._dist = np.hypot(xx - s.chest[0], yy - s.chest[1])
-            s._dsort = np.sort(s._dist[::4, ::4].ravel())
+            # rev c2: paper arriving, not an iris: elliptical (faster sideways), and the boundary broken by a ragged field
+            # (multi-scale noise + the paper's own grain/pencil hatch from patch_settle), multiplicative so it scales with the radius
+            rng = np.random.default_rng(31)
+            n = np.zeros((H, W), np.float32)
+            for sig, amp in ((90, 1.0), (40, 0.5), (16, 0.2)):
+                z = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), sig); n += amp * z / (z.std() + 1e-6)
+            pg = L.lum(s.psframe(PS_B)); pg = pg - cv2.GaussianBlur(pg, (0, 0), 6); n += 0.35 * pg / (pg.std() + 1e-6)
+            n /= n.std() + 1e-6
+            s._dfront = np.hypot((xx - s.chest[0]) * 0.82, yy - s.chest[1]) * (1 + 0.09 * n)
+            s._dsort = np.sort(s._dfront[::4, ::4].ravel())
         ts, fs = zip(*SceneB.DAY_KEYS)
         f = float(np.interp(t, ts, fs))
         if f >= 1.0:
@@ -231,8 +240,8 @@ class SceneB(M0.Scene):
         R = s.front_R(t)
         if R is None:
             return np.ones((H, W), np.float32)
-        e = 0.06 * W
-        w = np.clip((R - s._dist) / e + 0.5, 0, 1)
+        e = 0.2 * R + 12
+        w = np.clip((R - s._dfront) / e + 0.5, 0, 1)
         return w * w * (3 - 2 * w)
 
     def picture(s, t):
@@ -252,11 +261,7 @@ class SceneB(M0.Scene):
             out = out * (1 - fh) + day * fh
             w = s.day_at(t)[..., None]
             out = out * (1 - w) + day * w
-            # a warm rim on the daylight front
-            R = s.front_R(t)
-            if R is not None:
-                rim = np.exp(-((s._dist - R) / (0.035 * W)) ** 2) * 0.3
-                out = out + (1 - out) * rim[..., None] * np.array([1.0, 0.9, 0.7], np.float32)
+            # (rev c2: no rim on the front)
         return out
 
     def grade(s, t):
