@@ -9,7 +9,7 @@ Read this first, then `fable/take2/PLAN.md` (section 3 rules and section 11 stat
    her timestamps and look, write `notes/v8_direction.md`, two background agents (plates, compositor), look at strips yourself.
 3. If she picks "new master" on decision 4: master from v7 settings under "The master" below (`--q hud=0`), then the encodes and
    subtitles; the compositor leans that way. Release files are local only (likeness).
-4. The working tree was clean at handoff (last push `def30fc` on `fable/merge`); `docs/spend_ledger.jsonl` is rewritten by the gen tools,
+4. The working tree was clean at handoff (everything pushed on `fable/merge`); `docs/spend_ledger.jsonl` is rewritten by the gen tools,
    commit it with the round.
 
 ## Film v7 (2026-11-21)
