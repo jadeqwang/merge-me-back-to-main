@@ -1171,3 +1171,15 @@ Compare (local, with sound): out/catch_v9_v10.mp4 (3:16-3:58 v9, then v10, label
 out/ear/E1_catch_arrival.mp4 (202-213), E2_merge (218-233), E3_become (224-237), E4_settle_v9_v10 (230-240 v9 then v10),
 E5_graph_credits (241-264), E6_car (262-282.8). Page review/fable_take2/review_v10.html (15 decisions: 5 new, v9's 1/2/3/5/6, gates
 G2/G3/G5/G6, next; ear-clip questions E1-E6), thumbs review/fable_take2/v10/ from the public master.
+
+### Film v10 fixes after the listen agent's frame measure (2026-11-22, re-rendered under the same names)
+1. b137 impact: oa01's settleIn removed; cb12 carries `opt.settleOut` (film.js settleOut, shots.js SETTLE_OUT): the picture grows about
+   her eyes from 234.40 to two frames before the bar, ending matched to the tracing's eyes (scale 170/77, 943.5,148 -> 915,342); the
+   likeness mixes in on frames 7049 (1/3) and 7050 (2/3) and is alone on 7051 (235.033, the impact frame). Every-frame strip
+   234.3-236.0 dev/v10/settle2/strip2.jpg (and strip_local.jpg from the master): no double face outside those two mix frames.
+2. cb01 streak `move: 'on'`: head = u(1.3-0.3u), still moving at 0.7x mean speed when it reaches the mark on 209.526.
+3. dr26-dr31 (b101-103 inserts) `hatch.pre 3` as dr09-dr20.
+4. cb12 = `patch_settle_merge10c` (first in the list).
+check.py: 186 hard cuts, mean |error| 0.30 fr, 174 of 179 within 0.5; dr26 and dr30 no longer flagged; remaining outliers pc03, bu39,
+bu41, dr35 (+0.55), dr36 (+1.10) as v9; type and lyrics pass; 11 of 11 single frames identical. Public, sheets, local, catch_v9_v10 and
+all six ear clips re-made.
