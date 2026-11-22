@@ -19,10 +19,10 @@ The essay was written from stills. Every timing claim here has to be checked by 
 
 | # | question | recommendation | blocks |
 |---|---|---|---|
-| G1 | Is the catch (3:22-3:47) the climax, replacing most of the patchwork-jacket beat? | Yes; keep two bars of patchwork at most | A1-A4 |
+| G1 | Is the catch (3:22-3:47) the climax, replacing most of the patchwork-jacket beat? | **ANSWERED 2026-11-22: yes.** Jade: "I think there's something really cool about letters merging together that the patchwork jacket was only metaphorically gesturing at." So the image to build is letters MERGING (into each other and into her), not only landing | A1-A4 |
 | G2 | Glyph size as the merge variable: coarse in verse 1, finer in chorus 1, closing into line in chorus 2, none in daylight? | Yes | B1, and whether 4:01 stays glyphed (v9 decision 6) |
 | G3 | A notation per life (table in B2) instead of all scripts everywhere; all scripts kept for violet only? | Yes, tested on two shots first | B2 |
-| G4 | Outro: cut the 4:07 stance, the 4:12 aerial and the 4:21 log burst, and give the time to her real face, the cherry-pick and the car? | Yes | C1-C4 |
+| G4 | Outro: cut the 4:07 stance, the 4:12 aerial and the 4:21 log burst, and give the time to her real face, the cherry-pick and the car? | **ANSWERED 2026-11-22: yes** ("yes to clear the outro") | C1-C4 |
 | G5 | Will she write one true line per ended life about its last day (about eight lines)? | Ask; D1 does not go ahead without them | D1 |
 | G6 | Slab lyrics off chorus 2 from 3:39 to 3:58 (her binding rule: every lyric on screen)? | Her call; my lean is yes for those 19 s only | E1 |
 | G7 | The night drive as the frame of the whole film (plants at 0:25, 1:36 and in the breakdown; palm on the car window)? | Not in v10; test stills only | F1 |
@@ -102,7 +102,7 @@ rainbow wave run unless she raises it.
    (D1, D2, C4 car extension, F1 stills). Dependencies: plates before glyph for any plate that gets glyphs; C4's car before the
    render; compositor's full render last.
 4. **Carry the v9 open items** in the same round: va07 glide, style-1 shimmer on near-static plates, car console scribble, dr20.
-5. Render `film_v10`, `review_v10.html`, and this time **watch 3:16-3:58 and 3:55-4:42 at speed with sound** before sending.
+5. Render `film_v10`, `review_v10.html`, and run section 6 on 3:16-3:58 and 3:55-4:42 before sending.
 
 Budget: sections A-C need no paid generation beyond a possible car take (about $3); D and F add about $15-30. Running total
 is $579.85.
@@ -115,3 +115,26 @@ is $579.85.
 - **D1 without her lines** would be invented biography. It waits for G5.
 - **Scope.** A plus C is the film's argument; B is what makes v9's glyphs mean something; D is the largest emotional gain but
   the most new material. If the round has to shrink, drop F, then E, then D2-D3, then B3.
+
+## 6. "At speed with sound": what that can and cannot mean for us
+
+Jade asked (2026-11-22) what the essay's "did not watch at speed or hear the song" means and whether we can. Plainly: the models
+doing this work cannot hear audio and do not see motion; we read image files and numbers. "Nobody has watched it at speed with
+sound" in every handoff has meant exactly that, and only Jade's ear and eye close the gap. What we CAN do, and v10 must do before
+calling anything checked:
+
+1. **Hear by measurement.** From `inputs/Merge (keychange down).wav`: loudness/energy curve, onsets, spectral flux and a
+   mel-spectrogram image per section, laid against the bar map (`analysis_v3/timing.json`) and the sung-word times (subtitles,
+   `retime_sung.py` data). Mark where the song is loudest, where it drops out, where the vocal enters and leaves each phrase.
+   Read the spectrogram images; do not infer feeling from the lyric sheet alone.
+2. **See motion by dense strips.** For each changed passage: every frame (or every 2nd) as a strip with the energy curve and
+   bar/beat ticks drawn underneath, so a cut or an arrival can be read against the hit it is meant to land on. Measure, per
+   event (the letters landing, the last letter closing, the car box finishing, her smile), the offset in ms from its beat.
+3. **Picture quieter or louder than the music.** Compute a per-shot motion/visual-energy number (frame difference, cut rate) and
+   plot it against audio energy for the whole film; the essay's claim that verse 2 works because the picture is quieter than
+   the music becomes checkable, and so does the re-divided outro.
+4. **Ask Jade for the ear.** For each timing decision that measurement cannot settle (the outro re-division, the hold on her
+   face in the car, whether the catch lands), cut a short clip with sound and ask one specific question about it on the review
+   page. Say in the report which checks were measured and which are waiting on her.
+5. **Optional, only with her OK:** a model that accepts audio/video input could give a second opinion as a stand-in listener.
+   That sends her unreleased song and likeness to an outside service, so it is not done unless she says so.

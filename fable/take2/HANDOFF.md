@@ -39,6 +39,12 @@ Spend $579.85 (`tools/gen/spend.py`; cap constant still 600, Jade lifted the cap
    aerial, log burst), lives ending once at 2:00 (needs captions written by Jade), drop as violet's drawing. Its opinions against
    her binding choices (slab lyrics over chorus 2, the 4:09 rainbow wave run) are hers to weigh; do not act on them unasked.
    The essay also disagrees with parts of v9 as she specified it (style 1 on every close-up; glyphs at 4:01): told to her, her call.
+   **Answered 2026-11-22:** G1 yes (the catch is the climax; she wants letters *merging together*, which "the patchwork jacket was
+   only metaphorically gesturing at") and G4 yes (clear the outro). Gates G2, G3, G5-G8 still open.
+   **Her ask for v10:** actually check the film against the song. We cannot hear or watch; do `notes/v10_plan.md` section 6
+   (audio measured and read as spectrograms/energy against the bar map, dense frame strips with beat ticks, picture-vs-music
+   energy plot, per-event offsets in ms, short clips with one question each for her ear) and report which checks were measured
+   and which wait on her. Stop writing "nobody has watched it at speed" as a bare caveat; say what was measured instead.
 3. **Open items told to her** (fix with her notes): va07 0:39 glide (options: `cross_hackerhouses_v9_lock` with an earlier window
    via maxSpeed 2 or a later wipe, entry commented out in `CROSS_V4` in shots.js; or a third paid take that starts further from the
    door); va04 slip never measured (matte takes the door); orchestra pink lost in the D palette and bodies read as grey blocks at
