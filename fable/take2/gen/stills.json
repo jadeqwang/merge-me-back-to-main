@@ -1219,6 +1219,46 @@
     "work_fable/take2/dev/v8_plates/ref_day_run.jpg"
    ],
    "prompt": "Redraw this picture as a close-up of the same young woman's head and shoulders while she runs, in exactly the same clean anime cel drawing style, line weight, colours and cream paper as the reference. Three-quarter view: her face is turned toward the right side of the picture, nearly facing us but angled to the right, her running direction is to the right. Chest-up framing: her head fills about half the picture height, with her shoulders in the white cropped bomber jacket with an orange band and orange headphones around her neck. Her face: an oval face with a tall clear forehead, black hair parted exactly in the centre with no fringe, large very dark brown eyes with a clear double eyelid, soft straight brows, a small straight nose, natural closed lips in a calm gentle expression, not a wide smile, no makeup. Both eyes are OPEN and looking ahead. Her long black hair streams back behind her to the left in the wind. Plain cream paper background with a faint pale blue pencil hatch at the top, no buildings, no ground, no pencil in her hand. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v9_day_eyes_trim",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v9_plates/ref_day_eyes_f1_flip.jpg"
+   ],
+   "prompt": "Edit this picture and change only her white jacket; everything else stays exactly identical: the same drawing style and line work, the same framing and size, the same pose, face, eyes, hair, the orange headphones around her neck, the black high collar and the plain cream paper. 1) The two broad orange bands on the jacket become thin orange trims: one thin orange stripe across the front of the chest and one thin orange band around each upper arm, each only about a third as wide as the bands are now. Where the broad bands were, the sleeve and jacket are plain white with the same soft grey shading. 2) On her LEFT upper arm, which is the sleeve nearest the viewer whose shoulder is at the right side of the picture, just below the shoulder and above the thin orange band, add one round white sleeve patch with a thin black ring around its edge and the tiny black text 1420 MHz inside, drawn flat on the sleeve and following its curve. Only that one arm has a patch. No other text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v9_day_eyes_trim_half",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v9_plates/ref_day_eyes_f1_flip.jpg"
+   ],
+   "prompt": "Edit this picture and change only her white jacket; everything else stays exactly identical: the same drawing style and line work, the same framing and size, the same pose, face, eyes, hair, the orange headphones around her neck, the black high collar and the plain cream paper. 1) The two broad orange bands on the jacket become thin orange trims: one thin orange stripe across the front of the chest and one thin orange band around each upper arm, each about half as wide as the bands are now, a clear flat orange stripe, not a thin line. Where the broad bands were, the sleeve and jacket are plain white with the same soft grey shading. 2) On her LEFT upper arm, which is the sleeve nearest the viewer whose shoulder is at the right side of the picture, just below the shoulder and above the thin orange band, add one round white sleeve patch with a thin black ring around its edge and the tiny black text 1420 MHz inside, drawn flat on the sleeve and following its curve. Only that one arm has a patch. No other text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v9_day_eyes_shut",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/stills/v9_day_eyes_trim_half_a1.jpg"
+   ],
+   "prompt": "Edit this picture and change only her eyes: both eyes are now gently closed, the upper lids down, lashes resting as soft curved lines, a calm trusting face. Keep everything else exactly identical: the same drawing style and line work, the same framing and size, the same pose, the same hair, the same closed mouth and calm expression (no bigger smile), the white jacket with its thin orange stripes and the round 1420 MHz patch on the sleeve, the orange headphones around her neck and the plain cream paper. No text other than the patch, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v9_car_first",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v9_plates/car_f000_1080.jpg"
+   ],
+   "prompt": "Redraw this picture as a finished hand-drawn anime background painting in a clean cel style with ink outlines and flat soft shading, keeping exactly the same camera, framing, perspective and layout: the view from the driver's seat of a car at night, looking straight down the road through the windscreen. Fill in the detail of the car interior: the dashboard with its seams and vents, the instrument hood with the two glowing gauges (orange and pale blue), the steering wheel rim and centre, the windscreen pillar on the left, the rear-view mirror at the top right showing only a dark rear window. Outside: the two-lane road with yellow centre dashes and a white edge line, small roadside reflector posts, utility poles and wires, low dark hills, a starry Milky Way sky, and one small glowing violet light floating above the road ahead. Nobody is in the picture: no driver, no hands on the wheel, no arms, no reflection of any person in the mirror or the glass. Dark navy night palette lit by the dashboard glow. No text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
+  },
+  {
+   "id": "v9_car_last",
+   "raw": true,
+   "refs": [
+    "work_fable/take2/dev/v9_plates/car_flast_1080.jpg"
+   ],
+   "prompt": "Edit this picture and change only the car interior around the young woman; she stays exactly identical: the same face, eyes, gentle closed-mouth almost-smile, hair, white jacket with its orange stripes and the round 1420 MHz patch, orange headphones around her neck, seat belt, hands, pose, size and position in the frame. Redraw the plain dark background around her as a finished hand-drawn anime car interior at night in the same clean cel style with ink outlines: the passenger seat she sits in with its headrest and seams, the door panel with armrest and handle, the window and its frame showing the starry night sky and dark hills, the roof lining, all in dark navy tones lit softly by a cool dashboard glow from below left. Nobody else is in the picture: no driver, no other hands or arms, no reflection of any person in the window. No other text, no signature, no watermark. Wide 16:9 picture filling the whole frame."
   }
  ]
 }

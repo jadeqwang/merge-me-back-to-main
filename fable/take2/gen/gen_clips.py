@@ -265,6 +265,14 @@ EYES = ("She runs at a steady sprint toward the right of the picture, seen close
         "The camera is locked off: no zoom, no pan, no cut; the framing stays exactly as in the first frame.")
 C["day_eyes"] = ("v8_day_eyes_a2", "a flat cel-shaded anime drawing on cream paper", EYES, {"fixed": True})
 VIEWS["day_eyes"] = "none"
+# film v9 (plates_v9): jacket matched to the town runner (half-width orange trim, 1420 MHz patch on her LEFT arm, nearest the viewer).
+# Made in FILM orientation (she faces left), first frame = open eyes, last frame = the same still with closed eyes; intake hflips the
+# frames back so the plate keeps day_eyes' orientation and the film's mirror shows the patch text the right way round.
+C["day_eyes_v2"] = ("v9_day_eyes_trim_half_a1", "a flat cel-shaded anime drawing on cream paper",
+    EYES.replace("toward the right of the picture", "toward the left of the picture").replace("back to the left", "back to the right")
+    + " Her white jacket keeps exactly its thin orange stripes and the round white 1420 MHz patch on the upper sleeve nearest the viewer, the same in every frame; no new bands appear.",
+    {"fixed": True, "last": "v9_day_eyes_shut_a1"})
+VIEWS["day_eyes_v2"] = "none"
 
 def ref(src, out):
     os.makedirs(os.path.dirname(out), exist_ok=True)
