@@ -964,3 +964,5 @@ land, (4) no full render until main says. Dev files: `work_fable/take2/dev/v8/tr
   `streaks` (new film.js `streaks`): nine soft lane-colour streaks sliding right behind her, cut by her matte
   `work_fable/take2/kit/day_eyes` (tools/matte.py on media/gen/t2_day_eyes_t1_6144aa4042.mp4, 121 frames), multiplied onto the paper.
   Stills dev/v8/outro/eyes.jpg, eyes2.jpg.
+- Range render 235-280 with day_eyes: dev/v8/outro/outro_v8b.mp4 (77 s), beat strip dev/v8/outro/outro_beats_v8b.jpg (b137.1-b161.4).
+  Resume: waiting for main (no full film until told).
