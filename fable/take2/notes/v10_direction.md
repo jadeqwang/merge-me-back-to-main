@@ -77,3 +77,16 @@ No audio, song or likeness goes to any outside service.
 - **listen** (`tools/listen/**`, `notes/listen_v10.md`): section L.
 - Each keeps its resume note current, commits its own paths (never `git add -A`, never pushes). Main thread looks at every test
   and sheet, pushes at checkpoints. Spend at start: $579.85.
+
+## Timing corrections from the listen agent (2026-11-22, measured; these override sections A and C above)
+
+- **A2 streak**: the only real hit is b121.1 = 207.819 (the cb01 cut-in). b122.1 (209.526) has no hit under it. So the streak
+  ENTERS on 207.819 (first frames of cb01), not "arrives on b122".
+- **A4 merge**: nothing percussive plays under the folds (223.135-227.806) and the vocal is silent 225.89-227.40. "become" is sung
+  at **231.210 (b134.4), inside cb12**. So the merge is one slow arc, not twelve hits: coarse at the catch (221.4-223.1), lives
+  arrive as letters 223.1-226.5, pairwise fusing continues through cb11, and the LAST letter sinks in at 231.21 on "become".
+  Clean line with full colour and daylight from there to the b137 impact (235.038). "Clean line by b132" is withdrawn.
+- **C cut times**: oa05 245.268-248.673; ob01 graph 252.079-260.596 (drums and bass drop out at 255.485: the cherry-pick label
+  belongs after that); ob02 credits 260.596-265.712 with the commit line landing on the b153 hit at 262.301; ob03 road
+  265.712-269.126; ob04 car 269.126-276.820 (7.7 s) with her face clear from 272.543. Chord changes at b155.1, b157.1, b159.1.
+  Prefer this 7.7 s car over forcing 8.5 s (which would start at 268.272, off the chord change).
