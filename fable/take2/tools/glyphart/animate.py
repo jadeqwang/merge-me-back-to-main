@@ -74,7 +74,7 @@ def find_cuts(ks, thr=0.10):
     return segs
 
 
-def under(src, cfg, k, fm=None):
+def under(src, cfg, k, fm=None, mat=None):
     """underpainting: the source heavily blurred and darkened, so a hole left by a culled glyph is a soft patch of the
     right colour instead of black paper"""
     paper = P.hexrgb(cfg.get('paper', '#060509'))
@@ -82,7 +82,13 @@ def under(src, cfg, k, fm=None):
         c = np.empty_like(src); c[:] = paper; return c
     if fm is not None and isinstance(fm, np.ndarray):   # v9: full-strength underpainting in the face, so gaps between glyphs are skin,
         b = cv2.GaussianBlur(src, (0, 0), 4)               # not dark cracks (read as scarring at film size)
-        u = paper + (cv2.GaussianBlur(src, (0, 0), 18) - paper) * k
+        if mat is not None:   # v9: and full strength (+ the figure lift) under the figure, so dark cloth does not sink into the paper
+            kk = (k + (1 - k) * mat)[..., None]
+            u = paper + (cv2.GaussianBlur(src, (0, 0), 6) - paper) * kk
+            if cfg.get('lift'):
+                u = u + (1 - u) * cfg['lift'] * mat[..., None]
+        else:
+            u = paper + (cv2.GaussianBlur(src, (0, 0), 18) - paper) * k
         f = np.clip(fm, 0, 1)[..., None]
         return (u * (1 - f) + b * f).astype(np.float32)
     return (paper + (cv2.GaussianBlur(src, (0, 0), 18) - paper) * k).astype(np.float32)
@@ -152,7 +158,7 @@ def run_segment(args):
         small = cv2.cvtColor((src * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
         small = cv2.resize(small, (W // 2, H // 2), interpolation=cv2.INTER_AREA)
         if gl is None:
-            base = under(src, cfg, opt['under'], foc if opt.get('focus_skin') else None)
+            base = under(src, cfg, opt['under'], foc if opt.get('focus_skin') else None, mat)
             can, g0 = P.paint(src, at, cfg, rng, foc, canvas=base.copy(), dcan=base.copy(), log=lambda *a: None, matte=mat)
             gl = np.concatenate([g0, np.full((len(g0), 1), 99, np.float32)], 1)
             dcan = None
@@ -210,7 +216,7 @@ def run_segment(args):
                     gl[b, 4] = gid
             gl = cap_crowding(gl, cfg, H, W, rng, opt['cap'])
             fmr = foc if isinstance(foc, np.ndarray) else (P.ellipse_mask(H, W, foc) if foc else None)
-            can, dcan = render(gl, at, cfg, H, W, opt['fade'], under(src, cfg, opt['under'], foc if opt.get('focus_skin') else None), fmr)
+            can, dcan = render(gl, at, cfg, H, W, opt['fade'], under(src, cfg, opt['under'], foc if opt.get('focus_skin') else None, mat), fmr)
             # fill holes on top (error-driven, thresholded also in the coarsest layer)
             fcfg = dict(cfg, layer0_thresh=True, thresh=cfg.get('thresh', 0.07) * opt['fill_k'])
             can, gnew = P.paint(src, at, fcfg, rng, foc, canvas=can, dcan=dcan, log=lambda *a: None, fade_new=opt['fade'], matte=mat)
@@ -277,11 +283,16 @@ def main():
     json.dump(dict(segments=[(s[0], len(s)) for s in segs], frames=allt, cfg=cfg, opt=opt, wall=time.time() - t0),
               open(os.path.join(a.out, 'log.json'), 'w'), indent=1)
     if plate:   # same layout as the source plate: the compositor swaps the id, clip maps unchanged
-        m = dict(pm, n=len(segs[0]) if a.first == 1 else pm['n'], w=1920, h=1080,
+        m = dict(pm, w=1920, h=1080,
                  src=f"{os.path.relpath(pdir, P.ROOT)}/frames, glyph-painted (fable/take2/tools/glyphart/animate.py --preset {a.preset})",
                  glyph=dict(style=1, preset=a.preset, set=a.set, focus_skin=a.focus_skin, first=a.first, last=segs[0][-1]))
         json.dump(m, open(os.path.join(a.out, 'meta.json'), 'w'))
         import shutil
+        # frames outside --first..--last (not played by the shot) are copies of the nearest painted frame, so the folder is complete
+        for k in range(1, pm['n'] + 1):
+            if k < segs[0][0] or k > segs[0][-1]:
+                kk = min(max(k, segs[0][0]), segs[0][-1])
+                shutil.copy(os.path.join(fdir, f'f_{kk:04d}.jpg'), os.path.join(fdir, f'f_{k:04d}.jpg'))
         shutil.copy(os.path.join(fdir, f'f_{segs[0][0]:04d}.jpg'), os.path.join(a.out, 'still.jpg'))   # still-only uses
         if os.path.exists(os.path.join(pdir, 'REAL')):
             open(os.path.join(a.out, 'REAL'), 'w').write(open(os.path.join(pdir, 'REAL')).read())
